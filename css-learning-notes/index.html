@@ -1,0 +1,3939 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>CSS Learning Notes | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="CSS Learning Notes" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Cascading Style Sheets (CSS) is a stylesheet language that describes how HTML and XML documents are presented across different media types (screen, print, speech, etc.). 1. Basics 1.1. At-rules 1.2. Scoped style rules 1.3. CSS prefixes 1.4. External, internal, and inline stylesheet 2. Selectors 2.1. Universal selectors 2.2. Type, class, and ID selectors 2.3. Attribute selectors 2.4. Pseudo-classes and pseudo-elements 2.5. Combinators 2.6. Nesting selector (&amp;) 3. Cascade, specificity, and inheritance 3.1. Inheritance 3.2. Cascade and specificity 3.2.1. Origin types 3.2.2. Cascade layers 3.2.3. !important 3.2.4. Cascading order 4. The box model 4.1. Block and inline boxes 4.2. Writing modes…" />
+<meta name="twitter:description" property="og:description" content="Cascading Style Sheets (CSS) is a stylesheet language that describes how HTML and XML documents are presented across different media types (screen, print, speech, etc.). 1. Basics 1.1. At-rules 1.2. Scoped style rules 1.3. CSS prefixes 1.4. External, internal, and inline stylesheet 2. Selectors 2.1. Universal selectors 2.2. Type, class, and ID selectors 2.3. Attribute selectors 2.4. Pseudo-classes and pseudo-elements 2.5. Combinators 2.6. Nesting selector (&amp;) 3. Cascade, specificity, and inheritance 3.1. Inheritance 3.2. Cascade and specificity 3.2.1. Origin types 3.2.2. Cascade layers 3.2.3. !important 3.2.4. Cascading order 4. The box model 4.1. Block and inline boxes 4.2. Writing modes…" />
+<link rel="canonical" href="https://blog.codefarm.me/css-learning-notes/" />
+<meta property="og:url" content="https://blog.codefarm.me/css-learning-notes/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-04-26T14:09:38+08:00" />
+<meta property="article:modified_time" content="2024-04-26T14:09:38+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="CSS Learning Notes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-04-26T14:09:38+08:00","datePublished":"2024-04-26T14:09:38+08:00","description":"Cascading Style Sheets (CSS) is a stylesheet language that describes how HTML and XML documents are presented across different media types (screen, print, speech, etc.). 1. Basics 1.1. At-rules 1.2. Scoped style rules 1.3. CSS prefixes 1.4. External, internal, and inline stylesheet 2. Selectors 2.1. Universal selectors 2.2. Type, class, and ID selectors 2.3. Attribute selectors 2.4. Pseudo-classes and pseudo-elements 2.5. Combinators 2.6. Nesting selector (&amp;) 3. Cascade, specificity, and inheritance 3.1. Inheritance 3.2. Cascade and specificity 3.2.1. Origin types 3.2.2. Cascade layers 3.2.3. !important 3.2.4. Cascading order 4. The box model 4.1. Block and inline boxes 4.2. Writing modes…","headline":"CSS Learning Notes","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/css-learning-notes/"},"url":"https://blog.codefarm.me/css-learning-notes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">CSS Learning Notes</h1><p class="c-post-meta">26 Apr 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS">Cascading Style Sheets (CSS)</a> is a stylesheet language that describes how HTML and XML documents are presented across different media types (screen, print, speech, etc.).</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#basics">1. Basics</a>
+<ul class="sectlevel2">
+<li><a href="#at-rules">1.1. At-rules</a></li>
+<li><a href="#scoped-style-rules">1.2. Scoped style rules</a></li>
+<li><a href="#css-prefixes">1.3. CSS prefixes</a></li>
+<li><a href="#external-internal-and-inline-stylesheet">1.4. External, internal, and inline stylesheet</a></li>
+</ul>
+</li>
+<li><a href="#selectors">2. Selectors</a>
+<ul class="sectlevel2">
+<li><a href="#universal-selectors">2.1. Universal selectors</a></li>
+<li><a href="#type-class-and-id-selectors">2.2. Type, class, and ID selectors</a></li>
+<li><a href="#attribute-selectors">2.3. Attribute selectors</a></li>
+<li><a href="#pseudo-classes-and-pseudo-elements">2.4. Pseudo-classes and pseudo-elements</a></li>
+<li><a href="#combinators">2.5. Combinators</a></li>
+<li><a href="#nesting-selector">2.6. Nesting selector (&amp;)</a></li>
+</ul>
+</li>
+<li><a href="#cascade-specificity-and-inheritance">3. Cascade, specificity, and inheritance</a>
+<ul class="sectlevel2">
+<li><a href="#inheritance">3.1. Inheritance</a></li>
+<li><a href="#cascade-and-specificity">3.2. Cascade and specificity</a>
+<ul class="sectlevel3">
+<li><a href="#origin-types">3.2.1. Origin types</a></li>
+<li><a href="#cascade-layers">3.2.2. Cascade layers</a></li>
+<li><a href="#important">3.2.3. !important</a></li>
+<li><a href="#cascading-order">3.2.4. Cascading order</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-box-model">4. The box model</a>
+<ul class="sectlevel2">
+<li><a href="#block-and-inline-boxes">4.1. Block and inline boxes</a></li>
+<li><a href="#writing-modes">4.2. Writing modes</a></li>
+<li><a href="#logical-properties-and-values">4.3. Logical properties and values</a></li>
+<li><a href="#box-model">4.4. Box model</a>
+<ul class="sectlevel3">
+<li><a href="#the-standard-box-model">4.4.1. The standard box model</a></li>
+<li><a href="#the-alternative-box-model">4.4.2. The alternative box model</a></li>
+<li><a href="#the-box-model-and-inline-boxes">4.4.3. The box model and inline boxes</a></li>
+</ul>
+</li>
+<li><a href="#overflowing">4.5. Overflowing</a></li>
+</ul>
+</li>
+<li><a href="#values-and-units">5. Values and units</a>
+<ul class="sectlevel2">
+<li><a href="#numbers-lengths-and-percentages">5.1. Numbers, lengths, and percentages</a></li>
+</ul>
+</li>
+<li><a href="#intrinsic-and-extrinsic-sizes">6. Intrinsic and extrinsic sizes</a></li>
+<li><a href="#font-families">7. Font families</a></li>
+<li><a href="#custom-properties-css-variables">8. Custom properties (--*): CSS variables</a></li>
+<li><a href="#layout">9. Layout</a>
+<ul class="sectlevel2">
+<li><a href="#flow-layout">9.1. Flow layout</a></li>
+<li><a href="#display-and-visibility">9.2. Display and visibility</a></li>
+<li><a href="#flexbox">9.3. Flexbox</a></li>
+<li><a href="#grids">9.4. Grids</a></li>
+<li><a href="#floats">9.5. Floats</a></li>
+<li><a href="#positioning">9.6. Positioning</a></li>
+<li><a href="#multi-column-layout">9.7. Multi-column layout</a></li>
+<li><a href="#responsive-design">9.8. Responsive design</a></li>
+</ul>
+</li>
+<li><a href="#sass">10. Sass</a></li>
+<li><a href="#references">11. References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="basics">1. Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CSS is a rule-based language where each rule consists of property-value pairs applied to elements selected by a selector, with properties and values being case-insensitive.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If a CSS property is unknown or has an invalid value, the browser ignores that declaration completely.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+CSS uses US spelling as the standard. For example, use <code>color</code> instead of <code>colour</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* This is a single-line comment */</span>
+<span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="c">/*blue*/</span><span class="nx">red</span><span class="p">;</span> <span class="c">/* Add comments in the middle or the end of a code line */</span>
+  <span class="c">/* This is
+     a multi-line
+     comment */</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="at-rules">1.1. At-rules</h3>
+<div class="paragraph">
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule"><strong>At-rules</strong></a> are CSS statements that start with an at sign (<code>@</code>) followed by an identifier and continue until the next semicolon or CSS declaration block.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Regular at-rules</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* General structure */</span>
+<span class="k">@identifier</span> <span class="p">(</span><span class="n">RULE</span><span class="p">);</span>
+
+<span class="c">/* Example: tells browser to use UTF-8 character set */</span>
+<span class="k">@charset</span> <span class="s1">"utf-8"</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Nested at-rules</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="k">@identifier</span> <span class="p">(</span><span class="n">RULE</span><span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A subset of nested statements, which can be used as a statement of a style sheet as well as inside of <strong>conditional group rules</strong> that share a common syntax and each of them can include nested statements—either rulesets or nested at-rules.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* At the top level of your code */</span>
+<span class="k">@media</span> <span class="nb">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">min-width</span><span class="p">:</span> <span class="m">900px</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nt">article</span> <span class="p">{</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">1rem</span> <span class="m">3rem</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c">/* Nested within another conditional at-rule */</span>
+<span class="k">@supports</span> <span class="p">(</span><span class="n">display</span><span class="p">:</span> <span class="nb">flex</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">@media</span> <span class="nb">screen</span> <span class="n">and</span> <span class="p">(</span><span class="n">min-width</span><span class="p">:</span> <span class="m">900px</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nt">article</span> <span class="p">{</span>
+      <span class="nl">display</span><span class="p">:</span> <span class="nb">flex</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="scoped-style-rules">1.2. Scoped style rules</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@scope"><code>@scope</code></a> at-rule creates a scope for CSS rules to apply only to specific DOM elements. It works in two ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>As a standalone CSS block with a prelude containing <strong>scope root</strong> and optional <strong>scope limit</strong> selectors that define the scope boundaries — also called a <strong>donut scope</strong>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="k">@scope</span> <span class="p">(</span><span class="n">scope</span> <span class="n">root</span><span class="p">)</span> <span class="n">to</span> <span class="p">(</span><span class="n">scope</span> <span class="n">limit</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nt">rulesets</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>As inline styles within a <code>&lt;style&gt;</code> element in HTML, where the prelude is omitted and rules are automatically scoped to the parent element containing the <code>&lt;style&gt;</code> tag.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="o">&lt;</span><span class="nt">parent-element</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nt">style</span><span class="o">&gt;</span>
+    <span class="k">@scope</span> <span class="p">{</span>
+      <span class="nt">rulesets</span>
+    <span class="p">}</span>
+  <span class="o">&lt;/</span><span class="nt">style</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="nt">parent-element</span><span class="o">&gt;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Within a <code>@scope</code> block, the <code>:scope</code> pseudo-class targets the scope root element, allowing styling it directly from within the scope:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="k">@scope</span> <span class="p">(.</span><span class="n">feature</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nd">:scope</span> <span class="p">{</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="n">rebeccapurple</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nx">antiquewhite</span><span class="p">;</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="nb">sans-serif</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="css-prefixes">1.3. CSS prefixes</h3>
+<div class="paragraph">
+<p>Browser vendors add <a href="https://developer.mozilla.org/en-US/docs/Glossary/Vendor_Prefix">prefixes</a> to experimental CSS properties.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>-webkit-</code> (WebKit/Chromium browsers: Chrome, Safari, Opera, Edge, iOS browsers)</p>
+</li>
+<li>
+<p><code>-moz-</code> (Firefox)</p>
+</li>
+<li>
+<p><code>-o-</code> (old Opera versions)</p>
+</li>
+<li>
+<p><code>-ms-</code> (Internet Explorer and pre-Chromium Edge)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="external-internal-and-inline-stylesheet">1.4. External, internal, and inline stylesheet</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>An <strong>external stylesheet</strong> is a separate <code>.css</code> file linked in the HTML <code>&lt;head&gt;</code>, making it the most common and maintainable way to add CSS to a document.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="c">&lt;!-- Inside a subdirectory called styles inside the current directory --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"styles/style.css"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!-- Inside a subdirectory called general, which is in a subdirectory called
+     styles, inside the current directory --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"styles/general/style.css"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!-- Go up one directory level, then inside a subdirectory called styles --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"../styles/style.css"</span> <span class="nt">/&gt;</span>
+<span class="c">&lt;!-- Remote URL links --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span>
+       <span class="na">integrity=</span><span class="s">"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"</span>
+       <span class="na">crossorigin=</span><span class="s">"anonymous"</span> <span class="nt">/&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>rel</code> attribute stands for "relationship" and defines how the linked resource relates to the current document.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>An <strong>internal stylesheet</strong> (not recommended) is CSS code placed inside a <code>&lt;style&gt;</code> element within the HTML document.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>&lt;style&gt;</code> element can be included inside the <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code> of the document, though placing it in the <code>&lt;head&gt;</code> is generally recommended for better performance.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en-GB"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;</span>My CSS experiment<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;style&gt;</span>
+      <span class="nt">h1</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="nx">blue</span><span class="p">;</span>
+        <span class="nl">background-color</span><span class="p">:</span> <span class="nx">yellow</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="nx">black</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nt">p</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
+    <span class="nt">&lt;p&gt;</span>This is my first CSS example<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Inline styles</strong> (not recommended) are CSS declarations applied directly to a single HTML element using the <code>style</code> attribute.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;h1</span> <span class="na">style=</span><span class="s">"color: blue; background-color: yellow; border: 1px solid black;"</span><span class="nt">&gt;</span>
+  Hello World!
+<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">"color:red;"</span><span class="nt">&gt;</span>This is my first CSS example<span class="nt">&lt;/p&gt;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="selectors">2. Selectors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A CSS selector is a pattern that identifies which HTML elements should have CSS rules applied to them.</p>
+</div>
+<div class="sect2">
+<h3 id="universal-selectors">2.1. Universal selectors</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors"><strong>universal selector</strong></a> (<code>*</code>) selects all elements in the document or within a parent element when combined with other selectors.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* A reset stylesheet to remove the margins on all elements. */</span>
+<span class="o">*</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* It is selecting any element which is the first-child of an &lt;article&gt; element, or
+   the first-child of any descendant element of &lt;article&gt;. */</span>
+<span class="nt">article</span> <span class="o">*</span><span class="nd">:first-child</span> <span class="p">{</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="type-class-and-id-selectors">2.2. Type, class, and ID selectors</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors"><strong>type selector</strong></a> selects elements by their HTML tag name (like <code>div</code>, <code>p</code>, <code>span</code>, etc.).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">span</span> <span class="p">{</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nx">yellow</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">strong</span><span class="o">,</span> <span class="nt">em</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="n">rebeccapurple</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Class_selectors"><strong>class selector</strong></a> selects HTML elements that have a specific class name in their <code>class</code> attribute.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* Note that the following class selector */</span>
+<span class="nc">.class_name</span> <span class="p">{</span> <span class="c">/* style properties */</span> <span class="p">}</span>
+
+<span class="c">/* is equivalent to the following attribute selector */</span>
+<span class="o">[</span><span class="nt">class</span><span class="o">~=</span><span class="nt">class_name</span><span class="o">]</span> <span class="p">{</span> <span class="c">/* style properties */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* All elements with class="spacious" */</span>
+<span class="nc">.spacious</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">2em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* All &lt;li&gt; elements with class="spacious" */</span>
+<span class="nt">li</span><span class="nc">.spacious</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">2em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* All &lt;li&gt; elements with a class list that includes both "spacious" and "elegant" */</span>
+<span class="c">/* For example, class="elegant retro spacious" */</span>
+<span class="nt">li</span><span class="nc">.spacious.elegant</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">2em</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/ID_selectors"><strong>ID selector</strong></a> targets elements by their case-sensitive <code>id</code> attribute value.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* Note that syntactically (but not specificity-wise), the following ID selector */</span>
+<span class="nf">#id_value</span> <span class="p">{</span> <span class="c">/* style properties */</span> <span class="p">}</span>
+
+<span class="c">/* is equivalent to the following attribute selector */</span>
+<span class="o">[</span><span class="nt">id</span><span class="o">=</span><span class="nt">id_value</span><span class="o">]</span> <span class="p">{</span> <span class="c">/* style properties */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* The element with id="demo" */</span>
+<span class="nf">#demo</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="nx">red</span> <span class="m">2px</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Don&#8217;t use the same ID multiple times in a document as it creates invalid HTML and causes problems.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="attribute-selectors">2.3. Attribute selectors</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors"><strong>attribute selector</strong></a> selects elements that have specific attributes set, with options to match exact values or partial strings within those attributes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Presence and value selectors</strong> select elements based on whether they have a specific attribute (like <code>href</code>) or match certain attribute values.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 33.3333%;">
+<col style="width: 55.5556%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Selector</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a[title]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose name is the value in square brackets.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a[href="https://example.com"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose value is exactly <em>value</em> — the string inside the quotes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr~=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>p[class~="special"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose value is exactly <em>value</em>, or contains <em>value</em> in its (space separated) list of values.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr|=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>div[lang|="zh"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose value is exactly <em>value</em> or begins with <em>value</em> immediately followed by a hyphen.</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>The <strong>substring matching selectors</strong> select elements with an attribute value that contains a specific substring.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 71.4286%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Selector</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr^=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>li[class^="box-"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute, whose value begins with <em>value</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr$=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>li[class$="-box"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose value ends with <em>value</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[attr*=value]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>li[class*="box"]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects elements with an <em>attr</em> attribute whose value contains <em>value</em> anywhere within the string.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To match attribute values case-insensitively, use the value <code>i</code> before the closing bracket, such as <code>li[class^="a" i]</code>.
+</td>
+</tr>
+</table>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">li</span><span class="o">[</span><span class="nt">class</span><span class="o">^=</span><span class="s1">"a"</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nx">yellow</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">li</span><span class="o">[</span><span class="nt">class</span><span class="o">^=</span><span class="s1">"a"</span> <span class="nt">i</span><span class="o">]</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;h1&gt;</span>Case-insensitivity<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;ul&gt;</span>
+  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"a"</span><span class="nt">&gt;</span>Item 1<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"A"</span><span class="nt">&gt;</span>Item 2<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"Ab"</span><span class="nt">&gt;</span>Item 3<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span></code></pre>
+</div>
+</div>
+<div class="attribute-selectors case-insensitivity">
+  <style>
+    .attribute-selectors.case-insensitivity {
+      all: initial;
+
+      li[class^="a"] {
+        background-color: yellow;
+      }
+
+      li[class^="a" i] {
+        color: red;
+      }
+    }
+  </style>
+
+  <h1>Case-insensitivity</h1>
+  <ul>
+    <li class="a">Item 1</li>
+    <li class="A">Item 2</li>
+    <li class="Ab">Item 3</li>
+  </ul>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="pseudo-classes-and-pseudo-elements">2.4. Pseudo-classes and pseudo-elements</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>A <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes"><strong>pseudo-class</strong></a> is a selector that selects elements in a specific state, such as the first element of its type or an element being hovered over by the mouse.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pseudo-classes are keywords that start with a colon <code>:</code>, such as <code>:first-child</code> and <code>:hover</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* target the first paragraph child element in all article. */</span>
+<span class="nt">article</span> <span class="nt">p</span><span class="nd">:first-child</span> <span class="p">{</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">120%</span><span class="p">;</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Pseudo-classes can be written without an element selector to select any element in a specific state.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">article</span> <span class="nd">:first-child</span> <span class="p">{</span> <span class="c">/* is equivalent to article *:first-child */</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">120%</span><span class="p">;</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>User-action pseudo-classes</strong> (also called <strong>dynamic pseudo-classes</strong>) work like adding a class to an element when the user interacts with it.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">a</span><span class="nd">:link</span><span class="o">,</span> <span class="nt">a</span><span class="nd">:visited</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="n">rebeccapurple</span><span class="p">;</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">a</span><span class="nd">:hover</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">hotpink</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;p&gt;&lt;a</span> <span class="na">href=</span><span class="s">""</span><span class="nt">&gt;</span>Hover over me<span class="nt">&lt;/a&gt;&lt;/p&gt;</span></code></pre>
+</div>
+</div>
+<div class="pseudo-classes user-action">
+  <style>
+    .pseudo-classes.user-action {
+      all: initial;
+
+      a:link,
+      a:visited {
+        color: rebeccapurple;
+        font-weight: bold;
+      }
+
+      a:hover {
+        color: hotpink;
+      }
+    }
+  </style>
+  <p><a href="">Hover over me</a></p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements"><strong>Pseudo-elements</strong></a> work similarly to pseudo-classes, but instead of targeting existing elements, they create new virtual elements in the document.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Pseudo-elements start with a double colon <code>::</code>, such as <code>::first-line</code> and <code>::before</code>.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* select the first line of a paragraph of an article */</span>
+<span class="nt">article</span> <span class="nt">p</span><span class="nd">::first-line</span> <span class="p">{</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">120%</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="pseudo-elements">
+  <style>
+    .pseudo-elements {
+      all: initial;
+
+      article p::first-line {
+        font-size: 120%;
+        color: red;
+      }
+    }
+  </style>
+  <article>
+    <p>Veggies es bonus vobis, proinde vos postulo essum magis kohlrabi welsh onion daikon amaranth tatsoi tomatillo
+      melon azuki bean garlic.</p>
+
+    <p>Gumbo beet greens corn soko endive gumbo gourd. Parsley shallot courgette tatsoi pea sprouts fava bean collard
+      greens dandelion okra wakame tomato. Dandelion cucumber earthnut pea peanut soko zucchini.</p>
+  </article>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Combining pseudo-classes and pseudo-elements</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/*  make the first line of the first paragraph bold */</span>
+<span class="nt">article</span> <span class="nt">p</span><span class="nd">:first-child::first-line</span> <span class="p">{</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">120%</span><span class="p">;</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/::before"><code>::before</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/::after"><code>::after</code></a> pseudo-elements create virtual first and last children that use the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/content">content</a> property to insert content via CSS.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.topic-weather</span><span class="nd">::before</span> <span class="p">{</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="s2">'⛅ '</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.topic-weather</span><span class="nd">::after</span> <span class="p">{</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="s1">" ➥"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.topic-hot</span><span class="nd">::before</span> <span class="p">{</span>
+  <span class="nl">content</span><span class="p">:</span> <span class="nf">url</span><span class="p">(</span><span class="s2">'https://interactive-examples.mdn.mozilla.net/media/examples/fire.png'</span><span class="p">);</span>
+  <span class="nl">margin-right</span><span class="p">:</span> <span class="m">6px</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"topic-weather"</span><span class="nt">&gt;</span>Weather for Today: Heat, violent storms and twisters<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"topic-hot"</span><span class="nt">&gt;</span>Trending Article: Must-watch videos of the week<span class="nt">&lt;/p&gt;</span></code></pre>
+</div>
+</div>
+<div class="pseudo-elements after before">
+  <style>
+    .pseudo-elements.after.before {
+      all: initial;
+
+      .topic-weather {
+        &::before {
+          content: '⛅ ';
+        }
+
+        &::after {
+          content: " ➥";
+        }
+      }
+
+      .topic-hot::before {
+        content: url('https://interactive-examples.mdn.mozilla.net/media/examples/fire.png');
+        margin-right: 6px;
+      }
+    }
+  </style>
+  <p class="topic-weather">Weather for Today: Heat, violent storms and twisters</p>
+  <p class="topic-hot">Trending Article: Must-watch videos of the week</p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="combinators">2.5. Combinators</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator"><strong>descendant combinator</strong></a> (a single space character) targets elements that are descendants of another element, regardless of how many levels deep they are nested.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">body</span> <span class="nt">article</span> <span class="nt">p</span> <span class="p">{</span> <span class="c">/* */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator"><strong>child combinator</strong></a> (<code>&gt;</code>) selects direct child elements only, not deeper descendants.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* select only &lt;p&gt; elements that are direct children of &lt;article&gt; elements */</span>
+<span class="nt">article</span> <span class="o">&gt;</span> <span class="nt">p</span> <span class="p">{</span> <span class="c">/* */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Next-sibling_combinator"><strong>next-sibling combinator</strong></a> (<code>+</code>) selects elements that immediately follow another element as siblings.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/*  select all &lt;img&gt; elements that are immediately preceded by a &lt;p&gt; element */</span>
+<span class="nt">p</span> <span class="o">+</span> <span class="nt">img</span> <span class="p">{</span> <span class="c">/* */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">h1</span> <span class="o">+</span> <span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nx">#333</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">#fff</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">.5em</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;article&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>A heading<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;p&gt;</span>I am a paragraph.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;div&gt;</span>I am a div<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;p&gt;</span>I am another paragraph.<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/article&gt;</span></code></pre>
+</div>
+</div>
+<div class="next-sibling_combinator">
+  <style>
+    .next-sibling_combinator {
+      all: initial;
+
+      h1+p {
+        font-weight: bold;
+        background-color: #333;
+        color: #fff;
+        padding: .5em;
+      }
+    }
+  </style>
+  <article>
+    <h1>A heading</h1>
+    <p>I am a paragraph.</p>
+    <div>I am a div</div>
+    <p>I am another paragraph.</p>
+  </article>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Subsequent-sibling_combinator"><strong>subsequent-sibling combinator</strong></a> (<code>~</code>) selects all sibling elements that come after a specified element.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* select all &lt;img&gt; elements that come anywhere after &lt;p&gt; elements */</span>
+<span class="nt">p</span> <span class="o">~</span> <span class="nt">img</span> <span class="p">{</span> <span class="c">/* */</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">h1</span> <span class="o">~</span> <span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">font-weight</span><span class="p">:</span> <span class="nb">bold</span><span class="p">;</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nx">#333</span><span class="p">;</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">#fff</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">.5em</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;article&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>A heading<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;p&gt;</span>I am a paragraph.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;div&gt;</span>I am a div<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;p&gt;</span>I am another paragraph.<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/article&gt;</span></code></pre>
+</div>
+</div>
+<div class="subsequent-sibling_combinator">
+  <style>
+    .subsequent-sibling_combinator {
+      all: initial;
+
+      h1~p {
+        font-weight: bold;
+        background-color: #333;
+        color: #fff;
+        padding: .5em;
+      }
+    }
+  </style>
+  <article>
+    <h1>A heading</h1>
+    <p>I am a paragraph.</p>
+    <div>I am a div</div>
+    <p>I am another paragraph.</p>
+  </article>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Selector_list"><strong>selector list</strong></a> uses commas to separate multiple selectors that share the same CSS rules.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When multiple selectors share the same declarations, they can be grouped together into a comma-separated list.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">span</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="nx">red</span> <span class="m">2px</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="nx">red</span> <span class="m">2px</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* are equivalent to */</span>
+
+<span class="nt">span</span><span class="o">,</span> <span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="nx">red</span> <span class="m">2px</span> <span class="nb">solid</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Selector lists can be used as parameters in functional CSS pseudo-classes.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* Without :is() - repetitive */</span>
+<span class="nt">article</span> <span class="nt">h1</span><span class="o">,</span> <span class="nt">article</span> <span class="nt">h2</span><span class="o">,</span> <span class="nt">article</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">blue</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* With :is() - concise */</span>
+<span class="nt">article</span> <span class="nd">:is</span><span class="o">(</span><span class="nt">h1</span><span class="o">,</span> <span class="nt">h2</span><span class="o">,</span> <span class="nt">h3</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">blue</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>When a selector list contains an invalid selector, the entire style block is ignored.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* This entire rule is ignored */</span>
+<span class="nt">h1</span><span class="o">,</span> <span class="nt">h2</span><span class="nd">:invalid-pseudo</span><span class="o">,</span> <span class="nt">h3</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">blue</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nesting-selector">2.6. Nesting selector (&amp;)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Nesting_selector"><strong><code>&amp;</code> nesting selector</strong></a> defines a clear relationship between a parent and a nested style rule, making the child rule&#8217;s selector relative to the parent.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">parentRule</span> <span class="p">{</span>
+  <span class="c">/* parent rule style properties */</span>
+  <span class="err">&amp;</span> <span class="err">childRule</span> <span class="err">{</span>
+    <span class="c">/* child rule style properties */</span>
+  <span class="p">}</span>
+<span class="err">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Without the <code>&amp;</code> nesting selector, the browser adds whitespace between selectors, creating a descendant selector that targets child elements.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.parent-rule</span> <span class="p">{</span>
+  <span class="c">/* parent rule properties */</span>
+  <span class="err">.child-rule</span> <span class="err">{</span>
+    <span class="c">/* child rule properties */</span>
+  <span class="p">}</span>
+<span class="err">}</span>
+
+<span class="c">/* the browser parses the above nested rules as shown below */</span>
+
+<span class="nc">.parent-rule</span> <span class="p">{</span>
+  <span class="c">/* parent rule style properties */</span>
+<span class="p">}</span>
+
+<span class="nc">.parent-rule</span> <span class="nc">.child-rule</span> <span class="p">{</span>
+  <span class="c">/* style properties for .child-rule descendants for .parent-rule ancestors */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>With the <code>&amp;</code> nesting selector, no whitespace is added, combining selectors to target the same element.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.parent-rule</span> <span class="p">{</span>
+  <span class="c">/* parent rule properties */</span>
+  <span class="err">&amp;:child-rule</span> <span class="err">{</span>
+    <span class="c">/* child rule properties */</span>
+  <span class="p">}</span>
+<span class="err">}</span>
+
+<span class="c">/* the browser parses the above nested rules as shown below */</span>
+
+<span class="nc">.parent-rule</span> <span class="p">{</span>
+  <span class="c">/* parent rule properties */</span>
+<span class="p">}</span>
+
+<span class="nc">.parent-rule</span><span class="nd">:child-rule</span> <span class="p">{</span>
+  <span class="c">/* child rule properties */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <code>&amp;</code> nesting selector can also be appended to reverse the context of the rules.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.card</span> <span class="p">{</span>
+  <span class="c">/* .card styles */</span>
+  <span class="err">.featured</span> <span class="err">&amp;</span> <span class="err">{</span>
+    <span class="c">/* .featured .card styles */</span>
+  <span class="p">}</span>
+<span class="err">}</span>
+
+<span class="c">/* the browser parses above nested rules as shown below */</span>
+
+<span class="nc">.card</span> <span class="p">{</span>
+  <span class="c">/* .card styles */</span>
+<span class="p">}</span>
+
+<span class="nc">.featured</span> <span class="nc">.card</span> <span class="p">{</span>
+  <span class="c">/* .featured .card styles */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>CSS Combinators can be used with or without the <code>&amp;</code> nesting selector.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* the &amp; nesting selector is not required, but recommended */</span>
+<span class="nt">p</span> <span class="p">{</span>
+  <span class="err">&amp;</span> <span class="err">~</span> <span class="err">img</span> <span class="err">{</span>
+  <span class="p">}</span>
+<span class="err">}</span>
+
+<span class="c">/* the browser parses above nested rules as shown below */</span>
+
+<span class="nt">p</span> <span class="o">~</span> <span class="nt">img</span> <span class="p">{</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"nesting-selector"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;style&gt;</span>
+    <span class="nc">.nesting-selector</span> <span class="p">{</span>
+      <span class="err">.example</span> <span class="err">{</span>
+        <span class="nl">font-family</span><span class="p">:</span> <span class="n">system-ui</span><span class="p">;</span>
+        <span class="nl">font-size</span><span class="p">:</span> <span class="m">1.2rem</span><span class="p">;</span>
+
+        <span class="err">&amp;&gt;a</span> <span class="err">{</span>
+          <span class="nl">color</span><span class="p">:</span> <span class="nx">tomato</span><span class="p">;</span>
+
+          <span class="err">&amp;:hover,</span>
+          <span class="err">&amp;:focus</span> <span class="err">{</span>
+            <span class="nl">color</span><span class="p">:</span> <span class="nx">ivory</span><span class="p">;</span>
+            <span class="nl">background-color</span><span class="p">:</span> <span class="nx">tomato</span><span class="p">;</span>
+          <span class="p">}</span>
+        <span class="err">}</span>
+      <span class="err">}</span>
+    <span class="err">}</span>
+  <span class="nt">&lt;/style&gt;</span>
+
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"example"</span><span class="nt">&gt;</span>
+    This paragraph <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"#"</span><span class="nt">&gt;</span>contains a link<span class="nt">&lt;/a&gt;</span>, try hovering or focusing it.
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="nesting-selector">
+  <style>
+    .nesting-selector {
+      .example {
+        font-family: system-ui;
+        font-size: 1.2rem;
+
+        &>a {
+          color: tomato;
+
+          &:hover,
+          &:focus {
+            color: ivory;
+            background-color: tomato;
+          }
+        }
+      }
+    }
+  </style>
+
+  <p class="example">
+    This paragraph <a href="#">contains a link</a>, try hovering or focusing it.
+  </p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cascade-specificity-and-inheritance">3. Cascade, specificity, and inheritance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CSS cascade, specificity, and inheritance work together to determine which styles are applied to elements, with the cascade resolving conflicts between multiple rules targeting the same element, specificity breaking ties by favoring more specific selectors, and inheritance passing certain properties from parent to child elements unless explicitly overridden.</p>
+</div>
+<div class="sect2">
+<h3 id="inheritance">3.1. Inheritance</h3>
+<div class="paragraph">
+<p>CSS properties are either <strong>inherited</strong> or <strong>non-inherited</strong>, and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Inheritance"><strong>inheritance</strong></a> determines how property values are applied when no explicit value is set on an element.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For <strong>inherited properties</strong>, the element receives the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/computed_value">computed value</a> from its parent element.</p>
+</li>
+<li>
+<p>For <strong>non-inherited properties</strong>, the element receives the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/initial_value">initial value</a> of that property.</p>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/inherit"><strong>inherit</strong></a> keyword explicitly applies inheritance to any property, whether it&#8217;s normally inherited or not.</p>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/all"><code>all</code></a> shorthand property resets all element properties to their initial or inherited values, except for <code>unicode-bidi</code>, <code>direction</code>, and CSS Custom Properties.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;style&gt;</span>
+  <span class="nt">div</span><span class="nc">.inherit</span> <span class="nt">p</span> <span class="p">{</span>
+    <span class="nl">all</span><span class="p">:</span> <span class="n">revert</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">1rem</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nx">green</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="nb">medium</span> <span class="nb">solid</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.inherit</span> <span class="nt">p</span> <span class="nt">em</span><span class="nc">.inherit</span> <span class="p">{</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="nb">inherit</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"inherit"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;p&gt;</span>This paragraph has <span class="nt">&lt;em&gt;</span>emphasized text<span class="nt">&lt;/em&gt;</span> in it.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p&gt;</span>This paragraph has <span class="nt">&lt;em</span> <span class="na">class=</span><span class="s">"inherit"</span><span class="nt">&gt;</span>emphasized text<span class="nt">&lt;/em&gt;</span> in it.<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<style>
+  div.inherit p {
+    all: revert;
+    font-size: 1rem;
+    color: green;
+    border: medium solid;
+    width: 50%;
+  }
+
+  div.inherit p em.inherit {
+    border: inherit;
+  }
+</style>
+
+<div class="inherit">
+  <p>This paragraph has <em>emphasized text</em> in it.</p>
+  <p>This paragraph has <em class="inherit">emphasized text</em> in it.</p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cascade-and-specificity">3.2. Cascade and specificity</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade"><strong>cascade</strong></a> is CSS&#8217;s core algorithm, as emphasized by the name: <strong>Cascading</strong> Style Sheets, determining which <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade#origin_types">origin</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer">cascade layer</a> or <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@scope">@scope</a> block set a value for a property on an element.</p>
+</div>
+<div class="paragraph">
+<p>When a <strong>selector</strong> matches an element, the property value from the origin with the highest precedence gets applied, even if the selector from a lower precedence origin or layer has greater <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity">specificity</a>.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity"><strong>Specificity</strong></a> is the algorithm that browsers use to determine which CSS declaration is most relevant to an element, thereby determining the property value to apply, and it calculates the weight of a CSS selector to determine which rule from competing CSS declarations gets applied to an element.</p>
+</div>
+<div class="sect3">
+<h4 id="origin-types">3.2.1. Origin types</h4>
+<div class="paragraph">
+<p>CSS declarations come from different <strong>origin types</strong>: <em>User-agent stylesheets</em>, <em>Author stylesheets</em>, and <em>User stylesheets</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>User-agent stylesheets are the default styles provided by the user-agent, or browser.</p>
+</li>
+<li>
+<p>Author stylesheets are the styles defined by the web developer using one or more external linked or imported stylesheets, <code>&lt;style&gt;</code> blocks, and inline styles defined with the <code>style</code> attribute.</p>
+</li>
+<li>
+<p>User stylesheets are user&#8217;s personal custom styles, which can be overridden by the author stylesheets.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="cascade-layers">3.2.2. Cascade layers</h4>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer"><code>@layer</code></a> at-rule is used to declare a cascade layer and can also be used to define the order of precedence in case of multiple cascade layers.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* create a named cascade layer with the CSS rules */</span>
+<span class="k">@layer</span> <span class="n">layer-name</span> <span class="p">{</span><span class="nt">rules</span><span class="p">}</span>
+<span class="c">/* create one or multiple named cascade layers without assigning any styles */</span>
+<span class="k">@layer</span> <span class="n">layer-name</span><span class="p">;</span>
+<span class="c">/* the last layer to be listed will win if declarations are found in multiple layers. */</span>
+<span class="k">@layer</span> <span class="n">layer-name</span><span class="p">,</span> <span class="n">layer-name</span><span class="p">,</span> <span class="n">layer-name</span><span class="p">;</span>
+<span class="c">/* create an anonymous cascade layer */</span>
+<span class="k">@layer</span> <span class="p">{</span><span class="nt">rules</span><span class="p">}</span>
+<span class="c">/* create a cascade layer is by using @import. */</span>
+<span class="k">@import</span> <span class="nf">url</span> <span class="n">layer</span><span class="p">(</span><span class="n">layer-name</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Rules within a cascade layer cascade together, giving more control over the cascade to web developers.</p>
+</li>
+<li>
+<p>Any styles not in a layer are gathered together and placed into a single <strong>anonymous layer</strong> that comes after all the declared layers, named and anonymous.</p>
+</li>
+<li>
+<p>Any styles declared outside of a layer are treated as being part of an anonymous last declared layer, and will override styles declared in a layer, regardless of specificity.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="k">@layer</span> <span class="n">base</span><span class="p">,</span> <span class="n">special</span><span class="p">;</span>
+
+<span class="k">@layer</span> <span class="n">special</span> <span class="p">{</span>
+  <span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="n">rebeccapurple</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">@layer</span> <span class="n">base</span> <span class="p">{</span>
+  <span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nx">green</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">5px</span> <span class="nb">solid</span> <span class="nx">green</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">1.3em</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">0.5em</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="important">3.2.3. !important</h4>
+<div class="paragraph">
+<p>The <code>!important</code> keyword marks a CSS declaration as <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/important"><strong>important</strong></a>, otherwise it is called normal, and when a declaration is important, the cascade origin and layer orders are reversed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">selector</span> <span class="p">{</span>
+  <span class="py">property</span><span class="p">:</span> <span class="n">value</span><span class="p">;</span> <span class="c">/* normal declaration */</span>
+  <span class="py">property</span><span class="p">:</span> <span class="n">value</span> <span class="cp">!important</span><span class="p">;</span> <span class="c">/* important declaration (preferred) */</span>
+  <span class="py">property</span><span class="p">:</span> <span class="n">value</span> <span class="cp">! important</span><span class="p">;</span> <span class="c">/* important declaration (with whitespace, deprecated) */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="cascading-order">3.2.4. Cascading order</h4>
+<div class="paragraph">
+<p>The cascade order depends on the origin type, and within each origin, it follows the declaration order of cascade layers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Relevance</strong>: CSS first filters rules from all origins to keep only those that apply to the target element.</p>
+</li>
+<li>
+<p><strong>Origin and importance</strong>: CSS then sorts the rules by importance (whether they use <code>!important</code>) and by their origin, with the cascade order shown below:</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 30%;">
+<col style="width: 40%;">
+<col style="width: 30%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Order (low to high)</th>
+<th class="tableblock halign-left valign-top">Origin</th>
+<th class="tableblock halign-left valign-top">Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user-agent (browser)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">normal</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">normal</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">author (developer)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">normal</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSS <code>@keyframe</code> animations</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">author (developer)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>!important</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>!important</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user-agent (browser)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>!important</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CSS transitions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>Specificity</strong>: When rules have the same origin, CSS compares selector specificity and applies the declaration with the highest specificity.</p>
+</li>
+<li>
+<p><strong>Scoping proximity</strong>: When selectors have equal specificity, CSS applies the property value from scoped rules that requires the fewest DOM hops to reach the scope root.</p>
+</li>
+<li>
+<p><strong>Order of appearance</strong>: When competing values have equal specificity and scoping proximity, CSS applies the last declaration in the style order.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-box-model">4. The box model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Every element in CSS is contained within a box, and mastering these boxes is fundamental to creating sophisticated layouts and aligning elements effectively.</p>
+</div>
+<div class="sect2">
+<h3 id="block-and-inline-boxes">4.1. Block and inline boxes</h3>
+<div class="paragraph">
+<p>CSS boxes are categorized as <strong>block boxes</strong> or <strong>inline boxes</strong> and possess both an <strong>inner display</strong> type (which controls internal element layout, such as <code>display: flex;</code>) and an <strong>outer display</strong> type.</p>
+</div>
+<div class="paragraph">
+<p>If a box has an <strong>outer display</strong> type of <code>block</code>, then:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The box will break onto a new line.</p>
+</li>
+<li>
+<p>The <code>width</code> and <code>height</code> properties are respected.</p>
+</li>
+<li>
+<p>Padding, margin and border will cause other elements to be pushed away from the box.</p>
+</li>
+<li>
+<p>If <code>width</code> is not specified, the box will extend in the inline direction to fill the space available in its container, and in most cases, the box will become as wide as its container, filling up 100% of the space available.</p>
+</li>
+<li>
+<p>HTML elements, such as <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code>, use block as their outer display type by default.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If a box has an <strong>outer display</strong> type of <code>inline</code>, then:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The box will NOT break onto a new line.</p>
+</li>
+<li>
+<p>The <code>width</code> and <code>height</code> properties will NOT apply.</p>
+</li>
+<li>
+<p>Top and bottom padding, margins, and borders will apply but will NOT cause other inline boxes to move away from the box.</p>
+</li>
+<li>
+<p>Left and right padding, margins, and borders will apply and will cause other inline boxes to move away from the box.</p>
+</li>
+<li>
+<p>HTML elements, such as <code>&lt;a&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;em&gt;</code> and <code>&lt;strong&gt;</code> use inline as their outer display type by default.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="writing-modes">4.2. Writing modes</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode">writing-mode</a> property sets whether lines of text are laid out horizontally or vertically, as well as the direction in which blocks progress. When set for an entire document, it should be set on the root element (<code>html</code> element for HTML documents).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* For `ltr` scripts, content flows horizontally from left to right.
+   For `rtl` scripts, content flows horizontally from right to left.
+   The next horizontal line is positioned below the previous line. */</span>
+<span class="nt">writing-mode</span><span class="o">:</span> <span class="nt">horizontal-tb</span><span class="o">;</span>
+<span class="c">/* For `ltr` scripts, content flows vertically from top to bottom, and the
+   next vertical line is positioned to the left of the previous line.
+   For `rtl` scripts, content flows vertically from bottom to top, and the
+   next vertical line is positioned to the right of the previous line. */</span>
+<span class="nt">writing-mode</span><span class="o">:</span> <span class="nt">vertical-rl</span><span class="o">;</span>
+<span class="c">/* For `ltr` scripts, content flows vertically from top to bottom, and the
+   next vertical line is positioned to the right of the previous line.
+   For `rtl` scripts, content flows vertically from bottom to top, and the
+   next vertical line is positioned to the left of the previous line. */</span>
+<span class="nt">writing-mode</span><span class="o">:</span> <span class="nt">vertical-lr</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;style&gt;</span>
+<span class="nt">div</span><span class="nc">.writing-mode</span> <span class="p">{</span>
+  <span class="nl">writing-mode</span><span class="p">:</span> <span class="n">vertical-rl</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">'writing-mode'</span><span class="nt">&gt;</span>
+<span class="nt">&lt;p&gt;</span>歸園田居·其三<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>魏晉·陶淵明<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>種豆南山下，草盛豆苗稀。<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>晨興理荒穢，帶月荷鋤歸。<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>道狹草木長，夕露沾我衣。<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>衣沾不足惜，但使願無違。<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<style>
+div.writing-mode {
+  writing-mode: vertical-rl;
+}
+</style>
+<div class='writing-mode'>
+<p>歸園田居·其三</p>
+<p>魏晉·陶淵明</p>
+<p>種豆南山下，草盛豆苗稀。</p>
+<p>晨興理荒穢，帶月荷鋤歸。</p>
+<p>道狹草木長，夕露沾我衣。</p>
+<p>衣沾不足惜，但使願無違。</p>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="logical-properties-and-values">4.3. Logical properties and values</h3>
+<div class="paragraph">
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values">CSS logical properties and values</a> module introduces logical properties and values that provide the ability to control layout through logical, rather than physical, direction and dimension mappings.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>Block</strong> dimension perpendicular to the flow of text within a line, i.e., the vertical dimension in horizontal <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode">writing modes</a>, and the horizontal dimension in vertical <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode">writing modes</a>. For standard English text, it is the vertical dimension.</p>
+</li>
+<li>
+<p>The <strong>Inline</strong> dimension parallel to the flow of text within a line, i.e., the horizontal dimension in horizontal <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode">writing modes</a>, and the vertical dimension in vertical <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/writing-mode">writing modes</a>. For standard English text, it is the horizontal dimension.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Block and inline sizes</strong></p>
+</div>
+<div class="paragraph">
+<p>Logical properties and values use the abstract terms <code>block</code> and <code>inline</code> to describe the direction in which they flow.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/inline-size"><code>inline-size</code></a> property defines the horizontal or vertical size of an element&#8217;s block, depending on its writing mode. It corresponds to either the <code>width</code> or the <code>height</code> property, depending on the value of <code>writing-mode</code>.</p>
+<div class="paragraph">
+<p>If the writing mode is vertically oriented, the value of <code>inline-size</code> relates to the <code>height</code> of the element; otherwise, it relates to the <code>width</code> of the element.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Handling_different_text_directions/horizontal-tb.png" alt="Showing the block and inline axis for a horizontal writing mode." width="30%" height="30%">
+</div>
+<div class="title">Figure 1. Showing the block and inline axis for a horizontal writing mode.</div>
+</div>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/block-size"><code>block-size</code></a> property defines the horizontal or vertical size of an element&#8217;s block, depending on its writing mode. It corresponds to either the <code>width</code> or the <code>height</code> property, depending on the value of <code>writing-mode</code>.</p>
+<div class="paragraph">
+<p>If the writing mode is vertically oriented, the value of <code>block-size</code> relates to the <code>width</code> of the element; otherwise, it relates to the <code>height</code> of the element.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Handling_different_text_directions/vertical.png" alt="Showing the block and inline axis for a vertical writing mode." width="20%" height="20%">
+</div>
+<div class="title">Figure 2. Showing the block and inline axis for a vertical writing mode.</div>
+</div>
+</li>
+<li>
+<p>Properties that accept physical values (<code>top</code>, <code>bottom</code>, <code>left</code>, <code>right</code>) now also accept flow-relative logical values (<code>block-start</code>, <code>block-end</code>, <code>inline-start</code>, <code>inline-end</code>).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="box-model">4.4. Box model</h3>
+<div class="paragraph">
+<p>The CSS box model as a whole applies to block boxes and defines how the different parts of a box — margin, border, padding, and content — work together to create a box.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To add complexity, there is a <strong>standard</strong> and an <strong>alternate</strong> box model. By default, browsers use the standard box model.
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model/box-model.png" alt="Diagram of the box model" width="25%" height="25%">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Content area</strong>: The area where the content is displayed; size it using properties like <code>inline-size</code> and <code>block-size</code> or <code>width</code> and <code>height</code>.</p>
+</li>
+<li>
+<p><strong>Padding area</strong>: The padding sits around the content as white space; size it using <code>padding</code> and related properties.</p>
+</li>
+<li>
+<p><strong>Border area</strong>: The border wraps the content and any padding; size it using <code>border</code> and related properties.</p>
+</li>
+<li>
+<p><strong>Margin area</strong>: The margin is the outermost layer, wrapping the content, padding, and border as whitespace between this box and other elements; size it using <code>margin</code> and related properties.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="the-standard-box-model">4.4.1. The standard box model</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>In the <strong>standard box model</strong>, if set <code>inline-size</code> and <code>block-size</code> (or <code>width</code> and <code>height</code>) property values on a box, these values define the <code>inline-size</code> and <code>block-size</code> (<code>width</code> and <code>height</code> in horizontal languages) of the <strong>content box</strong>.</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Any padding and borders are then added to those dimensions to get the total size taken up by the box.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.box</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">350px</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">5px</span> <span class="nb">solid</span> <span class="nx">black</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model/standard-box-model.png" alt="Showing the size of the box when the standard box model is being used." width="25%" height="25%">
+</div>
+<div class="title">Figure 3. The actual space taken up by the box will be 410px wide (350 + 25 + 25 + 5 + 5) and 210px high (150 + 25 + 25 + 5 + 5).</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The margin is not counted towards the actual size of the box — sure, it affects the total space that the box will take up on the page, but only the space outside the box. The box&#8217;s area stops at the border — it does not extend into the margin.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-alternative-box-model">4.4.2. The alternative box model</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>In the <strong>alternative box model</strong>, aka <strong>Internet Explorer box model</strong>, any width is the width of the visible box on the page.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The content area width is that width minus the width for the padding and border.</p>
+</li>
+<li>
+<p>No need to add up the border and padding to get the real size of the box.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"><code>box-sizing</code></a> property sets how the total width and height of an element is calculated.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* The width and height properties include the content, padding, and border, but
+   do not include the margin. Note that padding and border will be inside of the box.
+*/</span>
+<span class="nt">box-sizing</span><span class="o">:</span> <span class="nt">border-box</span><span class="o">;</span> <span class="c">/* alternative box model, or Internet Explorer box model */</span>
+
+<span class="c">/* The width and height properties include the content, but
+   does not include the padding, border, or margin.
+*/</span>
+<span class="nt">box-sizing</span><span class="o">:</span> <span class="nt">content-box</span><span class="o">;</span> <span class="c">/* standard box model */</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To turn on the alternative box model for an element, set <code>box-sizing: border-box</code> on it:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.box</span> <span class="p">{</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">350px</span><span class="p">;</span>
+  <span class="py">inline-size</span><span class="p">:</span> <span class="m">350px</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+  <span class="py">block-size</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">5px</span> <span class="nb">solid</span> <span class="nx">black</span><span class="p">;</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="nb">border-box</span><span class="p">;</span> <span class="c">/* turn on the alternative box model */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model/alternate-box-model.png" alt="Showing the size of the box when the alternate box model is being used." width="25%" height="25%">
+</div>
+<div class="title">Figure 4. Now, the actual space taken up by the box will be 350px in the inline direction and 150px in the block direction.</div>
+</div>
+</li>
+<li>
+<p>To use the alternative box model for all elements (which is a common choice among developers), set the <code>box-sizing</code> property on the <code>&lt;html&gt;</code> element and set all other elements to inherit that value:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">html</span> <span class="p">{</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="nb">border-box</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">*,</span>
+<span class="o">*</span><span class="nd">::before</span><span class="o">,</span>
+<span class="o">*</span><span class="nd">::after</span> <span class="p">{</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="nb">inherit</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-box-model-and-inline-boxes">4.4.3. The box model and inline boxes</h4>
+<div class="paragraph">
+<p>An element, such as <code>&lt;span&gt;</code>, with <code>display: inline-block</code> does a subset of the block things, NOT, however, break onto a new line.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>width</code> and <code>height</code> properties are respected.</p>
+</li>
+<li>
+<p><code>padding</code>, <code>margin</code>, and <code>border</code> will cause other elements to be pushed away from the box.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box-model inline-box"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;style&gt;</span>
+    <span class="nc">.box-model.inline-box</span> <span class="p">{</span>
+      <span class="nl">all</span><span class="p">:</span> <span class="n">initial</span><span class="p">;</span>
+
+      <span class="err">span</span> <span class="err">{</span>
+        <span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;</span>
+        <span class="nl">background-color</span><span class="p">:</span> <span class="nx">pink</span><span class="p">;</span>
+        <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">dashed</span> <span class="nx">red</span><span class="p">;</span>
+        <span class="nl">height</span><span class="p">:</span> <span class="m">4</span><span class="n">lh</span><span class="p">;</span>
+        <span class="nl">padding</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+        <span class="nl">margin</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+
+        <span class="err">&amp;.inline-block</span> <span class="err">{</span>
+          <span class="nl">display</span><span class="p">:</span> <span class="nb">inline-block</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="err">}</span>
+    <span class="err">}</span>
+  <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;p&gt;&lt;span&gt;</span>あなたが教えてくれた,<span class="nt">&lt;/span&gt;&lt;span</span> <span class="na">class=</span><span class="s">"inline-block"</span><span class="nt">&gt;</span>夜にひそむやさしさ<span class="nt">&lt;/span&gt;&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="box-model inline-box">
+  <style>
+    .box-model.inline-box {
+      all: initial;
+
+      span {
+        vertical-align: middle;
+        background-color: pink;
+        border: 1px dashed red;
+        height: 4lh;
+        padding: 10px;
+        margin: 10px;
+
+        &.inline-block {
+          display: inline-block;
+        }
+      }
+    }
+  </style>
+  <p><span>あなたが教えてくれた,</span><span class="inline-block">夜にひそむやさしさ</span></p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="overflowing">4.5. Overflowing</h3>
+<div class="paragraph">
+<p>Everything in CSS is a box, and the size can be constrained by assigning values of <code>width</code> and <code>height</code> (or <code>inline-size</code> and <code>block-size</code>). Overflow happens when there is too much content to fit in a box.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Wherever possible, CSS does not hide content and try to avoid data loss.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-x"><code>overflow-x</code></a> property sets what shows when content overflows a block-level element&#8217;s left and right edges, which may be nothing, a scroll bar, or the overflow content.</p>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-y"><code>overflow-y</code></a> property sets what shows when content overflows a block-level element&#8217;s top and bottom edges, which may be nothing, a scroll bar, or the overflow content.</p>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow"><code>overflow</code></a> shorthand property sets the desired behavior when content does not fit in the parent element box (overflows) in the horizontal (<code>overflow-x</code>) and/or vertical (<code>overflow-y</code>) direction.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* Overflow content is not clipped and may be visible outside the element's padding box.
+   The element box is not a scroll container.
+   This is the default value of the overflow property. */</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">visible</span><span class="o">;</span>
+<span class="c">/* Overflow content is clipped at the element's padding box.
+   There are no scroll bars, and the clipped content is not visible, but the content still exists. */</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">hidden</span><span class="o">;</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">clip</span><span class="o">;</span>
+<span class="c">/* Overflow content is clipped at the element's padding box, and
+   overflow content can be scrolled into view using scroll bars.
+   User agents display scroll bars in both horizontal and
+   vertical directions if only one value is set, whether or not
+   any content is overflowing or clipped. */</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">scroll</span><span class="o">;</span>
+<span class="c">/* Overflow content is clipped at the element's padding box, and
+   overflow content can be scrolled into view.
+   Unlike scroll, user agents display scroll bars only if
+   the content is overflowing and hide scroll bars by default. */</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">auto</span><span class="o">;</span>
+<span class="nt">overflow</span><span class="o">:</span> <span class="nt">hidden</span> <span class="nt">visible</span><span class="o">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap"><code>overflow-wrap</code></a> property applies to text, setting whether the browser should insert line breaks within an otherwise unbreakable string to prevent text from overflowing its line box.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The property was originally a nonstandard and unprefixed Microsoft extension called <code>word-wrap</code>, and was implemented by most browsers with the same name. It has since been renamed to <code>overflow-wrap</code>, with <code>word-wrap</code> being an alias.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* Lines may only break at normal word break points (such as
+   a space between two words). */</span>
+<span class="nt">overflow-wrap</span><span class="o">:</span> <span class="nt">normal</span><span class="o">;</span>
+<span class="c">/* To prevent overflow, an otherwise unbreakable string of
+   characters — like a long word or URL — may be broken at any point if
+   there are no otherwise-acceptable break points in the line.
+   No hyphenation character is inserted at the break point.
+   Soft wrap opportunities introduced by the word break are considered when
+   calculating min-content intrinsic sizes. */</span>
+<span class="nt">overflow-wrap</span><span class="o">:</span> <span class="nt">anywhere</span><span class="o">;</span>
+<span class="c">/* The same as the anywhere value, with normally unbreakable words allowed to
+   be broken at arbitrary points if there are no otherwise acceptable
+   break points in the line, but soft wrap opportunities introduced by the
+   word break are NOT considered when calculating min-content intrinsic sizes. */</span>
+<span class="nt">overflow-wrap</span><span class="o">:</span> <span class="nt">break-word</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The differences between <code>normal</code>, <code>break-word</code> and <code>anywhere</code> are only clear if you are using <code>width: min-content</code> on the element containing the text, and you also set a <code>max-width</code>.</p>
+</div>
+<div class="paragraph">
+<p>See also: <a href="https://stackoverflow.com/questions/77651244/what-are-soft-wrap-opportunities-introduced-by-the-word-break" class="bare">https://stackoverflow.com/questions/77651244/what-are-soft-wrap-opportunities-introduced-by-the-word-break</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;style&gt;</span>
+  <span class="nt">div</span><span class="nc">.overflow-wrap</span> <span class="nt">p</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="n">min-content</span><span class="p">;</span>
+    <span class="nl">max-width</span><span class="p">:</span> <span class="m">5em</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="nx">lightblue</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.overflow-wrap</span> <span class="nt">p</span><span class="nc">.normal</span> <span class="p">{</span>
+    <span class="nl">overflow-wrap</span><span class="p">:</span> <span class="nb">normal</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.overflow-wrap</span> <span class="nt">p</span><span class="nc">.break-word</span> <span class="p">{</span>
+    <span class="nl">overflow-wrap</span><span class="p">:</span> <span class="n">break-word</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.overflow-wrap</span> <span class="nt">p</span><span class="nc">.break-word.hyphens</span> <span class="p">{</span>
+    <span class="nl">overflow-wrap</span><span class="p">:</span> <span class="n">break-word</span><span class="p">;</span>
+    <span class="nl">hyphens</span><span class="p">:</span> <span class="nb">auto</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.overflow-wrap</span> <span class="nt">p</span><span class="nc">.anywhere</span> <span class="p">{</span>
+    <span class="nl">overflow-wrap</span><span class="p">:</span> <span class="n">anywhere</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"overflow-wrap"</span> <span class="na">lang=</span><span class="s">"en-US"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"overflow-wrap normal"</span><span class="nt">&gt;</span>
+    Gooooooooogle
+  <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"overflow-wrap break-word"</span><span class="nt">&gt;</span>
+    Gooooooooogle
+  <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"overflow-wrap break-word hyphens"</span><span class="nt">&gt;</span>
+    Goooooo<span class="ni">&amp;shy;</span>ooogle <span class="c">&lt;!-- use &amp;shy; to insert a soft hyphen --&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"overflow-wrap anywhere"</span><span class="nt">&gt;</span>
+    Gooooooooogle
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<style>
+  div.overflow-wrap p {
+    width: min-content;
+    max-width: 5em;
+    background-color: lightblue;
+  }
+
+  div.overflow-wrap p.normal {
+    overflow-wrap: normal;
+  }
+
+  div.overflow-wrap p.break-word {
+    overflow-wrap: break-word;
+  }
+
+  div.overflow-wrap p.break-word.hyphens {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  div.overflow-wrap p.anywhere {
+    overflow-wrap: anywhere;
+  }
+</style>
+<div class="overflow-wrap" lang="en-US">
+  <p class="overflow-wrap normal">
+    Gooooooooogle
+  </p>
+  <p class="overflow-wrap break-word">
+    Gooooooooogle
+  </p>
+  <p class="overflow-wrap break-word hyphens">
+    Goooooo&shy;ooogle <!-- use &shy; to insert a soft hyphen -->
+  </p>
+  <p class="overflow-wrap anywhere">
+    Gooooooooogle
+  </p>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="values-and-units">5. Values and units</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CSS rules contain declarations, which in turn are composed of properties and values. Each property used in CSS has a <strong>value type</strong> that describes what kind of values it is allowed to have.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The terms <em>value type</em> and <em>data type</em> are basically interchangeable, and the term <em>value</em> refers to any particular expression supported by a value type
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CSS value types tend to be enclosed in angle brackets (<code>&lt;</code>, <code>&gt;</code>) to differentiate them from CSS properties. For example there is a <code>color</code> property and a <code>&lt;color&gt;</code> data type.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/*  The keywords, hex values, rgb() functions, etc, can be available &lt;color&gt; values */</span>
+<span class="nt">h1</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">black</span><span class="p">;</span> <span class="c">/* keywords */</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nf">rgb</span><span class="p">(</span><span class="m">197</span> <span class="m">93</span> <span class="m">161</span><span class="p">);</span> <span class="c">/* rgb() functions */</span>
+  <span class="nl">border-color</span><span class="p">:</span> <span class="nx">#128a7d</span><span class="p">;</span> <span class="c">/* hex values */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="numbers-lengths-and-percentages">5.1. Numbers, lengths, and percentages</h3>
+<table class="tableblock frame-all grid-all" style="width: 85%;">
+<caption class="title">Table 1. CSS various numeric value types</caption>
+<colgroup>
+<col style="width: 8.3333%;">
+<col style="width: 91.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Data type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;integer&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An <code>&lt;integer&gt;</code> is a whole number such as <code>1024</code> or <code>-55</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;number&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>&lt;number&gt;</code> represents a decimal number — it may or may not have a decimal point with a fractional component. For example, <code>0.255</code>, <code>128</code>, or <code>-1.2</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;dimension&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>&lt;dimension&gt;</code> is a <code>&lt;number&gt;</code> with a unit attached to it. For example, <code>45deg</code>, <code>5s</code>, or <code>10px</code>.</p>
+<p class="tableblock"><code>&lt;dimension&gt;</code> is an umbrella category that includes the <code>&lt;length&gt;</code>, <code>&lt;angle&gt;</code>, <code>&lt;time&gt;</code>, and <code>&lt;resolution&gt;</code> types.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;percentage&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <code>&lt;percentage&gt;</code> represents a fraction of some other value. For example, <code>50%</code>.</p>
+<p class="tableblock">Percentage values are always relative to another quantity. For example, an element&#8217;s length is relative to its parent element&#8217;s length.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/length"><code>&lt;length&gt;</code></a> data type represents a distance value which can be relative or absolute. Lengths can be used in numerous CSS properties, such as <code>width</code>, <code>height</code>, <code>margin</code>, <code>padding</code>, <code>border-width</code>, <code>font-size</code>, and <code>text-shadow</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>CSS relative length units are based on font, container, or viewport sizes.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>em</code> and <code>rem</code> are relative to the font size of the parent element and the root element, respectively.</p>
+</li>
+<li>
+<p><code>vh</code> and <code>vw</code> are relative to the viewport&#8217;s height and width, respectively.</p>
+</li>
+<li>
+<p><code>cqw</code> and <code>cqh</code> represents a percentage of the width and height of the query container, respectively.</p>
+</li>
+<li>
+<p><code>lh</code> and <code>rlh</code> is equal to the computed value of the <code>line-height</code> property of the element itself, and the root element, usually <code>&lt;html&gt;</code>, respectively.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Absolute length units represent a physical measurement when the physical properties of the output medium are known, such as for print layout.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 22.2222%;">
+<col style="width: 33.3333%;">
+<col style="width: 44.4445%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Unit</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Equivalent to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cm</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Centimeters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1cm = 37.8px = 25.2/64in</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>in</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inches</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1in = 2.54cm = 96px</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Points</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1pt = 1/72nd of 1in</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>px</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pixels</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1px = 1/96th of 1in</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The most of these units are more useful when used for print, rather than screen output.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Many users increase their user agent&#8217;s default font size to make text more legible. Absolute lengths can cause accessibility problems because they are fixed and do not scale according to user settings. For this reason, prefer relative lengths (such as <code>em</code> or <code>rem</code>) when setting <code>font-size</code>.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>CSS also has <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Functions">functions</a>, which work in a similar way to functions in other languages, which are statements that invoke special data processing or calculations to return a CSS value for a property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">background-image</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">"star.gif"</span><span class="o">);</span>
+<span class="nt">background</span><span class="o">:</span> <span class="nt">rgb</span><span class="o">(</span><span class="err">31</span> <span class="err">120</span> <span class="err">50</span><span class="o">);</span>
+<span class="nt">width</span><span class="o">:</span> <span class="nt">calc</span><span class="o">(</span><span class="m">100%</span> <span class="nt">-</span> <span class="err">80</span><span class="nt">px</span><span class="o">);</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="intrinsic-and-extrinsic-sizes">6. Intrinsic and extrinsic sizes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>HTML Elements have a natural size or <strong>intrinsic size</strong>, set before they are affected by any CSS styles or HTML attributes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An <code>&lt;image&gt;</code> contains sizing information, described as its intrinsic size, determined by the image file itself.</p>
+</li>
+<li>
+<p>An <code>&lt;div&gt;</code>, on the other hand, has no size of its own, and its intrinsic size is defined by its content.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A size referred to as an <strong>extrinsic size</strong>— give it specific width and height values, can be given to an element (the content of which then needs to fit into that size)</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If give a child box a percentage width it will be a percentage of the width of its parent container.</p>
+</li>
+<li>
+<p>When use margin and padding set in percentages, the value is calculated from the <strong>inline size</strong> of the containing block — therefore the width when working in a horizontal language.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.box</span> <span class="p">{</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">5px</span> <span class="nb">solid</span> <span class="nx">darkblue</span><span class="p">;</span>
+  <span class="c">/* give the child box a percentage width it will be
+     a percentage of the width of the parent container */</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+  <span class="c">/* the margins and padding have equal-sized all around the box. */</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">10%</span><span class="p">;</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">10%</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A common use of <code>max-width</code> is to cause images to scale down if there is not enough space to display them at their intrinsic width while making sure they don&#8217;t become larger than that width.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="paragraph">
+<p>If instead use <code>max-width: 100%</code>, and its intrinsic width is smaller than its container, the image will not be forced to stretch and become larger, thus preventing pixelation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;style&gt;</span>
+  <span class="nt">div</span><span class="nc">.min-max-size</span> <span class="nt">div</span> <span class="p">{</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">5px</span> <span class="nb">solid</span> <span class="nx">darkblue</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">5px</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.min-max-size</span> <span class="nt">div</span><span class="nc">.box</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.min-max-size</span> <span class="nt">div</span><span class="nc">.minibox</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.min-max-size</span> <span class="nt">img</span><span class="nc">.width</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nt">div</span><span class="nc">.min-max-size</span> <span class="nt">img</span><span class="nc">.max</span> <span class="p">{</span>
+    <span class="nl">max-width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"min-max-size"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">"width"</span> <span class="na">src=</span><span class="s">"https://mdn.github.io/css-examples/learn/sizing/star.png"</span> <span class="na">alt=</span><span class="s">"star"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">"max"</span> <span class="na">src=</span><span class="s">"https://mdn.github.io/css-examples/learn/sizing/star.png"</span> <span class="na">alt=</span><span class="s">"star"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"minibox"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;img</span> <span class="na">class=</span><span class="s">"max"</span> <span class="na">src=</span><span class="s">"https://mdn.github.io/css-examples/learn/sizing/star.png"</span> <span class="na">alt=</span><span class="s">"star"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">"clear: both"</span><span class="nt">&gt;&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<style>
+  div.min-max-size div {
+    float: left;
+    border: 5px solid darkblue;
+    margin: 5px;
+  }
+
+  div.min-max-size div.box {
+    width: 200px;
+  }
+
+  div.min-max-size div.minibox {
+    width: 50px;
+  }
+
+  div.min-max-size img.width {
+    width: 100%;
+  }
+
+  div.min-max-size img.max {
+    max-width: 100%;
+  }
+</style>
+
+<div class="min-max-size">
+  <div class="box">
+    <img class="width" src="https://mdn.github.io/css-examples/learn/sizing/star.png" alt="star" />
+  </div>
+  <div class="box">
+    <img class="max" src="https://mdn.github.io/css-examples/learn/sizing/star.png" alt="star" />
+  </div>
+  <div class="minibox">
+    <img class="max" src="https://mdn.github.io/css-examples/learn/sizing/star.png" alt="star" />
+  </div>
+</div>
+<div style="clear: both"></div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="font-families">7. Font families</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The CSS properties used to style text generally fall into two categories:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Font styles</strong>: Properties that affect a text&#8217;s font, e.g., which font gets applied, its size, and whether it&#8217;s bold, italic, etc.</p>
+</li>
+<li>
+<p><strong>Text layout styles</strong>: Properties that affect the spacing and other layout features of the text, allowing manipulation of, for example, the space between lines and letters, and how the text is aligned within the content box.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"><code>font-family</code></a> property specifies a prioritized list of one or more font family names and/or generic family names, separated by commas to indicate that they are alternatives, for the selected element.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Font selection is done one character at a time, so that if an available font does NOT have a glyph for a needed character, the latter fonts are tried.</p>
+</li>
+<li>
+<p>When a font is only available in some styles, variants, or sizes, those properties may also influence which font family is chosen.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/generic-family">Generic font families</a> are keywords and MUST not be quoted, which is a fallback mechanism, a means of preserving some of the style sheet author&#8217;s intent when none of the specified fonts are available.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>serif</code>, <code>sans-serif</code>, <code>system-ui</code> and <code>monospace</code> are quite predictable and should provide something reasonable.</p>
+</li>
+<li>
+<p><code>cursive</code> and <code>fantasy</code> are less predictable and recommended using them very carefully, testing as you go.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>It is a good practice to quote font family names that contain white space, digits, or punctuation characters other than hyphens.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* GitHub, Wordpress, Bootstrap, Medium, Ghost, etc.
+   See:
+     https://github.com/necolas/normalize.css/issues/665
+     https://bitsofco.de/the-new-system-font-stack/
+*/</span>
+<span class="nt">font-family</span><span class="o">:</span> <span class="nt">-apple-system</span><span class="o">,</span><span class="nt">system-ui</span><span class="o">,</span><span class="nt">BlinkMacSystemFont</span><span class="o">,</span><span class="s1">"Segoe UI"</span><span class="o">,</span><span class="nt">Roboto</span><span class="o">,</span><span class="s1">"Helvetica Neue"</span><span class="o">,</span><span class="nt">Arial</span><span class="o">,</span><span class="nt">sans-serif</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><code>-apple-system</code> targets <code>San Francisco</code> in Safari (on Mac OS X and iOS), and it targets <code>Neue Helvetica</code> and <code>Lucida Grande</code> on older versions of Mac OS X. It properly selects between <code>San Francisco Text</code> and <code>San Francisco Display</code> depending on the text’s size.</p>
+</li>
+<li>
+<p><code>system-ui</code> represents the default UI font on a given platform.</p>
+</li>
+<li>
+<p><code>BlinkMacSystemFont</code> is the equivalent to <code>-apple-system</code> for Chrome on Mac OS X.</p>
+</li>
+<li>
+<p><code>Segoe UI</code> targets Windows and Windows Phone.</p>
+</li>
+<li>
+<p><code>Roboto</code> targets Android and newer Chrome OS. It is deliberately listed after <code>Segoe UI</code> so that if you’re an Android developer on Windows and have Roboto installed, <code>Segoe UI</code> will be used instead.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fonts that are ONLY generally available across all systems are so-called <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Fundamentals#web_safe_fonts"><strong>web safe fonts</strong></a>.</p>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. The list of actual web safe fonts will change as operating systems evolve, but it&#8217;s reasonable to consider the following fonts web safe, at least for now.</caption>
+<colgroup>
+<col style="width: 15.3846%;">
+<col style="width: 15.3846%;">
+<col style="width: 69.2308%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Generic type</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Arial</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sans-serif</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">It&#8217;s often considered best practice to also add <code>Helvetica</code> as a preferred alternative to <code>Arial</code> as, although their font faces are almost identical, <code>Helvetica</code> is considered to have a nicer shape, even if <code>Arial</code> is more broadly available.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Courier New</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>monospace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some OSes have an alternative (possibly older) version of the <code>Courier New</code> font called <code>Courier</code>. It&#8217;s considered best practice to use both with <code>Courier New</code> as the preferred alternative.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Georgia</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>serif</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Times New Roman</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>serif</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Some OSes have an alternative (possibly older) version of the <code>Times New Roman</code> font called <code>Times</code>. It&#8217;s considered best practice to use both with <code>Times New Roman</code> as the preferred alternative.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Trebuchet MS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sans-serif</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">You should be careful with using this font — it isn&#8217;t widely available on mobile OSes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Verdana</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sans-serif</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-properties-css-variables">8. Custom properties (--*): CSS variables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Property names that are prefixed with <code>--</code>, like <code>--example-name</code>, represent <strong>custom properties</strong> or <strong>variables</strong> that contain a value that can be used in other declarations using the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/var"><code>var()</code></a> function. It&#8217;s <strong>scoped</strong> to the declared on element(s), and participate in the cascade.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A common practice is to define custom properties on the <code>:root</code> pseudo-class, so that it can be referenced globally</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nd">:root</span> <span class="p">{</span>
+  <span class="py">--main-bg-color</span><span class="p">:</span> <span class="nx">pink</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nf">var</span><span class="p">(</span><span class="l">--main-bg-color</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A custom property defined using two dashes <code>--</code> instead of <code>@property</code> always inherits the value of its parent.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"one"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;p&gt;</span>One<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"two"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;p&gt;</span>Two<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"three"</span><span class="nt">&gt;&lt;p&gt;</span>Three<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"four"</span><span class="nt">&gt;&lt;p&gt;</span>Four<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nf">var</span><span class="p">(</span><span class="l">--box-color</span><span class="p">);</span>
+  <span class="c">/*
+    class="one": invalid value, which is the default value of a custom property defined in this way
+    class="two": cornflowerblue
+    class="three": aquamarine
+    class="four": cornflowerblue (inherited from its parent)
+   */</span>
+<span class="p">}</span>
+
+<span class="nc">.two</span> <span class="p">{</span>
+  <span class="py">--box-color</span><span class="p">:</span> <span class="nx">cornflowerblue</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.three</span> <span class="p">{</span>
+  <span class="py">--box-color</span><span class="p">:</span> <span class="nx">aquamarine</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Referencing custom properties using <code>var()</code> with fallback values</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">body</span> <span class="p">{</span>
+  <span class="c">/* custom properties with fallbacks for use when the property has not been set */</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nf">var</span><span class="p">(</span><span class="l">--main-fg-color</span><span class="p">,</span> <span class="nx">blue</span><span class="p">);</span>
+  <span class="c">/* using a custom property as a fallback */</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nf">var</span><span class="p">(</span><span class="l">--main-bg-color</span><span class="p">,</span> <span class="nf">var</span><span class="p">(</span><span class="l">--backup-bg-color</span><span class="p">,</span> <span class="nx">white</span><span class="p">));</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="layout">9. Layout</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CSS page layout techniques are used to take elements contained in a web page and control where they&#8217;re positioned relative to the following factors:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>their default position in normal layout flow,</p>
+</li>
+<li>
+<p>the other elements around them,</p>
+</li>
+<li>
+<p>their parent container,</p>
+</li>
+<li>
+<p>and the main viewport/window.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="flow-layout">9.1. Flow layout</h3>
+<div class="paragraph">
+<p><em>Normal Flow</em>, or <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout"><strong>Flow Layout</strong></a>, is the way that Block and Inline elements are displayed on a page before any changes are made to their layout.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By default, a <a href="https://developer.mozilla.org/en-US/docs/Glossary/Block-level_content">block-level element</a>'s content fills the available inline space of the parent element containing it, growing along the block dimension to accommodate its content, and the size of <a href="https://developer.mozilla.org/en-US/docs/Glossary/Inline-level_content">inline-level elements</a> is just the size of their content.</p>
+</li>
+<li>
+<p>By default, block-level elements are laid out in the block flow direction based on the parent&#8217;s writing mode.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Each element will appear on a new line below the last one, with each one separated by whatever margin that&#8217;s been specified.</p>
+</li>
+<li>
+<p>The vertical direction <code>top</code> and <code>bottom</code> margins of blocks are sometimes combined (collapsed) into a single margin whose size is the largest of the individual margins, a behavior known as <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing"><strong>margin collapsing</strong></a>.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Note that the margins of floating and absolutely positioned elements never collapse.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Inline elements don&#8217;t appear on new lines; instead, they all sit on the same line along with any adjacent (or wrapped) text content as long as there is space for them to do so inside the width of the parent block level element, otherwise, the overflowing content will move down to a new line.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="display-and-visibility">9.2. Display and visibility</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/display"><code>display</code></a> property sets whether an element is treated as a <strong>block</strong> or <strong>inline</strong> box and the layout used for its children, such as flow layout, grid or flex.</p>
+</div>
+<div class="paragraph">
+<p>Formally, the display property sets an element&#8217;s <strong>inner</strong> and <strong>outer</strong> display types. The outer type sets an element&#8217;s participation in flow layout; the inner type sets the layout of children.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When browsers that support multi-keyword syntax encounter a display property that only has an <strong>outer</strong> value (e.g., <code>display: block</code> or <code>display: inline</code>), the inner value is set to <code>flow</code> (e.g., <code>display: block flow</code> and <code>display: inline flow</code>).
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When browsers that support multi-keyword syntax encounter a display property that only has an <strong>inner</strong> value (e.g., <code>display: flex</code> or <code>display: grid</code>), the outer value is set to <code>block</code> (e.g., <code>display: block flex</code> and <code>display: block grid</code>).
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>CSS 2 used a single-keyword, precomposed syntax for the display property, requiring separate keywords for block-level and inline-level variants of the same layout mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">display</span><span class="o">:</span> <span class="nt">inline-block</span><span class="o">;</span> <span class="c">/* display: inline flow-root; */</span>
+<span class="nt">display</span><span class="o">:</span> <span class="nt">inline-flex</span><span class="o">;</span>  <span class="c">/* display: inline flex; */</span>
+<span class="nt">display</span><span class="o">:</span> <span class="nt">inline-grid</span><span class="o">;</span>  <span class="c">/* display: inline grid; */</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>none</code> turns off the display of an element so that it has no effect on layout (the document is rendered as though the element did not exist). To have an element take up the space that it would normally take, but without actually rendering anything, use the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/visibility">visibility</a> property instead.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">visibility</span><span class="o">:</span> <span class="nt">visible</span><span class="o">;</span>
+<span class="nt">visibility</span><span class="o">:</span> <span class="nt">hidden</span><span class="o">;</span>
+<span class="nt">visibility</span><span class="o">:</span> <span class="nt">collapse</span><span class="o">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="flexbox">9.3. Flexbox</h3>
+<div class="paragraph">
+<p><strong>Flexbox</strong> is the short name for the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout">Flexible Box Layout</a> that defines the one-dimensional flex layout model, and the children can be laid out in any direction, and can "flex" their sizes, either growing to fill unused space or shrinking to avoid overflowing the parent.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox/flex_terms.png" alt="Three flex items in a left-to-right language are laid out side-by-side in a flex container. The main axis — the axis of the flex container in the direction in which the flex items are laid out — is horizontal. The ends of the axis are main-start and main-end and are on the left and right respectively. The cross axis is vertical; perpendicular to the main axis. The cross-start and cross-end are at the top and bottom respectively. The length of the flex item along the main axis, in this case, the width, is called the main size, and the length of the flex item along the cross axis, in this case, the height, is called the cross size." width="45%" height="45%">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When elements are laid out as flex items, they are laid out along two axes:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>main axis</strong> is the axis running in the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction">flow direction</a> the flex items are laid out in (for example, as a <code>row</code> across the page, or a <code>column</code> down the page.)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The start and end of the main axis are called the <strong>main start</strong> and <strong>main end</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <strong>cross axis</strong> is the axis running perpendicular to the flow direction the flex items are laid out in.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The start and end of the cross axis are called the <strong>cross start</strong> and <strong>cross end</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The parent element that has <code>display: flex</code> set on it is called the <strong>flex container</strong>.</p>
+</li>
+<li>
+<p>The items laid out as flexible boxes inside the flex container are called <strong>flex items</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Flexbox provides a property called <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction"><code>flex-direction</code></a> that specifies which direction the main axis runs (which direction the flexbox children are laid out in).</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap"><code>flex-wrap</code></a> property sets whether flex items are forced onto one line which may cause the flex container to overflow, or can wrap onto multiple lines on stack.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-flow"><code>flex-flow</code></a> shorthand property specifies the direction of a flex container, as well as its wrapping behavior.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="c">/* flex-flow: &lt;'flex-direction'&gt; */</span>
+<span class="nt">flex-flow</span><span class="o">:</span> <span class="nt">row</span><span class="o">;</span>
+<span class="c">/* flex-flow: &lt;'flex-wrap'&gt; */</span>
+<span class="nt">flex-flow</span><span class="o">:</span> <span class="nt">nowrap</span><span class="o">;</span>
+<span class="c">/* flex-flow: &lt;'flex-direction'&gt; and &lt;'flex-wrap'&gt; */</span>
+<span class="nt">flex-flow</span><span class="o">:</span> <span class="nt">column</span> <span class="nt">wrap</span><span class="o">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-basis"><code>flex-basis</code></a> property sets the initial main size, either width or height of the item which is dependent on the direction, of a flex item. It sets the size of the content box unless otherwise set with <code>box-sizing</code>.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In case both <code>flex-basis</code> (other than <code>auto</code>) and <code>width</code> or <code>height</code> are set for an element, <code>flex-basis</code> has priority.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow"><code>flex-grow</code></a> property sets the flex grow factor, which specifies how much of the flex container&#8217;s remaining space should be assigned to the flex item&#8217;s main size.</p>
+<div class="paragraph">
+<p>When the flex-container&#8217;s main size is larger than the combined main sizes of the flex items, the extra space is distributed among the flex items, with each item growth being their growth factor value as a <strong>proportion</strong> of the sum total of all the container&#8217;s items' flex grow factors.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex-shrink"><code>flex-shrink</code></a> property sets the flex shrink factor of a flex item if the size of all flex items is larger than the flex container.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"flexbox flex-shrink"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;style&gt;</span>
+    <span class="nc">.flexbox.flex-shrink</span> <span class="p">{</span>
+      <span class="nl">all</span><span class="p">:</span> <span class="n">initial</span><span class="p">;</span>
+
+      <span class="err">div.content</span> <span class="err">{</span>
+        <span class="nl">display</span><span class="p">:</span> <span class="nb">flex</span><span class="p">;</span>
+        <span class="nl">width</span><span class="p">:</span> <span class="m">500px</span><span class="p">;</span>
+
+        <span class="err">div</span> <span class="err">{</span>
+          <span class="nl">flex-basis</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+          <span class="nl">border</span><span class="p">:</span> <span class="m">3px</span> <span class="nb">solid</span> <span class="nf">rgb</span><span class="p">(</span><span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="o">/</span> <span class="m">20%</span><span class="p">);</span>
+          <span class="nl">box-sizing</span><span class="p">:</span> <span class="nb">border-box</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="err">}</span>
+
+      <span class="nc">.box</span> <span class="p">{</span>
+        <span class="nl">flex-shrink</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nc">.box1</span> <span class="p">{</span>
+        <span class="nl">flex-shrink</span><span class="p">:</span> <span class="m">2</span><span class="p">;</span>
+      <span class="p">}</span>
+
+    <span class="err">}</span>
+  <span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;p&gt;</span>The width of content is 500px; the flex-basis of the flex items is 150px.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p&gt;</span>A, B, C have flex-shrink:1 set. D and E have flex-shrink:2 set<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p&gt;</span>The width of D and E is less than the others.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"content"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box"</span> <span class="na">style=</span><span class="s">"background-color:red;"</span><span class="nt">&gt;</span>A<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box"</span> <span class="na">style=</span><span class="s">"background-color:lightblue;"</span><span class="nt">&gt;</span>B<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box"</span> <span class="na">style=</span><span class="s">"background-color:yellow;"</span><span class="nt">&gt;</span>C<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box1"</span> <span class="na">style=</span><span class="s">"background-color:brown;"</span><span class="nt">&gt;</span>D<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box1"</span> <span class="na">style=</span><span class="s">"background-color:lightgreen;"</span><span class="nt">&gt;</span>E<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="flexbox flex-shrink">
+  <style>
+    .flexbox.flex-shrink {
+      all: initial;
+
+      div.content {
+        display: flex;
+        width: 500px;
+
+        div {
+          flex-basis: 150px;
+          border: 3px solid rgb(0 0 0 / 20%);
+          box-sizing: border-box;
+        }
+      }
+
+      .box {
+        flex-shrink: 1;
+      }
+
+      .box1 {
+        flex-shrink: 2;
+      }
+
+    }
+  </style>
+  <p>The width of content is 500px; the flex-basis of the flex items is 150px.</p>
+  <p>A, B, C have flex-shrink:1 set. D and E have flex-shrink:2 set</p>
+  <p>The width of D and E is less than the others.</p>
+  <div class="content">
+    <div class="box" style="background-color:red;">A</div>
+    <div class="box" style="background-color:lightblue;">B</div>
+    <div class="box" style="background-color:yellow;">C</div>
+    <div class="box1" style="background-color:brown;">D</div>
+    <div class="box1" style="background-color:lightgreen;">E</div>
+  </div>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/flex"><code>flex</code></a> shorthand property sets how a flex item will grow or shrink to fit the space available in its flex container.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<iframe class="interactive is-default-height" height="375px" width="100%" src="https://interactive-examples.mdn.mozilla.net/pages/css/flex.html" title="MDN Web Docs Interactive Example" allow="clipboard-write" loading="lazy" data-readystate="complete"></iframe>
+</div>
+</details>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In Flexbox, the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/align-items"><code>align-items</code></a> property controls the alignment of items on the Cross Axis.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>By default, the value is <code>stretch</code>, which stretches all flex items to fill the parent in the direction of the cross axis.</p>
+</li>
+<li>
+<p>If the parent doesn&#8217;t have a fixed height in the cross axis direction, then all flex items will become as tall as the tallest flex item.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/align-self"><code>align-self</code></a> property overrides a grid or flex item&#8217;s <code>align-items</code> value.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content"><code>justify-content</code></a> property defines how the browser distributes space between and around content items along the main-axis of a flex container, and the inline axis of a grid container.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="grids">9.4. Grids</h3>
+<div class="paragraph">
+<p>CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"><strong>grid layout</strong></a> is a two-dimensional grid layout system, that is a set of intersecting horizontal and vertical lines defining columns and rows. Elements can be placed onto the grid within these column and row lines.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <strong>grid container</strong> is created by declaring <code>display: grid</code> or <code>display: inline-grid</code> on an element, and all direct children of that element become <strong>grid items</strong>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">grid</span><span class="p">;</span> <span class="c">/* a single column grid */</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div&gt;</span>One<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Two<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Three<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Four<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Five<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="grids grid-container">
+  <style>
+    .grids.grid-container {
+      all: initial;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .container {
+        max-width: 50%;
+
+        &>div {
+          border: 2px solid rgb(233 171 88);
+          border-radius: 5px;
+          background-color: rgb(233 171 88 / 50%);
+          padding: 1em;
+          color: #d9480f;
+        }
+      }
+
+      .container {
+        display: grid; /* a single column grid */
+      }
+    }
+  </style>
+  <div class="container">
+    <div>One</div>
+    <div>Two</div>
+    <div>Three</div>
+    <div>Four</div>
+    <div>Five</div>
+  </div>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <strong>grid track</strong> is the space between any two adjacent lines on the grid, that is defined with the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-rows">grid-template-rows</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns">grid-template-columns</a> properties.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">grid</span><span class="p">;</span>
+  <span class="c">/* mixing flexible and absolute sizes */</span>
+  <span class="nl">grid-template-columns</span><span class="p">:</span> <span class="m">2fr</span> <span class="m">50px</span> <span class="nf">repeat</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">1fr</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>fr</code> unit represents a fraction of the available space in the grid container.
+</td>
+</tr>
+</table>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="grids grid-track">
+  <style>
+    .grids.grid-track {
+      all: initial;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .container {
+        max-width: 50%;
+
+        &>div {
+          border: 2px solid rgb(233 171 88);
+          border-radius: 5px;
+          background-color: rgb(233 171 88 / 50%);
+          padding: 1em;
+          color: #d9480f;
+        }
+      }
+
+      .container {
+        display: grid;
+        /* mixing flexible and absolute sizes */
+        grid-template-columns: 2fr 50px repeat(2, 1fr);
+      }
+    }
+  </style>
+  <div class="container">
+    <div>One</div>
+    <div>Two</div>
+    <div>Three</div>
+    <div>Four</div>
+    <div>Five</div>
+  </div>
+</div>
+</div>
+</details>
+<div class="ulist">
+<ul>
+<li>
+<p>The size of tracks created in the implicit grid can be defined with the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-rows">grid-auto-rows</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-columns">grid-auto-columns</a> properties.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">grid</span><span class="p">;</span>
+  <span class="nl">grid-template-columns</span><span class="p">:</span> <span class="nf">repeat</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">1fr</span><span class="p">);</span>
+  <span class="nl">grid-auto-rows</span><span class="p">:</span> <span class="nf">minmax</span><span class="p">(</span><span class="m">100px</span><span class="p">,</span> <span class="nb">auto</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div&gt;</span>One<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>
+    Two
+    <span class="nt">&lt;p&gt;</span>I have some more content in.<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>This makes me taller than 100 pixels.<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Three<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Four<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;</span>Five<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="grids grid-track sizing ">
+  <style>
+    .grids.grid-track.sizing {
+      all: initial;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .container {
+        margin-left: 0;
+
+        &>div {
+          border: 2px solid rgb(233 171 88);
+          border-radius: 5px;
+          background-color: rgb(233 171 88 / 50%);
+          padding: 1em;
+          color: #d9480f;
+        }
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(100px, auto);
+      }
+    }
+  </style>
+  <div class="container">
+    <div>One</div>
+    <div>
+      Two
+      <p>I have some more content in.</p>
+      <p>This makes me taller than 100 pixels.</p>
+    </div>
+    <div>Three</div>
+    <div>Four</div>
+    <div>Five</div>
+  </div>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Grid items can also be positioned with numbered or named <strong>grid lines</strong> by <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-column"><code>grid-column</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-row"><code>grid-row</code></a>. Lines are numbered according to the writing mode of the document.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout/1_diagram_numbered_grid_lines.png" alt="Diagram showing numbered grid lines." width="35%" height="35%">
+</div>
+<div class="title">Figure 5. Three column, two row grid, three row and four column lines.</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>A <a href="https://developer.mozilla.org/en-US/docs/Glossary/Grid_Cell"><strong>grid cell</strong></a> is the smallest unit on a grid. Conceptually it is like a table cell.</p>
+</li>
+<li>
+<p>Items can span one or more cells both by row or by column, and can also occupy the same cell, which creates a <a href="https://developer.mozilla.org/en-US/docs/Glossary/Grid_Areas"><strong>grid area</strong></a> that is one or more grid cells that make up a rectangular area on the grid.</p>
+</li>
+<li>
+<p>In the overlapping items stack, the layer order can be controlled with the <code>z-index</code> property.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Gutters</strong> or <strong>alleys</strong> between grid cells can be created using the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-gap">column-gap</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/row-gap">row-gap</a> properties, or the shorthand <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/gap">gap</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">grid</span><span class="p">;</span>
+  <span class="nl">grid-template-columns</span><span class="p">:</span> <span class="nf">repeat</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">1fr</span><span class="p">);</span>
+  <span class="nl">grid-auto-rows</span><span class="p">:</span> <span class="nf">minmax</span><span class="p">(</span><span class="m">50px</span><span class="p">,</span> <span class="nb">auto</span><span class="p">);</span>
+  <span class="nl">column-gap</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="nl">row-gap</span><span class="p">:</span> <span class="m">1em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.box1</span> <span class="p">{</span>
+  <span class="nl">grid-column</span><span class="p">:</span> <span class="m">1</span> <span class="o">/</span> <span class="m">4</span><span class="p">;</span>
+  <span class="nl">grid-row</span><span class="p">:</span> <span class="m">1</span> <span class="o">/</span> <span class="m">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.box2</span> <span class="p">{</span>
+  <span class="nl">grid-column</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+  <span class="nl">grid-row</span><span class="p">:</span> <span class="m">3</span> <span class="o">/</span> <span class="m">5</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box1"</span><span class="nt">&gt;</span>One<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box2"</span><span class="nt">&gt;</span>Two<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box3"</span><span class="nt">&gt;</span>Three<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box4"</span><span class="nt">&gt;</span>Four<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"box5"</span><span class="nt">&gt;</span>Five<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="grids grid-lines">
+  <style>
+    .grids.grid-lines {
+      all: initial;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .container {
+        &>div {
+          border: 2px solid rgb(233 171 88);
+          border-radius: 5px;
+          background-color: rgb(233 171 88 / 50%);
+          padding: 1em;
+          color: #d9480f;
+        }
+      }
+
+      .container {
+        max-width: 50%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(50px, auto);
+        column-gap: 10px;
+        row-gap: 1em;
+      }
+
+      .box1 {
+        grid-column: 1 / 4;
+        grid-row: 1 / 3;
+      }
+
+      .box2 {
+        grid-column: 1;
+        grid-row: 3 / 5;
+      }
+    }
+  </style>
+  <div class="container">
+    <div class="box1">One</div>
+    <div class="box2">Two</div>
+    <div class="box3">Three</div>
+    <div class="box4">Four</div>
+    <div class="box5">Five</div>
+  </div>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="floats">9.5. Floats</h3>
+<div class="paragraph">
+<p>The float property was introduced to allow web developers to implement layouts involving an image floating inside a column of text, with the text wrapping around the left or right of it. But web developers quickly realized that it can float anything, not just images, so the use of float broadened, for example, to fun layout effects such as <a href="https://css-tricks.com/snippets/css/drop-caps/">drop-caps</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/float"><code>float</code></a> property places an element on the left or right side of its container, allowing text and inline elements to <strong>wrap around</strong> it.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <strong>floating element</strong> is one where the computed value of <code>float</code> is not <code>none</code>, and implicitly use the <code>block</code> layout.</p>
+</li>
+<li>
+<p>When an element is floated, it is taken out of the normal flow of the document (though still remaining part of it), and is shifted to the left, or right, until it touches the edge of its containing box, or another floated element.</p>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;section&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"left"</span><span class="nt">&gt;</span>2<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"right"</span><span class="nt">&gt;</span>3<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tristique
+    sapien ac erat tincidunt, sit amet dignissim lectus vulputate. Donec id
+    iaculis velit. Aliquam vel malesuada erat. Praesent non magna ac massa
+    aliquet tincidunt vel in massa. Phasellus feugiat est vel leo finibus
+    congue.
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/section&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">section</span> <span class="p">{</span>
+  <span class="nl">box-sizing</span><span class="p">:</span> <span class="nb">border-box</span><span class="p">;</span>
+  <span class="nl">border</span><span class="p">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="nx">blue</span><span class="p">;</span>
+  <span class="nl">max-width</span><span class="p">:</span> <span class="m">55%</span><span class="p">;</span>
+  <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">div</span> <span class="p">{</span>
+  <span class="nl">margin</span><span class="p">:</span> <span class="m">5px</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.left</span> <span class="p">{</span>
+  <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="nx">pink</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.right</span> <span class="p">{</span>
+  <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+  <span class="nl">background</span><span class="p">:</span> <span class="nx">cyan</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="float-examples">
+  <style>
+    .float-examples {
+      all: initial;
+
+      &::after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+
+      section {
+        box-sizing: border-box;
+        border: 1px solid blue;
+        max-width: 55%;
+        float: left;
+
+        &>div {
+          margin: 5px;
+          width: 50px;
+          height: 150px;
+        }
+
+        .left {
+          float: left;
+          background: pink;
+        }
+
+        .right {
+          float: right;
+          background: cyan;
+        }
+      }
+    }
+  </style>
+  <section>
+    <div class="left">1</div>
+    <div class="left">2</div>
+    <div class="right">3</div>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tristique
+      sapien ac erat tincidunt, sit amet dignissim lectus vulputate. Donec id
+      iaculis velit. Aliquam vel malesuada erat. Praesent non magna ac massa
+      aliquet tincidunt vel in massa. Phasellus feugiat est vel leo finibus
+      congue.
+    </p>
+  </section>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clear"><code>clear</code></a> property sets whether an floating and non-floating element must be moved below (cleared) floating elements that precede it.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When applied to non-floating blocks, it moves the border edge of the element down until it is below the margin edge of all relevant floats, and collapses its top margin.</p>
+</li>
+<li>
+<p>When applied to floating elements, the margin edge of the bottom element is moved below the margin edge of all relevant floats, and the vertical margins between two floated elements will NOT collapse</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nt">p</span> <span class="p">{</span>
+  <span class="nl">clear</span><span class="p">:</span> <span class="nb">both</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>Example</em></summary>
+<div class="content">
+<div class="float-examples clear">
+  <style>
+    .float-examples.clear {
+      all: initial;
+
+      section {
+        box-sizing: border-box;
+        border: 1px solid blue;
+        max-width: 75%;
+        display: flow-root;
+
+        &>div {
+          margin: 5px;
+          width: 50px;
+          height: 150px;
+        }
+
+        .left {
+          float: left;
+          background: pink;
+        }
+
+        .right {
+          float: right;
+          background: cyan;
+        }
+
+        p {
+          clear: both;
+        }
+      }
+    }
+  </style>
+  <section>
+    <div class="left">1</div>
+    <div class="left">2</div>
+    <div class="right">3</div>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tristique
+      sapien ac erat tincidunt, sit amet dignissim lectus vulputate. Donec id
+      iaculis velit. Aliquam vel malesuada erat. Praesent non magna ac massa
+      aliquet tincidunt vel in massa. Phasellus feugiat est vel leo finibus
+      congue.
+    </p>
+  </section>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>display: flow-root</code> lets an element generate a block box that establishes a new <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Block_formatting_context">block formatting context</a>, defining where the formatting root lies.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If an element contains only floated elements, its height collapses to nothing.</p>
+</li>
+<li>
+<p>If you want it to always be able to resize, so that it contains floating elements inside it, set the value of the element&#8217;s display property to <code>flow-root</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nf">#container</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="n">flow-root</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="positioning">9.6. Positioning</h3>
+<div class="paragraph">
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/position"><code>position</code></a> property sets how an element is positioned, and the <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code> properties determine the final location of positioned elements.</p>
+</div>
+<iframe class="interactive is-default-height" style="border: none;" height="380" width="100%" src="https://interactive-examples.mdn.mozilla.net/pages/css/position.html" title="MDN Web Docs Interactive Example" allow="clipboard-write" loading="lazy" data-readystate="complete"></iframe>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>static</code>, that is the default value, element is positioned according to the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout">normal flow</a> of the document, and the <code>top</code>, <code>right</code>, <code>bottom</code>, <code>left</code>, and <code>z-index</code> properties have no effect.</p>
+</li>
+<li>
+<p>The <code>relative</code> element is positioned according to the normal flow of the document, and then offset relative to itself based on the values of <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The offset does not affect the position of any other elements; thus, the space given for the element in the page layout is the same as if position were <code>static</code>.</p>
+</li>
+<li>
+<p>It creates a new <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Understanding_z-index/Stacking_context"><strong>stacking context</strong></a> when the value of <code>z-index</code> is not <code>auto</code>. Its effect on <code>table-*-group</code>, <code>table-row</code>, <code>table-column</code>, <code>table-cell</code>, and <code>table-caption</code> elements is undefined.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <code>absolute</code> element is removed from the normal document flow, and no space is created for the element in the page layout.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The element is positioned relative to its closest positioned ancestor (if any) or to the initial <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block"><strong>containing block</strong></a>.</p>
+</li>
+<li>
+<p>Its final position is determined by the values of <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code>.</p>
+</li>
+<li>
+<p>It creates a new stacking context when the value of <code>z-index</code> is not <code>auto</code>.</p>
+</li>
+<li>
+<p>The margins of absolutely positioned boxes do not collapse with other margins.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <code>fixed;</code> element is removed from the normal document flow, and no space is created for the element in the page layout.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The element is positioned relative to its <strong>initial containing block</strong>, which is the viewport in the case of visual media. Its final position is determined by the values of <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code>.</p>
+</li>
+<li>
+<p>It always creates a new stacking context.</p>
+</li>
+<li>
+<p>In printed documents, the element is placed in the same position on every page.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <code>sticky</code> element is positioned according to the normal flow of the document, and then offset relative to its nearest scrolling ancestor and containing block (nearest block-level ancestor), including table-related elements, based on the values of <code>top</code>, <code>right</code>, <code>bottom</code>, and <code>left</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The offset does not affect the position of any other elements.</p>
+</li>
+<li>
+<p>It always creates a new stacking context.</p>
+</li>
+<li>
+<p>Note that a sticky element "sticks" to its nearest ancestor that has a "scrolling mechanism" (created when <code>overflow</code> is <code>hidden</code>, <code>scroll</code>, <code>auto</code>, or <code>overlay</code>), even if that ancestor isn&#8217;t the nearest actually scrolling ancestor.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/z-index"><code>z-index</code></a> property sets the z-order of a positioned element and its descendants or flex and grid items, and overlapping elements with a larger z-index cover those with a smaller one.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multi-column-layout">9.7. Multi-column layout</h3>
+<div class="paragraph">
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_multicol_layout"><strong>Multi-column layout</strong></a>, usually referred to as <strong>multicol layout</strong>, is a specification for laying out content into a set of column boxes much like columns in a newspaper.</p>
+</div>
+<div class="paragraph">
+<p>Multicol layout is unlike any of the other layout methods in CSS; it <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fragmentation">fragments</a> the content, including all descendant elements, into columns, which is in the same way that content fragmented into <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_paged_media">pages</a>.</p>
+</div>
+<div class="paragraph">
+<p>A multi-column container or <strong>multicol container</strong> can be defined by using one of two properties: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-count"><code>column-count</code></a> or <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-width"><code>column-width</code></a>, or using the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/columns"><code>columns</code></a> shorthand. The columns are anonymous boxes, which are described as <strong>column boxes</strong> in the specification.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="css"><span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">column-width</span><span class="p">:</span> <span class="m">200px</span><span class="p">;</span>
+  <span class="nl">column-gap</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+
+  <span class="err">.card</span> <span class="err">{</span>
+    <span class="nl">break-inside</span><span class="p">:</span> <span class="nb">avoid</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="nf">rgb</span><span class="p">(</span><span class="m">207</span> <span class="m">232</span> <span class="m">220</span><span class="p">);</span>
+    <span class="nl">border</span><span class="p">:</span> <span class="m">2px</span> <span class="nb">solid</span> <span class="nf">rgb</span><span class="p">(</span><span class="m">79</span> <span class="m">185</span> <span class="m">227</span><span class="p">);</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="m">0</span> <span class="m">1em</span> <span class="m">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nc">.span</span> <span class="p">{</span>
+    <span class="nl">column-span</span><span class="p">:</span> <span class="nb">all</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="err">}</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title"><em>HTML</em></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>归园田居·其一<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>魏晋·陶渊明<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;p&gt;</span>少无适俗韵，性本爱丘山。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>误落尘网中，一去三十年。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>羁鸟恋旧林，池鱼思故渊。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>开荒南野际，守拙归园田。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>方宅十余亩，草屋八九间。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>榆柳荫后檐，桃李罗堂前。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>暧暧远人村，依依墟里烟。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>狗吠深巷中，鸡鸣桑树颠。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>户庭无尘杂，虚室有余闲。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>久在樊笼里，复得返自然。<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>归园田居·其二<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>魏晋·陶渊明<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;p&gt;</span>野外罕人事，穷巷寡轮鞅。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>白日掩荆扉，虚室绝尘想。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>时复墟曲中，披草共来往。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>相见无杂言，但道桑麻长。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>桑麻日已长，我土日已广。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>常恐霜霰至，零落同草莽。<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>歸園田居·其三<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>魏晉·陶淵明<span class="nt">&lt;/h3&gt;</span>
+    <span class="nt">&lt;p&gt;</span>種豆南山下，草盛豆苗稀。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>晨興理荒穢，帶月荷鋤歸。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>道狹草木長，夕露沾我衣。<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>衣沾不足惜，但使願無違。<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card span"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>五柳先生<span class="nt">&lt;/h3&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title"><em>Preview</em></summary>
+<div class="content">
+<div class="multicol">
+  <style>
+    .multicol {
+      all: initial;
+      display: block;
+      max-width: 75%;
+
+      .container {
+        column-width: 200px;
+        column-gap: 20px;
+
+        .card {
+          break-inside: avoid;
+          background-color: rgb(207 232 220);
+          border: 2px solid rgb(79 185 227);
+          padding: 10px;
+          margin: 0 0 1em 0;
+          text-align: center;
+        }
+
+        .span {
+          column-span: all;
+        }
+      }
+    }
+  </style>
+  <div class="container">
+    <div class="card">
+      <h3>归园田居·其一</h3>
+      <h3>魏晋·陶渊明</h3>
+      <p>少无适俗韵，性本爱丘山。</p>
+      <p>误落尘网中，一去三十年。</p>
+      <p>羁鸟恋旧林，池鱼思故渊。</p>
+      <p>开荒南野际，守拙归园田。</p>
+      <p>方宅十余亩，草屋八九间。</p>
+      <p>榆柳荫后檐，桃李罗堂前。</p>
+      <p>暧暧远人村，依依墟里烟。</p>
+      <p>狗吠深巷中，鸡鸣桑树颠。</p>
+      <p>户庭无尘杂，虚室有余闲。</p>
+      <p>久在樊笼里，复得返自然。</p>
+    </div>
+    <div class="card">
+      <h3>归园田居·其二</h3>
+      <h3>魏晋·陶渊明</h3>
+      <p>野外罕人事，穷巷寡轮鞅。</p>
+      <p>白日掩荆扉，虚室绝尘想。</p>
+      <p>时复墟曲中，披草共来往。</p>
+      <p>相见无杂言，但道桑麻长。</p>
+      <p>桑麻日已长，我土日已广。</p>
+      <p>常恐霜霰至，零落同草莽。</p>
+    </div>
+    <div class="card">
+      <h3>歸園田居·其三</h3>
+      <h3>魏晉·陶淵明</h3>
+      <p>種豆南山下，草盛豆苗稀。</p>
+      <p>晨興理荒穢，帶月荷鋤歸。</p>
+      <p>道狹草木長，夕露沾我衣。</p>
+      <p>衣沾不足惜，但使願無違。</p>
+    </div>
+    <div class="card span">
+      <h3>五柳先生</h3>
+    </div>
+  </div>
+</div>
+</div>
+</details>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-width"><code>column-width</code></a> property sets the ideal column width in a multi-column layout to make a container have as many columns as can fit without any of them having a width less than the <code>column-width</code> value.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the width of the container is narrower than the specified value, the single column&#8217;s width will be smaller than the declared column width.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-count"><code>column-count</code></a> property breaks an element&#8217;s content into the specified number of columns.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If the <code>column-width</code> is also set to a non-<code>auto</code> value, it merely indicates the maximum allowed number of columns.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/columns"><code>columns</code></a> shorthand property sets the number of columns to use when drawing an element&#8217;s contents, as well as those columns' widths.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-rule"><code>column-rule</code></a> shorthand property sets the width, style, and color of the line drawn between columns in a multi-column layout.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-gap"><code>column-gap</code></a> property sets the size of the gap (gutter) between an element&#8217;s columns.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/column-span"><code>column-span</code></a> property makes it possible for an <strong>spanning element</strong> to span across all columns when its value is set to <code>all</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="responsive-design">9.8. Responsive design</h3>
+<div class="paragraph">
+<p>Responsive web design (RWD) is a web design approach to make web pages render well on all screen sizes and resolutions while ensuring good usability. It is the way to design for a multi-device web.</p>
+</div>
+<div class="paragraph">
+<p>/* TODO */</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sass">10. Sass</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://sass-lang.com/">Sass</a> is a preprocessor scripting language that is interpreted or compiled into CSS, and <a href="https://sass-lang.com/dart-sass/">Dart Sass</a> is its modern, primary implementation that can be integrated into various environments like <a href="https://rubygems.org/gems/sass-embedded">Ruby</a> or <a href="https://www.npmjs.com/package/sass-embedded">Node.js</a> through an embedded protocol.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># install anywhere (npm)</span>
+npm <span class="nb">install</span> <span class="nt">-g</span> sass</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>sass <span class="nt">--help</span>
+<span class="go">Compile Sass to CSS.
+
+</span><span class="gp">Usage: sass &lt;input.scss&gt;</span><span class="w"> </span><span class="o">[</span>output.css]
+<span class="gp">       sass &lt;input.scss&gt;</span>:&lt;output.css&gt; &lt;input/&gt;:&lt;output/&gt; &lt;<span class="nb">dir</span>/&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">11. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS" class="bare">https://developer.mozilla.org/en-US/docs/Web/CSS</a></p>
+</li>
+<li>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/--*" class="bare">https://developer.mozilla.org/en-US/docs/Web/CSS/--*</a></p>
+</li>
+<li>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties" class="bare">https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

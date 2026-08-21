@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>How to Access Kubernetes API Server | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="How to Access Kubernetes API Server" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. The Kubernetes API 1.1. API Groups and Versioning 1.2. OpenAPI 2. Using kubectl Command Line Tools 2.1. Directly accessing the REST API 3. Programmatic access to the API 4. Accessing services running on the cluster References 1. The Kubernetes API The core of Kubernetes&#39; control plane is the API server. The API server exposes an HTTP API that lets end users, different parts of your cluster, and external components communicate with one another. [1] Kubernetes has a &quot;hub-and-spoke&quot; API pattern. All API usage from nodes (or the pods they run) terminates at the API server. None of the other…" />
+<meta name="twitter:description" property="og:description" content="1. The Kubernetes API 1.1. API Groups and Versioning 1.2. OpenAPI 2. Using kubectl Command Line Tools 2.1. Directly accessing the REST API 3. Programmatic access to the API 4. Accessing services running on the cluster References 1. The Kubernetes API The core of Kubernetes&#39; control plane is the API server. The API server exposes an HTTP API that lets end users, different parts of your cluster, and external components communicate with one another. [1] Kubernetes has a &quot;hub-and-spoke&quot; API pattern. All API usage from nodes (or the pods they run) terminates at the API server. None of the other…" />
+<link rel="canonical" href="https://blog.codefarm.me/access-kubernetes/" />
+<meta property="og:url" content="https://blog.codefarm.me/access-kubernetes/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-18T21:45:31+08:00" />
+<meta property="article:modified_time" content="2021-12-18T21:45:31+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="How to Access Kubernetes API Server" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-12-18T21:45:31+08:00","datePublished":"2021-12-18T21:45:31+08:00","description":"1. The Kubernetes API 1.1. API Groups and Versioning 1.2. OpenAPI 2. Using kubectl Command Line Tools 2.1. Directly accessing the REST API 3. Programmatic access to the API 4. Accessing services running on the cluster References 1. The Kubernetes API The core of Kubernetes&#39; control plane is the API server. The API server exposes an HTTP API that lets end users, different parts of your cluster, and external components communicate with one another. [1] Kubernetes has a &quot;hub-and-spoke&quot; API pattern. All API usage from nodes (or the pods they run) terminates at the API server. None of the other…","headline":"How to Access Kubernetes API Server","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/access-kubernetes/"},"url":"https://blog.codefarm.me/access-kubernetes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">How to Access Kubernetes API Server</h1><p class="c-post-meta">21 Feb 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#the-kubernetes-api">1. The Kubernetes API</a>
+<ul class="sectlevel2">
+<li><a href="#api-groups-and-versioning">1.1. API Groups and Versioning</a></li>
+<li><a href="#openapi">1.2. OpenAPI</a></li>
+</ul>
+</li>
+<li><a href="#using-kubectl-command-line-tools">2. Using kubectl Command Line Tools</a>
+<ul class="sectlevel2">
+<li><a href="#directly-accessing-the-rest-api">2.1. Directly accessing the REST API</a></li>
+</ul>
+</li>
+<li><a href="#programmatic-access-to-the-api">3. Programmatic access to the API</a></li>
+<li><a href="#accessing-services-running-on-the-cluster">4. Accessing services running on the cluster</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="the-kubernetes-api">1. The Kubernetes API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The core of Kubernetes' control plane is the <a href="https://kubernetes.io/docs/concepts/overview/components/#kube-apiserver">API server</a>. The API server exposes an HTTP API that lets end users, different parts of your cluster, and external components communicate with one another. <a href="#kube-kubernetes-api">[1]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/components-of-kubernetes.svg" alt="Components of Kubernetes" width="55%" height="55%">
+</div>
+</div>
+<div class="paragraph">
+<p>Kubernetes has a "hub-and-spoke" API pattern. All API usage from nodes (or the pods they run) terminates at the API server. None of the other control plane components are designed to expose remote services. The API server is configured to listen for remote connections on a secure HTTPS port (typically 443) with one or more forms of client <em>authentication</em> enabled. One or more forms of <em>authorization</em> should be enabled, especially if <em>anonymous requests</em> or <em>service account tokens</em> are allowed. <a href="#kube-control-plane-node-communication">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>Most operations can be performed through the <a href="https://kubernetes.io/docs/reference/kubectl/overview/"><code>kubectl</code></a> command-line interface or other command-line tools, such as <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/"><code>kubeadm</code></a>, which in turn use the API. However, you can also access the API directly using <a href="https://kubernetes.io/docs/reference/using-api/client-libraries/">REST calls</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="api-groups-and-versioning">1.1. API Groups and Versioning</h3>
+<div class="paragraph">
+<p>To make it easier to eliminate fields or restructure resource representations, Kubernetes supports multiple API versions, each at a different API path, such as <code>/api/v1</code> or <code>/apis/batch/v1</code>. <a href="#kube-kubernetes-api">[1]</a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://kubernetes.io/docs/reference/using-api/#api-groups">API groups</a> make it easier to extend the Kubernetes API. The API group is specified in a <em>REST path</em> and in the <code>apiVersion</code> field of a serialized object.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <em>core</em> (also called <em>legacy</em>) group is found at REST path <code>/api/v1</code>.</p>
+<div class="paragraph">
+<p>The core group is not specified as part of the <code>apiVersion</code> field, for example, <code>apiVersion: v1</code>.</p>
+</div>
+</li>
+<li>
+<p>The named groups are at REST path <code>/apis/$GROUP_NAME/$VERSION</code> and use <code>apiVersion: $GROUP_NAME/$VERSION</code> (for example, <code>apiVersion: batch/v1</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Kubernetes API can be extended in one of two ways: <a href="#kube-kubernetes-api">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom resources</a> let you declaratively define how the API server should provide your chosen resource API.</p>
+</li>
+<li>
+<p>You can also extend the Kubernetes API by implementing an <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/">aggregation layer</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="openapi">1.2. OpenAPI</h3>
+<div class="paragraph">
+<p>The Kubernetes API server serves an aggregated OpenAPI v2 spec via the <code>/openapi/v2</code> endpoint, and supports publishing a description of its APIs as OpenAPI v3, with a discovery endpoint <code>/openapi/v3</code> to see a list of all group/versions available. <a href="#kube-kubernetes-api">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>A list of all group versions supported by a cluster is published at the <code>/api</code> and <code>/apis</code> endpoints. Each group version also advertises the list of resources supported via <code>/apis/&lt;group&gt;/&lt;version&gt;</code> (for example: <code>/apis/rbac.authorization.k8s.io/v1</code>). These endpoints are used by <code>kubectl</code> to fetch the list of resources supported by a cluster.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl api-resources <span class="c"># Print the supported API resources</span>
+<span class="go">NAME                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND
+bindings                                       v1                                     true         Binding
+componentstatuses                 cs           v1                                     false        ComponentStatus
+configmaps                        cm           v1                                     true         ConfigMap
+endpoints                         ep           v1                                     true         Endpoints</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl proxy <span class="c"># Run a proxy to the Kubernetes API server.</span>
+<span class="go">Starting to serve on 127.0.0.1:8001</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-s</span> localhost:8001/openapi/v2 | jq | <span class="nb">head</span> <span class="nt">-n</span> 10
+<span class="go">{
+  "swagger": "2.0",
+  "info": {
+    "title": "Kubernetes",
+    "version": "v1.26.0"
+  },
+  "paths": {
+    "/.well-known/openid-configuration/": {
+      "get": {
+        "description": "get service account issuer OpenID configuration, also known as the 'OIDC discovery doc'",
+
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-s</span> localhost:8001/openapi/v3 | jq | <span class="nb">head</span> <span class="nt">-n</span> 10
+<span class="go">{
+  "paths": {
+    ".well-known/openid-configuration": {
+      "serverRelativeURL": "/openapi/v3/.well-known/openid-configuration?hash=41054813FD81725211A3B09D3C9FA87F2B041E99B64B1C4A6FD0AF072CEB1622726E80278D5F762B445839FD7F625B56622D56B68963DB550DFCCE30BE2C11F1"
+    },
+    "api": {
+      "serverRelativeURL": "/openapi/v3/api?hash=AB5AC9C5AB05D854B4B4489A3DE2E019BB9EA07DF8CB7E0B79F0B938FC7F7E300960DDE723878E9435E9B13AF07C0CF135A3ABCC6D2FB8FFE5F980CB3BA84F08"
+    },
+    "api/v1": {
+      "serverRelativeURL": "/openapi/v3/api/v1?hash=FB484AAC3A02DD7CC60312AB967AEE53CBD692C1D22332A846C17D94CD603392374A93C6427AA5CA5CBBC1DA1B4AF6ED2A28F933C295C6A9F46F79FA87B64A78"
+
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-s</span> localhost:8001/apis/rbac.authorization.k8s.io/v1 | <span class="nb">head</span> <span class="nt">-n</span> 10
+<span class="go">{
+  "kind": "APIResourceList",
+  "apiVersion": "v1",
+  "groupVersion": "rbac.authorization.k8s.io/v1",
+  "resources": [
+    {
+      "name": "clusterrolebindings",
+      "singularName": "",
+      "namespaced": false,
+      "kind": "ClusterRoleBinding",</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-kubectl-command-line-tools">2. Using kubectl Command Line Tools</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes provides <code>kubectl</code>, a command line tool, for communicating with a Kubernetes cluster&#8217;s control plane, using the Kubernetes API.</p>
+</div>
+<div class="paragraph">
+<p>By default <code>kubectl</code> will first determine if it is running within a pod, and thus in a cluster. It starts by checking for the <code>KUBERNETES_SERVICE_HOST</code> and <code>KUBERNETES_SERVICE_PORT</code> environment variables and the existence of a service account token file at <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code>. If all three are found <em>in-cluster</em> authentication is assumed. <a href="#kube-kubectl">[3]</a> <a href="#kube-configure-service-account">[6]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create deployment devnetools <span class="nt">--image</span> docker.io/qqbuby/net-tools:2.0 <span class="nt">--</span> <span class="nb">sleep </span>24h
+<span class="go">deployment.apps/devnetools created</span>
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>devnetools-847d89666-28psk <span class="nt">--</span> <span class="nb">env</span>
+<span class="go">PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span>
+<span class="go">HOSTNAME=devnetools-847d89666-28psk</span>
+<span class="go">KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443</span>
+<span class="go">KUBERNETES_PORT_443_TCP_PROTO=tcp</span>
+<span class="go">KUBERNETES_PORT_443_TCP_PORT=443</span>
+<span class="go">KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1</span>
+<span class="hll"><span class="go">KUBERNETES_SERVICE_HOST=10.96.0.1</span>
+</span><span class="hll"><span class="go">KUBERNETES_SERVICE_PORT=443</span>
+</span><span class="go">KUBERNETES_SERVICE_PORT_HTTPS=443</span>
+<span class="go">KUBERNETES_PORT=tcp://10.96.0.1:443</span>
+<span class="go">HOME=/root</span>
+
+<span class="go">// copy `kubectl` cmd into container</span>
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">cp</span> <span class="si">$(</span>which kubectl<span class="si">)</span> devnetools-847d89666-28psk:tmp
+
+<span class="go">// show the cluster info using `kubectl` in pod with in-cluster mode</span>
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>devnetools-847d89666-28psk <span class="nt">--</span> /tmp/kubectl cluster-info
+<span class="go">Error from server (Forbidden): services is forbidden: User "system:serviceaccount:default:default" cannot list resource "services" in API group "" in the namespace "kube-system"</span>
+
+<span class="go">To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.</span>
+<span class="go">command terminated with exit code 1</span>
+
+<span class="go">// bind the cluster view role to the service account</span>
+<span class="gp">$</span><span class="w"> </span>kubectl create clusterrolebinding default:default:view <span class="nt">--clusterrole</span><span class="o">=</span>view <span class="nt">--serviceaccount</span><span class="o">=</span>default:default
+<span class="go">clusterrolebinding.rbac.authorization.k8s.io/default:default:view created</span>
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>devnetools-847d89666-28psk <span class="nt">--</span> /tmp/kubectl cluster-info
+<span class="go">Kubernetes control plane is running at https://10.96.0.1:443</span>
+<span class="go">CoreDNS is running at https://10.96.0.1:443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy</span>
+
+<span class="go">To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.</span>
+<span class="gp">$</span><span class="w"> </span>kubectl delete clusterrolebindings.rbac.authorization.k8s.io default:default:view
+<span class="go">clusterrolebinding.rbac.authorization.k8s.io "default:default:view" deleted</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="directly-accessing-the-rest-api">2.1. Directly accessing the REST API</h3>
+<div class="paragraph">
+<p>Kubectl handles locating and authenticating to the apiserver. If you want to directly access the REST API with an http client like curl or wget, or a browser, there are several ways to locate and authenticate: <a href="#kube-access-cluster">[4]</a></p>
+</div>
+<div class="sect3">
+<h4 id="run-kubectl-in-proxy-mode">2.1.1. Run kubectl in proxy mode.</h4>
+<div class="paragraph">
+<p>The following command runs kubectl in a mode where it acts as a reverse proxy. It handles locating the apiserver and authenticating.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl proxy <span class="nt">--port</span> 8080 <span class="nt">--address</span> <span class="o">[</span>::1]
+<span class="go">Starting to serve on [::1]:8080</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open another terminal:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl localhost:8080/version
+<span class="go">{
+  "major": "1",
+  "minor": "26",
+  "gitVersion": "v1.26.0",
+  "gitCommit": "b46a3f887ca979b1a5d14fd39cb1af43e7e5d12d",
+  "gitTreeState": "clean",
+  "buildDate": "2022-12-08T19:51:45Z",
+  "goVersion": "go1.19.4",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="provide-the-location-and-credentials-directly-to-the-http-client">2.1.2. Provide the location and credentials directly to the http client.</h4>
+<div class="paragraph">
+<p>Use <code>kubectl apply</code> and <code>kubectl describe secret&#8230;&#8203;</code> to create a token for the default service account with grep/cut:</p>
+</div>
+<div class="paragraph">
+<p>First, create the Secret, requesting a token for the default ServiceAccount:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl apply <span class="nt">-f</span> - <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+apiVersion: v1
+kind: Secret
+metadata:
+  name: default-token
+  annotations:
+    kubernetes.io/service-account.name: default
+type: kubernetes.io/service-account-token
+EOF</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, wait for the token controller to populate the Secret with a token:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="k">while</span> <span class="o">!</span> kubectl describe secret default-token | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s1">'^token'</span> <span class="o">&gt;</span>/dev/null<span class="p">;</span> <span class="k">do
+  </span><span class="nb">echo</span> <span class="s2">"waiting for token..."</span> <span class="o">&gt;</span>&amp;2
+  <span class="nb">sleep </span>1
+<span class="k">done</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Capture and use the generated token:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">APISERVER</span><span class="o">=</span><span class="si">$(</span>kubectl config view <span class="nt">--minify</span> | <span class="nb">grep </span>server | <span class="nb">cut</span> <span class="nt">-f</span> 2- <span class="nt">-d</span> <span class="s2">":"</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s2">" "</span><span class="si">)</span>
+<span class="nv">TOKEN</span><span class="o">=</span><span class="si">$(</span>kubectl describe secret default-token | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s1">'^token'</span> | <span class="nb">cut</span> <span class="nt">-f2</span> <span class="nt">-d</span><span class="s1">':'</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s2">" "</span><span class="si">)</span>
+
+curl <span class="nv">$APISERVER</span>/api <span class="nt">--header</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span> <span class="nt">--insecure</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output is similar to this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">{
+  "major": "1",
+  "minor": "26",
+  "gitVersion": "v1.26.0",
+  "gitCommit": "b46a3f887ca979b1a5d14fd39cb1af43e7e5d12d",
+  "gitTreeState": "clean",
+  "buildDate": "2022-12-08T19:51:45Z",
+  "goVersion": "go1.19.4",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="programmatic-access-to-the-api">3. Programmatic access to the API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes officially supports <a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#go-client">Go</a> and <a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#python-client">Python</a> client libraries. <a href="#kube-access-cluster">[4]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To get the go client library, run the following command: <code>go get k8s.io/client-go@latest</code>, see <a href="https://github.com/kubernetes/client-go/blob/master/INSTALL.md">INSTALL.md</a> for detailed installation instructions. See <a href="https://github.com/kubernetes/client-go?tab=readme-ov-file#compatibility-matrix">Compatibility matrix</a> to see which versions are supported.</p>
+</li>
+<li>
+<p>Write an application atop of the client-go clients. Note that client-go defines its own API objects, so if needed, please import API definitions from client-go rather than from the main repository, e.g., <code>import "k8s.io/client-go/kubernetes"</code> is correct.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Go client can use the same <a href="https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/">kubeconfig file</a> as the kubectl CLI does to locate and authenticate to the apiserver.</p>
+</div>
+<div class="paragraph">
+<p>When accessing the API from a pod, locating and authenticating to the apiserver are somewhat different. <a href="#kube-access-api-from-pod">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using Official Client Libraries</p>
+<div class="paragraph">
+<p>The easiest and recommended way to use the Kubernetes API from a Pod is to use one of the official client libraries. For a Go client, use the official <a href="https://github.com/kubernetes/client-go/">Go client library</a>. The <code>rest.InClusterConfig()</code> function handles API host discovery and authentication automatically.</p>
+</div>
+</li>
+<li>
+<p>Directly accessing the REST API</p>
+<div class="paragraph">
+<p>While running in a Pod, your container can create an HTTPS URL for the Kubernetes API server by fetching the <code>KUBERNETES_SERVICE_HOST</code> and <code>KUBERNETES_SERVICE_PORT_HTTPS</code> environment variables. The API server&#8217;s in-cluster address is also published to a Service named <code>kubernetes</code> in the <code>default</code> namespace so that pods may reference <code>kubernetes.default.svc</code> as a DNS name for the local API server.</p>
+</div>
+<div class="paragraph">
+<p>The recommended way to authenticate to the API server is with a <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">service account</a> credential. By default, a Pod is associated with a service account, and a credential (token) for that service account is placed into the filesystem tree of each container in that Pod, at <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code>.</p>
+</div>
+<div class="paragraph">
+<p>If available, a certificate bundle is placed into the filesystem tree of each container at <code>/var/run/secrets/kubernetes.io/serviceaccount/ca.crt</code>, and should be used to verify the serving certificate of the API server.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the default namespace to be used for namespaced API operations is placed in a file at <code>/var/run/secrets/kubernetes.io/serviceaccount/namespace</code> in each container.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># create a go module.</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> github.com/samples/gocli
+<span class="nb">cd </span>github.com/samples/gocli/
+go mod init github.com/samples/gocli</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="go"><span class="c">// main.go</span>
+<span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"context"</span>
+	<span class="s">"flag"</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"os"</span>
+	<span class="s">"path/filepath"</span>
+
+	<span class="n">metav1</span> <span class="s">"k8s.io/apimachinery/pkg/apis/meta/v1"</span>
+	<span class="s">"k8s.io/client-go/kubernetes"</span>
+	<span class="s">"k8s.io/client-go/rest"</span>
+	<span class="s">"k8s.io/client-go/tools/clientcmd"</span>
+	<span class="s">"k8s.io/client-go/util/homedir"</span>
+	<span class="s">"k8s.io/klog/v2"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">kubeconfig</span> <span class="o">*</span><span class="kt">string</span>
+	<span class="k">if</span> <span class="n">home</span> <span class="o">:=</span> <span class="n">homedir</span><span class="o">.</span><span class="n">HomeDir</span><span class="p">();</span> <span class="n">home</span> <span class="o">!=</span> <span class="s">""</span> <span class="p">{</span>
+		<span class="n">kubeconfig</span> <span class="o">=</span> <span class="n">flag</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"kubeconfig"</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">Join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s">".kube"</span><span class="p">,</span> <span class="s">"config"</span><span class="p">),</span> <span class="s">"(optional) absolute path to the kubeconfig file"</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">kubeconfig</span> <span class="o">=</span> <span class="n">flag</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"kubeconfig"</span><span class="p">,</span> <span class="s">""</span><span class="p">,</span> <span class="s">"absolute path to the kubeconfig file"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">flag</span><span class="o">.</span><span class="n">Parse</span><span class="p">()</span>
+
+	<span class="c">// try to create the in-cluster config</span>
+	<span class="n">config</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">rest</span><span class="o">.</span><span class="n">InClusterConfig</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="c">// use the current context in kubeconfig</span>
+		<span class="n">config</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">clientcmd</span><span class="o">.</span><span class="n">BuildConfigFromFlags</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="o">*</span><span class="n">kubeconfig</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+			<span class="n">klog</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c">// creates the clientset</span>
+	<span class="n">clientset</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">kubernetes</span><span class="o">.</span><span class="n">NewForConfig</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">klog</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="n">pods</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">clientset</span><span class="o">.</span><span class="n">CoreV1</span><span class="p">()</span><span class="o">.</span><span class="n">Pods</span><span class="p">(</span><span class="s">""</span><span class="p">)</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">TODO</span><span class="p">(),</span> <span class="n">metav1</span><span class="o">.</span><span class="n">ListOptions</span><span class="p">{})</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">klog</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"There are %d pods in the cluster</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pods</span><span class="o">.</span><span class="n">Items</span><span class="p">))</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>go mod tidy
+<span class="go">go: finding module for package k8s.io/klog/v2
+go: finding module for package k8s.io/client-go/rest
+go: finding module for package k8s.io/apimachinery/pkg/apis/meta/v1
+go: finding module for package k8s.io/client-go/tools/clientcmd
+go: finding module for package k8s.io/client-go/util/homedir
+go: finding module for package k8s.io/client-go/kubernetes
+go: downloading k8s.io/klog v1.0.0
+go: downloading k8s.io/klog/v2 v2.120.1
+go: downloading k8s.io/apimachinery v0.29.2
+go: downloading k8s.io/client-go v0.29.2
+</span><span class="c">...
+</span><span class="gp">$</span><span class="w"> </span>go build
+<span class="gp">$</span><span class="w"> </span>./gocli
+<span class="go">There are 138 pods in the cluster</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="accessing-services-running-on-the-cluster">4. Accessing services running on the cluster</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Kubernetes, the <a href="https://kubernetes.io/docs/concepts/architecture/nodes/">nodes</a>, <a href="https://kubernetes.io/docs/concepts/workloads/pods/">pods</a> and <a href="https://kubernetes.io/docs/concepts/services-networking/service/">services</a> all have their own IPs. In many cases, the node IPs, pod IPs, and some service IPs on a cluster will not be routable, so they will not be reachable from a machine outside the cluster, such as your desktop machine. <a href="#kube-access-cluster-services">[7]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get no <span class="nt">-owide</span>
+<span class="go">NAME     STATUS   ROLES           AGE   VERSION    INTERNAL-IP      EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION                 CONTAINER-RUNTIME
+</span><span class="gp">node-0   Ready    control-plane   16d   v1.26.0    192.168.56.130   &lt;none&gt;</span><span class="w">        </span>Debian GNU/Linux 12 <span class="o">(</span>bookworm<span class="o">)</span>   6.1.0-17-amd64                 containerd://1.6.28
+<span class="gp">node-2   Ready    &lt;none&gt;</span><span class="w">          </span>2d    v1.26.13   192.168.56.132   &lt;none&gt;        CentOS Linux 7 <span class="o">(</span>Core<span class="o">)</span>            3.10.0-1160.108.1.el7.x86_64   containerd://1.6.28
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span>kubectl get svc <span class="nt">-n</span> ingress-nginx
+<span class="go">NAME                                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                      AGE
+</span><span class="gp">ingress-nginx-controller             NodePort    10.98.74.33    &lt;none&gt;</span><span class="w">        </span>10254:31196/TCP,80:30080/TCP,443:30443/TCP   47h
+<span class="gp">ingress-nginx-controller-admission   ClusterIP   10.100.192.1   &lt;none&gt;</span><span class="w">        </span>443/TCP                                      47h
+<span class="gp">$</span><span class="w"> </span>kubectl get po <span class="nt">-n</span> ingress-nginx <span class="nt">-owide</span>
+<span class="go">NAME                                        READY   STATUS    RESTARTS   AGE   IP            NODE     NOMINATED NODE   READINESS GATES
+</span><span class="gp">ingress-nginx-controller-5d84c5dd56-qdh4t   1/1     Running   0          46h   10.244.1.35   node-2   &lt;none&gt;</span><span class="w">           </span>&lt;none&gt;
+<span class="go">
+// access the services with `NodePort` and node IPs reachable outside the cluster
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-iI</span> 192.168.56.130:30080/healthz
+<span class="go">HTTP/1.1 200 OK
+Date: Tue, 20 Feb 2024 09:58:11 GMT
+Content-Type: text/html
+Content-Length: 0
+Connection: keep-alive
+
+// ssh to a node in the cluster, and access the services or pods directly
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-iI</span> 10.98.74.33/healthz
+<span class="go">HTTP/1.1 200 OK
+Date: Tue, 20 Feb 2024 09:50:08 GMT
+Content-Type: text/html
+Content-Length: 0
+Connection: keep-alive
+
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-iI</span> 10.244.1.35/healthz
+<span class="go">HTTP/1.1 200 OK
+Date: Tue, 20 Feb 2024 09:50:22 GMT
+Content-Type: text/html
+Content-Length: 0
+Connection: keep-alive</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Typically, there are several services which are started on a cluster by <code>kube-system</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl cluster-info
+<span class="go">Kubernetes control plane is running at https://cluster-endpoint:6443
+CoreDNS is running at https://cluster-endpoint:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="c1">#$ kubectl get svc -n kube-system kube-dns -oyaml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">labels</span><span class="pi">:</span>
+<span class="hll">    <span class="na">kubernetes.io/cluster-service</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+</span><span class="hll">    <span class="na">kubernetes.io/name</span><span class="pi">:</span> <span class="s">CoreDNS</span>
+</span><span class="hll">  <span class="na">name</span><span class="pi">:</span> <span class="s">kube-dns</span>
+</span><span class="hll">  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+</span><span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+<span class="hll">  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">dns</span>
+</span>    <span class="na">port</span><span class="pi">:</span> <span class="m">53</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">UDP</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">53</span>
+<span class="nn">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To create proxy URLs that include service endpoints, suffixes, and parameters, you append to the service&#8217;s proxy URL:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>http://<em>kubernetes_master_address</em>/api/v1/namespaces/<em>namespace_name</em>/services/<em>https:service_name[:port_name]</em>/proxy</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>If you haven&#8217;t specified a name for your port, you don&#8217;t have to specify <em>port_name</em> in the URL. You can also use the port number in place of the <em>port_name</em> for both named and unnamed ports.</p>
+</div>
+<div class="paragraph">
+<p>By default, the API server proxies to your service using http. To use https, prefix the service name with <code>https</code>:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>http:&lt;kubernetes_master_address&gt;/api/v1/namespaces/&lt;namespace_name&gt;/services/&lt;service_name&gt;/proxy</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The supported formats for the <code>&lt;service_name&gt;</code> segment of the URL are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&lt;service_name&gt;</code> - proxies to the default or unnamed port using http</p>
+</li>
+<li>
+<p><code>&lt;service_name&gt;:&lt;port_name&gt;</code> - proxies to the specified port name or port number using http</p>
+</li>
+<li>
+<p><code>https:&lt;service_name&gt;:</code> - proxies to the default or unnamed port using https (note the trailing colon)</p>
+</li>
+<li>
+<p><code>https:&lt;service_name&gt;:&lt;port_name&gt;</code> - proxies to the specified port name or port number using https</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Examples</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create <span class="nt">-n</span> default deployment <span class="nb">echo</span> <span class="nt">--image</span><span class="o">=</span>k8s.gcr.io/echoserver:1.10
+<span class="go">deployment.apps/echo created
+
+</span><span class="gp">$</span><span class="w"> </span>kubectl expose <span class="nt">-n</span> default deployment <span class="nb">echo</span> <span class="nt">--port</span> 80 <span class="nt">--target-port</span> 8080
+<span class="go">service/echo exposed
+
+</span><span class="gp">$</span><span class="w"> </span>kubectl proxy
+<span class="go">Starting to serve on 127.0.0.1:8001
+
+</span><span class="gp">$</span><span class="w"> </span>curl http://localhost:8001/api/v1/namespaces/default/services/echo/proxy/
+<span class="go">
+
+Hostname: echo
+
+Pod Information:
+	-no pod information available-
+
+Server values:
+	server_version=nginx: 1.13.3 - lua: 10008
+
+Request Information:
+	client_address=172.25.0.1
+	method=GET
+	real path=/
+	query=
+	request_version=1.1
+	request_scheme=http
+	request_uri=http://localhost:8080/
+
+Request Headers:
+	accept=*/*
+	accept-encoding=gzip
+	host=localhost:8001
+	user-agent=curl/7.74.0
+	x-forwarded-for=127.0.0.1, 10.24.128.43
+	x-forwarded-uri=/api/v1/namespaces/default/services/echo/proxy/
+
+Request Body:
+	-no body in request-
+</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="kube-kubernetes-api"></a>[1] <a href="https://kubernetes.io/docs/concepts/overview/kubernetes-api/" class="bare">https://kubernetes.io/docs/concepts/overview/kubernetes-api/</a></p>
+</li>
+<li>
+<p><a id="kube-control-plane-node-communication"></a>[2] <a href="https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/" class="bare">https://kubernetes.io/docs/concepts/architecture/control-plane-node-communication/</a></p>
+</li>
+<li>
+<p><a id="kube-kubectl"></a>[3] <a href="https://kubernetes.io/docs/reference/kubectl/overview/" class="bare">https://kubernetes.io/docs/reference/kubectl/overview/</a></p>
+</li>
+<li>
+<p><a id="kube-access-cluster"></a>[4] <a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/" class="bare">https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/</a></p>
+</li>
+<li>
+<p><a id="kube-access-api-from-pod"></a>[5] <a href="https://kubernetes.io/docs/tasks/run-application/access-api-from-pod/" class="bare">https://kubernetes.io/docs/tasks/run-application/access-api-from-pod/</a></p>
+</li>
+<li>
+<p><a id="kube-configure-service-account"></a>[6] <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/</a></p>
+</li>
+<li>
+<p><a id="kube-access-cluster-services"></a>[7] <a href="https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/" class="bare">https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

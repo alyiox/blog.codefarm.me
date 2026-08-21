@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>并行计算-笔记 | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="并行计算-笔记" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="CPU Cache 指令缓存 instruction cache 数据缓存 data cache 多级缓存 L1 L2 L3 L4 旁路转换缓冲 TLB (translation lookside buffer, part of MMU) 缓存记录 cache entry 缓存线 cache line : 固定大小，数据拷贝，内存地址(memory location, tag), 标志(flag, invalid bit, dirty bit) 缓存策略 替换策略: 最近最少使用(LRU) 写策略: 写通过(write-through), 回写(write-back), 缓存一致性协议, DMA, multi-core 缓存性能 CPU 和 内存之前通过 Cache 架起桥梁，消除鸿沟(gap) CPU 在缓存未命中而访问内存并创建缓存线的等待状态称为闲置(Stall) 为消除CPU的闲置(keep cpu busy),引入了乱序执行(out-of-order execution), 超线程(hyper-threading, HT)技术 缓存未命中 cache miss 读 miss：取指令，取数据 写 miss：队列 store buffer 内存管理单元 MMU 虚拟内存 virtual memory virtual address To physical address TLB (translation lookside buffer) page table, segment table 缓存一致性协议 MESI: Modified, Exclusive, Shared, Invalid Message: Read Read Response Invalidate Invlaidate Acknowledge Read…" />
+<meta name="twitter:description" property="og:description" content="CPU Cache 指令缓存 instruction cache 数据缓存 data cache 多级缓存 L1 L2 L3 L4 旁路转换缓冲 TLB (translation lookside buffer, part of MMU) 缓存记录 cache entry 缓存线 cache line : 固定大小，数据拷贝，内存地址(memory location, tag), 标志(flag, invalid bit, dirty bit) 缓存策略 替换策略: 最近最少使用(LRU) 写策略: 写通过(write-through), 回写(write-back), 缓存一致性协议, DMA, multi-core 缓存性能 CPU 和 内存之前通过 Cache 架起桥梁，消除鸿沟(gap) CPU 在缓存未命中而访问内存并创建缓存线的等待状态称为闲置(Stall) 为消除CPU的闲置(keep cpu busy),引入了乱序执行(out-of-order execution), 超线程(hyper-threading, HT)技术 缓存未命中 cache miss 读 miss：取指令，取数据 写 miss：队列 store buffer 内存管理单元 MMU 虚拟内存 virtual memory virtual address To physical address TLB (translation lookside buffer) page table, segment table 缓存一致性协议 MESI: Modified, Exclusive, Shared, Invalid Message: Read Read Response Invalidate Invlaidate Acknowledge Read…" />
+<link rel="canonical" href="https://blog.codefarm.me/parallel-computing-tips/" />
+<meta property="og:url" content="https://blog.codefarm.me/parallel-computing-tips/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-09T17:27:03+08:00" />
+<meta property="article:modified_time" content="2019-05-09T17:27:03+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="并行计算-笔记" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-05-09T17:27:03+08:00","datePublished":"2019-05-09T17:27:03+08:00","description":"CPU Cache 指令缓存 instruction cache 数据缓存 data cache 多级缓存 L1 L2 L3 L4 旁路转换缓冲 TLB (translation lookside buffer, part of MMU) 缓存记录 cache entry 缓存线 cache line : 固定大小，数据拷贝，内存地址(memory location, tag), 标志(flag, invalid bit, dirty bit) 缓存策略 替换策略: 最近最少使用(LRU) 写策略: 写通过(write-through), 回写(write-back), 缓存一致性协议, DMA, multi-core 缓存性能 CPU 和 内存之前通过 Cache 架起桥梁，消除鸿沟(gap) CPU 在缓存未命中而访问内存并创建缓存线的等待状态称为闲置(Stall) 为消除CPU的闲置(keep cpu busy),引入了乱序执行(out-of-order execution), 超线程(hyper-threading, HT)技术 缓存未命中 cache miss 读 miss：取指令，取数据 写 miss：队列 store buffer 内存管理单元 MMU 虚拟内存 virtual memory virtual address To physical address TLB (translation lookside buffer) page table, segment table 缓存一致性协议 MESI: Modified, Exclusive, Shared, Invalid Message: Read Read Response Invalidate Invlaidate Acknowledge Read…","headline":"并行计算-笔记","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/parallel-computing-tips/"},"url":"https://blog.codefarm.me/parallel-computing-tips/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">并行计算-笔记</h1><p class="c-post-meta">09 May 2019</p>
+  </header>
+
+  <div class="c-post-content">
+    <pre><code class="language-none">CPU Cache
+  指令缓存 instruction cache
+  数据缓存 data cache
+    多级缓存 L1 L2 L3 L4
+  旁路转换缓冲 TLB (translation lookside buffer, part of MMU)
+缓存记录 cache entry
+  缓存线 cache line : 固定大小，数据拷贝，内存地址(memory location, tag), 标志(flag, invalid bit, dirty bit)
+缓存策略
+  替换策略: 最近最少使用(LRU)
+  写策略: 写通过(write-through), 回写(write-back), 缓存一致性协议, DMA, multi-core
+缓存性能
+  CPU 和 内存之前通过 Cache 架起桥梁，消除鸿沟(gap)
+  CPU 在缓存未命中而访问内存并创建缓存线的等待状态称为闲置(Stall)
+  为消除CPU的闲置(keep cpu busy),引入了乱序执行(out-of-order execution), 超线程(hyper-threading, HT)技术
+缓存未命中 cache miss
+  读 miss：取指令，取数据
+  写 miss：队列 store buffer
+内存管理单元 MMU
+  虚拟内存 virtual memory
+  virtual address To physical address
+  TLB (translation lookside buffer)
+  page table, segment table
+缓存一致性协议
+  MESI: Modified, Exclusive, Shared, Invalid
+  Message:
+    Read
+    Read Response
+    Invalidate
+    Invlaidate Acknowledge
+    Read Invalidate
+    Writeback
+  CPU 闲置 Stall
+    Memory Barriers
+    Happend-before
+    Memory-misordering
+    Store Buffer
+      Store Forwarding
+    Invalidate Queue
+
+硬件同步原语 Hardware synchronization primitives
+  Compare and swap (CAS)
+    atomic test-and-set operation / atomic read-modify-write sequence
+    On Intel processors, compare-and-swap is implemented by the cmpxchg family of instructions.
+    A CAS operation includes three operands -- a memory location (V),
+      the expected old value (A), and a new value (B).
+    CAS effectively says "I think location V should have the value A; if it does, put B in it,
+      otherwise, don't change it but tell me what value is there now.
+  
+
+无锁编程 lockless programming
+  原子操作 atomic operation
+    RMW(read-modify-write)
+      _InterlockedIncrement on Win32
+    CAS(compare-and-swap)
+      _InterlockedCompareExchange on Win32
+  Memory Ordering
+    compiler reordering / processor reordering
+    内存屏障/栏栅 memory fence/barrier
+
+锁 lock
+  自旋锁 spinlock
+
+锁的粒度
+  lock overhead: the extra resources for using locks, like the memory space allocated for locks, the CPU time to initialize and destroy locks, and the time for acquiring or releasing locks. The more locks a program uses, the more overhead associated with the usage;
+  lock contention: this occurs whenever one process or thread attempts to acquire a lock held by another process or thread. The more fine-grained the available locks, the less likely one process/thread will request a lock held by the other. (For example, locking a row rather than the entire table, or locking a cell rather than the entire row.);
+  deadlock: the situation when each of at least two tasks is waiting for a lock that the other task holds. Unless something is done, the two tasks will wait forever.
+
+
+
+
+用户模式
+内核模式
+
+活锁
+死锁
+
+时间片
+
+睡眠 0 1 -1
+
+Yield
+
+原子操作
+
+Interlocked
+Volatile
+
+Memory fences / Memory barrier
+
+自旋锁 SpinLock
+  忙等 busy waiting
+
+事件 Event
+  AutoResetEvent
+  ManualResetEvent 惊群
+信号量 Semaphore
+
+互斥锁 Mutex
+  递归锁 Recursion
+  线程所有权 Thread Ownership
+
+读写锁 ReadWritLock
+
+混合锁 Hybrid Lock
+  用户模式 + 内核模式
+
+异步 IO
+
+
+
+A thread waiting on a construct might block forever if the thread currently holding the construct
+never releases it. If the construct is a user-mode construct, the thread is running on a CPU forever, and
+we call this a livelock. If the construct is a kernel-mode construct, the thread is blocked forever, and we
+call this a deadlock. Both of these are bad, but of the two, a deadlock is always preferable to a livelock,
+because a livelock wastes both CPU time and memory (the thread’s stack, etc.), while a deadlock wastes
+only memory.
+
+Context SWitch
+
+Kernel Mode / User Mode
+
+Volatile / Memory fences
+
+Volatile’s Read method performs an atomic read operation, and its Write method performs an
+atomic write operation. That is, each method performs either an atomic read operation or an atomic
+write operation. 
+
+Interlocked
+
+atomic read and write operation
+
+CPU
+Thread / logic CPU
+
+Single-CPU
+Hyperthreaded CPU
+  let only one thread run at a time
+time-slice
+
+SpinLock
+SpinWait()
+  executes a special CPU instructions; 
+  A thread can force itself to pause, allowing a hyperthreaded CPU
+    to switch to its other thread
+Sleep(0) Sleep(-1) Sleep(1)
+Yield()
+
+User-Mode Constructs
+  Volatile
+  SpinLock
+  InterLocked
+
+Kernel-Mode Constructs
+  events
+  semaphores
+
+  WaitHandle
+    EventWaitHandle
+      AutoResetWaitHandle
+      ManualResetWaitHandle
+    Semaphore
+    Mutex
+
+  Single-instance Application
+
+  Events
+    Events are simply Boolean variables maintained by the kernel.
+    true / false
+    unblock / block
+    AutoSet: unblock a thread then set event to false
+    ManualSet: unblock all thread, set event to false yourself
+
+    SpinWait based autoresetwaithandle:
+      forces the calling thread to transition from managed code to the kernel and back—which is bad. But when there is contention, the losing thread is blocked by the kernel and is not spinning and wasting CPU cycles—which is good.
+  Semaphore
+    Semaphores are simply Int32 variables maintained by the kernel. A thread waiting on a semaphore blocks when the semaphore is 0 and unblocks when the semaphore is greater than 0. When a thread waiting on a semaphore unblocks, the kernel automatically subtracts 1 from the semaphore’s count.
+  Mutex
+    A Mutex represents a mutual-exclusive lock. It works similar to an AutoResetEvent or a Semaphore with a count of 1 since all three constructs release only one waiting thread at a time.
+    System.ApplicationException
+    System.Threading.AbandonedMutexException
+    recursion count
+    Usually a recursive lock is needed when a method takes a lock and then calls another method that also requires the lock
+
+  Hybrid Constructs
+    Spinning / Thread OwnerShip / Recursion
+
+    Monitor / lock
+      Sync block index
+      public / private lock object
+    ReadWriterLockSlim
+      Recusion / Thread Ownership / upgrade
+    CountdownEvent
+      This construct blocks a thread until its internal counter reaches 0.
+
+Instead, you should use the thread pool to rent threads for short periods of time. So, a thread
+pool thread starts out spell checking, then it changes to grammar checking, and then it changes again
+to perform work on behalf of a client request, and so on.
+
+In addition, avoid using recursive locks (especially recursive reader-writer locks) because they hurt
+performance. However, Monitor is recursive and its performance is very good.77 Also, avoid releasing
+a lock in a finally block because entering and leaving exception-handling blocks incurs a
+performance hit, and if an exception is thrown while mutating state, then the state is corrupted, and
+other threads that manipulate it will experience unpredictable behavior and security bugs.
+
+In the CLR, calling any lock method is a full memory fence, and any variable writes you have before the fence must complete before the fence and any variable reads after the fence must start after it.
+
+
+Double-Check Locking
+
+Condition Variable Pattern
+</code></pre>
+
+<ul>
+  <li>https://www.ibm.com/developerworks/java/library/j-jtp11234/</li>
+</ul>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

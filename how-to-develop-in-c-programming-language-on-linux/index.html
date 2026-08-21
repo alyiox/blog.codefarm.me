@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>How to develop in C programming language on Linux | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="How to develop in C programming language on Linux" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Linux Programming and Tools 1.1. LLVM and GCC 1.2. How to use the above tools within Vim on Linux? 1.3. Books or online resources for the above guides 2. Set up C programming development environment in Vim 2.1. What&#8217;s diffs between vim and vim-nox? 2.2. What&#8217;s diffs between vim.basic and vim.tiny? 2.3. What&#8217;s diff between vim.basic and vim 2.4. Set up C programming environment in Vim on Linux 2.4.1. How to install YouCompleteMe on Linux 2.4.2. Integrating static analyzers and code formatters 2.4.3. How to troubleshooting VundleVim plugin 2.4.4. VundleVim does not have a specific log file where it…" />
+<meta name="twitter:description" property="og:description" content="1. Linux Programming and Tools 1.1. LLVM and GCC 1.2. How to use the above tools within Vim on Linux? 1.3. Books or online resources for the above guides 2. Set up C programming development environment in Vim 2.1. What&#8217;s diffs between vim and vim-nox? 2.2. What&#8217;s diffs between vim.basic and vim.tiny? 2.3. What&#8217;s diff between vim.basic and vim 2.4. Set up C programming environment in Vim on Linux 2.4.1. How to install YouCompleteMe on Linux 2.4.2. Integrating static analyzers and code formatters 2.4.3. How to troubleshooting VundleVim plugin 2.4.4. VundleVim does not have a specific log file where it…" />
+<link rel="canonical" href="https://blog.codefarm.me/how-to-develop-in-c-programming-language-on-linux/" />
+<meta property="og:url" content="https://blog.codefarm.me/how-to-develop-in-c-programming-language-on-linux/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-06-26T13:15:15+08:00" />
+<meta property="article:modified_time" content="2023-06-26T13:15:15+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="How to develop in C programming language on Linux" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-06-26T13:15:15+08:00","datePublished":"2023-06-26T13:15:15+08:00","description":"1. Linux Programming and Tools 1.1. LLVM and GCC 1.2. How to use the above tools within Vim on Linux? 1.3. Books or online resources for the above guides 2. Set up C programming development environment in Vim 2.1. What&#8217;s diffs between vim and vim-nox? 2.2. What&#8217;s diffs between vim.basic and vim.tiny? 2.3. What&#8217;s diff between vim.basic and vim 2.4. Set up C programming environment in Vim on Linux 2.4.1. How to install YouCompleteMe on Linux 2.4.2. Integrating static analyzers and code formatters 2.4.3. How to troubleshooting VundleVim plugin 2.4.4. VundleVim does not have a specific log file where it…","headline":"How to develop in C programming language on Linux","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/how-to-develop-in-c-programming-language-on-linux/"},"url":"https://blog.codefarm.me/how-to-develop-in-c-programming-language-on-linux/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">How to develop in C programming language on Linux</h1><p class="c-post-meta">26 Jun 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#linux-programming-and-tools">1. Linux Programming and Tools</a>
+<ul class="sectlevel2">
+<li><a href="#llvm-and-gcc">1.1. LLVM and GCC</a></li>
+<li><a href="#how-to-use-the-above-tools-within-vim-on-linux">1.2. How to use the above tools within Vim on Linux?</a></li>
+<li><a href="#books-or-online-resources-for-the-above-guides">1.3. Books or online resources for the above guides</a></li>
+</ul>
+</li>
+<li><a href="#set-up-c-programming-development-environment-in-vim">2. Set up C programming development environment in Vim</a>
+<ul class="sectlevel2">
+<li><a href="#whats-diffs-between-vim-and-vim-nox">2.1. What&#8217;s diffs between vim and vim-nox?</a></li>
+<li><a href="#whats-diffs-between-vim-basic-and-vim-tiny">2.2. What&#8217;s diffs between vim.basic and vim.tiny?</a></li>
+<li><a href="#whats-diff-between-vim-basic-and-vim">2.3. What&#8217;s diff between vim.basic and vim</a></li>
+<li><a href="#set-up-c-programming-environment-in-vim-on-linux">2.4. Set up C programming environment in Vim on Linux</a>
+<ul class="sectlevel3">
+<li><a href="#how-to-install-youcompleteme-on-linux">2.4.1. How to install YouCompleteMe on Linux</a></li>
+<li><a href="#integrating-static-analyzers-and-code-formatters">2.4.2. Integrating static analyzers and code formatters</a></li>
+<li><a href="#how-to-troubleshooting-vundlevim-plugin">2.4.3. How to troubleshooting VundleVim plugin</a></li>
+<li><a href="#vundlevim-does-not-have-a-specific-log-file-where-it-records-its-activity">2.4.4. VundleVim does not have a specific log file where it records its activity</a></li>
+<li><a href="#how-to-use-an-http-proxy-in-git">2.4.5. How to use an HTTP proxy in Git</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#developing-c-programs-on-linux-using-vim">3. Developing C programs on Linux using Vim</a>
+<ul class="sectlevel2">
+<li><a href="#developing-a-c-project-with-multiple-modules-or-c-files-in-vim">3.1. Developing a C project with multiple modules or C files in Vim</a></li>
+<li><a href="#whats-the-best-project-layout-and-style-for-c-programming">3.2. What&#8217;s the best project layout and style for C programming?</a></li>
+</ul>
+</li>
+<li><a href="#lets-get-started">4. Let&#8217;s Get Started</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="linux-programming-and-tools">1. Linux Programming and Tools</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are several useful tools in the C programming toolchain on Linux. Here&#8217;s a list of some of the most important and widely-used tools:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>GCC (GNU Compiler Collection)</strong>: GCC is a widely-used compiler for C, C&#43;&#43;, Objective-C, Fortran, Ada, and other languages. It compiles, assembles, and links your code into an executable binary.</p>
+</li>
+<li>
+<p><strong>Make</strong>: Make is a build automation tool that reads <code>Makefile</code> scripts to build and manage C projects. It simplifies the compilation process, especially for large projects with multiple source files and dependencies.</p>
+</li>
+<li>
+<p><strong>GDB (GNU Debugger)</strong>: GDB is a powerful debugger that allows you to trace the execution of your program, set breakpoints, inspect variables, and analyze the program&#8217;s flow. It is an essential tool for finding and fixing issues in your code.</p>
+</li>
+<li>
+<p><strong>Valgrind</strong>: Valgrind is a suite of tools for debugging and profiling C programs. It helps to detect memory leaks, uninitialized memory, and other memory-related issues. The most commonly used Valgrind tool is <code>memcheck</code>.</p>
+</li>
+<li>
+<p><strong>Clang</strong>: Clang is a compiler for C, C&#43;&#43;, and Objective-C languages. It is a part of the LLVM project and provides a more user-friendly interface and better diagnostics than GCC. Clang can be used as an alternative to GCC.</p>
+</li>
+<li>
+<p><strong>Ctags</strong>: Ctags is a tool that generates an index (or tag) file for C source code. This index makes it easier to navigate through the codebase in text editors like Vim and Emacs, allowing you to quickly jump to function or variable definitions.</p>
+</li>
+<li>
+<p><strong>CMake</strong>: CMake is a cross-platform build system that generates build files (e.g., Makefiles) for your project. It simplifies the build process by automatically detecting dependencies and managing the build process across different platforms and environments.</p>
+</li>
+<li>
+<p><strong>Static analyzers (e.g., cppcheck, Clang Static Analyzer)</strong>: Static analyzers analyze your code without executing it. They help you find potential issues, such as memory leaks, null pointer dereferences, and buffer overflows, before running the program.</p>
+</li>
+<li>
+<p><strong>Code formatters (e.g., clang-format, indent)</strong>: Code formatters automatically format your C code according to a set of style rules, ensuring consistent code style across your project.</p>
+</li>
+<li>
+<p><strong>Version control systems (e.g., Git, Mercurial, SVN)</strong>: Version control systems help you track changes in your code, collaborate with others, and manage different versions of your project.</p>
+<div class="paragraph">
+<p>These tools, when combined, create a powerful and efficient development environment for C programming on Linux.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="llvm-and-gcc">1.1. LLVM and GCC</h3>
+<div class="paragraph">
+<p>LLVM/Clang and GCC are two popular compiler toolchains for C, C&#43;&#43;, and other programming languages. They have some differences in terms of features, performance, and compatibility. Here is a comparison of the two:</p>
+</div>
+<div class="paragraph">
+<p><strong>LLVM/Clang</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Diagnostics</strong>: Clang provides more user-friendly and precise error and warning messages than GCC, making it easier to understand and fix issues in your code.</p>
+</li>
+<li>
+<p><strong>Compilation speed</strong>: Clang is generally faster at compiling code than GCC, which can be advantageous for large projects or when using an IDE with real-time code analysis.</p>
+</li>
+<li>
+<p><strong>Static analysis tools</strong>: Clang&#8217;s infrastructure enables powerful static analysis tools such as Clang-Tidy and Clang Static Analyzer, which can help identify potential issues in your code.</p>
+</li>
+<li>
+<p><strong>Modular design</strong>: LLVM has a more modular design, which allows for easier integration with other tools and development of custom optimization passes.</p>
+</li>
+<li>
+<p><strong>Language support</strong>: Clang has better support for the latest C&#43;&#43; standards and features. However, it lacks support for some languages that GCC supports, such as Fortran and Ada.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>GCC</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Maturity</strong>: GCC has been around for a longer time and is more mature. As a result, it has better support for a wider range of architectures, operating systems, and programming languages.</p>
+</li>
+<li>
+<p><strong>Optimization</strong>: GCC often produces more optimized code, resulting in faster run-time performance, especially on older hardware and architectures.</p>
+</li>
+<li>
+<p><strong>Language support</strong>: GCC supports a wide range of programming languages, including C, C&#43;&#43;, Objective-C, Fortran, Ada, D, Go, and others.</p>
+</li>
+<li>
+<p><strong>License</strong>: GCC is released under the GNU General Public License (GPL), while LLVM/Clang uses a more permissive University of Illinois/NCSA Open Source License.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Which one to use on Linux?</strong></p>
+</div>
+<div class="paragraph">
+<p>Both LLVM/Clang and GCC can be used on Linux, and the choice depends on your specific needs and preferences:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If you prioritize user-friendly error messages, faster compilation speed, or the latest C&#43;&#43; features, you might prefer LLVM/Clang.</p>
+</li>
+<li>
+<p>If you need better optimization, support for a wider range of programming languages, or compatibility with a wider range of architectures, GCC might be the better choice.</p>
+</li>
+<li>
+<p>In many cases, you can have both compilers installed on your system and switch between them as needed. This can be helpful for testing your code&#8217;s compatibility and performance across different compilers.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Ultimately, the choice between LLVM/Clang and GCC depends on your specific requirements and preferences. Both compilers have their strengths and weaknesses, and you should choose the one that best aligns with your project&#8217;s needs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="how-to-use-the-above-tools-within-vim-on-linux">1.2. How to use the above tools within Vim on Linux?</h3>
+<div class="paragraph">
+<p>To use the above C programming tools within Vim on Linux, you can leverage various Vim plugins and configurations to integrate these tools into your Vim environment. Here&#8217;s how to set up and use some of the most important tools within Vim:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>GCC/Clang</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>You can compile your code directly from Vim using the :! command followed by the compiler command, e.g., <code>:!gcc % -o output</code> or <code>:!clang % -o output</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Make:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>To integrate Make with Vim, add the following lines to your <code>.vimrc</code> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">set makeprg=make\ -j4
+set errorformat=%f:%l:\ %m</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>You can run <code>:make</code> in Vim to build your project, and use <code>:cnext</code> and <code>:cprev</code> to navigate through the errors and warnings.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>GDB</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install a GDB plugin for Vim, such as vim-gdb or Conque-GDB:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">Plugin 'vim-gdb'</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Follow the plugin documentation to set up and use GDB within Vim.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Valgrind</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run Valgrind from Vim using the <code>:!</code> command, e.g., <code>:!valgrind --tool=memcheck ./output</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Ctags</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install Exuberant Ctags on your system and generate a tags file in your project directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">ctags -R .</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the following lines to your <code>.vimrc</code> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">set tags=./tags,tags;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use commands like <code>:tag function_name, Ctrl-]</code>, and <code>Ctrl-t</code> to navigate through the code.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>CMake</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the <code>:!</code> command to run CMake from within Vim, e.g., <code>:!cmake ..</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Static analyzers</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run static analyzers like <code>cppcheck</code> or <code>clang-check</code> from within Vim using the <code>:!</code> command, e.g., <code>:!cppcheck %</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Code formatters</strong>:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Integrate a code formatter like <code>clang-format</code> in Vim by adding the following lines to your <code>.vimrc</code> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">function! FormatCode()
+  let l:current_pos = getpos('.')
+  execute '%!clang-format -style=file'
+  call setpos('.', l:current_pos)
+endfunction
+nnoremap &lt;Leader&gt;cf :call FormatCode()&lt;CR&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Press <code>&lt;Leader&gt;cf</code> in normal mode to format your code.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Version control systems</strong>:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Install a Vim plugin to integrate your preferred version control system, e.g., <code>vim-fugitive</code> for Git:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">Plugin 'tpope/vim-fugitive'</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use the plugin commands to manage your version control system directly from Vim.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Remember to run <code>:PluginInstall</code> after adding new plugins to your <code>.vimrc</code> file if you&#8217;re using Vundle as your plugin manager. By integrating these tools into Vim, you can create a powerful and efficient development environment for C programming on Linux.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="books-or-online-resources-for-the-above-guides">1.3. Books or online resources for the above guides</h3>
+<div class="paragraph">
+<p>There isn&#8217;t a single definitive guide that covers all aspects of C programming and toolchain integration on Linux, as the topics are quite broad and often evolve with the development of new tools and techniques. However, you can find specific books and resources that focus on different aspects of C programming and toolchain integration. Here&#8217;s a list of recommended books and resources that can help you build a solid foundation:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>C Programming</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>"C Programming Language" by Brian W. Kernighan and Dennis M. Ritchie: This classic book is considered the definitive guide to the C language, written by its creators.</p>
+</li>
+<li>
+<p>"21st Century C" by Ben Klemens: This book provides a modern approach to C programming and covers best practices, library usage, and advanced C features.</p>
+</li>
+<li>
+<p>"C Programming Absolute Beginner&#8217;s Guide" by Greg Perry and Dean Miller</p>
+</li>
+<li>
+<p>"C Programming for the Absolute Beginner, Second Edition" by Michael Vine</p>
+</li>
+<li>
+<p>"Head First C" by David Griffiths and Dawn Griffiths</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Linux Programming</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>"Beginning Linux Programming" by Neil Matthew and Richard Stones: This book covers Linux programming basics, including working with the filesystem, processes, threads, and inter-process communication.</p>
+</li>
+<li>
+<p>"Advanced Linux Programming" by Mark L. Mitchell, Jeffrey Oldham, and Alex Samuel: This book dives deeper into Linux programming topics, such as shared libraries, memory management, and system calls.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>GNU Toolchain</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>"Advanced C and C&#43;&#43; Compiling" by Milan Stevanovic: This book covers various aspects of the GNU toolchain, including GCC, GDB, and Make, as well as other compilation tools.</p>
+</li>
+<li>
+<p>"Autotools: A Practitioner&#8217;s Guide to GNU Autoconf, Automake, and Libtool" by John Calcote: This book covers the GNU build system (Autoconf, Automake, and Libtool) in depth.</p>
+</li>
+<li>
+<p>"The Art of Debugging with GDB, DDD, and Eclipse" by Norman Matloff and Peter Jay Salzman</p>
+</li>
+<li>
+<p>"Mastering Linux Debugging Techniques" by Rodrigo Freese</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Vim</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>"Practical Vim: Edit Text at the Speed of Thought" by Drew Neil: This book is a comprehensive guide to using Vim effectively and efficiently in your development workflow.</p>
+</li>
+<li>
+<p>"Mastering Vim Quickly" by Jovica Ilic</p>
+</li>
+<li>
+<p>"Modern Vim: Craft Your Development Environment with Vim 8 and Neovim" by Drew Neil</p>
+</li>
+<li>
+<p>Vim&#8217;s built-in help documentation: Accessible via <code>:help</code> in Vim</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Online resources</strong>:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>GCC online documentation: <a href="https://gcc.gnu.org/onlinedocs/" class="bare">https://gcc.gnu.org/onlinedocs/</a></p>
+</li>
+<li>
+<p>GDB online documentation: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb/" class="bare">https://sourceware.org/gdb/current/onlinedocs/gdb/</a></p>
+</li>
+<li>
+<p>Make documentation: <a href="https://www.gnu.org/software/make/manual/make.html" class="bare">https://www.gnu.org/software/make/manual/make.html</a></p>
+</li>
+<li>
+<p>Vim Tips Wiki: <a href="https://vim.fandom.com/wiki/Vim_Tips_Wiki" class="bare">https://vim.fandom.com/wiki/Vim_Tips_Wiki</a></p>
+</li>
+<li>
+<p>Valgrind user manual: <a href="http://valgrind.org/docs/manual/manual.html" class="bare">http://valgrind.org/docs/manual/manual.html</a></p>
+</li>
+<li>
+<p>CMake tutorial: <a href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html" class="bare">https://cmake.org/cmake/help/latest/guide/tutorial/index.html</a></p>
+</li>
+<li>
+<p>Ctags tutorial: <a href="https://andrew.stwrt.ca/posts/vim-ctags/" class="bare">https://andrew.stwrt.ca/posts/vim-ctags/</a></p>
+</li>
+<li>
+<p>Clang-format documentation: <a href="https://clang.llvm.org/docs/ClangFormat.html" class="bare">https://clang.llvm.org/docs/ClangFormat.html</a></p>
+</li>
+<li>
+<p>Linux programming tutorials on websites like Stack Overflow, GeeksforGeeks, and TutorialsPoint</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>While there isn&#8217;t a single definitive guide that covers everything, combining the knowledge from these books and resources will give you a solid understanding of C programming and toolchain integration on Linux. Keep in mind that the landscape of tools and techniques is constantly evolving, so staying up-to-date with new developments and best practices is essential.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="set-up-c-programming-development-environment-in-vim">2. Set up C programming development environment in Vim</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="whats-diffs-between-vim-and-vim-nox">2.1. What&#8217;s diffs between vim and vim-nox?</h3>
+<div class="paragraph">
+<p><strong>vim</strong> and <strong>vim-nox</strong> are two different packages of the Vim text editor available on some Linux distributions. The main difference between them is the set of features and scripting language support they provide:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>vim</strong>: This is the standard Vim package that comes with most Linux distributions. It includes basic features and a minimal set of plugins. It usually supports the Vim scripting language and, in some cases, Python.</p>
+</li>
+<li>
+<p><strong>vim-nox</strong>: This package is built with more features and scripting language support, including Python, Ruby, Lua, and Perl. It is suitable for users who want to use plugins and extensions that require these scripting languages.</p>
+<div class="paragraph">
+<p>Which package you should use depends on your needs and preferences:</p>
+</div>
+</li>
+<li>
+<p>If you only need a basic text editor with standard Vim features, the regular <strong>vim</strong> package should be sufficient.</p>
+</li>
+<li>
+<p>If you plan to use plugins and extensions that require additional scripting language support (Python, Ruby, Lua, or Perl), you should consider installing the <strong>vim-nox</strong> package.</p>
+<div class="paragraph">
+<p>To install vim-nox on Debian-based distributions (e.g., Ubuntu), you can use the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt-get <span class="nb">install </span>vim-nox</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For other distributions, consult your package manager documentation to find the appropriate package.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, there is another package called <strong>vim-gtk</strong> or <strong>vim-gnome</strong> that provides a version of Vim with a GTK-based GUI (GVim) and additional features. If you prefer to work with a GUI and need more advanced features, you might consider installing this package.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="whats-diffs-between-vim-basic-and-vim-tiny">2.2. What&#8217;s diffs between vim.basic and vim.tiny?</h3>
+<div class="paragraph">
+<p><strong>vim.basic</strong> and <strong>vim.tiny</strong> are two different configurations of the Vim text editor on Linux. The main difference between them lies in the set of features and functionality they provide:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>vim.tiny</strong>: This is a minimal version of Vim with a reduced feature set to minimize its binary size and memory footprint. It is designed for systems with limited resources or situations where a smaller binary is desired. In <strong>vim.tiny</strong>, many advanced features such as syntax highlighting, multi-level undo, and visual mode are not available.</p>
+</li>
+<li>
+<p><strong>vim.basic</strong>: This configuration provides a more feature-rich version of Vim compared to <strong>vim.tiny</strong>. It includes a wider range of features such as syntax highlighting, search and replace, auto-indentation, and more. The <strong>vim.basic</strong> configuration is what most users typically expect when using Vim on Linux.</p>
+<div class="paragraph">
+<p>The choice between <code>vim.basic</code> and <code>vim.tiny</code> depends on your requirements and the resources available on your system:</p>
+</div>
+</li>
+<li>
+<p>If you have a system with limited resources or require a small binary size, you might consider using <strong>vim.tiny</strong>.</p>
+</li>
+<li>
+<p>If you need a more feature-rich text editor with the standard Vim features, you should use <strong>vim.basic</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In most Linux distributions, the default Vim package is the <strong>vim.basic</strong> configuration, which provides a good balance between functionality and resource usage. To use <strong>vim.tiny</strong>, you may need to install it separately or build Vim from source with the tiny feature set enabled.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="whats-diff-between-vim-basic-and-vim">2.3. What&#8217;s diff between vim.basic and vim</h3>
+<div class="paragraph">
+<p><strong>vim.basic</strong> and <strong>vim</strong> are terms that may be used interchangeably in some contexts, but they can also refer to different configurations of the Vim text editor depending on the Linux distribution and package management system. Here&#8217;s a clarification:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>vim.basic</strong>: This typically refers to a standard, basic version of Vim with a moderate feature set. It includes features like syntax highlighting, search and replace, auto-indentation, and more. This configuration provides a good balance between functionality and resource usage and is what most users expect when using Vim on Linux.</p>
+</li>
+<li>
+<p><strong>vim</strong>: This term can refer to the Vim package or binary in general. In some distributions, it might be synonymous with <strong>vim.basic</strong>, meaning it provides the same features and functionality as <strong>vim.basic</strong>. In other cases, the <strong>vim</strong> package may include additional features or scripting language support (e.g., Python, Ruby, Lua, or Perl) compared to the <strong>vim.basic</strong> configuration.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The difference between <strong>vim.basic</strong> and <strong>vim</strong> depends on your Linux distribution and package management system. In most cases, installing the <strong>vim</strong> package should provide a Vim version with a feature set similar to or more extensive than <strong>vim.basic</strong>. If you need a specific configuration of Vim, you can check the package details in your package manager or build Vim from source to include the desired features.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="set-up-c-programming-environment-in-vim-on-linux">2.4. Set up C programming environment in Vim on Linux</h3>
+<div class="paragraph">
+<p>To set up a C programming development environment in Vim on Linux, follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install Vim on your Linux system using the package manager.</p>
+</li>
+<li>
+<p>Install the gcc compiler and related development tools using the package manager.</p>
+</li>
+<li>
+<p>Install a plugin manager for Vim, such as Vundle or Pathogen.</p>
+</li>
+<li>
+<p>Install the following Vim plugins using your chosen plugin manager:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>YouCompleteMe - Provides code completion and syntax checking.</p>
+</li>
+<li>
+<p>NERDTree - Provides a file tree for easy navigation.</p>
+</li>
+<li>
+<p>vim-fugitive - Provides Git integration for version control.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Create a <code>.vimrc</code> file in your home directory to configure Vim. Add the following lines to enable the plugins and set some basic configuration:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">set nocompatible
+filetype plugin indent on
+syntax on
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set number
+set mouse=a
+
+" Plugin settings
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'ycm-core/YouCompleteMe'
+Plugin 'scrooloose/nerdtree'
+Plugin 'tpope/vim-fugitive'
+call vundle#end()
+
+" YouCompleteMe settings
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+let g:ycm_error_symbol = '&gt;&gt;'
+let g:ycm_warning_symbol = '--'
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_min_num_of_chars_for_completion = 1
+let g:ycm_key_invoke_completion = '&lt;C-Space&gt;'
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_comments_and_strings = 1
+let g:ycm_complete_in_strings = 1
+let g:ycm_semantic_triggers = {'c': ['.']}
+let g:ycm_semantic_triggers_enabled = {'c': 1}
+
+" NERDTree settings
+map &lt;C-n&gt; :NERDTreeToggle&lt;CR&gt;
+
+" vim-fugitive settings
+map &lt;Leader&gt;gs :Git&lt;CR&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a new C file in Vim using the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">vim main.c</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start coding your C program in Vim. Use the following command to compile your program:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vim"><span class="p">:!</span>gcc % <span class="p">-</span><span class="k">o</span> %<span class="p">&lt;</span> &amp;&amp; <span class="p">.</span>/%<span class="p">&lt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command compiles your program and runs it immediately, displaying the output in the Vim terminal.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You now have a fully functional C programming development environment in Vim on Linux.</p>
+</div>
+<div class="sect3">
+<h4 id="how-to-install-youcompleteme-on-linux">2.4.1. How to install YouCompleteMe on Linux</h4>
+<div class="paragraph">
+<p>To install YouCompleteMe on Debian Bookworm, follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Install dependencies</strong>:</p>
+<div class="paragraph">
+<p>YouCompleteMe requires Vim with Python3 support, CMake, Python3 headers, and Clang. Install these dependencies using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>vim-nox cmake python3-dev libclang-dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure your Vim version is compiled with Python3 support by running <code>vim --version | grep python</code>. If you see <code>+python3</code>, then it&#8217;s supported.</p>
+</div>
+</li>
+<li>
+<p><strong>Install Vundle (Vim plugin manager)</strong>:</p>
+<div class="paragraph">
+<p>YouCompleteMe can be installed with Vundle, a popular Vim plugin manager. Follow these steps to install Vundle:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a directory for your Vim plugins if it does not already exist:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.vim/bundle</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Clone the Vundle repository from GitHub into the newly created directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Configure Vim to use Vundle:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create or open the <code>.vimrc</code> file in your home directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">vim ~/.vimrc</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the following lines to the <code>.vimrc</code> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">set nocompatible
+filetype off
+
+" Set the runtime path to include Vundle and initialize it
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" List the plugins that you wish to use
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'ycm-core/YouCompleteMe'
+
+" End Vundle initialization
+call vundle#end()
+filetype plugin indent on</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Save and close the <code>.vimrc</code> file.</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Install YouCompleteMe with Vundle</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open Vim and run the following command to install the plugins:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">:PluginInstall</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The YouCompleteMe plugin will be downloaded and installed in <code>~/.vim/bundle/YouCompleteMe</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Compile YouCompleteMe</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to the YouCompleteMe directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd</span> ~/.vim/bundle/YouCompleteMe</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the <code>install.py</code> script to compile YouCompleteMe:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">python3 install.py <span class="nt">--clang-completer</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command compiles YouCompleteMe with Clang support for C, C&#43;&#43;, Objective-C, and Objective-C languages.</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You have now successfully installed YouCompleteMe. When you open Vim, YouCompleteMe should be active and provide autocompletion for supported languages.</p>
+</div>
+<div class="paragraph">
+<p>You can customize YouCompleteMe&#8217;s behavior by modifying settings in your <code>.vimrc</code> file.</p>
+</div>
+<div class="paragraph">
+<p>For more information, refer to the YouCompleteMe documentation: <a href="https://github.com/ycm-core/YouCompleteMe#readme" class="bare">https://github.com/ycm-core/YouCompleteMe#readme</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="integrating-static-analyzers-and-code-formatters">2.4.2. Integrating static analyzers and code formatters</h4>
+<div class="paragraph">
+<p>Integrating static analyzers and code formatters within Vim for C programming can help you maintain a consistent coding style and identify potential issues early in the development process. Here are some popular tools and instructions on how to integrate them into Vim.</p>
+</div>
+<div class="paragraph">
+<p><strong>Static Analyzers</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>clang-tidy</strong>: Clang-Tidy is a popular static analyzer for C and C&#43;&#43; code, based on the LLVM/Clang compiler infrastructure.</p>
+<div class="paragraph">
+<p>To integrate Clang-Tidy into Vim, you can use the Syntastic plugin, which supports multiple linters, including Clang-Tidy. Follow these steps:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Install Syntastic using a plugin manager like Vundle or Pathogen.</p>
+</li>
+<li>
+<p>Install Clang-Tidy on your system.</p>
+</li>
+<li>
+<p>Configure Syntastic to use Clang-Tidy for C files by adding the following lines to your .vimrc file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">let g:syntastic_c_checkers=['clang_tidy']
+let g:syntastic_c_clang_tidy_exec = 'clang-tidy'  " Set the path to the clang-tidy executable if necessary</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Now, when you open a C file in Vim, Syntastic will automatically run Clang-Tidy and display any issues it finds.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Code Formatters</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>clang-format</strong>: Clang-Format is a powerful code formatter for C, C&#43;&#43;, Objective-C, Java, JavaScript, TypeScript, and Protobuf code.</p>
+<div class="paragraph">
+<p>To integrate Clang-Format into Vim, follow these steps:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Install Clang-Format on your system.</p>
+</li>
+<li>
+<p>Add the following lines to your <em>.vimrc</em> file to create a command and key mapping to format your code with Clang-Format:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">" Create a command and key mapping to run clang-format
+function! FormatWithClangFormat()
+    let l:cur_pos = getpos(".")
+    silent %!clang-format
+    call setpos('.', l:cur_pos)
+endfunction
+
+command! ClangFormat call FormatWithClangFormat()
+noremap &lt;Leader&gt;cf :ClangFormat&lt;CR&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>&lt;Leader&gt;</code> with your preferred leader key, if necessary.</p>
+</div>
+</li>
+<li>
+<p>You can now format your C code by running <code>:ClangFormat</code> or pressing <code>&lt;Leader&gt;cf</code> in normal mode.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Astyle</strong>: Artistic Style (Astyle) is another code formatter for C, C&#43;&#43;, and Java code.</p>
+<div class="paragraph">
+<p>To integrate Astyle into Vim, follow these steps:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Install Astyle on your system.</p>
+</li>
+<li>
+<p>Add the following lines to your <em>.vimrc</em> file to create a command and key mapping to format your code with Astyle:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="vimrc">" Create a command and key mapping to run Astyle
+function! FormatWithAstyle()
+    let l:cur_pos = getpos(".")
+    silent %!astyle
+    call setpos('.', l:cur_pos)
+endfunction
+
+command! Astyle call FormatWithAstyle()
+noremap &lt;Leader&gt;as :Astyle&lt;CR&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>&lt;Leader&gt;</code> with your preferred leader key, if necessary.</p>
+</div>
+</li>
+<li>
+<p>You can now format your C code by running <code>:Astyle</code> or pressing <code>&lt;Leader&gt;as</code> in normal mode.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By integrating static analyzers and code formatters into Vim, you can improve the quality and consistency of your C code, making it easier to read, maintain, and debug.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="how-to-troubleshooting-vundlevim-plugin">2.4.3. How to troubleshooting VundleVim plugin</h4>
+<div class="paragraph">
+<p>If you are having trouble installing the VundleVim plugin, there are a few things you can try to troubleshoot the issue:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Check that Git is installed on your system and is accessible from the command line. You can test this by running the command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git <span class="nt">--version</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If Git is not installed, you will need to install it before you can use Vundle.</p>
+</div>
+</li>
+<li>
+<p>Check that you have created the correct directory for your Vim plugins. By default, Vundle expects your plugins to be located in the directory <code>~/.vim/bundle</code>. You can check that this directory exists by running the command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">ls</span> ~/.vim/bundle</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the directory does not exist, you will need to create it before you can install Vundle.</p>
+</div>
+</li>
+<li>
+<p>Check that you have created a <em>.vimrc</em> file in your home directory and that it contains the correct configuration for Vundle. You can check the contents of your <em>.vimrc</em> file by running the command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cat</span> ~/.vimrc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure that the file contains the lines required to initialize Vundle and specify the plugins that you want to install.</p>
+</div>
+</li>
+<li>
+<p>Check that you have initialized Vundle by running the command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">:PluginList</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command should list the plugins that you have specified in your .vimrc file. If the list is empty, Vundle has not been initialized correctly.</p>
+</div>
+</li>
+<li>
+<p>Check that you have installed the plugins correctly by running the command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">:PluginInstall</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command should download and install the plugins that you have specified in your <em>.vimrc</em> file. If the installation fails, check that the Git repository for each plugin is correct.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If you have checked these steps and are still having trouble installing VundleVim, you can try searching for solutions to your specific issue online or posting a question on a forum or discussion board.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="vundlevim-does-not-have-a-specific-log-file-where-it-records-its-activity">2.4.4. VundleVim does not have a specific log file where it records its activity</h4>
+<div class="paragraph">
+<p>VundleVim, a plugin manager for Vim, does not have a specific log file where it records its activity. However, when you install, update, or clean plugins using VundleVim, the command outputs and error messages are displayed in the Vim command line or in a split window.</p>
+</div>
+<div class="paragraph">
+<p>To see detailed output or error messages while using VundleVim, you can follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open Vim.</p>
+</li>
+<li>
+<p>Execute the Vundle command you want to use, such as <code>:PluginInstall</code>, <code>:PluginUpdate</code>, or <code>:PluginClean</code>.</p>
+</li>
+<li>
+<p>Pay attention to the messages displayed in the command line or the split window during the operation. This is where you can see the progress of the operation and any error messages if they occur.</p>
+<div class="paragraph">
+<p>If you need to review the messages later, you can check Vim&#8217;s message history by running the command <code>:messages</code>. This command shows you the messages from the last few operations.</p>
+</div>
+<div class="paragraph">
+<p>Note that <code>:messages</code> might not show the entire output for operations like <code>:PluginInstall</code> or <code>:PluginUpdate</code>, as they open a separate split window with more detailed output. In such cases, you should carefully observe the messages in the split window while the operation is in progress.</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="how-to-use-an-http-proxy-in-git">2.4.5. How to use an HTTP proxy in Git</h4>
+<div class="paragraph">
+<p>To use an HTTP proxy in Git, follow these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set the HTTP proxy configuration by running the following command in your terminal:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> http.proxy http://proxyserver:port</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>proxyserver</code> with the hostname or IP address of your proxy server and <code>port</code> with the port number that your proxy server uses.</p>
+</div>
+</li>
+<li>
+<p>If your proxy server requires authentication, set the username and password for the proxy server by running the following command in your terminal:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> http.proxyAuthMethod <span class="s1">'basic'</span>
+git config <span class="nt">--global</span> http.proxyAuthUsername <span class="s1">'username'</span>
+git config <span class="nt">--global</span> http.proxyAuthPassword <span class="s1">'password'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>username</code> and <code>password</code> with your proxy server&#8217;s authentication credentials.</p>
+</div>
+</li>
+<li>
+<p>Verify that the proxy server is set correctly by running the following command in your terminal:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> <span class="nt">--get</span> http.proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command should display the HTTP proxy server that you have set in step 1.</p>
+</div>
+</li>
+<li>
+<p>To unset the HTTP proxy configuration, run the following command in your terminal:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> <span class="nt">--unset</span> http.proxy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command removes the HTTP proxy configuration from Git.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can now use Git with an HTTP proxy server. You can also use an HTTP proxy for a specific Git repository instead of setting it globally.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="developing-c-programs-on-linux-using-vim">3. Developing C programs on Linux using Vim</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Setting up the development environment</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install Vim, if not already installed, using the package manager for your Linux distribution.</p>
+</li>
+<li>
+<p>Install the GCC compiler and other development tools using the package manager.</p>
+</li>
+<li>
+<p>Install a plugin manager for Vim, such as Vundle or Pathogen, and install useful plugins like YouCompleteMe (for code completion), NERDTree (for file navigation), and vim-fugitive (for Git integration).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Writing the C program</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a new C file in Vim, e.g., <code>vim main.c</code>.</p>
+</li>
+<li>
+<p>Write your C program using Vim&#8217;s text editing features. Use the installed plugins for code completion, syntax checking, and file navigation.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Building the C program</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Save the file and compile your C program using the GCC compiler. You can do this within Vim by running the command: <code>:!gcc % -o %&lt;</code>. This command compiles the current file and creates an executable named after the file without the extension (e.g., <code>main</code> for <code>main.c</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Running the C program:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>To run the compiled program, execute the following command in Vim: <code>:!./%&lt;</code>. This runs the compiled executable and displays the output in the Vim terminal.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Debugging the C program</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For debugging, you can use the GDB (GNU Debugger) tool. First, compile your program with the -g flag to include debugging information: <code>:!gcc -g % -o %&lt;</code>.</p>
+</li>
+<li>
+<p>To start a debugging session, run GDB with the compiled executable: <code>:!gdb ./%&lt;</code>.</p>
+</li>
+<li>
+<p>Use GDB commands to set breakpoints, step through the code, inspect variables, and find issues. Some common GDB commands include <code>break</code>, <code>run</code>, <code>next</code>, <code>step</code>, <code>print</code>, and <code>continue</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Troubleshooting issues</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you encounter build errors, carefully read the error messages provided by the compiler and fix the issues in your code.</p>
+</li>
+<li>
+<p>If your program crashes or produces incorrect output, use GDB to debug the code and find the root cause of the problem.</p>
+</li>
+<li>
+<p>For Vim-related issues, consult the Vim documentation or seek help from online forums and communities.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By following this guide, you can effectively develop, build, debug, and troubleshoot C programs on Linux using Vim as your primary development environment.</p>
+</div>
+<div class="sect2">
+<h3 id="developing-a-c-project-with-multiple-modules-or-c-files-in-vim">3.1. Developing a C project with multiple modules or C files in Vim</h3>
+<div class="paragraph">
+<p>Developing a C project with multiple modules or C files in Vim on Linux involves organizing your files, writing the code, building, and debugging the project. Here&#8217;s a guide to help you through the process:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Organize your project directory</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a directory for your project, e.g., <em>my_project</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">mkdir </span>my_project</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Inside the project directory, create separate directories for your source files and header files, e.g., <em>src</em> and <em>include</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>my_project
+<span class="nb">mkdir </span>src include</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create source files and header files:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a <code>.c</code> file for each module in the <em>src</em> directory and a corresponding <code>.h</code> file in the <em>include</em> directory. For example, for a module named module1, create <em>src/module1.c</em> and <em>include/module1.h</em>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Writing the C code</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open the <code>.c</code> and <code>.h</code> files in Vim:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">vim src/module1.c include/module1.h</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Write the code for each module, implementing functions in the <code>.c</code> file and declaring them in the corresponding <code>.h</code> file. Use #include in the <code>.c</code> files to include the necessary header files.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Building the C project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a <code>Makefile</code> in the project directory to manage the build process:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">vim Makefile</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Write the Makefile rules to compile your project, including specifying the source files, header file locations, compilation flags, and output binary name. Here&#8217;s an example Makefile for a simple project with two modules:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="makefile"><span class="nv">CC</span> <span class="o">=</span> gcc
+<span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-Iinclude</span>
+<span class="nv">SRC</span> <span class="o">=</span> src/main.c src/module1.c src/module2.c
+<span class="nv">OBJ</span> <span class="o">=</span> <span class="p">$(</span>SRC:.c<span class="o">=</span>.o<span class="p">)</span>
+<span class="nv">OUT</span> <span class="o">=</span> my_project
+
+<span class="nl">all</span><span class="o">:</span> <span class="nf">$(OUT)</span>
+
+<span class="nl">$(OUT)</span><span class="o">:</span> <span class="nf">$(OBJ)</span>
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-o</span> <span class="nv">$@</span> <span class="p">$(</span>OBJ<span class="p">)</span>
+
+<span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">clean</span>
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="nt">-f</span> <span class="p">$(</span>OBJ<span class="p">)</span> <span class="p">$(</span>OUT<span class="p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the make command to build your project:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">make</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Running the C project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Run the compiled binary from the project directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">./my_project</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Debugging the C project</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Compile your project with the <code>-g</code> flag to include debugging information:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">make CFLAGS+<span class="o">=</span><span class="s2">" -g"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use GDB to debug your project:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">gdb ./my_project</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Set breakpoints, step through the code, inspect variables, and find issues using GDB commands.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Version control</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Consider using a version control system like Git to track changes and collaborate with others. Initialize a Git repository in your project directory, add your files, and commit your changes.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By following this guide, you can effectively develop a C project with multiple modules or C files in Vim on Linux.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="whats-the-best-project-layout-and-style-for-c-programming">3.2. What&#8217;s the best project layout and style for C programming?</h3>
+<div class="paragraph">
+<p>A well-organized project layout and consistent coding style are essential for readability and maintainability in C programming. While there is no universally accepted "best" project layout and style, there are some common practices and recommendations to consider.</p>
+</div>
+<div class="paragraph">
+<p><strong>Project Layout</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Source and header files</strong>: Organize your source files (<code>.c</code>) and header files (<code>.h</code>) in separate directories, typically named <em>src</em> and <em>include</em>, respectively. This makes it easier to navigate and manage your code.</p>
+</li>
+<li>
+<p><strong>Subdirectories</strong>: Divide your code into logical modules or components, and place the related source and header files into corresponding subdirectories within the <em>src</em> and <em>include</em> directories.</p>
+</li>
+<li>
+<p><strong>Makefile</strong>: Include a Makefile in the root directory of your project to automate the build process. This makes it easy to compile and link your source files and manage dependencies.</p>
+</li>
+<li>
+<p><strong>Documentation</strong>: Create a <em>docs</em> directory to store your project&#8217;s documentation, such as design documents, user guides, and API references.</p>
+</li>
+<li>
+<p><strong>Tests</strong>: If your project includes unit tests or other test code, organize them in a separate directory, typically named <em>tests</em>.</p>
+</li>
+<li>
+<p><strong>Configuration files</strong>: Place configuration files, such as <em>.gitignore</em>, in the root directory of your project.</p>
+</li>
+<li>
+<p><strong>Third-party libraries</strong>: If your project uses third-party libraries, store them in a separate directory, typically named <em>libs</em> or <em>external</em>.</p>
+<div class="paragraph">
+<p>Here&#8217;s an example project layout:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">my_project/
+├── Makefile
+├── .gitignore
+├── include/
+│   ├── module1/
+│   │   ├── file1.h
+│   │   └── file2.h
+│   └── module2/
+│       ├── file3.h
+│       └── file4.h
+├── src/
+│   ├── module1/
+│   │   ├── file1.c
+│   │   └── file2.c
+│   └── module2/
+│       ├── file3.c
+│       └── file4.c
+├── tests/
+│   ├── module1_tests.c
+│   └── module2_tests.c
+├── docs/
+│   ├── design.md
+│   └── user_guide.md
+└── libs/
+    └── third_party_library/</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Coding Style</strong></p>
+</div>
+<div class="paragraph">
+<p>There are several widely-accepted coding style guidelines for C programming, such as the Linux Kernel coding style, Google C&#43;&#43; Style Guide, and GNU Coding Standards. You can choose one of these or create your own style guide based on your preferences. Some general recommendations include:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Indentation</strong>: Use consistent indentation, either spaces or tabs, throughout your code. Typically, a 4-space indentation is used.</p>
+</li>
+<li>
+<p><strong>Braces</strong>: Choose a brace style, such as K&amp;R or Allman, and use it consistently throughout your code.</p>
+</li>
+<li>
+<p><strong>Naming conventions</strong>: Use descriptive names for variables, functions, and types. Follow a consistent naming convention, such as lower_snake_case for variables and functions, and UpperCamelCase for types.</p>
+</li>
+<li>
+<p><strong>Comments</strong>: Write meaningful comments for functions, complex code blocks, and non-obvious code. Use the C-style <code>/* &#8230;&#8203; */</code> for multi-line comments and <code>//</code> for single-line comments.</p>
+</li>
+<li>
+<p><strong>Header file inclusion guards</strong>: Use header file inclusion guards or <code>#pragma once</code> to prevent multiple inclusions of the same header file.</p>
+</li>
+<li>
+<p><strong>Error handling</strong>: Use consistent error handling mechanisms, such as returning error codes or using assert().</p>
+</li>
+<li>
+<p><strong>Function and variable declarations</strong>: Organize your function and variable declarations in a consistent manner. For example, declare one variable per line and place function return type on a separate line.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By following a well-organized project layout and consistent coding style, you can improve the readability and maintainability of your C code, making it</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lets-get-started">4. Let&#8217;s Get Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The above sections are generated by ChatGPT. Talk is cheap, let&#8217;s do it.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install <code>vim-nox</code>, and replce <code>vim</code> if exists  with <code>vim-nox</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">sudo apt-get install vim-nox
+sudo update-alternatives --set editor /usr/bin/vim.nox</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check Vim version is compiled with Python3.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>vim <span class="nt">--version</span> | <span class="nb">grep </span>python
+<span class="go">+cmdline_hist      +langmap           -python            +viminfo
++cmdline_info      +libcall           +python3           +virtualedit
+Linking: gcc -Wl,-E -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -o vim -lm -ltinfo -lselinux -lsodium -lacl -lattr -lgpm -L/usr/lib -llua5.2 -Wl,-E -fstack-protector-strong -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu/perl/5.36/CORE -lperl -ldl -lm -lpthread -lcrypt -L/usr/lib/python3.11/config-3.11-x86_64-linux-gnu -lpython3.11 -ldl -lm -L/usr/lib/x86_64-linux-gnu -ltcl8.6 -ldl -lz -lpthread -lm -lruby-3.1 -lm -L/usr/lib</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Follow 2.4. and Set up C programming environment in Vim on Linux</p>
+<div class="paragraph">
+<p>If the Vundle.Vim cann&#8217;t fetch plugin from GitHub using HTTP, please try to set up a HTTP proxy, or try to clone or fetch the plugin repository using SSH (i.e. git) to Vundle.Vim directory (e.g. <code>~/.vim/bundle/</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="log">[2023-06-26 17:15:42] &gt; fatal: unable to access 'https://github.com/scrooloose/nerdtree.git/': Failed to connect to github.com port 443 after 21054 ms: Couldn't connect to server</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd</span> ~/.vim/bundle/
+git clone git@github.com:scrooloose/nerdtree.git</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Compile YouCompleteMe</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to the YouCompleteMe directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd</span> ~/.vim/bundle/YouCompleteMe</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the <code>install.py</code> script to compile YouCompleteMe:</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>YCM requires CMake 3.13 or greater.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt-get <span class="nb">install </span>cmake</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">python3 install.py <span class="nt">--clangd-completer</span> <span class="c"># Enable C-family semantic completion engine through clangd lsp server.</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Writing the C program</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">vi main.c</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>gcc main.c <span class="nt">-o</span> main <span class="c"># Vim :!gcc % -o %&lt;</span>
+<span class="gp">$</span><span class="w"> </span>./main <span class="c"># Vim :!./%&lt;</span>
+<span class="go">Hello world!
+</span><span class="gp">$</span><span class="w"> </span>gcc <span class="nt">-g</span> main.c <span class="nt">-o</span> main <span class="c"># Vim: :!gcc -g % -o %&lt;</span>
+<span class="gp">$</span><span class="w"> </span>gdb main <span class="c"># Vim: :!gdb ./%&lt;</span>
+<span class="go">GNU gdb (Debian 13.1-3) 13.1
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./main...
+(gdb) run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+Hello world!
+[Inferior 1 (process 112300) exited normally]
+(gdb) exit</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

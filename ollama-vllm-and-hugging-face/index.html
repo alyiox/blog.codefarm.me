@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Ollama, vLLM, Hugging Face, LangChain, LlamaIndex, and Open WebUI | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Ollama, vLLM, Hugging Face, LangChain, LlamaIndex, and Open WebUI" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Ollama, vLLM, and llama.cpp are all tools related to running large language models (LLMs) locally on the own computer. 1. Ollama 2. vLLM 3. Hugging Face 4. LangChain 5. LlamaIndex 6. Open WebUI 1. Ollama Ollama (/ˈɒlˌlæmə/) is a user-friendly, higher-level interface for running various LLMs, including Llama, Qwen, Jurassic-1 Jumbo, and others. It provides a streamlined workflow for downloading models, configuring settings, and interacting with LLMs through a command-line interface (CLI) or Python API. Ollama acts as a central hub for managing and running multiple LLM models from different providers, and integrates with underlying tools like llama.cpp for efficient…" />
+<meta name="twitter:description" property="og:description" content="Ollama, vLLM, and llama.cpp are all tools related to running large language models (LLMs) locally on the own computer. 1. Ollama 2. vLLM 3. Hugging Face 4. LangChain 5. LlamaIndex 6. Open WebUI 1. Ollama Ollama (/ˈɒlˌlæmə/) is a user-friendly, higher-level interface for running various LLMs, including Llama, Qwen, Jurassic-1 Jumbo, and others. It provides a streamlined workflow for downloading models, configuring settings, and interacting with LLMs through a command-line interface (CLI) or Python API. Ollama acts as a central hub for managing and running multiple LLM models from different providers, and integrates with underlying tools like llama.cpp for efficient…" />
+<link rel="canonical" href="https://blog.codefarm.me/ollama-vllm-and-hugging-face/" />
+<meta property="og:url" content="https://blog.codefarm.me/ollama-vllm-and-hugging-face/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-06-12T14:07:43+08:00" />
+<meta property="article:modified_time" content="2024-06-12T14:07:43+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Ollama, vLLM, Hugging Face, LangChain, LlamaIndex, and Open WebUI" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-06-12T14:07:43+08:00","datePublished":"2024-06-12T14:07:43+08:00","description":"Ollama, vLLM, and llama.cpp are all tools related to running large language models (LLMs) locally on the own computer. 1. Ollama 2. vLLM 3. Hugging Face 4. LangChain 5. LlamaIndex 6. Open WebUI 1. Ollama Ollama (/ˈɒlˌlæmə/) is a user-friendly, higher-level interface for running various LLMs, including Llama, Qwen, Jurassic-1 Jumbo, and others. It provides a streamlined workflow for downloading models, configuring settings, and interacting with LLMs through a command-line interface (CLI) or Python API. Ollama acts as a central hub for managing and running multiple LLM models from different providers, and integrates with underlying tools like llama.cpp for efficient…","headline":"Ollama, vLLM, Hugging Face, LangChain, LlamaIndex, and Open WebUI","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/ollama-vllm-and-hugging-face/"},"url":"https://blog.codefarm.me/ollama-vllm-and-hugging-face/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Ollama, vLLM, Hugging Face, LangChain, LlamaIndex, and Open WebUI</h1><p class="c-post-meta">09 Mar 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ollama, vLLM, and llama.cpp are all tools related to running large language models (LLMs) locally on the own computer.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#ollama">1. Ollama</a></li>
+<li><a href="#vllm">2. vLLM</a></li>
+<li><a href="#hugging-face">3. Hugging Face</a></li>
+<li><a href="#langchain">4. LangChain</a></li>
+<li><a href="#llamaindex">5. LlamaIndex</a></li>
+<li><a href="#open-webui">6. Open WebUI</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ollama">1. Ollama</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/ollama/ollama">Ollama</a> (/ˈɒlˌlæmə/) is a user-friendly, <strong>higher-level interface</strong> for running various LLMs, including Llama, Qwen, Jurassic-1 Jumbo, and others.</p>
+</li>
+<li>
+<p>It provides a <strong>streamlined workflow</strong> for downloading models, configuring settings, and interacting with LLMs through a command-line interface (CLI) or Python API.</p>
+</li>
+<li>
+<p>Ollama acts as a central hub for managing and running <strong>multiple LLM models</strong> from different providers, and integrates with underlying tools like llama.cpp for efficient execution.</p>
+</li>
+<li>
+<p>To pull a model checkpoint and run the model, use the <code>ollama run</code> command.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Install Ollama on Linux:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl <span class="nt">-fsSL</span> https://ollama.com/install.sh | sh</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code>&gt;&gt;&gt; Downloading ollama...
+######################################################################## 100.0%-#O#- #   #
+######################################################################## 100.0%
+&gt;&gt;&gt; Installing ollama to /usr/local/bin...
+&gt;&gt;&gt; Creating ollama user...
+&gt;&gt;&gt; Adding ollama user to render group...
+&gt;&gt;&gt; Adding ollama user to video group...
+&gt;&gt;&gt; Adding current user to ollama group...
+&gt;&gt;&gt; Creating ollama systemd service...
+&gt;&gt;&gt; Enabling and starting ollama service...
+Created symlink /etc/systemd/system/default.target.wants/ollama.service → /etc/systemd/system/ollama.service.
+&gt;&gt;&gt; The Ollama API is now available at 127.0.0.1:11434.
+&gt;&gt;&gt; Install complete. Run "ollama" from the command line.
+WARNING: No NVIDIA/AMD GPU detected. Ollama will run in CPU-only mode.</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For more install instructions , see <a href="https://github.com/ollama/ollama" class="bare">https://github.com/ollama/ollama</a>.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Keep Ollama service running whenever using ollama:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>systemctl status ollama.service
+<span class="go">○ ollama.service - Ollama Service
+</span><span class="gp">     Loaded: loaded (/etc/systemd/system/ollama.service;</span><span class="w"> </span>disabled<span class="p">;</span> preset: enabled<span class="o">)</span>
+<span class="go">     Active: inactive (dead)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ollama run phi3:mini
+<span class="go">Error: could not connect to ollama app, is it running?</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>To run <a href="https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/">systemd inside of Windows Subsystem for Linux (WSL)</a> distros:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add these lines to the <a href="https://docs.microsoft.com/windows/wsl/wsl-config#wslconf">/etc/wsl.conf</a> to ensure systemd starts up on boot.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf">[<span class="n">boot</span>]
+<span class="n">systemd</span>=<span class="n">true</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run <code>wsl.exe --shutdown</code> from PowerShell to restart the WSL instances.</p>
+</li>
+<li>
+<p>Start and check the Ollama service status.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>systemctl start ollama.service
+<span class="gp">$</span><span class="w"> </span>systemctl status ollama.service
+<span class="go">● ollama.service - Ollama Service
+</span><span class="gp">     Loaded: loaded (/etc/systemd/system/ollama.service;</span><span class="w"> </span>disabled<span class="p">;</span> preset: enabled<span class="o">)</span>
+<span class="gp">     Active: active (running) since Wed 2024-06-12 15:21:39 CST;</span><span class="w"> </span>5min ago
+<span class="go">   Main PID: 914 (ollama)
+      Tasks: 15 (limit: 9340)
+     Memory: 576.9M
+     CGroup: /system.slice/ollama.service
+             └─914 /usr/local/bin/ollama serve
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ss <span class="nt">-ntlp</span>
+<span class="go">State     Recv-Q    Send-Q    Local Address:Port     Peer Address:Port    Process
+LISTEN    0         4096          127.0.0.1:11434         0.0.0.0:*        users:(("ollama",pid=914,fd=3))</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Ollama has its own <a href="https://ollama.com/library">library</a> to pull models, and store them at home directory of the user (i.e., <code>ollama</code>) that running the ollama service:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>macOS: <code>~/.ollama/models</code></p>
+</li>
+<li>
+<p>Linux: <code>/usr/share/ollama/.ollama/models</code></p>
+</li>
+<li>
+<p>Windows: <code>C:\Users\%username%\.ollama\models</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If a different directory needs to be used, set the environment variable <code>OLLAMA_MODELS</code> to the chosen directory.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To get the home directory of the user <code>ollama</code>, run <code>getent passwd ollama | cut -d: -f6</code>.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>To allow the Ollama service to listen on all network interfaces (default <code>127.0.0.1:11434</code>), follow these steps:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Edit the Ollama service configuration:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl edit ollama.service</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the following content to the editor:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[Service]</span><span class="w">
+</span><span class="py">Environment</span><span class="p">=</span><span class="s">"OLLAMA_HOST=0.0.0.0:11434"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Reload and restart the Ollama service:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl daemon-reload <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>systemctl restart ollama.service</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The ollama service can also be accessed via its OpenAI-compatible API when the model checkpoint is prepared.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ollama serve <span class="nt">--help</span>
+<span class="go">Start ollama
+
+Usage:
+  ollama serve [flags]
+
+Aliases:
+  serve, start
+
+Flags:
+  -h, --help   help for serve
+
+Environment Variables:
+      OLLAMA_DEBUG               Show additional debug information (e.g. OLLAMA_DEBUG=1)
+      OLLAMA_HOST                IP Address for the ollama server (default 127.0.0.1:11434)
+      OLLAMA_KEEP_ALIVE          The duration that models stay loaded in memory (default "5m")
+      OLLAMA_MAX_LOADED_MODELS   Maximum number of loaded models (default 1)
+      OLLAMA_MAX_QUEUE           Maximum number of queued requests
+      OLLAMA_MODELS              The path to the models directory
+      OLLAMA_NUM_PARALLEL        Maximum number of parallel requests (default 1)
+      OLLAMA_NOPRUNE             Do not prune model blobs on startup
+      OLLAMA_ORIGINS             A comma separated list of allowed origins
+      OLLAMA_TMPDIR              Location for temporary files
+      OLLAMA_FLASH_ATTENTION     Enabled flash attention
+      OLLAMA_LLM_LIBRARY         Set LLM library to bypass autodetection
+      OLLAMA_MAX_VRAM            Maximum VRAM</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">//  ensure that the model checkpoint is prepared.
+</span><span class="gp">$</span><span class="w"> </span>ollama list
+<span class="go">NAME                    ID              SIZE    MODIFIED
+phi3:mini               64c1188f2485    2.4 GB  17 minutes ago</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>curl</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl http://localhost:11434/v1/chat/completions <span class="se">\</span>
+    <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s1">'{"messages":[{"role":"user","content":"Say this is a test"}],"model":"phi3:mini"}'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Python</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">pip <span class="nb">install </span>openai</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="py"><span class="kn">from</span> <span class="n">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="n">client</span> <span class="o">=</span> <span class="nc">OpenAI</span><span class="p">(</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="sh">'</span><span class="s">http://localhost:11434/v1/</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="sh">'</span><span class="s">ollama</span><span class="sh">'</span><span class="p">,</span>  <span class="c1"># required but ignored
+</span><span class="p">)</span>
+<span class="n">chat_completion</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">chat</span><span class="p">.</span><span class="n">completions</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="sh">'</span><span class="s">role</span><span class="sh">'</span><span class="p">:</span> <span class="sh">'</span><span class="s">user</span><span class="sh">'</span><span class="p">,</span>
+            <span class="sh">'</span><span class="s">content</span><span class="sh">'</span><span class="p">:</span> <span class="sh">'</span><span class="s">Say this is a test</span><span class="sh">'</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">'</span><span class="s">phi3:mini</span><span class="sh">'</span><span class="p">,</span>
+<span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>C#/.NET</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># The official .NET library for the OpenAI API</span>
+dotnet add package OpenAI <span class="nt">--prerelease</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">using</span> <span class="nn">OpenAI.Chat</span><span class="p">;</span>
+
+<span class="n">ChatClient</span> <span class="n">client</span> <span class="p">=</span> <span class="k">new</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s">"phi3:mini"</span><span class="p">,</span>
+    <span class="n">credential</span><span class="p">:</span> <span class="s">"EMPTY_OPENAI_API_KEY"</span><span class="p">,</span>
+    <span class="n">options</span><span class="p">:</span> <span class="k">new</span> <span class="n">OpenAI</span><span class="p">.</span><span class="n">OpenAIClientOptions</span> <span class="p">{</span> <span class="n">Endpoint</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="s">"http://localhost:11434/v1/"</span><span class="p">)</span> <span class="p">});</span>
+
+<span class="n">ChatCompletion</span> <span class="n">completion</span> <span class="p">=</span> <span class="n">client</span><span class="p">.</span><span class="nf">CompleteChat</span><span class="p">(</span><span class="s">"Say 'this is a test.'"</span><span class="p">);</span>
+
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"[ASSISTANT]: </span><span class="p">{</span><span class="n">completion</span><span class="p">}</span><span class="s">"</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="vllm">2. vLLM</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/vllm-project/vllm">vLLM</a> (Very Low Latency Model) primarily <strong>focuses on deploying LLMs as low-latency inference servers</strong>.</p>
+</li>
+<li>
+<p>It prioritizes speed and efficiency, making it suitable for <strong>serving LLMs to multiple users</strong> in real-time applications.</p>
+</li>
+<li>
+<p>vLLM offers APIs that allow developers to integrate LLM functionality into their applications. While it can be used locally, server deployment is its main strength.</p>
+</li>
+<li>
+<p>vLLM is a Python library that also contains pre-compiled C++ and CUDA (12.1) binaries, and with the <a href="https://docs.vllm.ai/en/v0.5.0/getting_started/installation.html">requirements</a>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>OS: Linux</p>
+</li>
+<li>
+<p>Python: 3.8 – 3.11</p>
+</li>
+<li>
+<p>GPU: compute capability 7.0 or higher (e.g., V100, T4, RTX20xx, A100, L4, H100, etc.)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>To deploy a model as an OpenAI-compatible service:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">pip <span class="nb">install </span>vllm</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>pip list | egrep <span class="s1">'vllm|transformers'</span>
+<span class="go">transformers                      4.41.2
+vllm                              0.5.0
+vllm-flash-attn                   2.5.9</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>python <span class="nt">-m</span> vllm.entrypoints.openai.api_server <span class="nt">--help</span>
+<span class="go">vLLM OpenAI-Compatible RESTful API server.
+
+options:
+  --host HOST           host name
+  --port PORT           port number
+  --api-key API_KEY     If provided, the server will require this key to be presented in the header.
+  --model MODEL         Name or path of the huggingface model to use.
+  --max-model-len MAX_MODEL_LEN
+                        Model context length. If unspecified, will be automatically derived from the model config.
+  --gpu-memory-utilization GPU_MEMORY_UTILIZATION
+                        The fraction of GPU memory to be used for the model executor, which can range from 0 to 1. For example, a value of 0.5 would imply 50% GPU memory utilization. If unspecified, will use
+                        the default value of 0.9.
+  --served-model-name SERVED_MODEL_NAME [SERVED_MODEL_NAME ...]
+                        The model name(s) used in the API. If multiple names are provided, the server will respond to any of the provided names. The model name in the model field of a response will be the
+                        first name in this list. If not specified, the model name will be the same as the `--model` argument. Noted that this name(s)will also be used in `model_name` tag content of
+                        prometheus metrics, if multiple names provided, metricstag will take the first one.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Start an OpenAI-compatible API service</span>
+python <span class="nt">-m</span> vllm.entrypoints.openai.api_server <span class="nt">--model</span> Qwen/Qwen2-0.5B-Instruct</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If saw connection to <a href="https://huggingface.co/" class="bare">https://huggingface.co/</a> failed, try:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">HF_ENDPOINT</span><span class="o">=</span>https://hf-mirror.com python <span class="nt">-m</span> vllm.entrypoints.openai.api_server <span class="nt">--model</span> Qwen/Qwen2-0.5B-Instruct</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Run in a firewalled or <a href="https://huggingface.co/docs/transformers/v4.41.2/en/installation#offline-mode">offline</a> environment with locally cached files by setting the environment variable <code>TRANSFORMERS_OFFLINE=1</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">HF_DATASETS_OFFLINE</span><span class="o">=</span>1 <span class="nv">TRANSFORMERS_OFFLINE</span><span class="o">=</span>1 <span class="se">\</span>
+    <span class="nv">HF_ENDPOINT</span><span class="o">=</span>https://hf-mirror.com <span class="se">\</span>
+    python <span class="nt">-m</span> vllm.entrypoints.openai.api_server <span class="se">\</span>
+    <span class="nt">--model</span> Qwen/Qwen2-0.5B-Instruct <span class="se">\</span>
+    <span class="nt">--max-model-len</span> 4096</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The vLLM requires a NVIDIA GPU on the host system, and the <code>--device cpu</code> doesn&#8217;t work.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>python <span class="nt">-m</span> vllm.entrypoints.openai.api_server <span class="nt">--model</span> Qwen/Qwen2-0.5B-Instruct <span class="nt">--device</span> cpu
+<span class="go">RuntimeError: Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from http://www.nvidia.com/Download/index.aspx</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>llama.cpp:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/ggerganov/llama.cpp">llama.cpp</a> is a C++ library as a <strong>core inference engine</strong> that provides the core functionality for running LLMs on CPUs and GPUs.</p>
+</li>
+<li>
+<p>It&#8217;s designed to efficiently execute LLM models for tasks like text generation and translation.</p>
+</li>
+<li>
+<p>Ollama and other tools like Hugging Face Transformers can use llama.cpp as the underlying engine for running LLM models locally.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Think of Ollama as a user-friendly car with a dashboard and controls that simplifies running different LLM models (like choosing a destination). vLLM is more like a high-performance racing engine focused on speed and efficiency, which is optimized for serving LLMs to many users (like a racing car on a track). llama.cpp is the core engine that does the actual work of moving the car (like the internal combustion engine), and other tools can utilize it for different purposes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use Ollama for a simple and user-friendly experience running different LLM models locally.</p>
+</li>
+<li>
+<p>Consider vLLM if the focus is on deploying a low-latency LLM server for real-time applications.</p>
+</li>
+<li>
+<p>llama.cpp is a low-level library that serves as the core engine for other tools to run LLMs efficiently.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="hugging-face">3. Hugging Face</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://huggingface.co/">Hugging Face</a> is a popular <strong>open-source community</strong> and platform focused on advancing natural language processing (NLP) research and development, which is well-known for the <strong>Transformers library</strong>, a widely used open-source framework written in Python that provides tools and functionalities for training, fine-tuning, and deploying various NLP models, including LLMs.</p>
+</li>
+<li>
+<p>Hugging Face maintains a <strong>Model Hub</strong>, a vast repository of pre-trained NLP models, including LLMs like Qwen, Jurassic-1 Jumbo, and many others which can be downloaded and used with the Transformers library or other compatible tools.</p>
+</li>
+<li>
+<p><a href="https://huggingface.co/modelscope">Model Scope</a> is a platform that <strong>focus on model access</strong> and aims to democratize access to a wide range of machine learning models, including LLMs. It goes beyond NLP models and encompasses various domains like computer vision, audio processing, and more. It acts as a <strong>model hosting service</strong>, allowing developers to access and utilize pre-trained models through APIs or a cloud-based environment.</p>
+</li>
+<li>
+<p>While Model Scope has its own model repository, it also <strong>collaborates with Hugging Face</strong>. Some models from the Hugging Face Model Hub are also available on Model Scope, providing users with additional access options.</p>
+</li>
+<li>
+<p>Here&#8217;s a table summarizing the key differences:</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 42.8571%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Feature</th>
+<th class="tableblock halign-left valign-top">Hugging Face</th>
+<th class="tableblock halign-left valign-top">Model Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open-source community, NLP research &amp; development</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Model access across various domains (including NLP)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Core Strength</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transformers library, Model Hub</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Model hosting service, API access</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Model Scope</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Primarily NLP, but expanding</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wide range of machine learning models</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Community Focus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strong community focus, education, collaboration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less emphasis on community, more on commercial aspect</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Command line interface (CLI)</p>
+<div class="paragraph">
+<p>The <code>huggingface_hub</code> Python package comes with a built-in CLI called <a href="https://huggingface.co/docs/huggingface_hub/v0.21.4/en/guides/cli"><code>huggingface-cli</code></a> that can be used to interact with the Hugging Face Hub directly from a terminal.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">pip <span class="nb">install</span> <span class="nt">-U</span> <span class="s2">"huggingface_hub[cli]"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In the snippet above, the <code>[cli]</code> extra dependencies is also installed to make the user experience better, especially when using the <code>delete-cache</code> command.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To download a single file from a repo, simply provide the repo_id and filename as follow:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># If saw connection to https://huggingface.co/ failed, uncomment the following line:</span>
+<span class="c"># ENV HF_ENDPOINT=https://hf-mirror.com</span>
+
+huggingface-cli download sentence-transformers/all-MiniLM-L6-v2</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="langchain">4. LangChain</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://python.langchain.com/v0.2/docs/introduction/">LangChain</a> is a framework for developing applications powered by large language models (LLMs).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="llamaindex">5. LlamaIndex</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://docs.llamaindex.ai/">LlamaIndex</a> is the leading framework for building LLM-powered agents over data with LLMs and workflows.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="open-webui">6. Open WebUI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://docs.openwebui.com/">Open WebUI</a> is an extensible, feature-rich, and user-friendly self-hosted WebUI designed to operate entirely offline. It supports various LLM runners, including Ollama and OpenAI-compatible APIs.</p>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

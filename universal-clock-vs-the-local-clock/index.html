@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Universal Clock and Local Clock | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Universal Clock and Local Clock" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="We live by time. From the moment we wake to the rhythm of our daily schedules, to the precise coordination of global networks, time is the invisible backbone of our existence. It&#8217;s so fundamental, in fact, that philosophers like Kant considered it a basic intuition, a lens through which we perceive reality itself. (Turns out, it&#8217;s a bit more complicated than that.) For anyone who&#8217;s ever tried to schedule a global meeting or debug a cron job, time often feels less like a simple concept and more like a mischievous, shape-shifting entity, constantly playing tricks with our schedules and data.…" />
+<meta name="twitter:description" property="og:description" content="We live by time. From the moment we wake to the rhythm of our daily schedules, to the precise coordination of global networks, time is the invisible backbone of our existence. It&#8217;s so fundamental, in fact, that philosophers like Kant considered it a basic intuition, a lens through which we perceive reality itself. (Turns out, it&#8217;s a bit more complicated than that.) For anyone who&#8217;s ever tried to schedule a global meeting or debug a cron job, time often feels less like a simple concept and more like a mischievous, shape-shifting entity, constantly playing tricks with our schedules and data.…" />
+<link rel="canonical" href="https://blog.codefarm.me/universal-clock-vs-the-local-clock/" />
+<meta property="og:url" content="https://blog.codefarm.me/universal-clock-vs-the-local-clock/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-07-25T08:35:05+08:00" />
+<meta property="article:modified_time" content="2025-07-25T08:35:05+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Universal Clock and Local Clock" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-07-25T08:35:05+08:00","datePublished":"2025-07-25T08:35:05+08:00","description":"We live by time. From the moment we wake to the rhythm of our daily schedules, to the precise coordination of global networks, time is the invisible backbone of our existence. It&#8217;s so fundamental, in fact, that philosophers like Kant considered it a basic intuition, a lens through which we perceive reality itself. (Turns out, it&#8217;s a bit more complicated than that.) For anyone who&#8217;s ever tried to schedule a global meeting or debug a cron job, time often feels less like a simple concept and more like a mischievous, shape-shifting entity, constantly playing tricks with our schedules and data.…","headline":"Universal Clock and Local Clock","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/universal-clock-vs-the-local-clock/"},"url":"https://blog.codefarm.me/universal-clock-vs-the-local-clock/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Universal Clock and Local Clock</h1><p class="c-post-meta">25 Jul 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>We live by time. From the moment we wake to the rhythm of our daily schedules, to the precise coordination of global networks, time is the invisible backbone of our existence. It&#8217;s so fundamental, in fact, that philosophers like Kant considered it a basic intuition, a lens through which we perceive reality itself. (Turns out, it&#8217;s a bit more complicated than that.) For anyone who&#8217;s ever tried to schedule a global meeting or debug a cron job, time often feels less like a simple concept and more like a mischievous, shape-shifting entity, constantly playing tricks with our schedules and data. This post delves into that duality, the very essence of <strong>"The Universal Clock vs. The Local Clock"</strong>: exploring the two fundamental ways we track time—the <strong>Local Clock</strong>, which governs human experience and local conventions, and the <strong>Universal Clock</strong>, which provides the absolute precision and global synchronization demanded by our digital world.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#the-human-calendar-following-the-sun-and-moon">1. The Human Calendar: Following the Sun and Moon</a>
+<ul class="sectlevel2">
+<li><a href="#the-solar-calendar-keeping-pace-with-the-seasons">1.1. The Solar Calendar: Keeping Pace with the Seasons</a></li>
+<li><a href="#the-lunar-calendar-riding-the-moons-phases">1.2. The Lunar Calendar: Riding the Moon&#8217;s Phases</a></li>
+<li><a href="#the-lunisolar-calendar-the-best-of-both-worlds">1.3. The Lunisolar Calendar: The Best of Both Worlds</a></li>
+<li><a href="#a-tale-of-two-systems-why-months-have-different-lengths">1.4. A Tale of Two Systems: Why Months Have Different Lengths</a>
+<ul class="sectlevel3">
+<li><a href="#the-gregorian-calendar-a-story-of-history-and-ego">1.4.1. The Gregorian Calendar: A Story of History and Ego</a></li>
+<li><a href="#the-lunisolar-calendar-a-dance-with-the-moon">1.4.2. The Lunisolar Calendar: A Dance with the Moon</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-computers-clock-a-quest-for-absolute-truth">2. The Computer&#8217;s Clock: A Quest for Absolute Truth</a>
+<ul class="sectlevel2">
+<li><a href="#the-ambiguity-of-local-time">2.1. The Ambiguity of Local Time</a></li>
+<li><a href="#the-solution-utc-the-universal-timekeeper">2.2. The Solution: UTC, The Universal Timekeeper</a></li>
+<li><a href="#the-fine-tuning-the-leap-second">2.3. The Fine-Tuning: The Leap Second</a></li>
+<li><a href="#under-the-hood-the-unix-timestamp">2.4. Under the Hood: The Unix Timestamp</a></li>
+<li><a href="#the-language-of-computer-time-iso-8601-and-rfc-3339">2.5. The Language of Computer Time: ISO 8601 and RFC 3339</a></li>
+<li><a href="#a-note-on-older-standards-rfc-1123">2.6. A Note on Older Standards: RFC 1123</a></li>
+</ul>
+</li>
+<li><a href="#the-developers-dilemma-storing-the-past-vs-scheduling-the-future">3. The Developer&#8217;s Dilemma: Storing the Past vs. Scheduling the Future</a>
+<ul class="sectlevel2">
+<li><a href="#recording-the-past-a-single-point-in-time">3.1. Recording the Past: A Single Point in Time</a></li>
+<li><a href="#scheduling-the-future-a-social-agreement">3.2. Scheduling the Future: A Social Agreement</a>
+<ul class="sectlevel3">
+<li><a href="#a-classic-example-the-cron-job">3.2.1. A Classic Example: The Cron Job</a></li>
+<li><a href="#the-correct-solution-storing-intent">3.2.2. The Correct Solution: Storing Intent</a></li>
+<li><a href="#a-tale-of-two-clocks-datetime-and-datetimeoffset-in-net">3.2.3. A Tale of Two Clocks: DateTime and DateTimeOffset in .NET</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#conclusion-two-clocks-one-world">4. Conclusion: Two Clocks, One World</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-human-calendar-following-the-sun-and-moon">1. The Human Calendar: Following the Sun and Moon</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For millennia, humanity has looked to the heavens to measure the passage of time. The two most prominent celestial bodies, the sun and the moon, gave rise to three distinct types of calendar systems, each designed to solve a different problem.</p>
+</div>
+<div class="sect2">
+<h3 id="the-solar-calendar-keeping-pace-with-the-seasons">1.1. The Solar Calendar: Keeping Pace with the Seasons</h3>
+<div class="paragraph">
+<p>The first and most widely used system is the <strong>Solar Calendar</strong>, or <code>阳历</code>. Its single most important goal is to align with the seasons. This is crucial for agriculture, as it tells you when to plant and when to harvest.</p>
+</div>
+<div class="paragraph">
+<p>The Earth takes approximately 365.2425 days to orbit the sun. To account for this fractional day, the solar calendar introduces a clever correction mechanism: the <strong>Leap Year (闰年)</strong>. The Gregorian calendar, the global standard today, refines this with a simple set of rules:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A year is a leap year if it is divisible by 4.</p>
+</li>
+<li>
+<p><strong>However</strong>, if the year is divisible by 100, it is <strong>not</strong> a leap year&#8230;&#8203;</p>
+</li>
+<li>
+<p><strong>Unless</strong> the year is also divisible by 400.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see this in action:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>2024</strong> is a leap year because it is divisible by 4.</p>
+</li>
+<li>
+<p><strong>1900</strong> was not a leap year because it is divisible by 100 but not by 400.</p>
+</li>
+<li>
+<p><strong>2000</strong> was a leap year because it is divisible by 400.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This system is remarkably effective at keeping our calendar year in lockstep with the astronomical year.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-lunar-calendar-riding-the-moons-phases">1.2. The Lunar Calendar: Riding the Moon&#8217;s Phases</h3>
+<div class="paragraph">
+<p>The second type is the <strong>Lunar Calendar</strong>, or <code>阴历</code>. Its purpose is to track the phases of the moon. Each month begins with a new moon, and the middle of the month corresponds to a full moon. A year in a pure lunar system consists of 12 months, which adds up to about 354 days.</p>
+</div>
+<div class="paragraph">
+<p>This creates a significant consequence: a lunar year is about 11 days shorter than a solar year. As a result, a purely lunar calendar drifts significantly relative to the seasons. For example, the Islamic calendar is a strict lunar calendar, which is why the holy month of Ramadan can occur in any season, gradually cycling through the entire year.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-lunisolar-calendar-the-best-of-both-worlds">1.3. The Lunisolar Calendar: The Best of Both Worlds</h3>
+<div class="paragraph">
+<p>The third type is the ingenious <strong>Lunisolar Calendar</strong>, or <code>农历</code> (often translated as the "Agricultural Calendar"). It seeks to synchronize with <strong>both</strong> the moon&#8217;s phases and the sun&#8217;s seasonal cycle. This is the system used by the traditional Chinese, Hebrew, and Hindu calendars.</p>
+</div>
+<div class="paragraph">
+<p>It operates as a lunar calendar for its months, but it solves the 11-day seasonal drift by adding an entire <strong>Leap Month (闰月)</strong> every two or three years. This intercalary month acts as a reset button, pulling the calendar back into alignment with the seasons. For example, a lunisolar year might have two "fifth months" back-to-back. The first is the normal fifth month, and the second is the "leap fifth month" (<code>闰五月</code>). This extra month is inserted into the year, giving that specific year 13 months instead of the usual 12. This brilliant hybrid system allowed ancient cultures to track the immediate, observable cycle of the moon while still relying on the calendar for long-term agricultural planning.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="a-tale-of-two-systems-why-months-have-different-lengths">1.4. A Tale of Two Systems: Why Months Have Different Lengths</h3>
+<div class="paragraph">
+<p>A common point of confusion is why months have the number of days they do. The answer reveals the fundamental difference between a solar calendar based on historical tradition and a lunisolar calendar based on direct astronomy.</p>
+</div>
+<div class="sect3">
+<h4 id="the-gregorian-calendar-a-story-of-history-and-ego">1.4.1. The Gregorian Calendar: A Story of History and Ego</h4>
+<div class="paragraph">
+<p>The irregular 30/31 day pattern in the Gregorian calendar isn&#8217;t based on clean mathematics, but on a messy history of Roman superstition and political ego. It was built on top of an older Roman lunar calendar that considered even numbers unlucky, which is why February was chosen to have an "unlucky" even number of days (28).</p>
+</div>
+<div class="paragraph">
+<p>When Julius Caesar reformed the calendar to follow the sun, he added 10 days to the year, distributing them among the months to create the 30 and 31 day lengths we know today. The final tweak, according to legend, came from Emperor Augustus, who wanted his month, August, to have 31 days, just like Julius&#8217;s month, July. He supposedly took a day from February to achieve this, cementing its status as the shortest month and creating the seemingly random pattern we&#8217;ve inherited.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-lunisolar-calendar-a-dance-with-the-moon">1.4.2. The Lunisolar Calendar: A Dance with the Moon</h4>
+<div class="paragraph">
+<p>In contrast, the traditional Chinese calendar is far simpler and more consistent. The length of a month is determined directly by the moon&#8217;s cycle, which is approximately 29.53 days. Since a calendar can&#8217;t have half a day, months are either:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>大月 (dà yuè) — "Big Month":</strong> 30 days</p>
+</li>
+<li>
+<p><strong>小月 (xiǎo yuè) — "Small Month":</strong> 29 days</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Which months are "Big" and which are "Small" is not fixed. It is calculated by astronomers each year based on the precise time between new moons. This direct link to astronomy ensures that the first day of every month is always a new moon.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-computers-clock-a-quest-for-absolute-truth">2. The Computer&#8217;s Clock: A Quest for Absolute Truth</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While human calendars are designed to follow the relative, observable cycles of the sun and moon, computers require something different: a single, unambiguous, and globally consistent way to record time. For a computer, the question isn&#8217;t "What day is it for the farmer?" but "At what exact, universal instant did this event occur?"</p>
+</div>
+<div class="sect2">
+<h3 id="the-ambiguity-of-local-time">2.1. The Ambiguity of Local Time</h3>
+<div class="paragraph">
+<p>To understand why computers can&#8217;t rely on human time, imagine scheduling a global video conference. If you propose meeting at "9:00 AM," this is immediately meaningless. Is that 9:00 AM in New York, London, or Tokyo?</p>
+</div>
+<div class="paragraph">
+<p>The problem gets worse with Daylight Saving Time (DST). The meaning of "9:00 AM" in New York actually represents two different moments in universal time depending on the time of year. For software logging a financial transaction or a server error, this level of ambiguity is not just confusing—it&#8217;s dangerous.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-solution-utc-the-universal-timekeeper">2.2. The Solution: UTC, The Universal Timekeeper</h3>
+<div class="paragraph">
+<p>The solution to this problem is <strong>Coordinated Universal Time (UTC)</strong>. To understand UTC, we must first look to geography. The world&#8217;s starting point for longitude is the <strong>Prime Meridian (本初子午线)</strong>, the line of 0° longitude running through Greenwich, London. The local time on this line was historically known as <strong>Greenwich Mean Time (GMT)</strong> and served as the world&#8217;s time standard for many years.</p>
+</div>
+<div class="paragraph">
+<p>UTC is the modern, scientific successor to GMT. <strong>While GMT was based on the Earth&#8217;s rotation, UTC is based on hyper-accurate atomic clocks, making it far more stable.</strong> However, it is intentionally kept in close alignment with the time at the Prime Meridian. For all practical purposes, when you see UTC, you can think of it as the modern, high-precision version of GMT. It is the global standard, the "zero point" from which all other time zones are calculated. Crucially, UTC is the same everywhere on Earth and does not observe Daylight Saving Time. When an event is recorded as <code>14:30:00Z</code> UTC, it represents one specific, unchangeable instant in time, whether you are in Boston or Beijing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-fine-tuning-the-leap-second">2.3. The Fine-Tuning: The Leap Second</h3>
+<div class="paragraph">
+<p>A fascinating quirk arises because atomic time is perfectly stable, but the Earth&#8217;s rotation is not—it is gradually and irregularly slowing down. To keep UTC from drifting too far from the solar day (the time based on the Earth&#8217;s spin), an adjustment known as the <strong>Leap Second (闰秒)</strong> has been occasionally added to UTC.</p>
+</div>
+<div class="paragraph">
+<p>However, this one-second jump has proven to be a nightmare for computer systems, which expect time to be linear and continuous. Leap seconds have been blamed for major outages across the internet. Because of this, the international community has made a historic decision: the leap second will be officially abolished by 2035. This means we are choosing the stability of our digital infrastructure over perfect synchronization with the Earth&#8217;s rotation. Over many decades, this will cause clock time to slowly drift apart from sun time, meaning "noon" on our clocks may no longer be the moment the sun is highest in the sky—a small price to pay for a more stable digital world.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="under-the-hood-the-unix-timestamp">2.4. Under the Hood: The Unix Timestamp</h3>
+<div class="paragraph">
+<p>Before we discuss how time is written, it&#8217;s important to understand how it&#8217;s often stored and calculated. Internally, many computer systems represent time as a single, large number called a <strong>timestamp</strong>.</p>
+</div>
+<div class="paragraph">
+<p>This number represents the total number of seconds that have passed since a specific, arbitrary starting point. That starting point is the <strong>Unix Epoch</strong>: <code>00:00:00 UTC on January 1, 1970</code>.</p>
+</div>
+<div class="paragraph">
+<p>A <strong>Unix Timestamp</strong> is therefore a simple count of seconds since the epoch. This format is incredibly efficient for computers to store and perform calculations with. For higher precision, systems often use milliseconds, microseconds, or even nanoseconds since the epoch. This numerical representation is the true "computer time" before it gets formatted for human eyes.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-language-of-computer-time-iso-8601-and-rfc-3339">2.5. The Language of Computer Time: ISO 8601 and RFC 3339</h3>
+<div class="paragraph">
+<p>When a computer needs to present a timestamp in a human-readable format, it converts the numerical timestamp into a string. The global standard for this is <strong>ISO 8601</strong>.</p>
+</div>
+<div class="paragraph">
+<p>A typical ISO 8601 timestamp looks like this:
+<code>2025-07-24T15:30:00.123456789Z</code></p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s break it down:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>2025-07-24</code>: The date (Year-Month-Day).</p>
+</li>
+<li>
+<p><code>T</code>: A literal character separating the date from the time.</p>
+</li>
+<li>
+<p><code>15:30:00.123456789</code>: The time, represented as <code>Hours:Minutes:Seconds</code>. The decimal portion indicates the fractional part of a second, allowing for high precision such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Milliseconds (3 digits): <code>.123</code></p>
+</li>
+<li>
+<p>Microseconds (6 digits): <code>.123456</code></p>
+</li>
+<li>
+<p>Nanoseconds (9 digits): <code>.123456789</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>Z</code>: The most critical part. This is the "Zone Designator" for "Zulu Time," which explicitly means this timestamp is in <strong>UTC</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>While ISO 8601 is powerful, it is also very flexible. For example, it allows for different separators or even the omission of separators. To ensure maximum compatibility for internet protocols, a stricter profile of ISO 8601 was created: <strong>RFC 3339</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Think of it this way: ISO 8601 is a big toolbox with many options, while RFC 3339 picks one specific set of tools and makes them mandatory. For example, RFC 3339 requires:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>T</code> separator between date and time (a space is not allowed).</p>
+</li>
+<li>
+<p>Hyphens (<code>-</code>) between date parts and colons (<code>:</code>) between time parts.</p>
+</li>
+<li>
+<p>A mandatory time zone offset (either <code>Z</code> for UTC or a <code>+/-hh:mm</code> offset).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>By removing ambiguity, RFC 3339 guarantees that a timestamp generated by one system can be reliably parsed by another. It is the de facto standard for timestamps in modern APIs and internet protocols.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="a-note-on-older-standards-rfc-1123">2.6. A Note on Older Standards: RFC 1123</h3>
+<div class="paragraph">
+<p>Before ISO 8601 and RFC 3339 became the dominant standards for modern APIs, other formats were common, particularly in older IETF protocols like HTTP/1.0 and in email headers. The most prominent of these is <strong>RFC 1123</strong>.</p>
+</div>
+<div class="paragraph">
+<p>An RFC 1123 timestamp is more human-readable but less structured than its modern counterparts. It follows a specific format:</p>
+</div>
+<div class="paragraph">
+<p><code>Www, dd Mmm yyyy hh:mm:ss GMT</code></p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a breakdown:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Www</code>: Three-letter day of the week (e.g., "Mon").</p>
+</li>
+<li>
+<p><code>dd</code>: Two-digit day of the month (e.g., "01").</p>
+</li>
+<li>
+<p><code>Mmm</code>: Three-letter month abbreviation (e.g., "Jan").</p>
+</li>
+<li>
+<p><code>yyyy</code>: Four-digit year (e.g., "2024").</p>
+</li>
+<li>
+<p><code>hh:mm:ss</code>: Two-digit hour, minute, and second in 24-hour format.</p>
+</li>
+<li>
+<p><code>GMT</code>: Indicates Greenwich Mean Time. Coordinated Universal Time (UTC) is also acceptable.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A full example looks like this: <code>Fri, 25 Jul 2025 15:30:00 GMT</code></p>
+</div>
+<div class="paragraph">
+<p>You will most commonly encounter this format in HTTP headers, such as the <code>Date</code> and <code>Last-Modified</code> headers, which are used to communicate the time the response was generated and the last time the resource was changed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-Ii</span> https://blog.codefarm.me
+<span class="go">HTTP/2 200
+server: GitHub.com
+</span><span class="gp">content-type: text/html;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+<span class="go">last-modified: Fri, 25 Jul 2025 13:29:44 GMT
+access-control-allow-origin: *
+etag: "688386c8-7454"
+expires: Mon, 28 Jul 2025 01:21:36 GMT
+cache-control: max-age=600
+x-proxy-cache: MISS
+x-github-request-id: FC47:08F9:889ED7:8AE375:6886CE46
+accept-ranges: bytes
+date: Mon, 28 Jul 2025 01:11:43 GMT
+via: 1.1 varnish
+age: 7
+x-served-by: cache-nrt-rjtf7700026-NRT
+x-cache: HIT
+x-cache-hits: 1
+x-timer: S1753665103.429076,VS0,VE1
+vary: Accept-Encoding
+x-fastly-request-id: 817c69f5770b7da31b4d999125b6c8aba907a859
+content-length: 29780</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While still encountered in legacy systems, RFC 1123 is generally avoided in new development in favor of the stricter, more machine-friendly, and unambiguous RFC 3339 format.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-developers-dilemma-storing-the-past-vs-scheduling-the-future">3. The Developer&#8217;s Dilemma: Storing the Past vs. Scheduling the Future</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This brings us to the most practical part of our discussion: how should software developers actually handle time? The answer depends entirely on whether you are recording an event that has already happened or scheduling one that will happen in the future. The golden rule is simple and powerful: <strong>Store in UTC, display in local time.</strong> This principle ensures that your data remains pure and unambiguous, while the user experience is intuitive and correct.</p>
+</div>
+<div class="sect2">
+<h3 id="recording-the-past-a-single-point-in-time">3.1. Recording the Past: A Single Point in Time</h3>
+<div class="paragraph">
+<p>When recording an event that has already occurred—a user signup, a financial transaction, a server log—you are capturing a fixed, absolute moment in time. The best way to store this is as a single UTC timestamp. This value is universal and free from the complexities of time zones and DST. It represents the undeniable "when" of the event.</p>
+</div>
+<div class="paragraph">
+<p>A classic example of how to do this correctly (and incorrectly) can be found in Microsoft SQL Server. It offers two modern data types for time: <code>datetime2</code> and <code>datetimeoffset</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>datetime2</code>:</strong> This type is "time zone naive." It stores only a date and time (e.g., <code>2025-07-25 10:00:00</code>), with no information about its offset from UTC. Storing a time here is like writing a number without a currency symbol—the value is ambiguous. Is it 10:00 AM in London or Tokyo? The database doesn&#8217;t know, and you&#8217;re relying on convention alone, which is a recipe for bugs.</p>
+</li>
+<li>
+<p><strong><code>datetimeoffset</code>:</strong> This type is "time zone aware." It stores both the date/time <strong>and</strong> its offset from UTC (e.g., <code>2025-07-25 10:00:00 -05:00</code>). This represents a single, unambiguous instant in time.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>While it&#8217;s technically possible to store different offsets in a <code>datetimeoffset</code> column, this is strongly discouraged as it creates significant complexity. Imagine a table with mixed offsets. A simple query like <code>WHERE event_time &gt; '2025-07-25 12:00:00'</code> becomes unreliable. To correctly query, sort, or use a <code>BETWEEN</code> clause, you would constantly have to account for the different offsets in every row, leading to complex, error-prone code and poor performance.</p>
+</div>
+<div class="paragraph">
+<p>The best practice is to combine the "Store in UTC" rule with the power of <code>datetimeoffset</code>. Your application should convert all local times to UTC before saving them. The resulting database entry is perfectly clear and standardized: <code>2025-07-25 15:00:00 +00:00</code>. This gives you the simplicity of a uniform UTC standard and the self-documenting safety of a data type that proves it.</p>
+</div>
+<div class="paragraph">
+<p>When you query this data, you should always provide timestamps in the full, unambiguous text format as well. The standard format for this is RFC 3339, <code>YYYY-MM-DDThh:mm:ss.fffZ</code>, ensuring your query is as explicit as the data you are retrieving.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="scheduling-the-future-a-social-agreement">3.2. Scheduling the Future: A Social Agreement</h3>
+<div class="paragraph">
+<p>Scheduling future events, however, is far more complex. A future event is a social agreement based on a local "wall clock" time. <strong>"Wall clock" time refers to the time displayed on a clock in a specific location, which changes with Daylight Saving Time and local time zone rules.</strong> The classic example is a recurring meeting at "9:00 AM every Tuesday." The intention is for the meeting to always be at 9:00 AM on the local clock, even if the underlying UTC time shifts due to a Daylight Saving Time change.</p>
+</div>
+<div class="paragraph">
+<p>To solve this, we must first understand what a <strong>time zone</strong> truly is. It&#8217;s not just a number; it&#8217;s a geographical region where a uniform, legally mandated time is observed. The critical part is that a time zone&#8217;s rules can change over time, most commonly due to Daylight Saving Time. This leads to two different ways of representing a time zone&#8217;s information:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An <strong>Offset:</strong> This is a simple value, like <code>-05:00</code>, that represents the difference from UTC at a single moment. It&#8217;s a snapshot, but it contains no historical or future rules. It doesn&#8217;t know when DST begins or ends.</p>
+</li>
+<li>
+<p>A <strong>Time Zone ID:</strong> This is a full name, like <code>America/New_York</code>, from the official IANA Time Zone Database. This ID represents the <strong>entire set of rules</strong> for a region, including all its past and future DST changes and historical offsets. It is the complete context.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you were to convert "9:00 AM in New York" to a UTC timestamp in February (Standard Time) and store it, you would create a classic bug. Storing a fixed UTC time for a future event fails to capture the user&#8217;s intent and leads to unexpected behavior when DST changes occur. Let&#8217;s see this in action with a Python example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">from</span> <span class="n">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="n">zoneinfo</span> <span class="kn">import</span> <span class="n">ZoneInfo</span>
+
+<span class="c1"># Define the time zone
+</span><span class="n">tz</span> <span class="o">=</span> <span class="nc">ZoneInfo</span><span class="p">(</span><span class="sh">"</span><span class="s">America/New_York</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># 1. A user schedules an event for Nov 5th at 9:00 AM (during Standard Time)
+</span><span class="n">event_time_local</span> <span class="o">=</span> <span class="nf">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="p">)</span>
+<span class="c1"># This correctly converts to 14:00 UTC
+</span><span class="n">event_time_utc</span> <span class="o">=</span> <span class="n">event_time_local</span><span class="p">.</span><span class="nf">astimezone</span><span class="p">(</span><span class="nc">ZoneInfo</span><span class="p">(</span><span class="sh">"</span><span class="s">UTC</span><span class="sh">"</span><span class="p">))</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Event in November (local): </span><span class="si">{</span><span class="n">event_time_local</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span> <span class="c1"># ... 09:00:00-05:00
+</span><span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Event in November (UTC):   </span><span class="si">{</span><span class="n">event_time_utc</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>   <span class="c1"># ... 14:00:00+00:00
+</span>
+<span class="c1"># 2. Now, let's use that stored UTC time to see what time the event
+#    would appear to be on a day in May (during Daylight Time).
+</span><span class="n">utc_time_in_may</span> <span class="o">=</span> <span class="nf">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="nc">ZoneInfo</span><span class="p">(</span><span class="sh">"</span><span class="s">UTC</span><span class="sh">"</span><span class="p">))</span>
+<span class="n">local_time_in_may</span> <span class="o">=</span> <span class="n">utc_time_in_may</span><span class="p">.</span><span class="nf">astimezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span>
+
+<span class="c1"># The meeting has unexpectedly moved to 10:00 AM!
+</span><span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Event in May (local):      </span><span class="si">{</span><span class="n">local_time_in_may</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span> <span class="c1"># ... 10:00:00-04:00</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This happens because <code>14:00Z</code> is a fixed point in time. When you convert it back to New York time during the summer, it correctly maps to <code>10:00 AM</code> EDT, breaking the user&#8217;s expectation that the event should always be at 9:00 AM.</p>
+</div>
+<div class="sect3">
+<h4 id="a-classic-example-the-cron-job">3.2.1. A Classic Example: The Cron Job</h4>
+<div class="paragraph">
+<p>The standard Unix <code>cron</code> daemon is a perfect real-world illustration of this "wall clock" behavior. Cron jobs are scheduled based on the server&#8217;s local time zone. This leads to two infamous edge cases during Daylight Saving Time transitions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Spring Forward:</strong> When the clock jumps from 2:00 AM to 3:00 AM, any job scheduled to run during that non-existent hour (e.g., at 2:30 AM) is <strong>skipped</strong> and does not run.</p>
+</li>
+<li>
+<p><strong>Fall Back:</strong> When the clock jumps from 2:00 AM back to 1:00 AM, the hour repeats. Any job scheduled during that hour will <strong>run twice</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This behavior is often desired for daily maintenance, but it&#8217;s a disaster for tasks that must run exactly once per 24-hour period. It perfectly demonstrates the risks of scheduling against a local time that is subject to DST rules.</p>
+</div>
+<div class="paragraph">
+<p>To mitigate these issues, common solutions include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Running the server in UTC:</strong> This eliminates DST changes entirely for the cron daemon.</p>
+</li>
+<li>
+<p><strong>Using advanced cron features:</strong> Some cron implementations (e.g., <code>cronie</code>) support <code>CRON_TZ</code> variables, allowing you to specify a time zone for the job and handle DST transitions correctly.</p>
+</li>
+<li>
+<p><strong>Avoiding the problematic window:</strong> Schedule critical jobs outside the 1 AM - 3 AM window during DST transitions.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-correct-solution-storing-intent">3.2.2. The Correct Solution: Storing Intent</h4>
+<div class="paragraph">
+<p>To correctly store a future event, you must store the user&#8217;s <strong>intent</strong>. Here is a sample table design in SQL Server that models this perfectly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">FutureAppointments</span> <span class="p">(</span>
+    <span class="n">AppointmentID</span> <span class="nb">INT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">Description</span> <span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+    <span class="c1">-- The "wall clock" time, with no time zone context</span>
+    <span class="n">LocalAppointmentTime</span> <span class="n">DATETIME2</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span>
+    <span class="c1">-- The IANA Time Zone ID that provides the context</span>
+    <span class="n">TimeZoneID</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s break down this design:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>LocalAppointmentTime</code> uses <code>datetime2</code> precisely because it is <strong>time zone naive</strong>. It stores the literal value <code>2025-11-05 09:00:00</code> without any ambiguity or conversion. It perfectly represents the "wall clock" part of the user&#8217;s intent.</p>
+</li>
+<li>
+<p><code>TimeZoneID</code> stores the critical set of rules, such as <code>America/New_York</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The application&#8217;s job is then to read these two fields and, using a time zone library, calculate the correct absolute UTC time only when it&#8217;s needed (e.g., to send a reminder notification). This approach preserves the user&#8217;s intent and is immune to DST bugs.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="a-tale-of-two-clocks-datetime-and-datetimeoffset-in-net">3.2.3. A Tale of Two Clocks: DateTime and DateTimeOffset in .NET</h4>
+<div class="paragraph">
+<p>C# and the .NET ecosystem provide two primary types for working with time: <code>DateTime</code> and <code>DateTimeOffset</code>. Understanding their differences is critical for handling time correctly.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong><code>DateTime</code></strong> structure represents a date and time.</p>
+<div class="paragraph">
+<p>However, it can be ambiguous. Its <code>Kind</code> property can be <code>Utc</code>, <code>Local</code>, or <code>Unspecified</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DateTimeKind.Utc</code>: The time is in UTC.</p>
+</li>
+<li>
+<p><code>DateTimeKind.Local</code>: The time is in the server&#8217;s local time zone.</p>
+</li>
+<li>
+<p><code>DateTimeKind.Unspecified</code>: The time zone is unknown which is dangerous and a common source of bugs.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong><code>DateTimeOffset</code></strong> structure represents a date and time along with an offset from UTC.</p>
+<div class="paragraph">
+<p>For example, the value <code>2025-11-05 09:00:00 -05:00</code> represents a single, unambiguous point in time. It is equivalent to <code>2025-11-05 14:00:00Z</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>While <code>DateTimeOffset</code> is excellent for recording past events (as it&#8217;s a specific instant), it shares the same pitfalls as the Python example when used to schedule future events. If you convert a future "wall clock" appointment to a <code>DateTimeOffset</code> and store it, you are storing a fixed UTC instant, not the user&#8217;s intent.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"--- DateTime ---"</span><span class="p">);</span>
+
+<span class="c1">// DateTimeKind.Local: Time in the server's local time zone</span>
+<span class="n">DateTime</span> <span class="n">localTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="s">"Local Time:"</span><span class="p">,-</span><span class="m">20</span><span class="p">}</span><span class="s"> </span><span class="p">{</span><span class="n">localTime</span><span class="p">}</span><span class="s"> (Kind: </span><span class="p">{</span><span class="n">localTime</span><span class="p">.</span><span class="n">Kind</span><span class="p">}</span><span class="s">)"</span><span class="p">);</span>
+
+<span class="c1">// DateTimeKind.Utc: Time in Coordinated Universal Time</span>
+<span class="n">DateTime</span> <span class="n">utcTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">UtcNow</span><span class="p">;</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="s">"UTC Time:"</span><span class="p">,-</span><span class="m">20</span><span class="p">}</span><span class="s"> </span><span class="p">{</span><span class="n">utcTime</span><span class="p">}</span><span class="s"> (Kind: </span><span class="p">{</span><span class="n">utcTime</span><span class="p">.</span><span class="n">Kind</span><span class="p">}</span><span class="s">)"</span><span class="p">);</span>
+
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"--- DateTimeOffset ---"</span><span class="p">);</span>
+
+<span class="c1">// DateTimeOffset: Represents a date and time along with an offset from UTC</span>
+<span class="n">DateTimeOffset</span> <span class="n">dateTimeOffsetNow</span> <span class="p">=</span> <span class="n">DateTimeOffset</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="s">"DateTimeOffset Now:"</span><span class="p">,-</span><span class="m">20</span><span class="p">}</span><span class="s"> </span><span class="p">{</span><span class="n">dateTimeOffsetNow</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+
+<span class="n">DateTimeOffset</span> <span class="n">dateTimeOffsetUtcNow</span> <span class="p">=</span> <span class="n">DateTimeOffset</span><span class="p">.</span><span class="n">UtcNow</span><span class="p">;</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="s">"DateTimeOffset UtcNow:"</span><span class="p">,-</span><span class="m">20</span><span class="p">}</span><span class="s"> </span><span class="p">{</span><span class="n">dateTimeOffsetUtcNow</span><span class="p">}</span><span class="s">"</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet run
+<span class="go">--- DateTime ---
+Local Time:          2025/7/25 8:51:41 PM (Kind: Local)
+UTC Time:            2025/7/25 12:51:41 PM (Kind: Utc)
+--- DateTimeOffset ---
+DateTimeOffset Now:  2025/7/25 8:51:41 PM +08:00
+DateTimeOffset UtcNow: 2025/7/25 12:51:41 PM +00:00</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion-two-clocks-one-world">4. Conclusion: Two Clocks, One World</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As we&#8217;ve explored, time, seemingly simple, is a multifaceted concept. Human time, governed by calendars and local conventions, is inherently local and relative, adapting to the cycles of the sun and moon and the social agreements of time zones. Computer time, in contrast, strives for a global and absolute truth, anchored by UTC and represented by precise, unambiguous standards like ISO 8601 and RFC 3339.</p>
+</div>
+<div class="paragraph">
+<p>Understanding this fundamental dichotomy—between the wall clock and the universal clock—is not merely an academic exercise. For anyone building software, designing systems, or simply navigating our increasingly interconnected world, recognizing when to use a local time and when to use a global time is crucial. It&#8217;s the difference between a seamless user experience and a frustrating bug, between reliable data and ambiguous records. By respecting the distinct nature of these two clocks, we can build more robust, accurate, and user-friendly systems that truly stay in sync with the world.</p>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

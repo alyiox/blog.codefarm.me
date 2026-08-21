@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Structures in C Language | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Structures in C Language" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Defining Structures 2. Declaring Structure Variables 2.1. Declaring Structure Variables at Definition 2.2. Declaring Structure Variables After Definition 2.3. Intializing Structure Members 3. Accessing Structure Members 4. Bit Fields 5. Size of Structures 6. References A structure is a programmer-defined data type made up of variables of other data types (possibly including other structure types). 1. Defining Structures You define a structure using the struct keyword followed by the declaration of the structure’s members, enclosed in braces. You declare each member of a structure just as you would normally declare a variable—using the data type followed by one or…" />
+<meta name="twitter:description" property="og:description" content="1. Defining Structures 2. Declaring Structure Variables 2.1. Declaring Structure Variables at Definition 2.2. Declaring Structure Variables After Definition 2.3. Intializing Structure Members 3. Accessing Structure Members 4. Bit Fields 5. Size of Structures 6. References A structure is a programmer-defined data type made up of variables of other data types (possibly including other structure types). 1. Defining Structures You define a structure using the struct keyword followed by the declaration of the structure’s members, enclosed in braces. You declare each member of a structure just as you would normally declare a variable—using the data type followed by one or…" />
+<link rel="canonical" href="https://blog.codefarm.me/structures-in-c-language/" />
+<meta property="og:url" content="https://blog.codefarm.me/structures-in-c-language/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-03-01T11:20:55+08:00" />
+<meta property="article:modified_time" content="2017-03-01T11:20:55+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Structures in C Language" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-03-01T11:20:55+08:00","datePublished":"2017-03-01T11:20:55+08:00","description":"1. Defining Structures 2. Declaring Structure Variables 2.1. Declaring Structure Variables at Definition 2.2. Declaring Structure Variables After Definition 2.3. Intializing Structure Members 3. Accessing Structure Members 4. Bit Fields 5. Size of Structures 6. References A structure is a programmer-defined data type made up of variables of other data types (possibly including other structure types). 1. Defining Structures You define a structure using the struct keyword followed by the declaration of the structure’s members, enclosed in braces. You declare each member of a structure just as you would normally declare a variable—using the data type followed by one or…","headline":"Structures in C Language","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/structures-in-c-language/"},"url":"https://blog.codefarm.me/structures-in-c-language/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Structures in C Language</h1><p class="c-post-meta">01 Mar 2017</p>
+  </header>
+
+  <div class="c-post-content">
+    <ul id="markdown-toc">
+  <li><a href="#1-defining-structures" id="markdown-toc-1-defining-structures">1. Defining Structures</a></li>
+  <li><a href="#2-declaring-structure-variables" id="markdown-toc-2-declaring-structure-variables">2. Declaring Structure Variables</a>    <ul>
+      <li><a href="#21-declaring-structure-variables-at-definition" id="markdown-toc-21-declaring-structure-variables-at-definition">2.1. Declaring Structure Variables at Definition</a></li>
+      <li><a href="#22-declaring-structure-variables-after-definition" id="markdown-toc-22-declaring-structure-variables-after-definition">2.2. Declaring Structure Variables After Definition</a></li>
+      <li><a href="#23-intializing-structure-members" id="markdown-toc-23-intializing-structure-members">2.3. Intializing Structure Members</a></li>
+    </ul>
+  </li>
+  <li><a href="#3-accessing-structure-members" id="markdown-toc-3-accessing-structure-members">3. Accessing Structure Members</a></li>
+  <li><a href="#4-bit-fields" id="markdown-toc-4-bit-fields">4. Bit Fields</a></li>
+  <li><a href="#5-size-of-structures" id="markdown-toc-5-size-of-structures">5. Size of Structures</a></li>
+  <li><a href="#6-references" id="markdown-toc-6-references">6. References</a></li>
+</ul>
+
+<hr />
+
+<p>A structure is a programmer-defined data type made up of variables of other data types (possibly including other structure types).</p>
+
+<h3 id="1-defining-structures">1. Defining Structures</h3>
+
+<p>You define a structure using the <code class="language-plaintext highlighter-rouge">struct</code> keyword followed by the declaration of the structure’s members, enclosed in braces. You declare each member of a structure just as you would normally declare a variable—using the data type followed by one or more variable names separated by commas, and ending with a semicolon. Then end the structure definition with a semicolon after the closing brace.</p>
+
+<p>You should also include a name for the structure in between the <code class="language-plaintext highlighter-rouge">struct</code> keyword and the opening brace. This is optional, but if you leave it out, you can’t refer to that structure data type later on (without a <code class="language-plaintext highlighter-rouge">typedef</code>).</p>
+
+<p>Here is an example of defining a simple structure for holding the X and Y coordinates of a point:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>That defines a structure type named <code class="language-plaintext highlighter-rouge">struct point</code>, which contains two members, <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code>, both of which are of type <code class="language-plaintext highlighter-rouge">int</code>.</p>
+
+<p>Structures (and unions) may contain instances of other structures and unions, but of course not themselves. It is possible for a structure or union type to contain a field which is a pointer to the same type.</p>
+
+<h3 id="2-declaring-structure-variables">2. Declaring Structure Variables</h3>
+
+<p>You can declare variables of a structure type when both you initially define the structure and after the definition, provided you gave the structure type a name.</p>
+
+<h4 id="21-declaring-structure-variables-at-definition">2.1. Declaring Structure Variables at Definition</h4>
+
+<p>You can declare variables of a structure type when you define the strucutre type by putting the variable names after the enclosing brace of the structure definition, but before the final semicolon. You can declare more than one such variable by separating the names with commas.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">first_point</span><span class="p">,</span> <span class="n">second_point</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>That example declares two variable of type <code class="language-plaintext highlighter-rouge">struct point</code>, <code class="language-plaintext highlighter-rouge">first_point</code> and <code class="language-plaintext highlighter-rouge">second_point</code>.</p>
+
+<h4 id="22-declaring-structure-variables-after-definition">2.2. Declaring Structure Variables After Definition</h4>
+
+<p>You can declare variables of a structure type after defining the structure by using the <code class="language-plaintext highlighter-rouge">struct</code> keyword and the name you gave the structure type, followed by one or more variables names separated by commas.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">point</span> <span class="n">first_point</span><span class="p">,</span> <span class="n">second_point</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>That example declares two variable of type <code class="language-plaintext highlighter-rouge">struct point</code>, <code class="language-plaintext highlighter-rouge">first_point</code> and <code class="language-plaintext highlighter-rouge">second_point</code>.</p>
+
+<h4 id="23-intializing-structure-members">2.3. Intializing Structure Members</h4>
+
+<p>You can intialize the members of a structure type to have certain values when you decalre structure variables.</p>
+
+<p>If you do not initialize a structure variable, the effect depends on whether it has static storage or not. If it is, members with integral type are intialized with 0 and pointer members are initialized to NULL; otherwise, the value of the structure’s members is indeterminate.</p>
+
+<p>One way to initialize a structure is to specify the values in a set of braces and separated by commas. Those values are assigned to the structure memebers in the same order that the members are declared in the structure in definition.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">point</span> <span class="n">first_point</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>In that example, the <code class="language-plaintext highlighter-rouge">x</code> member of <code class="language-plaintext highlighter-rouge">first_point</code> gets the value 5, and the <code class="language-plaintext highlighter-rouge">y</code> member gets the value 10.</p>
+
+<p>Another way to initialize the members is to specify the name of the member to initialize. This way, you can initialize the members in any order you like, and even leave some of them unintialized. There are two methods that you can use. The first method is available in C99 and as a C89 extension in GCC:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="n">first_point</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can also omit the period and use a colon instead of ‘=’, though this is a GNU C extension:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">structure</span> <span class="n">point</span> <span class="n">first_point</span> <span class="o">=</span> <span class="p">{</span> <span class="n">y</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span> <span class="n">x</span><span class="o">:</span> <span class="mi">5</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can also initialize the structure variable’s members when you declare the variable during the structure definition:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">first_point</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can also initialize fewer than all of a structure variable’s members:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">pointy</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">pointy</span> <span class="n">first_pointy</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">x</code> is initialized with 5, <code class="language-plaintext highlighter-rouge">y</code> is initialized with 0, and <code class="language-plaintext highlighter-rouge">p</code> is initialized with NULL. The rule here is that <code class="language-plaintext highlighter-rouge">y</code> and <code class="language-plaintext highlighter-rouge">p</code> are initialized just as they would be if they were static variables.</p>
+
+<p>Here is another example that initializes a structure’s members which are structure variables themselves:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">rectangle</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">point</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">rectangle</span> <span class="n">my_rectangle</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">},</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>That example defines the <code class="language-plaintext highlighter-rouge">rectangle</code> structure to consist of two <code class="language-plaintext highlighter-rouge">point</code> structure variables. Then it declares one variable of type <code class="language-plaintext highlighter-rouge">struct rectangle</code> and initializes its members. Since its members are structure variables, we used an extra set of braces surrounding the members that belong to the <code class="language-plaintext highlighter-rouge">point</code> structure variables. However, those extra braces are not necessary; they just make the code easier to read.</p>
+
+<h3 id="3-accessing-structure-members">3. Accessing Structure Members</h3>
+
+<p>You can access the members of a structure variable using the member access operator. You put the name of the structure variable on the left side of the operator, and the name of the member on the right side.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">point</span> <span class="n">first_poit</span><span class="p">;</span>
+
+<span class="n">first_point</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">first_point</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>You can also access the members of a structure variable which is itself a member of a structure variables.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">rectangle</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">point</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">rectangle</span> <span class="n">my_rectangle</span><span class="p">;</span>
+
+<span class="n">my_rectangle</span><span class="p">.</span><span class="n">top_left</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">my_rectangle</span><span class="p">.</span><span class="n">top_left</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+<span class="n">my_rectangle</span><span class="p">.</span><span class="n">bottom_right</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">my_rectangle</span><span class="p">.</span><span class="n">bottom_right</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="4-bit-fields">4. Bit Fields</h3>
+
+<p>You can create structures with integer members of nonstandard sizes, called <em>bit fields</em>. You do this by specifying an integer (<code class="language-plaintext highlighter-rouge">int</code>, <code class="language-plaintext highlighter-rouge">char</code>, <code class="language-plaintext highlighter-rouge">long int</code>, etc.) member as usual, and inserting a colon and the member of bits that the member should occupy in between the memeber’s name and the semicolon.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">card</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">suit</span> <span class="o">:</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="n">usigned</span> <span class="kt">int</span> <span class="n">face_value</span> <span class="o">:</span><span class="mi">4</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>That example defines a structure type with two bit fields, <code class="language-plaintext highlighter-rouge">suit</code> and <code class="language-plaintext highlighter-rouge">face_value</code>, which take up 2 bits and 4 bits, respectively. <code class="language-plaintext highlighter-rouge">suit</code> can hold values from 0 to 3, and <code class="language-plaintext highlighter-rouge">face_value</code> can hold values from 0 to 15. Notice that these bit fields were declared as <code class="language-plaintext highlighter-rouge">unsigned int</code>; had they been signed integers, then theirs would been from -2 to 1, and from -8 to 7, respectively.</p>
+
+<p>More generally, the range of an unsigned bit field of <code class="language-plaintext highlighter-rouge">N</code> bits is from 0 to <em>2^N - 1</em>, and the range of a signed bit field of <code class="language-plaintext highlighter-rouge">N</code> bits is from <em>-(2^N) / 2</em> to <em>((2^N) / 2) - 1</em>.</p>
+
+<p>Bit fields can be specified without a name in order to control which actual bits within the containing unit are used. However, the effect of this is not very portable and it is rarely useful. You can also specify a bit field of size 0, which indicates that subsequent bit fields not further bit fields should be packed into the unit containing the previous bit field. This is likewise not generally useful.</p>
+
+<p>You may not take the address of a bit field with the address operator <code class="language-plaintext highlighter-rouge">&amp;</code>.</p>
+
+<h3 id="5-size-of-structures">5. Size of Structures</h3>
+
+<p>The size of a structure type is equal to the sum of the size of all its members, possibly including padding to cause the structure type to align to a particular type byte boundary. The detail vary depending on your computer platform, but it would not be atypical to see structures padded to align on four- or eight-byte boudaries. This is done in order to speed up memory accesses of instance of the structure type.</p>
+
+<p>As a GNU extension, GCC allows structures with no memebers. Such structures have zero size.</p>
+
+<p>If you wish to explicitly omit padding from your structure types (which may, in turn, decrease the speed of structure memory accesses), then GCC provides multiple methods of turning packing off. The quick and easy method is to use the <code class="language-plaintext highlighter-rouge">-fpack-struct</code> compiler option. For more details on omitting packing, please see the GCC manual which corresponds to your version of the compiler.</p>
+
+<hr />
+
+<h3 id="6-references">6. References</h3>
+
+<ol>
+  <li><a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Structures">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

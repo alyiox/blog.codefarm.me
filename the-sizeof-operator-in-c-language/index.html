@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>The sizeof Operator in C Language | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="The sizeof Operator in C Language" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="You can use the sizeof operator to obtain the size (in bytes) of the data type of its operand. The operand may be an actual type specifier (such as int or float), as well as any valid expression. When the operand is a type name, it must be enclosed in parentheses. Here are some examples: size_t a = sizeof(int); size_t b = sizeof(float); size_t c = sizeof(5); size_t d = sizeof(5.143); size_t e = sizeof a; The result of the sizeof operator is of a type called size_t, which is defined in the header file &lt;stddef.h&gt;. size_t is an unsigned…" />
+<meta name="twitter:description" property="og:description" content="You can use the sizeof operator to obtain the size (in bytes) of the data type of its operand. The operand may be an actual type specifier (such as int or float), as well as any valid expression. When the operand is a type name, it must be enclosed in parentheses. Here are some examples: size_t a = sizeof(int); size_t b = sizeof(float); size_t c = sizeof(5); size_t d = sizeof(5.143); size_t e = sizeof a; The result of the sizeof operator is of a type called size_t, which is defined in the header file &lt;stddef.h&gt;. size_t is an unsigned…" />
+<link rel="canonical" href="https://blog.codefarm.me/the-sizeof-operator-in-c-language/" />
+<meta property="og:url" content="https://blog.codefarm.me/the-sizeof-operator-in-c-language/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-03-03T11:47:55+08:00" />
+<meta property="article:modified_time" content="2017-03-03T11:47:55+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="The sizeof Operator in C Language" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-03-03T11:47:55+08:00","datePublished":"2017-03-03T11:47:55+08:00","description":"You can use the sizeof operator to obtain the size (in bytes) of the data type of its operand. The operand may be an actual type specifier (such as int or float), as well as any valid expression. When the operand is a type name, it must be enclosed in parentheses. Here are some examples: size_t a = sizeof(int); size_t b = sizeof(float); size_t c = sizeof(5); size_t d = sizeof(5.143); size_t e = sizeof a; The result of the sizeof operator is of a type called size_t, which is defined in the header file &lt;stddef.h&gt;. size_t is an unsigned…","headline":"The sizeof Operator in C Language","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/the-sizeof-operator-in-c-language/"},"url":"https://blog.codefarm.me/the-sizeof-operator-in-c-language/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">The sizeof Operator in C Language</h1><p class="c-post-meta">03 Mar 2017</p>
+  </header>
+
+  <div class="c-post-content">
+    <p>You can use the <code class="language-plaintext highlighter-rouge">sizeof</code> operator to obtain the size (in bytes) of the data type of its operand. The operand may be an actual type specifier (such as <code class="language-plaintext highlighter-rouge">int</code> or <code class="language-plaintext highlighter-rouge">float</code>), as well as any valid expression. When the operand is a type name, it must be enclosed in parentheses. Here are some examples:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">size_t</span> <span class="n">a</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+<span class="kt">size_t</span> <span class="n">b</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">);</span>
+<span class="kt">size_t</span> <span class="n">c</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="kt">size_t</span> <span class="n">d</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="mi">5</span><span class="p">.</span><span class="mi">143</span><span class="p">);</span>
+<span class="kt">size_t</span> <span class="n">e</span> <span class="o">=</span> <span class="k">sizeof</span> <span class="n">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The result of the <code class="language-plaintext highlighter-rouge">sizeof</code> operator is of a type called <code class="language-plaintext highlighter-rouge">size_t</code>, which is defined in the header file <code class="language-plaintext highlighter-rouge">&lt;stddef.h&gt;</code>. <code class="language-plaintext highlighter-rouge">size_t</code> is an unsigned integer type, perhaps identical to <code class="language-plaintext highlighter-rouge">unsigned int</code> or <code class="language-plaintext highlighter-rouge">unsigned long int</code>; it varies from system to system.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">size_t</code> type if often a conventient type for a look index, since it is guaranteed to be able to hold the number of elements in any array; this is not the case with <code class="language-plaintext highlighter-rouge">int</code>, for example.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">sizeof</code> operator can be used to automatically compute the number of elements in an array:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">values</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">681</span> <span class="p">};</span>
+<span class="cp">#define ARRAYSIZE(x) (sizeof x / sizeof x[0])
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ARRAYSIZE</span><span class="p">(</span><span class="n">values</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>There are two cases where this technique does not work. The first is where the array element has zero size (GCC supports zero-sized structures as a GNU extension). The second is where the array is in fact a function parameter.</p>
+
+<hr />
+
+<h5 id="references">References</h5>
+
+<ol>
+  <li><a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#The-sizeof-Operator">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

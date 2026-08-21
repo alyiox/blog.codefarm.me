@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Lua Learning Notes | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Lua Learning Notes" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. [1] Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics. Lua is dynamically typed, runs by interpreting bytecode with a register-based virtual machine, and has automatic memory management with a generational garbage collection, making it ideal for configuration, scripting, and rapid prototyping. Lua is implemented as a library, written in clean C, the common subset of standard C and C++. The Lua distribution includes a host program called lua, which…" />
+<meta name="twitter:description" property="og:description" content="Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. [1] Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics. Lua is dynamically typed, runs by interpreting bytecode with a register-based virtual machine, and has automatic memory management with a generational garbage collection, making it ideal for configuration, scripting, and rapid prototyping. Lua is implemented as a library, written in clean C, the common subset of standard C and C++. The Lua distribution includes a host program called lua, which…" />
+<link rel="canonical" href="https://blog.codefarm.me/lua-learning-notes/" />
+<meta property="og:url" content="https://blog.codefarm.me/lua-learning-notes/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-06-03T11:21:44+08:00" />
+<meta property="article:modified_time" content="2024-06-03T11:21:44+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Lua Learning Notes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-06-03T11:21:44+08:00","datePublished":"2024-06-03T11:21:44+08:00","description":"Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. [1] Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics. Lua is dynamically typed, runs by interpreting bytecode with a register-based virtual machine, and has automatic memory management with a generational garbage collection, making it ideal for configuration, scripting, and rapid prototyping. Lua is implemented as a library, written in clean C, the common subset of standard C and C++. The Lua distribution includes a host program called lua, which…","headline":"Lua Learning Notes","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/lua-learning-notes/"},"url":"https://blog.codefarm.me/lua-learning-notes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Lua Learning Notes</h1><p class="c-post-meta">03 Jun 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. <a href="#lua-manual">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics.</p>
+</li>
+<li>
+<p>Lua is dynamically typed, runs by interpreting bytecode with a register-based virtual machine, and has automatic memory management with a generational garbage collection, making it ideal for configuration, scripting, and rapid prototyping.</p>
+</li>
+<li>
+<p>Lua is implemented as a library, written in clean C, the common subset of standard C and C++.</p>
+</li>
+<li>
+<p>The Lua distribution includes a host program called <code>lua</code>, which uses the Lua library to offer a complete, standalone Lua interpreter, for interactive or batch use.</p>
+</li>
+<li>
+<p>Lua is intended to be used both as a powerful, lightweight, embeddable scripting language for any program that needs one, and as a powerful but lightweight and efficient stand-alone language.</p>
+</li>
+<li>
+<p>As an extension language, Lua has no notion of a "main" program: it works embedded in a host client, called the <em>embedding program</em> or simply the <em>host</em>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#the-stand-alone-interpreter">1. The stand-alone interpreter</a></li>
+<li><a href="#lexical">2. Lexical</a>
+<ul class="sectlevel2">
+<li><a href="#local-variables-and-blocks">2.1. Local variables and blocks</a></li>
+<li><a href="#control-structures">2.2. Control structures</a>
+<ul class="sectlevel3">
+<li><a href="#if-then-else">2.2.1. if then else</a></li>
+<li><a href="#while">2.2.2. While</a></li>
+<li><a href="#repeat">2.2.3. repeat</a></li>
+<li><a href="#for">2.2.4. For</a></li>
+<li><a href="#break-return-and-goto">2.2.5. break, return, and goto</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#values-and-types">3. Values and Types</a>
+<ul class="sectlevel2">
+<li><a href="#nil">3.1. Nil</a></li>
+<li><a href="#booleans">3.2. Booleans</a></li>
+<li><a href="#numbers">3.3. Numbers</a></li>
+<li><a href="#strings">3.4. Strings</a></li>
+<li><a href="#tables">3.5. Tables</a>
+<ul class="sectlevel3">
+<li><a href="#table-indices">3.5.1. Table Indices</a></li>
+<li><a href="#table-constructors">3.5.2. Table Constructors</a></li>
+<li><a href="#arrays-lists-and-sequences">3.5.3. Arrays, Lists, and Sequences</a></li>
+<li><a href="#table-traversal">3.5.4. Table Traversal</a></li>
+<li><a href="#the-table-library">3.5.5. The table library</a></li>
+</ul>
+</li>
+<li><a href="#functions">3.6. Functions</a>
+<ul class="sectlevel3">
+<li><a href="#multiple-results">3.6.1. Multiple results</a></li>
+<li><a href="#variadic-functions">3.6.2. Variadic Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-io-library">4. The I/O library</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-stand-alone-interpreter">1. The stand-alone interpreter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The stand-alone interpreter (also called <code>lua.c</code> due to its source file or simply <code>lua</code> due to its executable) is a small program that allows the direct use of Lua. <a href="#programming-in-lua">[2]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Debian</span>
+apt <span class="nb">install </span>lua5.4</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Windows</span><span class="w">
+</span><span class="n">winget</span><span class="w"> </span><span class="nx">install</span><span class="w"> </span><span class="nx">DEVCOM.Lua</span><span class="w"> </span><span class="nt">--version</span><span class="w"> </span><span class="nx">5.4.6</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the interpreter loads a file, it ignores its first line if this line starts with a hash (<code>#</code>).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="cp">#!/usr/bin/env lua</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Hello World!"</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Without arguments the interpreter enters the interactive mode.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lua
+<span class="go">Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
+</span><span class="gp">&gt;</span><span class="w"> </span>math.pi / 4
+<span class="go">0.78539816339745
+</span><span class="gp">&gt;</span><span class="w"> </span>os.exit<span class="o">()</span>
+<span class="gp">$</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A script can retrieve its arguments through the predefined global variable <code>arg</code>.</p>
+<div class="paragraph">
+<p>In a call like <code>% lua script a b c</code>, the interpreter creates the table <code>arg</code> with all the command-line arguments, before running any code.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>The script name goes into index 0; its first argument ("a" in the example) goes to index 1, and so on.</p>
+</li>
+<li>
+<p>Preceding options go to negative indices, as they appear before the script.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For instance, consider this call:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">% lua -e "sin=math.sin" script a b</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The interpreter collects the arguments as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">arg</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"lua"</span>
+<span class="n">arg</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"-e"</span>
+<span class="n">arg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"sin=math.sin"</span>
+<span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"script"</span>
+<span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"a"</span>
+<span class="n">arg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"b"</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lexical">2. Lexical</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- Lua is case-sensitive: and is a reserved word, but And and AND are two different identifiers.</span>
+<span class="ow">and</span>	<span class="k">break</span>	<span class="k">do</span>	<span class="k">else</span>	<span class="k">elseif</span>
+<span class="k">end</span>	<span class="kc">false</span>	<span class="k">for</span>	<span class="k">function</span>	<span class="nf">goto</span>
+<span class="k">if</span>	<span class="k">in</span>	<span class="kd">local</span>	<span class="kc">nil</span>	<span class="ow">not</span>
+<span class="ow">or</span>	<span class="k">repeat</span>	<span class="k">return</span>	<span class="k">then</span>	<span class="kc">true</span>
+<span class="k">until</span>	<span class="k">while</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Naming conventions in Lua</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Variables and Functions: Lower camel case (e.g., <code>userName</code>, <code>calculateArea</code>)</p>
+</li>
+<li>
+<p>Table Keys: Lower camel case or underscore separated (e.g., <code>userData.name</code>, <code>user_data["age"]</code>)</p>
+</li>
+<li>
+<p>Constants: Uppercase with underscores (e.g., <code>MAX_PLAYERS</code>)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <strong>chunk</strong> is simply a sequence of commands (or statements), that is a piece of code that Lua executes, such as a file or a single line in interactive mode. <a href="#programming-in-lua">[2]</a></p>
+</li>
+<li>
+<p>A <strong>comment</strong> starts anywhere with two consecutive hyphens (<code>--</code>) and runs until the end of the line. Lua also offers long comments, which start with two hyphens followed by two opening square brackets and run until the first occurrence of two consecutive closing square brackets, like here:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="cm">--[[A multi-line
+long comment
+]]</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua needs no separator (i.e. semicolon, <code>;</code>) between consecutive statements.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span> <span class="c1">-- ugly, but valid</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>It is not an error to access a non-initialized variable (<code>nil</code>).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lua <span class="nt">-e</span> <span class="s1">'print(x)'</span>
+<span class="go">nil</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="local-variables-and-blocks">2.1. Local variables and blocks</h3>
+<div class="paragraph">
+<p>By default, variables in Lua are global. Unlike global variables, a local variable has its scope limited to the block where it is declared.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A block is the body of a control structure, the body of a function, or a chunk (the file or string where the variable is declared):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">x</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>     <span class="c1">-- local to the chunk</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="k">do</span>
+    <span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="c1">-- local to the while body</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>    <span class="c1">--&gt; 2, 4, 6, 8, ...</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span>
+<span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="k">then</span>
+    <span class="kd">local</span> <span class="n">x</span>  <span class="c1">-- local to the "then" body</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="c1">-- (would print 22 if test succeeded)</span>
+<span class="k">else</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1">--&gt; 10 (the global one)</span>
+<span class="k">end</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>     <span class="c1">--&gt; 10 (the global one)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>In interactive mode, each line is a chunk by itself (unless it is not a complete command).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lua
+<span class="go">Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">local </span>x <span class="o">=</span> 10
+<span class="gp">&gt;</span><span class="w"> </span>print<span class="o">(</span>x<span class="o">)</span>
+<span class="go">nil
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="k">do</span>
+<span class="gp">&gt;</span><span class="o">&gt;</span> <span class="nb">local </span>x <span class="o">=</span> 20
+<span class="gp">&gt;</span><span class="o">&gt;</span> print<span class="o">(</span>x<span class="o">)</span>
+<span class="gp">&gt;</span><span class="o">&gt;</span> end
+<span class="go">20
+</span><span class="gp">&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <em>do-end</em> blocks are useful to finer control over the scope of some local variables:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span>
+<span class="k">do</span>
+    <span class="kd">local</span> <span class="n">a2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a</span>
+    <span class="kd">local</span> <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">^</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">a2</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">a2</span>
+<span class="k">end</span>           <span class="c1">-- scope of 'a2' and 'd' ends here</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span> <span class="c1">-- 'x1' and 'x2' still in scope</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>It is good programming style to use local variables whenever possible.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Local variables avoid cluttering the global environment with unnecessary names; they also avoid name clashes between different parts of a program.</p>
+</li>
+<li>
+<p>Moreover, the access to local variables is faster than to global ones.</p>
+</li>
+<li>
+<p>Finally, a local variable vanishes as soon as its scope ends, allowing the garbage collector to release its value.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The Lua distribution comes with a module <code>strict.lua</code> for global-variable checks; it raises an error if we try to assign to a non-existent global inside a function or to use a non-existent global.</p>
+</li>
+<li>
+<p>A common idiom in Lua is <code>local foo = foo</code> to create a local variable, <code>foo</code>, and initializes it with the value of the global variable <code>foo</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="control-structures">2.2. Control structures</h3>
+<div class="paragraph">
+<p>Lua provides a small and conventional set of control structures, with <code>if</code> for conditional execution and <code>while</code>, <code>repeat</code>, and <code>for</code> for iteration.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All control structures have a syntax with an explicit terminator: <code>end</code> terminates <code>if</code>, <code>for</code> and <code>while</code> structures; <code>until</code> terminates <code>repeat</code> structures.</p>
+</li>
+<li>
+<p>The condition expression of a control structure can result in any value.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="if-then-else">2.2.1. if then else</h4>
+<div class="paragraph">
+<p>An <strong>if</strong> statement tests its condition and executes its then-part or its else-part accordingly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"+"</span> <span class="k">then</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="k">elseif</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"-"</span> <span class="k">then</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+<span class="k">elseif</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"*"</span> <span class="k">then</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+<span class="k">elseif</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"/"</span> <span class="k">then</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+<span class="k">else</span>
+    <span class="nb">error</span><span class="p">(</span><span class="s2">"invalid operation"</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="while">2.2.2. While</h4>
+<div class="paragraph">
+<p>A <strong>while</strong> loop repeats its body while a condition is true. As usual, Lua first tests the while condition; if the condition is false, then the loop ends; otherwise, Lua executes the body of the loop and repeats the process.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">while</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="repeat">2.2.3. repeat</h4>
+<div class="paragraph">
+<p>A <strong>repeat–until</strong> statement repeats its body until its condition is true. It does the test after the body, so that it always executes the body at least once.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- print the first non-empty input line</span>
+<span class="kd">local</span> <span class="n">line</span>
+<span class="k">repeat</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="nb">io.read</span><span class="p">()</span>
+<span class="k">until</span> <span class="n">line</span> <span class="o">~=</span> <span class="s2">""</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- computes the square root of 'x' using Newton-Raphson method</span>
+<span class="kd">local</span> <span class="n">sqr</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="k">repeat</span>
+    <span class="n">sqr</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqr</span> <span class="o">+</span> <span class="n">x</span> <span class="o">/</span> <span class="n">sqr</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="kd">local</span> <span class="nb">error</span> <span class="o">=</span> <span class="nb">math.abs</span><span class="p">(</span><span class="n">sqr</span> <span class="o">^</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+<span class="k">until</span> <span class="nb">error</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">/</span> <span class="mi">10000</span> <span class="c1">-- local 'error' still visible here</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="for">2.2.4. For</h4>
+<div class="paragraph">
+<p>The <strong>for</strong> statement has two variants: the <em>numerical</em> for and the <em>generic</em> for.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A numerical for has the following syntax:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">var</span> <span class="o">=</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">do</span>
+    <span class="c1">-- something</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span> <span class="k">do</span>
+    <span class="nb">io.write</span><span class="p">(</span><span class="n">i</span> <span class="o">..</span> <span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 0	1	2	3</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span> <span class="k">do</span>
+    <span class="nb">io.write</span><span class="p">(</span><span class="n">i</span> <span class="o">..</span> <span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 0	2	4	6	8	10</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The generic for loop traverses all values returned by an iterator function, with <code>pairs</code>, <code>ipairs</code>, <code>io.lines</code>, etc.</p>
+</li>
+<li>
+<p>Unlike the numerical for, the generic for can have multiple variables, which are all updated at each iteration. The loop stops when the first variable gets <code>nil</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="break-return-and-goto">2.2.5. break, return, and goto</h4>
+<div class="paragraph">
+<p>The <strong>break</strong> and <strong>return</strong> statements are used to jump out of a block, and the <strong>goto</strong> statement is used  jump to almost any point in a function.</p>
+</div>
+<div class="paragraph">
+<p>In Lua, the syntax for a <strong>goto</strong> statement is quite conventional: it is the reserved word <strong>goto</strong> followed by the label name, which can be any valid identifier: it has two colons followed by the label name followed by more two colons, like in <code>::name::</code>, which is intentional, to highlight labels in a program.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="values-and-types">3. Values and Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Lua is a dynamically typed language, which means that variables do not have types; only values do. <a href="#lua-manual">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All values carry their own type.</p>
+</li>
+<li>
+<p>All values in Lua are <strong>first-class</strong> values, which means that all values can be stored in variables, passed as arguments to other functions, and returned as results.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are eight basic types in Lua: <code>nil</code>, <code>boolean</code>, <code>number</code>, <code>string</code>, <code>function</code>, <code>userdata</code>, <code>thread</code>, and <code>table</code>.</p>
+</div>
+<div class="paragraph">
+<p>The type <code>userdata</code> is provided to allow arbitrary C data to be stored in Lua variables. A userdata value represents a block of raw memory. There are two kinds of userdata: full userdata, which is an object with a block of memory managed by Lua, and light userdata, which is simply a C pointer value. Userdata has no predefined operations in Lua, except assignment and identity test. By using metatables, the programmer can define operations for full userdata values.</p>
+</div>
+<div class="paragraph">
+<p>The type <code>thread</code> represents independent threads of execution and it is used to implement coroutines. Lua threads are not related to operating-system threads. Lua supports coroutines on all systems, even those that do not support threads natively.</p>
+</div>
+<div class="paragraph">
+<p>Tables, functions, threads, and (full) userdata values are <em>objects</em>: variables do not actually contain these values, only references to them. Assignment, parameter passing, and function returns always manipulate references to such values; these operations do not imply any kind of copy.</p>
+</div>
+<div class="sect2">
+<h3 id="nil">3.1. Nil</h3>
+<div class="paragraph">
+<p>The type <code>nil</code> has one single value, <code>nil</code>, whose main property is to be different from any other value; it often represents the absence of a useful value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lua
+<span class="go">Lua 5.4.4  Copyright (C) 1994-2022 Lua.org, PUC-Rio
+</span><span class="gp">&gt;</span><span class="w"> </span>undefined
+<span class="go">nil
+</span><span class="gp">&gt;</span><span class="w"> </span>not undefined
+<span class="go">true
+</span><span class="gp">&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="booleans">3.2. Booleans</h3>
+<div class="paragraph">
+<p>The type <code>boolean</code> has two values, <code>false</code> and <code>true</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Both <code>nil</code> and <code>false</code> make a condition false; they are collectively called false values. Any other value makes a condition true.</p>
+</li>
+<li>
+<p>Despite its name, <code>false</code> is frequently used as an alternative to <code>nil</code>, with the key difference that <code>false</code> behaves like a regular value in a table, while a <code>nil</code> in a table represents an absent key.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Lua supports a conventional set of logical operators: <code>and</code>, <code>or</code>, and <code>not</code>.</p>
+<div class="paragraph">
+<p>Both <code>and</code> and <code>or</code> use short-circuit evaluation, that is, they evaluate their second operand only when necessary.</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The result of the <code>and</code> operator is its first operand if that operand is false; otherwise, the result is its second operand.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">4</span> <span class="ow">and</span> <span class="mi">5</span>      <span class="c1">--&gt; 5</span>
+<span class="kc">nil</span> <span class="ow">and</span> <span class="mi">13</span>   <span class="c1">--&gt; nil</span>
+<span class="kc">false</span> <span class="ow">and</span> <span class="mi">13</span> <span class="c1">--&gt; false</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The result of the <code>or</code> operator is its first operand if it is not false; otherwise, the result is its second operand:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">0</span> <span class="ow">or</span> <span class="mi">5</span>        <span class="c1">--&gt; 0</span>
+<span class="kc">false</span> <span class="ow">or</span> <span class="s2">"hi"</span> <span class="c1">--&gt; "hi"</span>
+<span class="kc">nil</span> <span class="ow">or</span> <span class="kc">false</span>  <span class="c1">--&gt; false</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <code>not</code> operator always gives a Boolean value.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="ow">not</span> <span class="kc">nil</span>     <span class="c1">--&gt; true</span>
+<span class="ow">not</span> <span class="kc">false</span>   <span class="c1">--&gt; true</span>
+<span class="ow">not</span> <span class="mi">0</span>       <span class="c1">--&gt; false</span>
+<span class="ow">not</span> <span class="ow">not</span> <span class="mi">1</span>   <span class="c1">--&gt; true</span>
+<span class="ow">not</span> <span class="ow">not</span> <span class="kc">nil</span> <span class="c1">--&gt; false</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="numbers">3.3. Numbers</h3>
+<div class="paragraph">
+<p>The type <code>number</code> represents both integer numbers and real (floating-point) numbers, using two subtypes: <em>integer</em> and <em>float</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Integers and floats with the same value compare as equal in Lua:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span>     <span class="c1">--&gt; true</span>
+<span class="o">-</span><span class="mi">3</span> <span class="o">==</span> <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">0</span>   <span class="c1">--&gt; true</span>
+<span class="mi">0</span><span class="p">.</span><span class="mf">2e3</span> <span class="o">==</span> <span class="mi">200</span> <span class="c1">--&gt; true</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To distinguish between floats and integers, use <code>math.type</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">math.type</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>   <span class="c1">--&gt; integer</span>
+<span class="nb">math.type</span><span class="p">(</span><span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span> <span class="c1">--&gt; float</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>If both operands are integers, the operation gives an integer result; otherwise, the operation results in a float. In case of mixed operands, Lua converts the integer one to a float before the operation:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">13</span><span class="p">.</span><span class="mi">0</span> <span class="o">+</span> <span class="mi">25</span>  <span class="c1">--&gt; 38.0</span>
+<span class="o">-</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span> <span class="c1">--&gt; -18.0</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To avoid different results between division of integers and divisions of floats, division always operates on floats and gives float results:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">3</span><span class="p">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">2</span><span class="p">.</span><span class="mi">0</span> <span class="c1">--&gt; 1.5</span>
+<span class="mi">3</span> <span class="o">/</span> <span class="mi">2</span>     <span class="c1">--&gt; 1.5</span>
+<span class="mi">3</span> <span class="o">//</span> <span class="mi">2</span>    <span class="c1">--&gt; 1 -- floor division and denoted by //</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua provides the following relational operators, and all these operators always produce a Boolean value:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="o">&lt;</span>	<span class="o">&gt;</span>	<span class="o">&lt;=</span>	<span class="o">&gt;=</span>	<span class="o">==</span>	<span class="o">~=</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To force a number to be a float, simply add <code>0.0</code> to it.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="o">-</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span>                  <span class="c1">--&gt; -3.0</span>
+<span class="mh">0x7fffffffffffffff</span> <span class="o">+</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span>  <span class="c1">--&gt; 9.2233720368548e+18</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To force a number to be an integer, OR it with zero:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="mi">2</span><span class="o">^</span><span class="mi">53</span>      <span class="c1">--&gt; 9.007199254741e+15 (float)</span>
+<span class="mi">2</span><span class="o">^</span><span class="mi">53</span> <span class="err">|</span> <span class="mi">0</span>  <span class="c1">--&gt; 9007199254740992</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- number has no integer representation</span>
+<span class="mi">3</span><span class="p">.</span><span class="mi">2</span> <span class="err">|</span> <span class="mi">0</span>   <span class="c1">-- fractional part</span>
+<span class="mi">2</span><span class="o">^</span><span class="mi">64</span> <span class="err">|</span> <span class="mi">0</span>  <span class="c1">-- out of range</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="strings">3.4. Strings</h3>
+<div class="paragraph">
+<p>The type <code>string</code> represents immutable sequences of bytes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Lua is 8-bit clean: strings can contain any 8-bit value, including embedded zeros ('\0').</p>
+</li>
+<li>
+<p>Lua is also encoding-agnostic; it makes no assumptions about the contents of a string.</p>
+</li>
+<li>
+<p>Get the length of a string using the length operator (denoted by <code>#</code>):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">hi</span> <span class="o">=</span> <span class="s1">'Hello 世界'</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">hi</span><span class="p">)</span>  <span class="c1">--&gt; 12  -- always counts the length in bytes</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Concatenate two strings with the concatenation operator .. (two dots):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="s2">"Hello "</span> <span class="o">..</span> <span class="s2">"World"</span>  <span class="c1">--&gt; Hello World</span>
+<span class="s2">"result is "</span> <span class="o">..</span> <span class="mi">3</span>    <span class="c1">--&gt; result is 3</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Multiple line literal strings can be delimited  also by matching double square brackets, as with long comments. Moreover, it ignores the first character of the string when this character is a newline.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">page</span> <span class="o">=</span> <span class="s">[[
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;An HTML Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;a href="http://www.lua.org"&gt;Lua&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+]]</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua provides automatic conversions between numbers and strings at run time.</p>
+</li>
+<li>
+<p>To convert a string to a number explicitly, we can use the function <code>tonumber</code>, which returns <code>nil</code> if the string does not denote a proper number.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">tonumber</span><span class="p">(</span><span class="s2">" -3 "</span><span class="p">)</span>      <span class="c1">--&gt; -3</span>
+<span class="nb">tonumber</span><span class="p">(</span><span class="s2">" 10e4 "</span><span class="p">)</span>    <span class="c1">--&gt; 100000.0</span>
+<span class="nb">tonumber</span><span class="p">(</span><span class="s2">"10e"</span><span class="p">)</span>       <span class="c1">--&gt; nil (not a valid number)</span>
+<span class="nb">tonumber</span><span class="p">(</span><span class="s2">"0x1.3p-4"</span><span class="p">)</span>  <span class="c1">--&gt; 0.07421875</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To convert a number to a string explicitly, call the function <code>tostring</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">print</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"10"</span><span class="p">)</span> <span class="c1">--&gt; true</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Since version 5.3, Lua includes a small library (<code>utf8</code>) to support operations on Unicode strings encoded in UTF-8.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">hi</span> <span class="o">=</span> <span class="s1">'Hello 世界'</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">string.len</span><span class="p">(</span><span class="n">hi</span><span class="p">))</span>  <span class="c1">-- 12</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">utf8.len</span><span class="p">(</span><span class="n">hi</span><span class="p">))</span>  <span class="c1">-- 8</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tables">3.5. Tables</h3>
+<div class="paragraph">
+<p>The type <code>table</code> implements associative arrays, that is, arrays that can have as indices not only numbers, but any Lua value except <code>nil</code> and <code>NaN</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Tables can be heterogeneous; that is, they can contain values of all types (except <code>nil</code>).</p>
+</li>
+<li>
+<p>Any key associated to the value <code>nil</code> is not considered part of the table. Conversely, any key that is not part of a table has an associated value <code>nil</code>.</p>
+</li>
+<li>
+<p>Lua uses tables to represent packages and objects as well. For Lua, the <code>math.sin</code> means “index the table math using the string "sin" as the key”.</p>
+</li>
+<li>
+<p>Lua stores global variables in ordinary tables.</p>
+</li>
+<li>
+<p>Tables are created by means of a constructor expression, which in its simplest form is written as <code>{}</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">-- create a table and assign its reference</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1">-- new entry, with key="x" and value=10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">x</span><span class="p">)</span>  <span class="c1">--&gt; 10</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="table-indices">3.5.1. Table Indices</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Each table can store values with different types of indices, and it grows as needed to accommodate new entries.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">-- empty table</span>
+<span class="c1">-- create 1000 new entries</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span> <span class="k">do</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="k">end</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>           <span class="c1">--&gt; 18</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span>         <span class="c1">--&gt; 10</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">'y'</span><span class="p">]</span>         <span class="c1">--&gt; nil</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua supports to use the field name as an index by providing <code>a.name</code> as syntactic sugar for <code>a['name']</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span> <span class="p">}</span>
+<span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span>  <span class="c1">--&gt; true  -- indexed by the string 'x'</span>
+<span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">==</span> <span class="n">a</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>  <span class="c1">--&gt; false</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="table-constructors">3.5.2. Table Constructors</h4>
+<div class="paragraph">
+<p>Constructors are expressions that create and initialize tables, and the simplest constructor is the empty constructor, <code>{}</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- empty constructor</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1">-- record-style and list-style initializations</span>
+<span class="n">days</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"Sunday"</span><span class="p">,</span> <span class="s2">"Monday"</span><span class="p">,</span> <span class="s2">"Tuesday"</span><span class="p">,</span> <span class="s2">"Wednesday"</span><span class="p">,</span> <span class="s2">"Thursday"</span><span class="p">,</span> <span class="s2">"Friday"</span><span class="p">,</span> <span class="s2">"Saturday"</span> <span class="p">}</span>  <span class="c1">-- initialize a list</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">20</span> <span class="p">}</span>  <span class="c1">-- initialize a record-like table</span>
+
+<span class="c1">-- explicitly write each index as an expression, between square brackets, to</span>
+<span class="c1">-- initialize fields with negative indices, nor with string indices</span>
+<span class="n">opnames</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">[</span><span class="s2">"+"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"add"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">"-"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"sub"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">"*"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"mul"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">"/"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"div"</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="arrays-lists-and-sequences">3.5.3. Arrays, Lists, and Sequences</h4>
+<div class="paragraph">
+<p>To represent a conventional array or a list, simply use a table with integer keys.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- read 10 lines, storing them in a table</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span> <span class="k">do</span>
+    <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">io.read</span><span class="p">()</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sequences are lists without holes.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For sequences, Lua offers the length operator (<code>#</code>) to give the length of the sequence represented by a table.</p>
+</li>
+<li>
+<p>The length operator (<code>#</code>) is unreliable for lists with holes (nils).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span>  <span class="c1">-- 1</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="table-traversal">3.5.4. Table Traversal</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Tables can be traversed all key–value pairs with the <code>pairs</code> iterator, the order that elements appear in a traversal is undefined.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">print</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="s2">"hi"</span> <span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 1	10</span>
+<span class="c1">-- 2	function: 0x5595d1eb1730</span>
+<span class="c1">-- k	hi</span>
+<span class="c1">-- x	12</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>For lists, they can be traversed by using the <code>ipairs</code> iterator:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">print</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">"hi"</span> <span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 1	10</span>
+<span class="c1">-- 2	function: 0x558e75c75730</span>
+<span class="c1">-- 3	12</span>
+<span class="c1">-- 4	hi</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or, with a numerical for:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">print</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">"hi"</span> <span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">t</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+<span class="k">end</span>
+<span class="c1">-- 1	10</span>
+<span class="c1">-- 2	function: 0x561090ff8730</span>
+<span class="c1">-- 3	12</span>
+<span class="c1">-- 4	hi</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-table-library">3.5.5. The table library</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The function <code>table.insert</code> inserts an element in a given position of a sequence, moving up other elements to open space. Without a position, it inserts the element in the last position of the sequence, moving no elements.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span> <span class="p">}</span>
+<span class="nb">table.insert</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 1	50</span>
+<span class="c1">-- 2	10</span>
+<span class="c1">-- 3	20</span>
+<span class="c1">-- 4	30</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The function <code>table.remove</code> removes and returns an element from the given position in a sequence, moving subsequent elements down to fill the gap. Without a position, it removes the last element of the sequence.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span> <span class="p">}</span>
+<span class="nb">table.remove</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1">-- 1	10</span>
+<span class="c1">-- 2	20</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="functions">3.6. Functions</h3>
+<div class="paragraph">
+<p>Functions are the main mechanism for abstraction of statements and expressions in Lua.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">print</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span>  <span class="c1">-- as a statement</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nb">math.sin</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="nb">math.cos</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">-- as an expression</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">os.date</span><span class="p">())</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a function has one single argument and that argument is either a literal string or a table constructor, then the parentheses in the call are optional:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">print</span> <span class="s2">"Hello World"</span>   <span class="c1">--&gt; print("Hello World")</span>
+<span class="nb">dofile</span> <span class="s1">'a.lua'</span>        <span class="c1">--&gt; dofile ('a.lua')</span>
+<span class="nb">print</span> <span class="s">[[a multi-line  --&gt; print([[a multi-line
+message]]</span> <span class="n">message</span><span class="p">]])</span>
+<span class="n">f</span><span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">}</span>         <span class="c1">--&gt; f({x=10, y=20})</span>
+<span class="nb">type</span><span class="p">{}</span>                <span class="c1">--&gt; type({})</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A Lua program can use functions defined both in Lua and in C (or in any other language used by the host application).</p>
+</li>
+<li>
+<p>A function definition in Lua has a conventional syntax, like here:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="c1">-- add the elements of sequence 'a'</span>
+<span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span> <span class="k">do</span>
+        <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">sum</span>
+<span class="k">end</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua adjusts the number of arguments to the number of parameters by throwing away extra arguments and supplying nils to extra parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">end</span>
+
+<span class="n">f</span><span class="p">()</span>        <span class="c1">-- nil 	nil</span>
+<span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>       <span class="c1">-- 3		nil</span>
+<span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>    <span class="c1">-- 3		4</span>
+<span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">-- 3		4	(5 is discarded)</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="multiple-results">3.6.1. Multiple results</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Functions that we write in Lua also can return multiple results, by listing them all after the <code>return</code> keyword.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">mi</span> <span class="o">=</span> <span class="mi">1</span>    <span class="c1">-- index of the maximum value</span>
+    <span class="kd">local</span> <span class="n">m</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="c1">-- maximum value</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">m</span> <span class="k">then</span>
+            <span class="n">mi</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">mi</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">maximum</span><span class="p">({</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">5</span> <span class="p">}))</span>  <span class="c1">-- 23	3</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Lua always adjusts the number of results from a function to the circumstances of the call.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When call a function as a statement, Lua discards all results from the function.</p>
+</li>
+<li>
+<p>When use a call as an expression (e.g., the operand of an addition), Lua keeps only the first result.</p>
+</li>
+<li>
+<p>Lua gives all results only when the call is the last (or the only) expression in a list of expressions: multiple assignments, arguments to function calls, table constructors, and return statements.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">foo0</span><span class="p">()</span> <span class="k">end</span>                  <span class="c1">-- returns no results</span>
+<span class="k">function</span> <span class="nf">foo1</span><span class="p">()</span> <span class="k">return</span> <span class="s2">"a"</span> <span class="k">end</span>       <span class="c1">-- returns 1 result</span>
+<span class="k">function</span> <span class="nf">foo2</span><span class="p">()</span> <span class="k">return</span> <span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span> <span class="k">end</span>  <span class="c1">-- returns 2 results</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>In a multiple assignment, a function call as the last (or only) expression produces as many results as needed to match the variables:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo2</span><span class="p">()</span>        <span class="c1">-- x="a", y="b"</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">foo2</span><span class="p">()</span>           <span class="c1">-- x="a", "b" is discarded</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">foo2</span><span class="p">()</span> <span class="c1">-- x=10, y="a", z="b"</span>
+
+<span class="c1">-- In a multiple assignment, if a function has fewer results than we</span>
+<span class="c1">-- need, Lua produces nils for the missing values:</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo0</span><span class="p">()</span>        <span class="c1">-- x=nil, y=nil</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo1</span><span class="p">()</span>        <span class="c1">-- x="a", y=nil</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">foo2</span><span class="p">()</span>     <span class="c1">-- x="a", y="b", z=nil</span>
+
+<span class="c1">-- A function call that is not the last</span>
+<span class="c1">-- element in the list always produces exactly one result:</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo2</span><span class="p">(),</span> <span class="mi">20</span>    <span class="c1">-- x="a", y=20 ('b' discarded)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo0</span><span class="p">(),</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span> <span class="c1">-- x=nil, y=20 (30 is discarded)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>When a function call is the last (or the only) argument to another call, all results from the first call go as arguments.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="nb">print</span><span class="p">(</span><span class="n">foo0</span><span class="p">())</span>        <span class="c1">--&gt; (no results)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo1</span><span class="p">())</span>        <span class="c1">--&gt; a</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo2</span><span class="p">())</span>        <span class="c1">--&gt; a b</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo2</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>     <span class="c1">--&gt; a 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo2</span><span class="p">()</span> <span class="o">..</span> <span class="s2">"x"</span><span class="p">)</span> <span class="c1">--&gt; ax</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A constructor also collects all results from a call, without any adjustments:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="n">foo0</span><span class="p">()</span> <span class="p">}</span>          <span class="c1">-- t = {} (an empty table)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="n">foo1</span><span class="p">()</span> <span class="p">}</span>          <span class="c1">-- t = {"a"}</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="n">foo2</span><span class="p">()</span> <span class="p">}</span>          <span class="c1">-- t = {"a", "b"}</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">{</span> <span class="n">foo0</span><span class="p">(),</span> <span class="n">foo2</span><span class="p">(),</span> <span class="mi">4</span> <span class="p">}</span> <span class="c1">-- t[1] = nil, t[2] = "a", t[3] = 4</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Finally, a statement like <code>return f()</code> returns all values returned by <code>f</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">foo</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+        <span class="k">return</span> <span class="n">foo0</span><span class="p">()</span>
+    <span class="k">elseif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">then</span>
+        <span class="k">return</span> <span class="n">foo1</span><span class="p">()</span>
+    <span class="k">elseif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">then</span>
+        <span class="k">return</span> <span class="n">foo2</span><span class="p">()</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>     <span class="c1">--&gt; a</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>     <span class="c1">--&gt; a b</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>     <span class="c1">-- (no results)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>     <span class="c1">-- (no results)</span>
+
+<span class="c1">-- force a call to return exactly one result by enclosing it in an</span>
+<span class="c1">-- extra pair of parentheses:</span>
+<span class="nb">print</span><span class="p">((</span><span class="n">foo0</span><span class="p">()))</span> <span class="c1">--&gt; nil</span>
+<span class="nb">print</span><span class="p">((</span><span class="n">foo1</span><span class="p">()))</span> <span class="c1">--&gt; a</span>
+<span class="nb">print</span><span class="p">((</span><span class="n">foo2</span><span class="p">()))</span> <span class="c1">--&gt; a</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="variadic-functions">3.6.2. Variadic Functions</h4>
+<div class="paragraph">
+<p>A function in Lua can be variadic (<code>&#8230;&#8203;</code>), that is, it can take a variable number of arguments.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To iterate over its extra arguments as a sequence, a function can use the expression <code>{&#8230;&#8203;}</code> or <code>table.pack</code> to collect them all in a table.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span> <span class="k">do</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">v</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">s</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>     <span class="c1">--&gt; 54</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">nonils</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">arg</span> <span class="o">=</span> <span class="nb">table.pack</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">n</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span> <span class="k">return</span> <span class="kc">false</span> <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="kc">true</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">nonils</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>   <span class="c1">--&gt; false</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nonils</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>        <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nonils</span><span class="p">())</span>            <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nonils</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>         <span class="c1">--&gt; false</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The three-dot expression is a <em>vararg expression</em>, which behaves like a multiple return function, returning all <em>extra arguments</em> of the current function.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="k">function</span> <span class="nf">echo</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">...</span>
+<span class="k">end</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">echo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>  <span class="c1">-- 1	3	5	7</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-io-library">4. The I/O library</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The I/O library provides two different styles for file manipulation. The first one uses <em>implicit file descriptors</em>; that is, there are operations to set a default input file and a default output file, and all input/output operations are over these default files. The second style uses <em>explicit file descriptors</em>.</p>
+</div>
+<div class="paragraph">
+<p>When using implicit file descriptors, all operations are supplied by table <code>io</code>. When using explicit file descriptors, the operation <code>io.open</code> returns a file descriptor and then all operations are supplied as methods of the file descriptor.</p>
+</div>
+<div class="paragraph">
+<p>The table <code>io</code> also provides three predefined file descriptors with their usual meanings from C: <code>io.stdin</code>, <code>io.stdout</code>, and <code>io.stderr</code>. The I/O library never closes these files.</p>
+</div>
+<div class="paragraph">
+<p>Unless otherwise stated, all I/O functions return <code>nil</code> on failure (plus an <em>error message</em> as a second result and a system-dependent <em>error code</em> as a third result) and some value different from <code>nil</code> on success.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="lua-manual"></a>[1] <a href="https://lua.org/manual/5.4/manual.html" class="bare">https://lua.org/manual/5.4/manual.html</a></p>
+</li>
+<li>
+<p><a id="programming-in-lua"></a>[2] Programming in Lua, Fourth Edition, Roberto Ierusalimschy</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

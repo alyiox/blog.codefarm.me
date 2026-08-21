@@ -1,0 +1,3212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>CI/CD Builds on Jenkins | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="CI/CD Builds on Jenkins" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Distributed Builds Architecture 2. Nodes and Components 2.1. Controllers 2.2. Agents 2.3. Nodes 2.4. Executors 3. Installing Jenkins with Docker 3.1. Configuring Controller 3.2. Configuring Jenkins SSH Credential 3.3. Configuring Agents using SSH Connector in Docker 3.4. Configuring Agents running Docker in Docker 4. Blue Ocean 5. Pipeline 5.1. Pipeline Concepts 5.2. Pipelines Creating 5.3. Jenkinsfile 5.4. Environment Variables and Credentials 5.5. Using Docker 5.5.1. Workspace Synchronization 5.5.2. Caching Data for Containers 5.5.3. Using Multiple Containers 5.6. Deploying on Kubernetes 5.7. Using SSH on a remote machine 6. Installing a Jenkins agent on Windows 6.1. Install OpenSSH for Windows…" />
+<meta name="twitter:description" property="og:description" content="1. Distributed Builds Architecture 2. Nodes and Components 2.1. Controllers 2.2. Agents 2.3. Nodes 2.4. Executors 3. Installing Jenkins with Docker 3.1. Configuring Controller 3.2. Configuring Jenkins SSH Credential 3.3. Configuring Agents using SSH Connector in Docker 3.4. Configuring Agents running Docker in Docker 4. Blue Ocean 5. Pipeline 5.1. Pipeline Concepts 5.2. Pipelines Creating 5.3. Jenkinsfile 5.4. Environment Variables and Credentials 5.5. Using Docker 5.5.1. Workspace Synchronization 5.5.2. Caching Data for Containers 5.5.3. Using Multiple Containers 5.6. Deploying on Kubernetes 5.7. Using SSH on a remote machine 6. Installing a Jenkins agent on Windows 6.1. Install OpenSSH for Windows…" />
+<link rel="canonical" href="https://blog.codefarm.me/ci-and-cd-on-jenkins/" />
+<meta property="og:url" content="https://blog.codefarm.me/ci-and-cd-on-jenkins/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-26T15:01:54+08:00" />
+<meta property="article:modified_time" content="2024-01-26T15:01:54+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="CI/CD Builds on Jenkins" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-01-26T15:01:54+08:00","datePublished":"2024-01-26T15:01:54+08:00","description":"1. Distributed Builds Architecture 2. Nodes and Components 2.1. Controllers 2.2. Agents 2.3. Nodes 2.4. Executors 3. Installing Jenkins with Docker 3.1. Configuring Controller 3.2. Configuring Jenkins SSH Credential 3.3. Configuring Agents using SSH Connector in Docker 3.4. Configuring Agents running Docker in Docker 4. Blue Ocean 5. Pipeline 5.1. Pipeline Concepts 5.2. Pipelines Creating 5.3. Jenkinsfile 5.4. Environment Variables and Credentials 5.5. Using Docker 5.5.1. Workspace Synchronization 5.5.2. Caching Data for Containers 5.5.3. Using Multiple Containers 5.6. Deploying on Kubernetes 5.7. Using SSH on a remote machine 6. Installing a Jenkins agent on Windows 6.1. Install OpenSSH for Windows…","headline":"CI/CD Builds on Jenkins","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/ci-and-cd-on-jenkins/"},"url":"https://blog.codefarm.me/ci-and-cd-on-jenkins/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">CI/CD Builds on Jenkins</h1><p class="c-post-meta">03 Mar 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#distributed-builds-architecture">1. Distributed Builds Architecture</a></li>
+<li><a href="#nodes-and-components">2. Nodes and Components</a>
+<ul class="sectlevel2">
+<li><a href="#controllers">2.1. Controllers</a></li>
+<li><a href="#agents">2.2. Agents</a></li>
+<li><a href="#nodes">2.3. Nodes</a></li>
+<li><a href="#executors">2.4. Executors</a></li>
+</ul>
+</li>
+<li><a href="#installing-jenkins-with-docker">3. Installing Jenkins with Docker</a>
+<ul class="sectlevel2">
+<li><a href="#configuring-controller">3.1. Configuring Controller</a></li>
+<li><a href="#configuring-jenkins-ssh-credential">3.2. Configuring Jenkins SSH Credential</a></li>
+<li><a href="#configuring-agents-using-ssh-connector-in-docker">3.3. Configuring Agents using SSH Connector in Docker</a></li>
+<li><a href="#configuring-agents-running-docker-in-docker">3.4. Configuring Agents running Docker in Docker</a></li>
+</ul>
+</li>
+<li><a href="#blue-ocean">4. Blue Ocean</a></li>
+<li><a href="#pipeline">5. Pipeline</a>
+<ul class="sectlevel2">
+<li><a href="#pipeline-concepts">5.1. Pipeline Concepts</a></li>
+<li><a href="#pipelines-creating">5.2. Pipelines Creating</a></li>
+<li><a href="#jenkinsfile">5.3. Jenkinsfile</a></li>
+<li><a href="#environment-variables-and-credentials">5.4. Environment Variables and Credentials</a></li>
+<li><a href="#using-docker">5.5. Using Docker</a>
+<ul class="sectlevel3">
+<li><a href="#workspace-synchronization">5.5.1. Workspace Synchronization</a></li>
+<li><a href="#caching-data-for-containers">5.5.2. Caching Data for Containers</a></li>
+<li><a href="#using-multiple-containers">5.5.3. Using Multiple Containers</a></li>
+</ul>
+</li>
+<li><a href="#deploying-on-kubernetes">5.6. Deploying on Kubernetes</a></li>
+<li><a href="#using-ssh-on-a-remote-machine">5.7. Using SSH on a remote machine</a></li>
+</ul>
+</li>
+<li><a href="#installing-a-jenkins-agent-on-windows">6. Installing a Jenkins agent on Windows</a>
+<ul class="sectlevel2">
+<li><a href="#install-openssh-for-windows">6.1. Install OpenSSH for Windows</a></li>
+<li><a href="#create-a-local-user-for-jenkin-on-windows-agent">6.2. Create a Local User for Jenkin on Windows Agent</a></li>
+<li><a href="#copy-the-public-key-to-the-windows-agent">6.3. Copy the public key to the Windows Agent</a></li>
+<li><a href="#install-jdk-on-windows-agent">6.4. Install JDK on Windows Agent</a></li>
+<li><a href="#configure-jenkins-agent-in-jenkins">6.5. Configure Jenkins Agent in Jenkins:</a></li>
+</ul>
+</li>
+<li><a href="#gitlab-jenkins-integration">Appendix A: GitLab Jenkins Integration</a>
+<ul class="sectlevel2">
+<li><a href="#install-gitlab-using-docker">A.1. Install GitLab using Docker</a></li>
+</ul>
+</li>
+<li><a href="#sonatype-nexus-repository-oss">Appendix B: Sonatype Nexus Repository OSS</a>
+<ul class="sectlevel2">
+<li><a href="#installing-nexus-repository-with-docker">B.1. Installing Nexus Repository with Docker</a></li>
+<li><a href="#docker-hosted-repositories">B.2. Docker Hosted Repositories</a></li>
+<li><a href="#nuget-hosted-repositories">B.3. NuGet Hosted Repositories</a></li>
+</ul>
+</li>
+<li><a href="#jenkins-for-a-net-application-using-docker">Appendix C: Jenkins for a .NET application using Docker</a></li>
+<li><a href="#reverse-proxy-for-jenkins">Appendix D: Reverse proxy for Jenkins</a></li>
+<li><a href="#openssh-for-windows">Appendix E: OpenSSH for Windows</a>
+<ul class="sectlevel2">
+<li><a href="#install-openssh-for-windows-2">E.1. Install OpenSSH for Windows</a></li>
+<li><a href="#connect-to-openssh-server">E.2. Connect to OpenSSH Server</a></li>
+<li><a href="#uninstall-openssh-for-windows">E.3. Uninstall OpenSSH for Windows</a></li>
+<li><a href="#openssh-configuration-files">E.4. OpenSSH configuration files</a>
+<ul class="sectlevel3">
+<li><a href="#configuring-the-default-shell-for-openssh-in-windows">E.4.1. Configuring the default shell for OpenSSH in Windows</a></li>
+<li><a href="#authorizedkeysfile">E.4.2. AuthorizedKeysFile</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <em>controller</em> is a central, coordinating process which stores configuration, loads plugins, and renders the various user interfaces for Jenkins.</p>
+</div>
+<div class="paragraph">
+<p>An <em>agent</em> is typically a machine, or container, which connects to a Jenkins controller and executes tasks when directed by the controller.</p>
+</div>
+<div class="paragraph">
+<p>A node is a machine which is part of the Jenkins environment and capable of executing Pipelines or jobs. Both the Controller and Agents are considered to be Nodes.</p>
+</div>
+<div class="paragraph">
+<p>An <em>executor</em> is a slot for execution of work defined by a Pipeline or job on a Node. A Node may have zero or more Executors configured which corresponds to how many concurrent Jobs or Pipelines are able to execute on that Node.</p>
+</div>
+<div class="paragraph">
+<p>A <em>workspace</em> is disposable directory on the file system of a Node where work can be done by a Pipeline or job. Workspaces are typically left in place after a Build or Pipeline run completes unless specific Workspace cleanup policies have been put in place on the Jenkins Controller. <a href="#glossary">[1]</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="distributed-builds-architecture">1. Distributed Builds Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Jenkins controller can operate by itself both managing the build environment and executing the builds with its own executors and resources. If you stick with this "standalone" configuration you will most likely run out of resources when the number or the load of your projects increase.</p>
+</div>
+<div class="paragraph">
+<p>An agent, where the workload of building projects are delegated to, is a machine set up to offload projects from the controller. The method with which builds are scheduled depends on the configuration given to each project. For example, some projects may be configured to "restrict where this project is run" which ties the project to a specific agent or set of labeled agents. Other projects which omit this configuration will select an agent from the available pool in Jenkins.</p>
+</div>
+<div class="paragraph">
+<p>In a distributed builds environment, the Jenkins controller will use its resources to only handle HTTP requests and manage the build environment. Actual execution of builds will be delegated to the agents. With this configuration it is possible to horizontally scale an architecture, which allows a single Jenkins installation to host a large number of projects and build environments. <a href="#architecting-for-scale">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>In order for a machine to be recognized as an agent, it needs to run a specific agent program to establish bi-directional communication with the controller.</p>
+</div>
+<div class="paragraph">
+<p>There are different ways to establish a connection between controller and agent:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <strong>SSH connector</strong>: Configuring an agent to use the SSH connector is the preferred and the most stable way to establish controller-agent communication.</p>
+</li>
+<li>
+<p>The <strong>Inbound connector</strong>: In this case the communication is established starting the agent through a connection initiated by an agent program.</p>
+</li>
+<li>
+<p>The <strong>Inbound-HTTP connector</strong>: This approach is quite similar to the Inbound-TCP Java Web Start approach, with the difference in this case being that the agent is executed as headless and the connection can be tunneled via HTTP(s).</p>
+</li>
+<li>
+<p><strong>Custom-script</strong>: It is also possible to create a custom script to initialize the communication between controller and agent if the other solutions do not provide enough flexibility for a specific use-case.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="nodes-and-components">2. Nodes and Components</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Builds in a distributed builds architecture use <em>nodes</em>, <em>agents</em>, and <em>executors</em>, which are distinct from the Jenkins controller itself. Understanding what each of these components are is useful when managing nodes: <a href="#managing-nodes">[3]</a></p>
+</div>
+<div class="sect2">
+<h3 id="controllers">2.1. Controllers</h3>
+<div class="paragraph">
+<p>The Jenkins <em>controller</em> is the Jenkins service itself and where Jenkins is installed. It is also a web server that also acts as a "brain" for deciding how, when, and where to run tasks. Management tasks such as configuration, authorization, and authentication are executed on the controller, which serves HTTP requests. Files written when a Pipeline executes are written to the filesystem on the controller, unless they are off-loaded to an artifact repository such as Nexus or Artifactory.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="agents">2.2. Agents</h3>
+<div class="paragraph">
+<p><em>Agents</em> manage the task execution on behalf of the Jenkins controller by using executors. An agent is a small (170KB single jar) Java client process that connects to a Jenkins controller and is assumed to be unreliable. An agent can use any operating system that supports Java. Any tools required for building and testing get installed on the node where the agent runs. Because these tools are a part of the node, they can be installed directly or in a container, such as Docker or Kubernetes. Each agent is effectively a process with its own Process Identifier (PID) on the host machine. In practice, nodes and agents are essentially the same but it is good to remember that they are conceptually distinct.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nodes">2.3. Nodes</h3>
+<div class="paragraph">
+<p><em>Nodes</em> are the "machines" on which build agents run. Jenkins monitors each attached node for disk space, free temp space, free swap, clock time/sync, and response time. A node is taken offline if any of these values go outside the configured threshold. Jenkins supports two types of nodes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>agents</strong> (described above)</p>
+</li>
+<li>
+<p><strong>built-in node</strong></p>
+<div class="paragraph">
+<p>The built-in node is a node that exists within the controller process. It is possible to use agents and the build-in node to run tasks. However, running tasks on the built-in node is discouraged for security, performance, and scalability reasons. The number of executors configured for the node determines the node’s ability to run tasks. <em>Set the number of executors to 0 to disable running tasks on the built-in node.</em></p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="executors">2.4. Executors</h3>
+<div class="paragraph">
+<p>An <em>executor</em> is a slot for the execution of tasks. Effectively, it is a thread in the agent. The number of executors on a node defines the number of concurrent tasks that can run. In other words, this determines the number of concurrent Pipeline <em>stages</em> that can execute at the same time. Determine the correct number of executors per build node must be determined based on the resources available on the node and the resources required for the workload. When determining how many executors to run on a node, consider CPU and memory requirements, as well as the amount of I/O and network activity:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>One executor per node is the safest configuration.</p>
+</li>
+<li>
+<p>One executor per CPU core can work well, if the tasks running are small.</p>
+</li>
+<li>
+<p>Monitor I/O performance, CPU load, memory usage, and I/O throughput carefully when running multiple executors on a node.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installing-jenkins-with-docker">3. Installing Jenkins with Docker</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Due to Docker’s fundamental platform and container design, a Docker image for a given application, such as Jenkins, can be run on any supported operating system or cloud service also running Docker. <a href="#installing-docker">[4]</a></p>
+</div>
+<div class="sect2">
+<h3 id="configuring-controller">3.1. Configuring Controller</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open up a terminal window, and create a directory named <em>controller</em>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">mkdir </span>controller
+<span class="nb">cd </span>controller</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a groovy file named <code>executors.groovy</code> with the following content.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+<span class="n">Jenkins</span><span class="o">.</span><span class="na">instance</span><span class="o">.</span><span class="na">setNumExecutors</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="c1">// Recommended to not run builds on the built-in node</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a bridge network for the controller.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create <span class="nt">-d</span> bridge jenkins-controller</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a compose file named <code>compose.yml</code> with the following content.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">jenkins</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">controller</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">jenkins-controller</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+      <span class="na">dockerfile_inline</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">ARG JENKINS_TAG=2.426.3-jdk21</span>
+        <span class="s">FROM jenkins/jenkins:$${JENKINS_TAG} </span><i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="s">COPY --chown=jenkins:jenkins executors.groovy /usr/share/jenkins/ref/init.groovy.d/executors.groovy </span><i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8080:8080"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">50000:50000"</span> <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">jenkins-home:/var/jenkins_home:rw</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">controller</span><span class="pi">:</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">jenkins-home</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-home</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">controller</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span> <i class="conum" data-value="6"></i><b>(6)</b>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-controller</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use the recommended official <a href="https://hub.docker.com/r/jenkins/jenkins/">jenkins/jenkins</a> image from the Docker Hub repository. <a href="#installing-docker">[4]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Extend the image and change it to your desired number of executors (recommended 0 executors on the built-in node). <a href="#docker-readme-md">[5]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Always restart the container if it stops. If it&#8217;s manually stopped, it&#8217;s restarted only when Docker daemon restarts or the container itself is manually restarted. (See the bullet listed in <a href="https://docs.docker.com/config/containers/start-containers-automatically/#restart-policy-details">restart policy details</a>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>In order to connect agents through an inbound TCP connection, map the port: <code>-p 50000:50000</code>. That port will be used when you connect agents to the controller.
+<div class="paragraph">
+<p>If you are only using <a href="https://plugins.jenkins.io/ssh-slaves">SSH (outbound) build agents</a>, this port is not required, as connections are established from the controller. If you connect agents using web sockets (since Jenkins 2.217), the TCP agent port is not used either. <a href="#docker-readme-md">[5]</a></p>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>NOTE: Avoid using a <a href="https://docs.docker.com/storage/bind-mounts/">bind mount</a> from a folder on the host machine into <em>/var/jenkins_home</em>, as this might result in file permission issues (the user used inside the container might not have rights to the folder on the host machine). If you <em>really</em> need to bind mount jenkins_home, ensure that the directory on the host is accessible by the jenkins user inside the container (jenkins user - uid 1000) or use <code>-u some_other_user</code> parameter with <code>docker run</code>. <a href="#docker-readme-md">[5]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><code>external</code> specifies that this network’s lifecycle is maintained outside of that of the application.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>(Optional) Create a compose file named <code>compose.override.yml</code> with the following content.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Docker Compose lets you merge and override a set of Compose files together to create a composite Compose file.</p>
+</div>
+<div class="paragraph">
+<p>By default, Compose reads two files, a <em>compose.yml</em> and an optional <em>compose.override.yml</em> file. By convention, the <em>compose.yml</em> contains your base configuration. The override file can contain configuration overrides for existing services or entirely new services. <a href="#multiple-compose-files">[8]</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">services</span><span class="pi">:</span>
+  <span class="na">controller</span><span class="pi">:</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">args</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">JENKINS_TAG=2.426.3-jdk21</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">TZ=Asia/Shanghai</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Starting the controller container:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Post-installation setup wizard.</p>
+<div class="paragraph">
+<p>Following this <a href="https://www.jenkins.io/doc/book/installing/docker/#setup-wizard">Post-installation setup</a> to finish the last steps.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Print the password at console.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>docker inspect jenkins-home
+<span class="c">...
+</span><span class="go">        "Mountpoint": "/var/lib/docker/volumes/jenkins-home/_data",
+        "Name": "jenkins-home",
+</span><span class="c">...
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo cat</span> /var/lib/docker/volumes/jenkins-home/_data/secrets/initialAdminPassword
+<span class="go">80df7355be5c4b15933742f7024dd739</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>(Optional) Expose Jeknins with a Kubernetes service.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">jenkins</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">8080</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">discovery.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">EndpointSlice</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-1</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">kubernetes.io/service-name</span><span class="pi">:</span> <span class="s">jenkins</span>
+<span class="na">addressType</span><span class="pi">:</span> <span class="s">IPv4</span>
+<span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+    <span class="na">appProtocol</span><span class="pi">:</span> <span class="s">http</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+<span class="na">endpoints</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">addresses</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">192.168.56.130"</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins.dev.test</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">jenkins</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">nginx.ingress.kubernetes.io/ssl-redirect</span><span class="pi">:</span> <span class="s2">"</span><span class="s">false"</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ingressClassName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">nginx"</span>
+  <span class="na">tls</span><span class="pi">:</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="pi">-</span> <span class="na">hosts</span><span class="pi">:</span>
+      <span class="pi">-</span>  <span class="s2">"</span><span class="s">*.dev.test"</span>
+      <span class="na">secretName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">dev.test"</span>
+  <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">jenkins.dev.test</span> <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="na">http</span><span class="pi">:</span>
+        <span class="na">paths</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+            <span class="na">pathType</span><span class="pi">:</span> <span class="s">ImplementationSpecific</span>
+            <span class="na">backend</span><span class="pi">:</span>
+              <span class="na">service</span><span class="pi">:</span>
+                <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins</span>
+                <span class="na">port</span><span class="pi">:</span>
+                  <span class="na">number</span><span class="pi">:</span> <span class="s">8080</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace the IP address with the server hosting the Jenkins controller, e.g, <code>192.168.56.130</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Replace the TLS and hosts of the Ingress with your settings.</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-jenkins-ssh-credential">3.2. Configuring Jenkins SSH Credential</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Generating an SSH key pair.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To generate the SSH key pair, execute a command line tool named <code>ssh-keygen</code> on a machine you have access to. <a href="#using-agents">[6]</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-t</span> ed25519 <span class="nt">-f</span> ~/.ssh/jenkins_agent_key</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Jenkins SSH credential.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to your Jenkins dashboard.</p>
+</li>
+<li>
+<p>Go to <strong>Manage Jenkins</strong> option in left main menu and click on the <strong>Credentials</strong> button under the <strong>Security</strong>.</p>
+</li>
+<li>
+<p>Select the drop option <strong>Add Credentials</strong> from the <code>(global)</code> item under the <strong>Stores scoped to Jenkins</strong>.</p>
+</li>
+<li>
+<p>Fill in the form.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Kind: <em>SSH Username with private key</em></p>
+</li>
+<li>
+<p>ID: <em>jenkins</em></p>
+</li>
+<li>
+<p>Description: <em>Jenkins SSH private key</em></p>
+</li>
+<li>
+<p>Username: <em>jenkins</em></p>
+</li>
+<li>
+<p>Private Key: Select <strong>Enter directly</strong> and press the <strong>Add</strong> button to insert the content of your private key file at <em>~/.ssh/jenkins_agent_key</em>.</p>
+</li>
+<li>
+<p>Passphrase: Fill your passphrase used to generate the SSH key pair (leave empty if you didn’t use one at the previous step) and then press the <strong>Create</strong> button.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-agents-using-ssh-connector-in-docker">3.3. Configuring Agents using SSH Connector in Docker</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open up a terminal window, and create a directory named <em>agents</em>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">mkdir </span>agents
+<span class="nb">cd </span>agents</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a bridge network for the agent.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create <span class="nt">-d</span> bridge jenkins-agents</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a compose file named <code>compose.yml</code> with the following content.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agents</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">agent</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">jenkins-agent</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">jenkins/ssh-agent:alpine-jdk21</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">2200:22"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">JENKINS_AGENT_SSH_PUBKEY=[your-public-key]"</span> <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="c1"># e.g. - "JENKINS_AGENT_SSH_PUBKEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBBHLJ+8RuLPO8dO1tm3RAt5kc3HqYwJUYMmRPjhtI3" </span><i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">agent-home:/home/jenkins/agent:rw</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">agents</span><span class="pi">:</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">agent-home</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agent-home</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">agents</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agents</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The value of <code>JENKINS_AGENT_SSH_PUBKEY</code> MUST include the full contents of your .pub file created above (i.e. <em>~/.ssh/jenkins_agent_key.pub</em>), including the <code>ssh-XXXX</code> prefix. <a href="#using-agents">[6]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When using the Linux image, you have to set the value of the <strong>Remote root directory</strong> to <code>/home/jenkins/agent</code> in the agent configuration UI.
+<div class="paragraph">
+<p>When using the Windows image, you have to set the value of the <strong>Remote root directory</strong> to <code>C:/Users/jenkins/Work</code> in the agent configuration UI. <a href="#docker-ssh-agent">[7]</a></p>
+</div></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Starting the agent container.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Setup up the <em>jenkins-agent</em> on jenkins.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to your Jenkins dashboard.</p>
+</li>
+<li>
+<p>Go to <strong>Manage Jenkins</strong> option in left main menu.</p>
+</li>
+<li>
+<p>Go to <strong>Nodes</strong> item under the <strong>System Configuration</strong>.</p>
+</li>
+<li>
+<p>Go to <strong>New Node</strong> option in top right menu.</p>
+</li>
+<li>
+<p>Fill the <strong>Node name</strong> and select the type; (e.g. Name: <em>agent1</em>, Type: <em>Permanent Agent</em>), and then press the <strong>Create</strong> button.</p>
+</li>
+<li>
+<p>Now fill the fields.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Remote root directory; (e.g. <em>/home/jenkins/agent</em>)</p>
+</li>
+<li>
+<p>Labels; (e.g. <em>agent1</em> )</p>
+</li>
+<li>
+<p>Usage; (e.g. <em>Use this node as much as possible</em>)</p>
+</li>
+<li>
+<p>Launch method; (e.g. <em>Launch agents via SSH</em>)</p>
+</li>
+<li>
+<p>Host; (e.g. localhost or your IP address)</p>
+</li>
+<li>
+<p>Credentials; (e.g. <em>jenkins</em>)</p>
+</li>
+<li>
+<p>Host Key verification Strategy (e.g.: <em>Non verifying Verification Strategy</em>. <em>test only, NOT recommended</em>)</p>
+<div class="paragraph">
+<p>See also, <a href="https://github.com/jenkinsci/ssh-agents-plugin/blob/main/doc/CONFIGURE.md#host-key-verification-strategy">Host Key Verification Strategy</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+It&#8217;s recommended to use <code>Manually trusted key Verification Strategy</code>, then enter the agent configure page to trust the host key manually.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Expand the <strong>Advanced</strong> tab, and set the <strong>Port</strong> to be <code>2200</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Press the <strong>Save</strong> button and the agent1 will be registered, and be launched by the Controller.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Delegating the first job to <em>agent1</em>.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to your Jenkins dashboard</p>
+</li>
+<li>
+<p>Select <strong>New Item</strong> on side menu</p>
+</li>
+<li>
+<p>Enter an item name. (e.g.: <em>First Job to Agent1</em>)</p>
+</li>
+<li>
+<p>Select the <strong>Freestyle project</strong> and press <strong>OK</strong>.</p>
+</li>
+<li>
+<p>Now select the option <strong>Execute shell</strong> at <strong>Build Steps</strong> section.</p>
+</li>
+<li>
+<p>Add the command: <code>echo $NODE_NAME</code> in the <strong>Command</strong> field of the <strong>Execute shell</strong> step and the name of the agent will be printed inside the log when this job is run.</p>
+</li>
+<li>
+<p>Press the <strong>Save</strong> button and then select the option <strong>Build Now</strong>.</p>
+</li>
+<li>
+<p>Wait some seconds and then go to <strong>Console Output</strong> page.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">Started by user admin
+Running as SYSTEM
+Building remotely on agent1 in workspace /home/jenkins/agent/workspace/test
+[test] $ /bin/sh -xe /tmp/jenkins5590136104445527177.sh
++ echo agent1
+agent1
+Finished: SUCCESS</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-agents-running-docker-in-docker">3.4. Configuring Agents running Docker in Docker</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open up a terminal window, and create a directory named <em>agents/dind</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">mkdir</span> <span class="nt">-p</span> agents/dind
+<span class="nb">cd </span>agents/dind</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a bridge network for the agent:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create <span class="nt">-d</span> bridge jenkins-agents-dind</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a compose file named <code>compose.yml</code> with the following content:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agents-dind</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">agent</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">jenkins-agent-dind</span>
+    <span class="c1"># image: qqbuby/jenkins-ssh-dind-agent:5.25.0-jdk21</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+      <span class="na">dockerfile_inline</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">ARG SSH_AGENET_TAG=jdk21</span>
+        <span class="s">FROM jenkins/ssh-agent:$${SSH_AGENET_TAG}</span>
+        <span class="s">ARG DOCKER_CE_CLI_VERSION=5:25.0.1-1~debian.12~bookworm</span>
+        <span class="s">RUN apt-get update \</span>
+            <span class="s">&amp;&amp; DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \</span>
+                <span class="s">ca-certificates \</span>
+                <span class="s">curl \</span>
+                <span class="s">lsb-release \</span>
+            <span class="s">&amp;&amp; rm -rf /var/lib/apt/lists/*</span>
+        <span class="s">RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc https://download.docker.com/linux/debian/gpg</span>
+        <span class="s">RUN echo "deb [arch=$(dpkg --print-architecture) \</span>
+                  <span class="s">signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \</span>
+                  <span class="s">https://download.docker.com/linux/debian \</span>
+                  <span class="s">$(lsb_release -cs) stable" &gt; /etc/apt/sources.list.d/docker.list</span>
+        <span class="s">RUN apt-get update \</span>
+            <span class="s">&amp;&amp; DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \</span>
+                <span class="s">docker-ce-cli=$${DOCKER_CE_CLI_VERSION} \ </span><i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="s">&amp;&amp; rm -rf /var/lib/apt/lists/*</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">2210:22"</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">JENKINS_AGENT_SSH_PUBKEY=[your-public-key]"</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="c1"># e.g. - "JENKINS_AGENT_SSH_PUBKEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBBHLJ+8RuLPO8dO1tm3RAt5kc3HqYwJUYMmRPjhtI3"</span>
+      <span class="pi">-</span> <span class="s">DOCKER_HOST=tcp://docker:2376</span>
+      <span class="pi">-</span> <span class="s">DOCKER_CERT_PATH=/certs/client</span>
+      <span class="pi">-</span> <span class="s">DOCKER_TLS_VERIFY=1</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">agent-home:/home/jenkins/agent:rw</span>
+      <span class="pi">-</span> <span class="s">docker-certs:/certs/client:ro</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">agents</span><span class="pi">:</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">docker</span>
+  <span class="na">docker</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">jenkins-docker</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker:25</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">2376"</span>
+    <span class="na">privileged</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">environment</span><span class="pi">:</span>
+       <span class="pi">-</span> <span class="s">DOCKER_TLS_CERTDIR=/certs</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">agent-home:/home/jenkins/agent:rw</span> <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="pi">-</span> <span class="s">docker-certs:/certs/client:rw</span>
+      <span class="pi">-</span> <span class="s">docker-root:/var/lib/docker:rw</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">agents</span><span class="pi">:</span>
+        <span class="na">aliases</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">docker</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">agent-home</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agent-home-dind</span>
+  <span class="na">docker-certs</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agent-docker-certs</span>
+  <span class="na">docker-root</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agent-docker-root</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">agents</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">jenkins-agents-dind</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Extend the <code>jenkins/ssh-agent</code> image to install Docker CLI.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If your machine already has a ssh server running on the <code>22</code> port, use another port to publish the agent container port 22 (SSH), such as <code>2210:22</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The value of <code>JENKINS_AGENT_SSH_PUBKEY</code> MUST include the full contents of your .pub file created above (i.e. <em>~/.ssh/jenkins_agent_key.pub</em>), including the <code>ssh-XXXX</code> prefix. <a href="#using-agents">[6]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Share the agent home volume (i.e. <code>agent-home</code>) to the Docker container, otherwise the pipeline will be stuck.
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">. . .
+process apparently never started in /home/jenkins/agent/workspace/jenkins-getting-started_main@tmp/durable-7a43d858
+(running Jenkins temporarily with -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true might make the problem clearer)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+</span><span class="gp">$</span><span class="w"> </span>docker stop <span class="nt">--time</span><span class="o">=</span>1 383e1c4132052f8e461d87bf75108d3e627623cafe3de5f7f5ca80f843c324ae
+<span class="gp">$</span><span class="w"> </span>docker <span class="nb">rm</span> <span class="nt">-f</span> <span class="nt">--volumes</span> 383e1c4132052f8e461d87bf75108d3e627623cafe3de5f7f5ca80f843c324ae
+<span class="go">[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code -2
+Finished: FAILURE</span></code></pre>
+</div>
+</div></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>(Optional) Create a compose file named <em>compose.override.yml</em> with the following content:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">services</span><span class="pi">:</span>
+  <span class="na">agent</span><span class="pi">:</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">args</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">SSH_AGENET_TAG=jdk21</span>
+        <span class="pi">-</span> <span class="s">DOCKER_CE_CLI_VERSION=5:25.0.1-1~debian.12~bookworm</span>
+  <span class="na">docker</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker:25</span>
+    <span class="c1"># If an insecure registry isn’t marked as insecure,</span>
+    <span class="c1"># docker pull, docker push, and docker search result</span>
+    <span class="c1"># in error messages, prompting the user to either</span>
+    <span class="c1"># secure or pass the --insecure-registry flag to the</span>
+    <span class="c1"># Docker daemon.</span>
+    <span class="c1"># command: ["--insecure-registry=192.168.56.0/24"]</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Starting the agent and docker container:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Refer to <a href="#configuring-agents-using-ssh-connector-in-docker">Configuring agents using the SSH connector in Docker</a> (replace SSH port with <code>2210</code> instead of <code>2200</code>) to setup up the agent on jenkins, and create a <strong>Freestyle project</strong> using <strong>Execute shell</strong> with <code>docker version</code> command, and select the option <strong>Build Now</strong> then go to <strong>Console Output</strong> page.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">Started by user admin
+Running as SYSTEM
+Building remotely on agent1 in workspace /home/jenkins/agent/workspace/test
+[test] $ /bin/sh -xe /tmp/jenkins2069680891022148280.sh
++ docker version
+Client: Docker Engine - Community
+ Version:           25.0.1
+ API version:       1.44
+ Go version:        go1.21.6
+ Git commit:        29cf629
+ Built:             Tue Jan 23 23:09:46 2024
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          25.0.1
+  API version:      1.44 (minimum version 1.24)
+  Go version:       go1.21.6
+  Git commit:       71fa3ab
+  Built:            Tue Jan 23 23:09:59 2024
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v1.7.12
+  GitCommit:        71909c1814c544ac47ab91d2e8b84718e517bb99
+ runc:
+  Version:          1.1.11
+  GitCommit:        v1.1.11-0-g4bccb38
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+Finished: SUCCESS</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="blue-ocean">4. Blue Ocean</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Blue Ocean as it stands provides easy-to-use Pipeline visualization. It was intended to be a rethink of the Jenkins user experience, designed from the ground up for Jenkins Pipeline. Blue Ocean was intended to reduce clutter and increases clarity for all users. <a href="#book-blueocean">[9]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Sophisticated visualization</strong> of continuous delivery (CD) Pipelines, allowing for fast and intuitive comprehension of your Pipeline’s status.</p>
+</li>
+<li>
+<p><strong>Pipeline editor</strong> makes the creation of Pipelines more approachable, by guiding the user through a visual process to create a Pipeline.</p>
+</li>
+<li>
+<p><strong>Personalization</strong> to suit the role-based needs of each member of the team.</p>
+</li>
+<li>
+<p><strong>Pinpoint precision</strong> when intervention is needed or issues arise. Blue Ocean shows where attention is needed, facilitating exception handling and increasing productivity.</p>
+</li>
+<li>
+<p><strong>Native integration for branches and pull requests</strong>, which enables maximum developer productivity when collaborating on code in GitHub and Bitbucket.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When Jenkins is installed on most platforms, the Blue Ocean plugin and all necessary dependent plugins, which compile the Blue Ocean suite of plugins, are not installed by default.</p>
+</div>
+<div class="paragraph">
+<p>To install the Blue Ocean suite of plugins on an existing Jenkins instance: <a href="#book-blueocean-gs">[10]</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Ensure you are logged in to Jenkins as a user with the <strong>Administer</strong> permission.</p>
+</li>
+<li>
+<p>From the Jenkins home page, select <strong>Manage Jenkins</strong> on the left and then <strong>Plugins</strong> under the <strong>System Configuration</strong>.</p>
+</li>
+<li>
+<p>Select the <strong>Available plugins</strong> tab and enter <code>blueocean</code> in the <strong>Filter</strong> text box. This filters the list of plugins based on the name and description.</p>
+</li>
+<li>
+<p>Select the box to the left of <strong>Blue Ocean</strong>, and then select either the <strong>Install after restart</strong> option (recommended) or the <strong>Install</strong> without restart option at the top right of the page.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>It is not necessary to select other plugins in this list. The main <strong>Blue Ocean</strong> plugin automatically selects and installs all dependent plugins, composing the Blue Ocean suite of plugins.</p>
+</div>
+<div class="paragraph">
+<p>If you select the <strong>Install without restart</strong> option, you must restart Jenkins to gain full Blue Ocean functionality.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Once a Jenkins environment has Blue Ocean installed and log in to the Jenkins classic UI, the Blue Ocean UI can be accessed by selecting <strong>Open Blue Ocean</strong> on the left side of the screen.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, access Blue Ocean directly by appending <code>/blue</code> to the end of the Jenkins server’s URL. For example <code><a href="https://jenkins-server-url/blue" class="bare">https://jenkins-server-url/blue</a></code>.</p>
+</div>
+<div class="paragraph">
+<p>If you need to access these features, select the <strong>Go to classic</strong> icon at the top of a common section of Blue Ocean’s navigation bar.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pipeline">5. Pipeline</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Jenkins Pipeline (or simply "Pipeline" with a capital "P") is a suite of plugins which supports implementing and integrating continuous delivery pipelines into Jenkins.</p>
+</div>
+<div class="paragraph">
+<p>The definition of a Jenkins Pipeline is written into a text file (called a <code>Jenkinsfile</code>) which in turn can be committed to a project’s source control repository, which is the foundation of "Pipeline-as-code"; treating the CD pipeline as a part of the application to be versioned and reviewed like any other code. <a href="#book-pipeline">[9]</a></p>
+</div>
+<div class="sect2">
+<h3 id="pipeline-concepts">5.1. Pipeline Concepts</h3>
+<div class="paragraph">
+<p>The following concepts are key aspects of Jenkins Pipeline, which tie in closely to Pipeline syntax.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Pipeline</strong></p>
+<div class="paragraph">
+<p>A Pipeline is a user-defined model of a CD pipeline. A Pipeline’s code defines your entire build process, which typically includes stages for building an application, testing it and then delivering it.</p>
+</div>
+<div class="paragraph">
+<p>Also, a <code>pipeline</code> block is a key part of <em>Declarative Pipeline syntax</em>.</p>
+</div>
+</li>
+<li>
+<p><strong>Node</strong></p>
+<div class="paragraph">
+<p>A node is a machine which is part of the Jenkins environment and is capable of executing a Pipeline.</p>
+</div>
+<div class="paragraph">
+<p>Also, a <code>node</code> block is a key part of <em>Scripted Pipeline syntax</em>.</p>
+</div>
+</li>
+<li>
+<p><strong>Stage</strong></p>
+<div class="paragraph">
+<p>A <code>stage</code> block defines a conceptually distinct subset of tasks performed through the entire Pipeline (e.g. "Build", "Test" and "Deploy" stages), which is used by many plugins to visualize or present Jenkins Pipeline status/progress.</p>
+</div>
+</li>
+<li>
+<p><strong>Step</strong></p>
+<div class="paragraph">
+<p>A single task. Fundamentally, a <code>step</code> tells Jenkins what to do at a particular point in time (or "step" in the process). For example, to execute the shell command <code>make</code>, use the <code>sh</code> step: <code>sh 'make'</code>. When a plugin extends the Pipeline DSL, that typically means the plugin has implemented a new step.</p>
+</div>
+<div class="paragraph">
+<p>For an overview of available steps, please refer to the <a href="https://www.jenkins.io/doc/pipeline/steps/">Pipeline Steps reference</a> which contains a comprehensive list of steps built into Pipeline as well as steps provided by plugins. <a href="#pipeline-syntax">[12]</a></p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="pipelines-creating">5.2. Pipelines Creating</h3>
+<div class="paragraph">
+<p>A Pipeline can be created in one of the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.jenkins.io/doc/book/blueocean/creating-pipelines/"><strong>Through Blue Ocean</strong></a> - after setting up a Pipeline project in Blue Ocean, the Blue Ocean UI helps you write your Pipeline’s <code>Jenkinsfile</code> and commit it to source control.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Blue Ocean automatically generates an SSH public/private key pair or provides you with an existing pair for the current Jenkins user. This credential is automatically registered in Jenkins with the following details for this Jenkins user:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Domain: <em>blueocean-private-key-domain</em></p>
+</li>
+<li>
+<p>ID: <em>jenkins-generated-ssh-key</em></p>
+</li>
+<li>
+<p>Name: <em>&lt;jenkins-username&gt; (jenkins-generated-ssh-key)</em></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><strong>Through the classic UI</strong> - you can enter a basic Pipeline directly in Jenkins through the classic UI.</p>
+</li>
+<li>
+<p><a href="https://www.jenkins.io/doc/book/pipeline/getting-started/#defining-a-pipeline-in-scm"><strong>In SCM</strong></a> - you can write a <code>Jenkinsfile</code> manually, which you can commit to your project’s source control repository.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <a href="https://www.jenkins.io/doc/book/pipeline/multibranch/">Multibranch Pipeline project</a> type enables you to implement different Jenkinsfiles for different branches of the same project. In a Multibranch Pipeline project, Jenkins automatically discovers, manages and executes Pipelines for branches which contain a <code>Jenkinsfile</code> in source control.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="jenkinsfile">5.3. Jenkinsfile</h3>
+<div class="paragraph">
+<p>Using a text editor, ideally one which supports <a href="http://groovy-lang.org/">Groovy</a> syntax highlighting, create a new Jenkinsfile in the root directory of the project. <a href="#pipeline-jenkinsfile">[11]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">any</span>
+
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Build'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">echo</span> <span class="s1">'Building..'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Test'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">echo</span> <span class="s1">'Testing..'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Deploy'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">echo</span> <span class="s1">'Deploying....'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Declarative Pipeline example above contains the minimum necessary structure to implement a continuous delivery pipeline. The <a href="https://www.jenkins.io/doc/book/pipeline/syntax/#agent">agent directive</a>, which is required, instructs Jenkins to allocate an executor and workspace for the Pipeline. Without an <code>agent</code> directive, not only is the Declarative Pipeline not valid, it would not be capable of doing any work! By default the <code>agent</code> directive ensures that the source repository is checked out and made available for steps in the subsequent stages.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://www.jenkins.io/doc/book/pipeline/syntax/#stages">stages directive</a>, and <a href="https://www.jenkins.io/doc/book/pipeline/syntax/#steps">steps directives</a> are also required for a valid Declarative Pipeline as they instruct Jenkins what to execute and in which stage it should be executed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="environment-variables-and-credentials">5.4. Environment Variables and Credentials</h3>
+<div class="paragraph">
+<p>Jenkins Pipeline exposes environment variables via the global variable <code>env</code>, which is available from anywhere within a Jenkinsfile. <a href="#pipeline-jenkinsfile">[11]</a></p>
+</div>
+<div class="paragraph">
+<p>The full list of environment variables accessible from within Jenkins Pipeline is documented at <code>${YOUR_JENKINS_URL}/pipeline-syntax/globals#env</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">any</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Example'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="c1">// groovy context or scripted syntax</span>
+                <span class="n">echo</span> <span class="s2">"Running ${env.BUILD_ID} on ${env.JENKINS_URL}"</span>
+                <span class="c1">// shell context or declarative syntax</span>
+                <span class="n">sh</span> <span class="s1">'echo "Running ${BUILD_ID} on ${JENKINS_URL}"'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>environment</code> directive specifies a sequence of key-value pairs which will be defined as environment variables for all steps, or stage-specific steps, depending on where the environment directive is located within the Pipeline. <a href="#pipeline-syntax">[12]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">any</span>
+    <span class="n">environment</span> <span class="o">{</span>
+        <span class="n">CC</span> <span class="o">=</span> <span class="s1">'clang'</span>
+    <span class="o">}</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Example'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">environment</span> <span class="o">{</span>
+                <span class="n">DEBUG_FLAGS</span> <span class="o">=</span> <span class="s1">'-g'</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'printenv'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Jenkins can store the following types of <a href="https://www.jenkins.io/doc/book/using/using-credentials/">credentials</a>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Secret text</strong> - a token such as an API token (e.g. a GitHub personal access token),</p>
+</li>
+<li>
+<p><strong>Username and password</strong> - which could be handled as separate components or as a colon separated string in the format <code>username:password</code>.</p>
+</li>
+<li>
+<p><strong>Secret file</strong> - which is essentially secret content in a file,</p>
+</li>
+<li>
+<p><strong>SSH Username with private key</strong> - an SSH public/private key pair,</p>
+</li>
+<li>
+<p><strong>Certificate</strong> - a PKCS#12 certificate file and optional password, or</p>
+</li>
+<li>
+<p><strong>Docker Host Certificate Authentication</strong> credentials.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>environment</code> directive supports a special helper method <code>credentials()</code> which can be used to access pre-defined <a href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials">Credentials</a> by their identifier in the Jenkins environment.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Using single-quotes instead of double-quotes when referencing these sensitive environment variables prevents interpolation leaking. <a href="#pipeline-jenkinsfile">[11]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">any</span>
+    <span class="n">environment</span> <span class="o">{</span>
+        <span class="n">EXAMPLE_CREDS</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">(</span><span class="s1">'example-credentials-id'</span><span class="o">)</span>
+    <span class="o">}</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Example'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="cm">/* CORRECT */</span>
+                <span class="n">sh</span><span class="o">(</span><span class="s1">'curl -u $EXAMPLE_CREDS_USR:$EXAMPLE_CREDS_PSW https://example.com/'</span><span class="o">)</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-docker">5.5. Using Docker</h3>
+<div class="paragraph">
+<p>Many organizations use Docker to unify their build and test environments across machines, and to provide an efficient mechanism for deploying applications.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><em>To use the Docker with Pipeline, install the Docker Pipeline plugin:</em></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using the GUI: From your Jenkins dashboard navigate to <strong>Manage Jenkins</strong> &gt; <strong>Plugins</strong> and select the <strong>Available plugins</strong> tab. Locate this plugin by searching for <code>docker-workflow</code>.</p>
+</li>
+<li>
+<p>Using the CLI tool:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">jenkins-plugin-cli <span class="nt">--plugins</span> docker-workflow:572.v950f58993843</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Using direct upload. Download one of the <a href="https://plugins.jenkins.io/docker-workflow/#releases">releases</a> and upload it to your Jenkins instance.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Pipeline is designed to easily use Docker images as the execution environment for a single Stage or the entire Pipeline. Meaning that a user can define the tools required for their Pipeline, without having to manually configure agents. Any tool that can be packaged in a Docker container can be used with ease, by making only minor edits to a Jenkinsfile. <a href="#pipeline-docker">[13]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="o">{</span>
+        <span class="n">docker</span> <span class="o">{</span> <span class="n">image</span> <span class="s1">'node:20.11.0-alpine3.19'</span> <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Test'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'id'</span>
+                <span class="n">sh</span> <span class="s1">'node --version'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the Pipeline executes, Jenkins will automatically start the specified container and execute the defined steps within:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">. . .
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] sh
++ id
+uid=1000(node) gid=1000(node) groups=1000(node)
+[Pipeline] sh
++ node --version
+v20.11.0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+. . .</span></code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="workspace-synchronization">5.5.1. Workspace Synchronization</h4>
+<div class="paragraph">
+<p>If it is important to keep the workspace synchronized with other stages, use <code>reuseNode true</code>. Otherwise, a dockerized stage can be run on the same agent or any other agent, but in a temporary workspace.</p>
+</div>
+<div class="paragraph">
+<p>By default, for a <em>containerized stage</em>, Jenkins:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Picks an agent.</p>
+</li>
+<li>
+<p>Creates a new empty workspace.</p>
+</li>
+<li>
+<p>Clones pipeline code into it.</p>
+</li>
+<li>
+<p>Mounts this new workspace into the container.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If you have multiple Jenkins agents, your containerized stage can be started on any of them.</p>
+</div>
+<div class="paragraph">
+<p>When <code>reuseNode</code> is set to <code>true</code>, no new workspace will be created, and the current workspace from the current agent will be mounted into the container. After this, the container will be started on the same node, so all of the data will be synchronized.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">any</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Build'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">agent</span> <span class="o">{</span>
+                <span class="n">docker</span> <span class="o">{</span>
+                    <span class="n">image</span> <span class="s1">'gradle:8.2.0-jdk17-alpine'</span>
+                    <span class="c1">// Run the container on the node specified at the</span>
+                    <span class="c1">// top-level of the Pipeline, in the same workspace,</span>
+                    <span class="c1">// rather than on a new node entirely:</span>
+                    <span class="n">reuseNode</span> <span class="kc">true</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'gradle --version'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="caching-data-for-containers">5.5.2. Caching Data for Containers</h4>
+<div class="paragraph">
+<p>Many build tools will download external dependencies and cache them locally for future re-use. Since containers are initially created with "clean" file systems, this can result in slower Pipelines, as they may not take advantage of on-disk caches between subsequent Pipeline runs.</p>
+</div>
+<div class="paragraph">
+<p>Pipeline supports adding custom arguments that are passed to Docker, allowing users to specify custom <a href="https://docs.docker.com/engine/tutorials/dockervolumes/">Docker Volumes</a> to mount, which can be used for caching data on the agent between Pipeline runs. The following example will cache <code>~/.m2</code> between Pipeline runs utilizing the maven container, avoiding the need to re-download dependencies for subsequent Pipeline runs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="o">{</span>
+        <span class="n">docker</span> <span class="o">{</span>
+            <span class="n">image</span> <span class="s1">'maven:3.9.3-eclipse-temurin-17'</span>
+            <span class="n">args</span> <span class="s1">'-v $HOME/.m2:/root/.m2'</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Build'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'mvn -B'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="using-multiple-containers">5.5.3. Using Multiple Containers</h4>
+<div class="paragraph">
+<p>It has become increasingly common for code bases to rely on multiple different technologies. For example, a repository might have both a Java-based back-end API implementation and a JavaScript-based front-end implementation. Combining Docker and Pipeline allows a Jenkinsfile to use multiple types of technologies, by combining the <code>agent {}</code> directive with different stages.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+    <span class="n">agent</span> <span class="n">none</span>
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Back-end'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">agent</span> <span class="o">{</span>
+                <span class="n">docker</span> <span class="o">{</span> <span class="n">image</span> <span class="s1">'maven:3.9.6-eclipse-temurin-17-alpine'</span> <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'mvn --version'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Front-end'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">agent</span> <span class="o">{</span>
+                <span class="n">docker</span> <span class="o">{</span> <span class="n">image</span> <span class="s1">'node:20.11.0-alpine3.19'</span> <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'node --version'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploying-on-kubernetes">5.6. Deploying on Kubernetes</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install <a href="https://plugins.jenkins.io/kubernetes-cli">Kubernetes CLI</a> plugin.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Using the GUI: From the Jenkins dashboard navigate to <strong>Manage Jenkins</strong> &gt; <strong>Plugins</strong> and select the <strong>Available</strong> tab. Locate this plugin by searching for <code>kubernetes-cli</code>.</p>
+</li>
+<li>
+<p>Using the CLI tool:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">jenkins-plugin-cli <span class="nt">--plugins</span> kubernetes-cli:1.12.1</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Configure Credentials</p>
+<div class="paragraph">
+<p>The following types of credentials are supported and can be used to authenticate against Kubernetes clusters:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Token, as secrets (<em>Kind: Secret text</em>)(see <a href="https://plugins.jenkins.io/plain-credentials/">Plain Credentials plugin</a>)</p>
+</li>
+<li>
+<p>Plain KubeConfig files (<em>Kind: Secret file</em>) (see <a href="https://plugins.jenkins.io/plain-credentials/">Plain Credentials plugin</a>)</p>
+</li>
+<li>
+<p>Username and Password (see <a href="https://plugins.jenkins.io/credentials/">Credentials plugin</a>)</p>
+</li>
+<li>
+<p>Certificates (see <a href="https://plugins.jenkins.io/credentials/">Credentials plugin</a>)</p>
+</li>
+<li>
+<p>OpenShift OAuth tokens, as secrets (see <a href="https://plugins.jenkins.io/kubernetes-credentials/">Kubernetes Credentials plugin</a>)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If the Jenkins Agent is running within a Pod (e.g. by using the <a href="https://plugins.jenkins.io/kubernetes/">Kubernetes plugin</a>), you can fallback to the Pod&#8217;s ServiceAccount by not setting any credentials.</p>
+</div>
+<div class="paragraph">
+<p>Now, let&#8217;s create a KubeConfig credential using the <code>Secret file</code>. On the Jenkins dashboard, go to <strong>Manage Jenkins</strong> &gt; <strong>Credentials</strong>, move mouse over the <strong>(global)</strong> and select the <strong>Add credentials</strong>. Fill the fields as below:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Kind: <em>Secret file</em>.</p>
+</li>
+<li>
+<p>Scope: <em>Global (Jenkins, nodes, items, all child items, etc)</em></p>
+</li>
+<li>
+<p>File: Upload your cluster kubeconfig file.</p>
+</li>
+<li>
+<p>ID: <em>kubernetes-admin</em>.</p>
+</li>
+<li>
+<p>Description: (optional)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Create a testing <strong>Freestyle project</strong> job:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Scroll down to the <strong>Build Environment</strong> section.</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select <strong>Configure Kubernetes CLI (kubectl) with multiple credentials</strong>.</p>
+</li>
+<li>
+<p>In the <strong>Credential</strong> dropdown, select the credentials (e.g., <code>kubernetes-admin</code>) to authenticate on the cluster or the kubeconfig stored in Jenkins.</p>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On the <strong>Build Steps</strong>, using <strong>Execute shell</strong> with <code>kubectl cluster-info</code> command.</p>
+</li>
+<li>
+<p>Click "Save", and select the option <strong>Build Now</strong> then go to <strong>Console Output</strong> page.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Wait a seconds and then go to <strong>Console Output</strong> page.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Started by user admin
+Running as SYSTEM
+Building remotely on agent-dind-2 in workspace /home/jenkins/agent/workspace/First Job to K8s
+</span><span class="gp">[First Job to K8s] $</span><span class="w"> </span>/bin/sh <span class="nt">-xe</span> /tmp/jenkins17537654207595799867.sh
+<span class="go">+ kubectl cluster-info
+/tmp/jenkins17537654207595799867.sh: 2: kubectl: not found <i class="conum" data-value="1"></i><b>(1)</b>
+Build step 'Execute shell' marked build as failure
+[kubernetes-cli] kubectl configuration cleaned up
+Finished: FAILURE</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To solve the <code>kubectl: not found</code> problem, it&#8217;s required to install the <code>kubectl</code> command line tool to the agent node.
+<div class="paragraph">
+<p>See also <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-kubectl-on-linux">Install kubectl on Linux</a>.</p>
+</div>
+<div class="paragraph">
+<p>You can also try to use the <code>docker cp</code> to copy the <code>kubectl</code> into the specific agent container.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker <span class="nb">cp</span> <span class="si">$(</span>which kubectl<span class="si">)</span> jenkins-agent-dind:/usr/local/bin
+<span class="go">Successfully copied 49.7MB to jenkins-agent-dind:/usr/local/bin</span></code></pre>
+</div>
+</div></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Again, click the <strong>Build Now</strong>, and see the log on the <strong>Console Output</strong> page.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Started by user admin
+Running as SYSTEM
+Building remotely on agent-dind-2 in workspace /home/jenkins/agent/workspace/First Job to K8s
+</span><span class="gp">[First Job to K8s] $</span><span class="w"> </span>/bin/sh <span class="nt">-xe</span> /tmp/jenkins9182137363539535938.sh
+<span class="go">+ kubectl cluster-info
+</span><span class="gp">[0;</span>32mKubernetes control plane[0m is running at <span class="o">[</span>0<span class="p">;</span>33mhttps://192.168.56.130:6443[0m
+<span class="gp">[0;</span>32mCoreDNS[0m is running at <span class="o">[</span>0<span class="p">;</span>33mhttps://192.168.56.130:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy[0m
+<span class="go">
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[kubernetes-cli] kubectl configuration cleaned up
+Finished: SUCCESS</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-ssh-on-a-remote-machine">5.7. Using SSH on a remote machine</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create a SSH key pair with <code>ssh-keygen</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-t</span> ed25519 <span class="nt">-f</span> .ssh/id_ed25519</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Regenerate the public key using <code>ssh-keygen -y -f .ssh/id_ed25519</code> if you lost it.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Copy the public key to the destination host</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id <span class="nt">-i</span> .ssh/id_ed25519.pub <span class="o">[</span>user@]hostname // e.g., jenkins@node-3</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <strong>SSH Username with private key</strong> credential with ID as <code>jenkins-ssh-key-for-node-3</code></p>
+<div class="paragraph">
+<p>See also <a href="https://www.jenkins.io/doc/book/using/using-credentials/#configuring-credentials" class="bare">https://www.jenkins.io/doc/book/using/using-credentials/#configuring-credentials</a></p>
+</div>
+</li>
+<li>
+<p>The following snippet is used to execute a command (e.g., <code>date</code>) on a remote host (e.g, <code>192.168.211.133</code>).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">environment</span> <span class="o">{</span>
+    <span class="n">LOGIN_NAME</span><span class="o">=</span><span class="s2">"jenkins"</span>
+    <span class="n">DESTINATION_HOST</span><span class="o">=</span><span class="s2">"192.168.211.133"</span>
+<span class="o">}</span>
+<span class="n">steps</span> <span class="o">{</span>
+    <span class="c1">// Create a SSH Username with private key credential with ID as `jenkins-ssh-key-for-node-3` on Jenkins.</span>
+    <span class="n">withCredentials</span><span class="o">(</span><span class="nl">bindings:</span> <span class="o">[</span><span class="n">sshUserPrivateKey</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="s1">'jenkins-ssh-key-for-node-3'</span><span class="o">,</span> <span class="err">\</span>
+                                                 <span class="nl">keyFileVariable:</span> <span class="s1">'JENKINS_SSH_KEY_FOR_NODE_3'</span><span class="o">)])</span> <span class="o">{</span>
+        <span class="n">sh</span> <span class="s1">'ssh -T -o StrictHostKeyChecking=no -i $JENKINS_SSH_KEY_FOR_NODE_3 -l $LOGIN_NAME $DESTINATION_HOST date'</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By convention, variable names for environment variables are typically specified in capital case, with individual words separated by underscores.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installing-a-jenkins-agent-on-windows">6. Installing a Jenkins agent on Windows</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here, we use the OpenSSH to establish a SSH connection between the Jenkins Controller and the Windows Agent.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>It&#8217;s also required to install the necessary build tools, like Git etc., on the Windows agent, and make sure the Git is in the <code>Path</code> environment variables, like <code>. . .;C:\Program Files\Git\cmd;. . .</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span><span class="nv">$env</span>:Path <span class="c"># `path` on batch shell</span>
+<span class="gp">. . .;</span>C:<span class="se">\P</span>rogram Files<span class="se">\G</span>it<span class="se">\c</span>md<span class="p">;</span><span class="nb">.</span> <span class="nb">.</span> .</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>It&#8217;s suggested to use the <code>powershell</code> (Windows PowerShell Script) or <code>bat</code> (Windows Batch Script) step on Windows instead of the <code>sh</code>, like:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+
+    <span class="n">agent</span> <span class="o">{</span> <span class="n">label</span> <span class="s1">'dotnet &amp;&amp; windows'</span> <span class="o">}</span>
+
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Publish'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">steps</span> <span class="o">{</span>
+ <span class="c1">//             bat 'dotnet publish .\\src\\Example.WebApp'</span>
+ <span class="c1">//             bat '''dotnet build ^</span>
+ <span class="c1">//    .\\src\\Example.WebApp.Installer\\ ^</span>
+ <span class="c1">//    -r win-x64 ^</span>
+ <span class="c1">//    -c Release ^</span>
+ <span class="c1">//    -p:InstallerPlatform=x64 ^</span>
+ <span class="c1">//    -p:SuppressValidation=true'''</span>
+                <span class="n">powershell</span> <span class="s1">'dotnet publish .\\src\\Example.WebApp'</span>
+                <span class="n">powershell</span> <span class="s1">'''dotnet build ^
+    .\\src\\Example.WebApp.Installer\\ ^
+    -r win-x64 ^
+    -c Release ^
+    -p:InstallerPlatform=x64 ^
+    -p:SuppressValidation=true'''</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="install-openssh-for-windows">6.1. Install OpenSSH for Windows</h3>
+<div class="paragraph">
+<p>To install OpenSSH using PowerShell, run PowerShell as an Administrator. To make sure that OpenSSH is available, run the following cmdlet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Where-Object</span><span class="w"> </span><span class="nx">Name</span><span class="w"> </span><span class="o">-like</span><span class="w"> </span><span class="s1">'OpenSSH*'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, install the server or client components as needed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Install the OpenSSH Client</span><span class="w">
+</span><span class="n">Add-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Client~~~~0.0.1.0</span><span class="w">
+
+</span><span class="c"># Install the OpenSSH Server</span><span class="w">
+</span><span class="n">Add-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Server~~~~0.0.1.0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To start and configure OpenSSH Server for initial use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Set the sshd service to be started automatically</span><span class="w">
+</span><span class="n">Get-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">sshd</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Set-Service</span><span class="w"> </span><span class="nt">-StartupType</span><span class="w"> </span><span class="nx">Automatic</span><span class="w">
+
+</span><span class="c"># Now start the sshd service</span><span class="w">
+</span><span class="n">Start-Service</span><span class="w"> </span><span class="nx">sshd</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="create-a-local-user-for-jenkin-on-windows-agent">6.2. Create a Local User for Jenkin on Windows Agent</h3>
+<div class="paragraph">
+<p>Run PowerShell as an Administrator with the following cmdlet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="nv">$Password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Read-Host</span><span class="w"> </span><span class="nt">-AsSecureString</span><span class="w">
+</span><span class="n">New-LocalUser</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">jenkins</span><span class="w"> </span><span class="nt">-Password</span><span class="w"> </span><span class="nv">$Password</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The home directory (i.e., <code>$env:USERPROFILE</code>) will be initializad at the fist sign-in.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="copy-the-public-key-to-the-windows-agent">6.3. Copy the public key to the Windows Agent</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="nv">$JENKINS_AGENT_SSH_PUBKEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBBHLJ+8RuLPO8dO1tm3RAt5kc3HqYwJUYMmRPjhtI3"</span><span class="w">
+</span><span class="nv">$USERPROFILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"C:\Users\jenkins"</span><span class="w">
+</span><span class="nv">$REMOTE_POWER_SHELL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"powershell New-Item -Force -ItemType Directory -Path </span><span class="nv">$USERPROFILE</span><span class="s2">\.ssh; Add-Content -Force -Path </span><span class="nv">$USERPROFILE</span><span class="s2">\.ssh\authorized_keys -Value '</span><span class="nv">$JENKINS_AGENT_SSH_PUBKEY</span><span class="s2">'"</span><span class="w">
+</span><span class="n">ssh</span><span class="w"> </span><span class="nx">jenkins</span><span class="err">@</span><span class="nx">servername</span><span class="w"> </span><span class="nv">$REMOTE_POWER_SHELL</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="install-jdk-on-windows-agent">6.4. Install JDK on Windows Agent</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+It&#8217;s recommended to install JDK with the same version of the Jenkins Controller.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">java</span><span class="w"> </span><span class="nt">--version</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>ssh jenkins@node-4 java <span class="nt">-version</span>
+<span class="go">openjdk version "21.0.2" 2024-01-16 LTS
+OpenJDK Runtime Environment Temurin-21.0.2+13 (build 21.0.2+13-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.2+13 (build 21.0.2+13-LTS, mixed mode, sharing)</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configure-jenkins-agent-in-jenkins">6.5. Configure Jenkins Agent in Jenkins:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Go to <strong>Manage Jenkins</strong> &#8594; <strong>Manage Nodes</strong> &#8594; <strong>New Node</strong></p>
+</li>
+<li>
+<p>Enter the <strong>Node Name</strong> there and select <strong>Permanent Agent</strong> then click <strong>OK</strong> ,</p>
+</li>
+<li>
+<p><strong>Remote Directory</strong>: The directory where Jenkins will perform builds on the agent machine. i.e. <code>C:\Users\jenkins\agent</code></p>
+</li>
+<li>
+<p><strong>Launch method</strong>: Choose <strong>"Launch agent via SSH"</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Enter the <strong>Host</strong> address (e.g., <code>192.168.211.134</code>)</p>
+</li>
+<li>
+<p>Select the Credentials created in the previous steps, i.e. `jenkins (Jenkins SSH private key)</p>
+</li>
+<li>
+<p>Select "Manually trusted key Verification Strategy" for Host key Verification Strategy</p>
+</li>
+<li>
+<p>Others Keep default. (Click help icon and know everything from the page itself)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Click <strong>Save</strong> to save the new node</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="gitlab-jenkins-integration">Appendix A: GitLab Jenkins Integration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GitLab is a fully featured software development platform that includes, among other powerful features, built-in GitLab CI/CD to leverage the ability to build, test, and deploy your apps without requiring you to integrate with CI/CD external tools. <a href="#gitlab-jenkins">[14]</a></p>
+</div>
+<div class="paragraph">
+<p>However, many organizations have been using Jenkins for their deployment processes, and need an integration with Jenkins to be able to onboard to GitLab before switching to GitLab CI/CD. Others have to use Jenkins to build and deploy their applications because of the inability to change the established infrastructure for current projects, but they want to use GitLab for all the other capabilities.</p>
+</div>
+<div class="paragraph">
+<p>With <a href="https://docs.gitlab.com/ee/integration/jenkins.html">GitLab&#8217;s Jenkins integration</a>, you can effortlessly set up your project to build with Jenkins, and GitLab will output the results for you right from GitLab&#8217;s UI.</p>
+</div>
+<div class="paragraph">
+<p>After configured a Jenkins integration, trigger a build in Jenkins when push code to your repository or create a merge request in GitLab. The Jenkins pipeline status displays on merge request widgets and the GitLab project’s home page. <a href="#gitlab-integration-jenkins">[21]</a></p>
+</div>
+<div class="paragraph">
+<p>To configure a Jenkins integration with GitLab:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Grant Jenkins access to the GitLab project.</p>
+</li>
+<li>
+<p>Configure the Jenkins server.</p>
+</li>
+<li>
+<p>Configure the Jenkins project.</p>
+</li>
+<li>
+<p>Configure the GitLab project.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="install-gitlab-using-docker">A.1. Install GitLab using Docker</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open a terminal, and a bridge network named <code>gitlab-ce</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create gitlab-ce</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <code>compose.yml</code> file.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">gitlab-ce</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">gitlab-ce</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">gitlab/gitlab-ce:16.5.8-ce.0</span> <span class="c1"># Pin GitLab to a specific Community Edition version</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">data:/var/opt/gitlab:rw</span> <span class="c1"># For storing application data.</span>
+      <span class="pi">-</span> <span class="s">logs:/var/log/gitlab:rw</span> <span class="c1"># For storing logs.</span>
+      <span class="pi">-</span> <span class="s">config:/etc/gitlab:rw</span>   <span class="c1"># For storing the GitLab configuration files.</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">gitlab-ce</span><span class="pi">:</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">data</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce-data</span>
+  <span class="na">logs</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce-logs</span>
+  <span class="na">config</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce-config</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">gitlab-ce</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <code>compose.override.yml</code> file.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">gitlab-ce</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">gitlab-ce</span><span class="pi">:</span>
+    <span class="c1"># Pin GitLab to a specific Community Edition version</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">gitlab/gitlab-ce:16.5.8-ce.0</span>
+    <span class="c1"># Use a valid externally-accessible hostname or IP address. Do not use `localhost`.</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s1">'</span><span class="s">node-0'</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="c1"># If you want to use a different host port than 80 (HTTP), 443 (HTTPS), or 22 (SSH), you</span>
+      <span class="c1"># need to add a separate --publish directive to the docker run command.</span>
+      <span class="na">GITLAB_OMNIBUS_CONFIG</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s"># Add any other gitlab.rb configuration here, each on its own line</span>
+        <span class="s">gitlab_rails['gitlab_shell_ssh_port'] = 2424 </span><i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="s">external_url 'http://node-0:8929' </span><i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">8929:8929'</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">2424:22'</span>
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-0:192.168.56.130"</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If you don’t want to change the server’s default SSH port, you can configure a different SSH port that GitLab uses for Git over SSH pushes. In that case, the SSH clone URLs looks like <code>ssh://git@gitlab.example.com:&lt;portNumber&gt;/user/project.git</code>. <a href="#install-gitlab">[20]</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To display the correct repository clone links to your users, you must provide GitLab with the URL your users use to reach the repository. You can use the IP of your server, but a Fully Qualified Domain Name (FQDN) is preferred. <a href="#gitlab-configuration">[22]</a></td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Start the <code>gitlab-ce</code> container.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The initialization process may take a long time. You can track this process with: <a href="#install-gitlab">[20]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker logs <span class="nt">-f</span> gitlab-ce</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After starting the container, you can visit <code>node-0</code>. It might take a while before the Docker container starts to respond to queries.</p>
+</div>
+<div class="paragraph">
+<p>Visit the GitLab URL, and sign in with the username <code>root</code> and the password from the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo cat</span> <span class="si">$(</span>docker inspect gitlab-ce-config <span class="nt">-f</span> <span class="s2">"{{.Mountpoint}}"</span><span class="si">)</span>/initial_root_password</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The password file is automatically deleted in the first container restart after 24 hours.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sonatype-nexus-repository-oss">Appendix B: Sonatype Nexus Repository OSS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sonatype Nexus Repository Manager provides a central platform for storing build artifacts. <a href="#sonatype-nexus-repository">[15]</a></p>
+</div>
+<div class="sect2">
+<h3 id="installing-nexus-repository-with-docker">B.1. Installing Nexus Repository with Docker</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Creata a bridge network named <code>sonatype-nexus</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create <span class="nt">-d</span> bridge sonatype-nexus</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <em>compose.yml</em> file.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">name</span><span class="pi">:</span> <span class="s">sonatype-nexus</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">nexus</span><span class="pi">:</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">sonatype-nexus</span>
+    <span class="na">user</span><span class="pi">:</span> <span class="s">nexus:nexus</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">sonatype/nexus3:3.64.0</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">data:/nexus-data:rw</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">nexus</span><span class="pi">:</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">data</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">nexus-data</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">nexus</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">sonatype-nexus</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <em>compose.override.yml</em> file.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">services</span><span class="pi">:</span>
+  <span class="na">nexus</span><span class="pi">:</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8081:8081"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8082:8082"</span> <span class="c1"># Using for Docker Registry</span>
+    <span class="c1"># environment:</span>
+    <span class="c1">#   NEXUS_CONTEXT: nexus </span><i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="c1">#   INSTALL4J_ADD_VM_PARAMS, passed to the Install4J startup script. Defaults to -Xms2703m -Xmx2703m -XX:MaxDirectMemorySize=2703m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs.</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>An environment variable can be used to control the Nexus Context Path, <code>NEXUS_CONTEXT</code>, defaults to <code>/</code>. <a href="#sonatype-nexus-oss-installation-methods">[16]</a> <a href="#docker-nexus3">[17]</a></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Start the <em>sonatype-nexus</em> container.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Go to a browser with <a href="http://localhost:8081" class="bare">http://localhost:8081</a>, click the <strong>Sign in</strong> button on the top right, and fill the login fields, and then complete required setup tasks.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Your <strong>admin</strong> user password is located in <em>/nexus-data/admin.password</em> on the server.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Inspect the Docker volume (i.e. <em>nexus-data</em>).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker inspect nexus-data
+<span class="c">...
+</span><span class="go">        "Mountpoint": "/var/lib/docker/volumes/nexus-data/_data",
+</span><span class="c">...</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Print the user password.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo cat</span> /var/lib/docker/volumes/nexus-data/_data/admin.password</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="docker-hosted-repositories">B.2. Docker Hosted Repositories</h3>
+<div class="paragraph">
+<p>A hosted repository using the Docker repository format is typically called a private Docker registry. It can be used to upload your own container images as well as third-party images. It is common practice to create two separate hosted repositories for these purposes. <a href="#nexus-hosted-repository-for-docker">[18]</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go the Nexus dashboard, and select the gear icon at the top bar, or enter <a href="http://localhost:8081/#admin/repository" class="bare">http://localhost:8081/#admin/repository</a>.</p>
+</li>
+<li>
+<p>Select the <strong>Repositories</strong> on the left menu to the <strong>Manage repositories</strong> panel, or enter <a href="http://localhost:8081/#admin/repository/repositories" class="bare">http://localhost:8081/#admin/repository/repositories</a>.</p>
+</li>
+<li>
+<p>Click the <strong>Create repository</strong> button, and select the <strong>docker (hosted)</strong> recipe, then fill the form.</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Name</strong>: <em>docker-registry</em></p>
+</li>
+<li>
+<p><strong>Http:</strong>: <em>8082</em></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Click the <strong>Create repository</strong> button at the bottom.</p>
+</li>
+<li>
+<p>Login in with Docker, and push/pull images from/to the Nexus.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker login <span class="nt">-u</span> admin <span class="nt">-p</span> <span class="o">[</span>YOUR ADMIN PASSWORD OF NEXUS] http://localhost:8082</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker pull busybox
+<span class="go">Using default tag: latest
+latest: Pulling from library/busybox
+9ad63333ebc9: Pull complete
+Digest: sha256:6d9ac9237a84afe1516540f40a0fafdc86859b2141954b4d643af7066d598b74
+Status: Downloaded newer image for busybox:latest
+docker.io/library/busybox:latest
+</span><span class="gp">$</span><span class="w"> </span>docker tag busybox:latest localhost:8082/busybox
+<span class="gp">$</span><span class="w"> </span>docker push localhost:8082/busybox
+<span class="go">Using default tag: latest
+The push refers to repository [localhost:8082/busybox]
+2e112031b4b9: Pushed
+latest: digest: sha256:d319b0e3e1745e504544e931cde012fc5470eba649acc8a7b3607402942e5db7 size: 527
+</span><span class="gp">$</span><span class="w"> </span>docker pull localhost:8082/busybox
+<span class="go">Using default tag: latest
+latest: Pulling from busybox
+Digest: sha256:d319b0e3e1745e504544e931cde012fc5470eba649acc8a7b3607402942e5db7
+Status: Image is up to date for localhost:8082/busybox:latest
+localhost:8082/busybox:latest</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Go back to the Browser (e.g. <a href="http://localhost:8081/#browse/browse:docker-registry" class="bare">http://localhost:8081/#browse/browse:docker-registry</a>) in the Nexus to check the Repository status.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>By default, Docker assumes all registries to be secure, except for local registries. Communicating with an insecure registry isn&#8217;t possible if Docker assumes that registry is secure. In order to communicate with an insecure registry, the Docker daemon requires --insecure-registry in one of the following two forms:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--insecure-registry myregistry:5000</code> tells the Docker daemon that myregistry:5000 should be considered insecure.</p>
+</li>
+<li>
+<p><code>--insecure-registry 10.1.0.0/16</code> tells the Docker daemon that all registries whose domain resolve to an IP address is part of the subnet described by the CIDR syntax, should be considered insecure.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The flag can be used multiple times to allow multiple registries to be marked as insecure.</p>
+</div>
+<div class="paragraph">
+<p>If an insecure registry isn&#8217;t marked as insecure, <code>docker pull</code>, <code>docker push</code>, and <code>docker search</code> result in error messages, prompting the user to either secure or pass the <code>--insecure-registry</code> flag to the Docker daemon as described above.</p>
+</div>
+<div class="paragraph">
+<p>Local registries, whose IP address falls in the 127.0.0.0/8 range, are automatically marked as insecure as of Docker 1.3.2. It isn&#8217;t recommended to rely on this, as it may change in the future.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">$ </span>docker info
+  <span class="nb">.</span> <span class="nb">.</span> <span class="nb">.</span>
+ Insecure Registries:
+  127.0.0.0/8</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See also, <a href="https://docs.docker.com/engine/reference/commandline/dockerd/#insecure-registries" class="bare">https://docs.docker.com/engine/reference/commandline/dockerd/#insecure-registries</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="nuget-hosted-repositories">B.3. NuGet Hosted Repositories</h3>
+<div class="paragraph">
+<p>A hosted repository for NuGet can be used to upload your own packages as well as third-party packages. The repository manager includes a hosted NuGet repository named <em>nuget-hosted</em> by default. <a href="#nexus-nuget-hosted-repo">[19]</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go the Nexus dashboard, sign in, and click the user name at the top right, or enter <a href="http://localhost:8081/#user/account" class="bare">http://localhost:8081/#user/account</a>.</p>
+</li>
+<li>
+<p>On the left panel, select the <strong>NuGet API Key</strong>.</p>
+</li>
+<li>
+<p>Click the <strong>Access API Key</strong>, authentication with your credential, and then click <strong>Copy to Clipboard</strong>.</p>
+</li>
+<li>
+<p>Click the gear icon at the top panel, select the <strong>Realms</strong> on the left panel under the <strong>Security</strong>.</p>
+</li>
+<li>
+<p>Select the <strong>NuGet API-Key Realm</strong> on the left <strong>Available</strong> tab panel, and transfer it to the right <strong>Active</strong> tab panel.</p>
+</li>
+<li>
+<p>Click the <strong>Save</strong> button at the bottom right.</p>
+</li>
+<li>
+<p>Push a Nuget package on Nexus.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet new classlib <span class="nt">-o</span> HelloLib
+<span class="go">The template "Class Library" was created successfully.
+. . .
+</span><span class="gp">$</span><span class="w"> </span>dotnet pack HelloLib/
+<span class="gp">$</span><span class="w"> </span>dotnet nuget push HelloLib/bin/Release/HelloLib.1.0.0.nupkg <span class="nt">-k</span> <span class="o">[</span>REPLACE WITH YOUR API KEY] <span class="nt">-s</span> http://localhost:8081/repository/nuget-hosted/index.json
+<span class="go">warn : You are running the 'push' operation with an 'HTTP' source, 'http://localhost:8081/repository/nuget-hosted/index.json'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source.
+Pushing HelloLib.1.0.0.nupkg to 'http://localhost:8081/repository/nuget-hosted'...
+warn : You are running the 'push' operation with an 'HTTP' source, 'http://localhost:8081/repository/nuget-hosted/'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source.
+  PUT http://localhost:8081/repository/nuget-hosted/
+  Created http://localhost:8081/repository/nuget-hosted/ 40ms
+Your package was pushed.</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can also create a <em>nuget.config</em> and add the NuGet source to the project.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet new console <span class="nt">-o</span> HelloApp
+<span class="nb">cd </span>HelloApp/
+dotnet new nugetconfig
+dotnet nuget add <span class="nb">source</span> <span class="nt">-n</span> nexus http://localhost:8081/repository/nuget-hosted/index.json
+dotnet add package HelloLib <span class="nt">--version</span> 1.0.0</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jenkins-for-a-net-application-using-docker">Appendix C: Jenkins for a .NET application using Docker</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open a terminal, create a working folder if you haven&#8217;t already, and enter it.</p>
+<div class="paragraph">
+<p>In the working folder, run the following command to create a demo ASP.NET Core Web project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet new gitignore
+dotnet new globaljson <span class="nt">--sdk-version</span><span class="o">=</span>8.0.101 <span class="nt">--roll-forward</span><span class="o">=</span>latestFeature
+dotnet new sln <span class="nt">-n</span> jenkins-getting-started
+dotnet new web <span class="nt">-o</span> src/HelloWorld
+dotnet sln add <span class="nt">-s</span> src src/HelloWorld/</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create Dockerfile using to build Docker image.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="dockerfile"><span class="k">FROM</span><span class="w"> </span><span class="s">mcr.microsoft.com/dotnet/sdk:8.0</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">WORKDIR</span><span class="s"> /source</span>
+
+<span class="c"># Copy everything</span>
+<span class="k">COPY</span><span class="s"> . ./</span>
+<span class="c"># Restore as distinct layers</span>
+<span class="k">RUN </span>dotnet restore
+<span class="c"># Build and publish a release</span>
+<span class="k">RUN </span>dotnet publish <span class="nt">-c</span> release <span class="nt">-o</span> /app <span class="nt">--no-restore</span>
+
+<span class="c"># Build runtime image</span>
+<span class="k">FROM</span><span class="s"> mcr.microsoft.com/dotnet/aspnet:8.0</span>
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+<span class="k">COPY</span><span class="s"> --from=build /app ./</span>
+<span class="k">ENTRYPOINT</span><span class="s"> ["dotnet", "HelloWorld.dll"]</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create Jenkinsfile.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="groovy"><span class="n">pipeline</span> <span class="o">{</span>
+
+    <span class="n">environment</span> <span class="o">{</span>
+        <span class="c1">// Explicitly specify the DOTNET_CLI_HOME environment variable to a writable directory, like /tmp:</span>
+        <span class="c1">// See also: https://github.com/dotnet/cli/pull/9327</span>
+        <span class="c1">//           https://github.com/dotnet/sdk/blob/main/src/Common/CliFolderPathCalculatorCore.cs#L14</span>
+        <span class="c1">// System.UnauthorizedAccessException: Access to the path '/.dotnet' is denied.</span>
+        <span class="n">DOTNET_CLI_HOME</span> <span class="o">=</span> <span class="s1">'/tmp'</span>
+        <span class="c1">// Replace the following variables with your container registry.</span>
+        <span class="n">REGISTRY_SCHEME</span><span class="o">=</span> <span class="s1">'http'</span>
+        <span class="n">REGISTRY_HOSTNAME</span> <span class="o">=</span> <span class="s1">'192.168.211.130'</span>
+        <span class="n">REGISTRY_PORT</span> <span class="o">=</span> <span class="s1">'8082'</span>
+    <span class="o">}</span>
+
+    <span class="n">agent</span> <span class="n">none</span>
+
+    <span class="n">stages</span> <span class="o">{</span>
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Build'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">agent</span> <span class="o">{</span>
+                <span class="n">docker</span> <span class="o">{</span>
+                    <span class="n">label</span> <span class="s1">'docker &amp;&amp; linux'</span> <i class="conum" data-value="1"></i><b>(1)</b>
+                    <span class="n">image</span> <span class="s1">'mcr.microsoft.com/dotnet/sdk:8.0'</span>
+                    <span class="c1">// Run the container on the node specified at the</span>
+                    <span class="c1">// top-level of the Pipeline, in the same workspace,</span>
+                    <span class="c1">// rather than on a new node entirely:</span>
+                    <span class="n">reuseNode</span> <span class="kc">true</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'dotnet build'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Test'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">agent</span> <span class="o">{</span>
+                <span class="n">docker</span> <span class="o">{</span>
+                    <span class="n">label</span> <span class="s1">'docker &amp;&amp; linux'</span>
+                    <span class="n">image</span> <span class="s1">'mcr.microsoft.com/dotnet/sdk:8.0'</span>
+                    <span class="c1">// Run the container on the node specified at the</span>
+                    <span class="c1">// top-level of the Pipeline, in the same workspace,</span>
+                    <span class="c1">// rather than on a new node entirely:</span>
+                    <span class="n">reuseNode</span> <span class="kc">true</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'dotnet test'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Docker'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">when</span> <span class="o">{</span> <span class="n">tag</span> <span class="s2">"*"</span> <span class="o">}</span>
+            <span class="n">agent</span> <span class="o">{</span> <span class="n">label</span> <span class="s1">'docker &amp;&amp; linux'</span> <span class="o">}</span>
+            <span class="c1">// Execute the stage on a node pre-configured to accept Docker-based Pipelines</span>
+            <span class="n">environment</span> <span class="o">{</span>
+                <span class="c1">// Create a Username and password credential with ID as `jenkins-docker-registry-creds` for your Docker Registry on Jenkins.</span>
+                <span class="n">DOCKER_REGISTRY_CREDS</span> <span class="o">=</span> <span class="n">credentials</span><span class="o">(</span><span class="s1">'jenkins-docker-registry-creds'</span><span class="o">)</span> <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="n">sh</span> <span class="s1">'docker build . -f src/WebApplication1/Dockerfile -t $REGISTRY_HOSTNAME:$REGISTRY_PORT/webapplication1:$TAG_NAME'</span>
+                <span class="n">sh</span> <span class="s1">'docker login -u $DOCKER_REGISTRY_CREDS_USR -p $DOCKER_REGISTRY_CREDS_PSW $REGISTRY_SCHEME://$REGISTRY_HOSTNAME:$REGISTRY_PORT'</span>
+                <span class="n">sh</span> <span class="s1">'docker push $REGISTRY_HOSTNAME:$REGISTRY_PORT/webapplication1:$BRANCH_NAME'</span>
+                <span class="n">sh</span> <span class="s1">'docker logout $REGISTRY_SCHEME://$REGISTRY_HOSTNAME:$REGISTRY_PORT'</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">stage</span><span class="o">(</span><span class="s1">'Deploy'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">when</span> <span class="o">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
+                <span class="n">tag</span> <span class="s2">"*"</span>
+                <span class="n">expression</span> <span class="o">{</span>
+                    <span class="n">currentBuild</span><span class="o">.</span><span class="na">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">currentBuild</span><span class="o">.</span><span class="na">result</span> <span class="o">==</span> <span class="s1">'SUCCESS'</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">agent</span> <span class="o">{</span> <span class="n">label</span> <span class="s1">'docker &amp;&amp; linux'</span> <span class="o">}</span>
+            <span class="n">environment</span> <span class="o">{</span>
+                <span class="n">container_name</span><span class="o">=</span><span class="s2">"webapplication1"</span>
+                <span class="n">image</span><span class="o">=</span><span class="s2">"$REGISTRY_HOSTNAME:$REGISTRY_PORT/webapplication1:$TAG_NAME"</span>
+                <span class="n">login_name</span><span class="o">=</span><span class="s2">"jenkins"</span>
+                <span class="n">destination_host</span><span class="o">=</span><span class="s2">"192.168.211.133"</span>
+            <span class="o">}</span>
+            <span class="n">steps</span> <span class="o">{</span>
+                <span class="c1">// Create a SSH Username with private key credential with ID as `jenkins-ssh-key-for-node-3` on Jenkins.</span>
+                <span class="n">withCredentials</span><span class="o">(</span><span class="nl">bindings:</span> <span class="o">[</span><span class="n">sshUserPrivateKey</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="s1">'jenkins-ssh-key-for-node-3'</span><span class="o">,</span> <span class="err">\</span>
+                                                             <span class="nl">keyFileVariable:</span> <span class="s1">'JENKINS_SSH_KEY_FOR_NODE_3'</span><span class="o">)])</span> <span class="o">{</span>
+                    <span class="n">sh</span> <span class="s1">'''
+cat &lt;&lt;EOF | ssh -T -o StrictHostKeyChecking=no -i $JENKINS_SSH_KEY_FOR_NODE_3 -l $login_name $destination_host
+#!/bin/sh
+
+set -ex
+
+docker container inspect $container_name -f \'{{ json .State }}\' \\
+    &amp;&amp; docker rm --force $container_name
+
+docker run --name $container_name --restart always --detach --publish 7890:8080 $image \\ <i class="conum" data-value="4"></i><b>(4)</b>
+    &amp;&amp; docker ps -n 1
+EOF
+                       '''</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>See also <a href="https://www.jenkins.io/doc/book/pipeline/syntax/#agent" class="bare">https://www.jenkins.io/doc/book/pipeline/syntax/#agent</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>See also <a href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials" class="bare">https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>See also <a href="https://www.jenkins.io/doc/book/pipeline/syntax/#when" class="bare">https://www.jenkins.io/doc/book/pipeline/syntax/#when</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>See also:
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port" class="bare">https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port</a></p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-8.0" class="bare">https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-8.0</a></p>
+</li>
+</ul>
+</div></td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>The final project structure should be as below.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tree
+<span class="c">.
+</span><span class="go">├── Dockerfile
+├── global.json
+├── Jenkinsfile
+├── jenkins-getting-started.sln
+└── src
+    └── HelloWorld
+        ├── appsettings.Development.json
+        ├── appsettings.json
+        ├── HelloWorld.csproj
+        ├── Program.cs
+        └── Properties
+            └── launchSettings.json
+
+4 directories, 9 files</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Build and test the project.</p>
+<div class="paragraph">
+<p>Run the Web application.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">$ </span>dotnet run <span class="nt">--project</span> src/HelloWorld/
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5062
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open another terminal, and test the above endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">$ </span>curl <span class="nt">-i</span> http://localhost:5062
+HTTP/1.1 200 OK
+Content-Type: text/plain<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8
+Date: Tue, 30 Jan 2024 03:25:20 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+Hello World!</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The following is a sample output on Jenkins.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">. . .
++ dotnet build
+MSBuild version 17.8.3+195e7f5a3 for .NET
+  Determining projects to restore...
+. . .
+
++ docker build . -t 192.168.56.130:8082/hello-world:main
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  1.535MB
+. . .
+
++ docker login -u **** -p **** http://192.168.56.130:8082
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /home/jenkins/.docker/config.json.
+Configure a credential helper to remove this warning. See
+</span><span class="gp">https://docs.docker.com/engine/reference/commandline/login/#</span>credentials-store
+<span class="go">
+Login Succeeded
+[Pipeline] sh
++ docker push 192.168.56.130:8082/hello-world:main
+The push refers to repository [192.168.56.130:8082/hello-world]
+. . .
+
++ docker logout http://192.168.56.130:8082
+Removing login credentials for 192.168.56.130:8082
+. . .</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reverse-proxy-for-jenkins">Appendix D: Reverse proxy for Jenkins</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An error message is displayed in the "Manage Jenkins" page: <code>It appears that your reverse proxy setup is broken</code>. <a href="#jenkins-reverse-proxy-configuration-troubleshooting">[23]</a></p>
+</div>
+<div class="paragraph">
+<p>For a reverse proxy to work correctly, it needs to rewrite both the request and the response. Request rewriting involves receiving an inbound HTTP call and then making a forwarding request to Jenkins (sometimes with some HTTP headers modified, sometimes not). Failing to configure the request rewriting is easy to catch, because you just won’t see any pages at all.</p>
+</div>
+<div class="paragraph">
+<p>But correct reverse proxying also involves <strong>one of two options</strong>, EITHER</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>rewrite the response</strong> with a "Location" header in the response, which is used during redirects. Jenkins sends <code>Location: <a href="http://actual.server:8080/jenkins/foobar" class="bare">http://actual.server:8080/jenkins/foobar</a></code> and the reverse proxy must rewrite it to <code>Location: <a href="http://nice.name/jenkins/foobar" class="bare">http://nice.name/jenkins/foobar</a></code>. Unfortunately, failing to configure this correctly is harder to catch; OR</p>
+</li>
+<li>
+<p><strong>set the headers</strong> <code>X-Forwarded-Host</code> (and perhaps <code>X-Forwarded-Port</code>) on the forwarded request. Jenkins will parse those headers and generate all the redirects and other links on the basis of those headers. Depending on your reverse proxy it may be easier to set <code>X-Forwarded-Host</code> and <code>X-Forwarded-Port</code> to the hostname and port in the original <code>Host</code> header respectively or it may be easier to just pass the original <code>Host</code> header through as <code>X-Forwarded-Host</code> and delete the <code>X-Forwarded-Port</code> # header from the request. You will also need to set the <code>X-Forwarded-Proto</code> header if your reverse proxy is changing from https to http or vice-versa.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="openssh-for-windows">Appendix E: OpenSSH for Windows</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenSSH is the open-source version of the Secure Shell (SSH) tools used by administrators of Linux and other non-Windows for cross-platform management of remote systems. OpenSSH has been added to Windows (as of autumn 2018), and is included in Windows Server and Windows client. <a href="#windows-openssh_overview">[24]</a></p>
+</div>
+<div class="paragraph">
+<p>OpenSSH for Windows has the below commands built in.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ssh</code> is the SSH client component that runs on the user&#8217;s local system</p>
+</li>
+<li>
+<p><code>sshd</code> is the SSH server component that must be running on the system being managed remotely</p>
+</li>
+<li>
+<p><code>ssh-keygen</code> generates, manages and converts authentication keys for SSH</p>
+</li>
+<li>
+<p><code>ssh-agent</code> stores private keys used for public key authentication</p>
+</li>
+<li>
+<p><code>ssh-add</code> adds private keys to the list allowed by the server</p>
+</li>
+<li>
+<p><code>ssh-keyscan</code> aids in collecting the public SSH host keys from hosts</p>
+</li>
+<li>
+<p><code>sftp</code> is the service that provides the Secure File Transfer Protocol, and runs over SSH</p>
+</li>
+<li>
+<p><code>scp</code> is a file copy utility that runs on SSH</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="install-openssh-for-windows-2">E.1. Install OpenSSH for Windows</h3>
+<div class="paragraph">
+<p>To install OpenSSH using PowerShell, run PowerShell as an Administrator. To make sure that OpenSSH is available, run the following cmdlet: <a href="#windows-openssh_install_firstuse">[25]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Where-Object</span><span class="w"> </span><span class="nx">Name</span><span class="w"> </span><span class="o">-like</span><span class="w"> </span><span class="s1">'OpenSSH*'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The command should return the following output if neither are already installed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Name  : OpenSSH.Client~~~~0.0.1.0
+State : NotPresent
+
+Name  : OpenSSH.Server~~~~0.0.1.0
+State : NotPresent</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, install the server or client components as needed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Install the OpenSSH Client</span><span class="w">
+</span><span class="n">Add-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Client~~~~0.0.1.0</span><span class="w">
+
+</span><span class="c"># Install the OpenSSH Server</span><span class="w">
+</span><span class="n">Add-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Server~~~~0.0.1.0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To start and configure OpenSSH Server for initial use, open an elevated PowerShell prompt (right click, Run as an administrator), then run the following commands to start the <code>sshd service</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Start the sshd service</span><span class="w">
+</span><span class="n">Start-Service</span><span class="w"> </span><span class="nx">sshd</span><span class="w">
+
+</span><span class="c"># OPTIONAL but recommended:</span><span class="w">
+</span><span class="n">Set-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">sshd</span><span class="w"> </span><span class="nt">-StartupType</span><span class="w"> </span><span class="s1">'Automatic'</span><span class="w">
+
+</span><span class="c"># Confirm the Firewall rule is configured. It should be created automatically by setup. Run the following to verify</span><span class="w">
+</span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">Get-NetFirewallRule</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">"OpenSSH-Server-In-TCP"</span><span class="w"> </span><span class="nt">-ErrorAction</span><span class="w"> </span><span class="nx">SilentlyContinue</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Select-Object</span><span class="w"> </span><span class="nx">Name</span><span class="p">,</span><span class="w"> </span><span class="nx">Enabled</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"Firewall Rule 'OpenSSH-Server-In-TCP' does not exist, creating it..."</span><span class="w">
+    </span><span class="n">New-NetFirewallRule</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s1">'OpenSSH-Server-In-TCP'</span><span class="w"> </span><span class="nt">-DisplayName</span><span class="w"> </span><span class="s1">'OpenSSH Server (sshd)'</span><span class="w"> </span><span class="nt">-Enabled</span><span class="w"> </span><span class="nx">True</span><span class="w"> </span><span class="nt">-Direction</span><span class="w"> </span><span class="nx">Inbound</span><span class="w"> </span><span class="nt">-Protocol</span><span class="w"> </span><span class="nx">TCP</span><span class="w"> </span><span class="nt">-Action</span><span class="w"> </span><span class="nx">Allow</span><span class="w"> </span><span class="nt">-LocalPort</span><span class="w"> </span><span class="nx">22</span><span class="w">
+</span><span class="p">}</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"Firewall rule 'OpenSSH-Server-In-TCP' has been created and exists."</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>By default the sshd service is set to start manually. To start it each time the server is rebooted, run the following commands from an elevated PowerShell prompt on your server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Set the sshd service to be started automatically</span><span class="w">
+</span><span class="n">Get-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">sshd</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Set-Service</span><span class="w"> </span><span class="nt">-StartupType</span><span class="w"> </span><span class="nx">Automatic</span><span class="w">
+
+</span><span class="c"># Now start the sshd service</span><span class="w">
+</span><span class="n">Start-Service</span><span class="w"> </span><span class="nx">sshd</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="connect-to-openssh-server">E.2. Connect to OpenSSH Server</h3>
+<div class="paragraph">
+<p>Once installed, you can connect to OpenSSH Server from a Windows or Windows Server device with the OpenSSH client installed. From a PowerShell prompt, run the following command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">ssh</span><span class="w"> </span><span class="nx">domain\username</span><span class="err">@</span><span class="nx">servername</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once connected, you&#8217;ll see the Windows command shell prompt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">domain\username</span><span class="err">@</span><span class="nx">SERVERNAME</span><span class="w"> </span><span class="nx">C:\Users\username</span><span class="err">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh dev@node-4 cmd
+<span class="go">dev@node-4's password:
+Microsoft Windows [Version 10.0.19045.3803]
+(c) Microsoft Corporation. All rights reserved.
+
+</span><span class="gp">dev@DESKTOP-A81NPH1 C:\Users\dev&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="uninstall-openssh-for-windows">E.3. Uninstall OpenSSH for Windows</h3>
+<div class="paragraph">
+<p>To uninstall the OpenSSH components using PowerShell, use the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Uninstall the OpenSSH Client</span><span class="w">
+</span><span class="n">Remove-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Client~~~~0.0.1.0</span><span class="w">
+
+</span><span class="c"># Uninstall the OpenSSH Server</span><span class="w">
+</span><span class="n">Remove-WindowsCapability</span><span class="w"> </span><span class="nt">-Online</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">OpenSSH.Server~~~~0.0.1.0</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="openssh-configuration-files">E.4. OpenSSH configuration files</h3>
+<div class="paragraph">
+<p>In Windows, the Open SSH Server (sshd) reads configuration data from <code>%programdata%\ssh\sshd_config</code> by default, or a different configuration file may be specified by launching <code>sshd.exe</code> with the <code>-f</code> parameter. If the file is absent, sshd generates one with the default configuration when the service is started. <a href="#windows-openssh_server_configuration">[26]</a></p>
+</div>
+<div class="paragraph">
+<p>In Windows, the OpenSSH Client (ssh) reads configuration data from a configuration file in the following order:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By launching <code>ssh.exe</code> with the <code>-F</code> parameter, specifying a path to a configuration file and an entry name from that file.</p>
+</li>
+<li>
+<p>A user&#8217;s configuration file at <code>%userprofile%\.ssh\config</code>.</p>
+</li>
+<li>
+<p>The system-wide configuration file at <code>%programdata%\ssh\ssh_config</code></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="configuring-the-default-shell-for-openssh-in-windows">E.4.1. Configuring the default shell for OpenSSH in Windows</h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Windows Jenkins agent requires the Windows Command shell as the default shell.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The default command shell provides the experience a user sees when connecting to the server using SSH. The initial default Windows is the Windows Command shell (cmd.exe). Windows also includes PowerShell, and third-party command shells are also available for Windows and may be configured as the default shell for a server.</p>
+</div>
+<div class="paragraph">
+<p>To set the default command shell, first confirm that the OpenSSH installation folder is on the system path environment. For Windows, the default installation folder is <code>%systemdrive%\Windows\System32\openssh</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title"><em>Windows Command shell</em></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cmd">path</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><em>PowerShell</em></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">path</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configuring the default ssh shell is done in the Windows registry by adding the full path to the shell executable to <code>HKEY_LOCAL_MACHINE\SOFTWARE\OpenSSH</code> in the string value <code>DefaultShell</code>.</p>
+</div>
+<div class="paragraph">
+<p>As an example, the following elevated PowerShell command sets the default shell to be powershell.exe:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">New-ItemProperty</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Path</span><span class="w"> </span><span class="s2">"HKLM:\SOFTWARE\OpenSSH"</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Name</span><span class="w"> </span><span class="nx">DefaultShell</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Value</span><span class="w"> </span><span class="s2">"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-PropertyType</span><span class="w"> </span><span class="nx">String</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Force</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="authorizedkeysfile">E.4.2. AuthorizedKeysFile</h4>
+<div class="paragraph">
+<p>The default is <code>.ssh/authorized_keys</code>. If the path isn&#8217;t absolute, it&#8217;s taken relative to user&#8217;s home directory (or profile image path), for example, <code>C:\Users\username</code>. If the user belongs to the administrator group, <code>%programdata%/ssh/administrators_authorized_keys</code> is used instead.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <code>administrators_authorized_keys</code> file must only have permission entries for the <code>NT Authority\SYSTEM</code> account and <code>BUILTIN\Administrators</code> security group. The <code>NT Authority\SYSTEM</code> account must be granted full control. The <code>BUILTIN\Administrators</code> security group is required for administrators to manage the authorized keys, you can choose the required access. To grant permissions you can open an elevated PowerShell prompt, and running the command <code>icacls.exe "C:\ProgramData\ssh\administrators_authorized_keys" /inheritance:r /grant "Administrators:F" /grant "SYSTEM:F"</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Standard user</p>
+<div class="paragraph">
+<p>The example below copies the public key to the server (where "username" is replaced by your username). You&#8217;ll need to use the password for the user account for the server initially.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Get the public key file generated previously on your client</span><span class="w">
+</span><span class="nv">$authorizedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Get-Content</span><span class="w"> </span><span class="nt">-Path</span><span class="w"> </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w">
+
+</span><span class="c"># Generate the PowerShell to be run remote that will copy the public key file generated previously on your client to the authorized_keys file on your server</span><span class="w">
+</span><span class="nv">$remotePowershell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"powershell New-Item -Force -ItemType Directory -Path </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="s2">\.ssh; Add-Content -Force -Path </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="s2">\.ssh\authorized_keys -Value '</span><span class="nv">$authorizedKey</span><span class="s2">'"</span><span class="w">
+
+</span><span class="c"># Connect to your server and run the PowerShell using the $remotePowerShell variable</span><span class="w">
+</span><span class="n">ssh</span><span class="w"> </span><span class="nx">username</span><span class="err">@</span><span class="nx">domain1</span><span class="err">@</span><span class="nx">contoso.com</span><span class="w"> </span><span class="nv">$remotePowershell</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Administrative user</p>
+<div class="paragraph">
+<p>The example below copies the public key to the server and configures the ACL (where "username" is replaced by your user name). You&#8217;ll need to use the password for the user account for the server initially.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Get the public key file generated previously on your client</span><span class="w">
+</span><span class="nv">$authorizedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Get-Content</span><span class="w"> </span><span class="nt">-Path</span><span class="w"> </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="nx">\.ssh\id_ed25519.pub</span><span class="w">
+
+</span><span class="c"># Generate the PowerShell to be run remote that will copy the public key file generated previously on your client to the authorized_keys file on your server</span><span class="w">
+</span><span class="nv">$remotePowershell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"powershell Add-Content -Force -Path </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">ProgramData</span><span class="s2">\ssh\administrators_authorized_keys -Value '''</span><span class="nv">$authorizedKey</span><span class="s2">''';icacls.exe ""</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">ProgramData</span><span class="s2">\ssh\administrators_authorized_keys"" /inheritance:r /grant ""Administrators:F"" /grant ""SYSTEM:F"""</span><span class="w">
+
+</span><span class="c"># Connect to your server and run the PowerShell using the $remotePowerShell variable</span><span class="w">
+</span><span class="n">ssh</span><span class="w"> </span><span class="nx">username</span><span class="err">@</span><span class="nx">domain1</span><span class="err">@</span><span class="nx">contoso.com</span><span class="w"> </span><span class="nv">$remotePowershell</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="glossary"></a>[1] <a href="https://www.jenkins.io/doc/book/glossary/" class="bare">https://www.jenkins.io/doc/book/glossary/</a></p>
+</li>
+<li>
+<p><a id="architecting-for-scale"></a>[2] <a href="https://www.jenkins.io/doc/book/scaling/architecting-for-scale/" class="bare">https://www.jenkins.io/doc/book/scaling/architecting-for-scale/</a></p>
+</li>
+<li>
+<p><a id="managing-nodes"></a>[3] <a href="https://www.jenkins.io/doc/book/managing/nodes/" class="bare">https://www.jenkins.io/doc/book/managing/nodes/</a></p>
+</li>
+<li>
+<p><a id="installing-docker"></a>[4] <a href="https://www.jenkins.io/doc/book/installing/docker/" class="bare">https://www.jenkins.io/doc/book/installing/docker/</a></p>
+</li>
+<li>
+<p><a id="docker-readme-md"></a>[5] <a href="https://github.com/jenkinsci/docker/blob/master/README.md" class="bare">https://github.com/jenkinsci/docker/blob/master/README.md</a></p>
+</li>
+<li>
+<p><a id="using-agents"></a>[6]] <a href="https://www.jenkins.io/doc/book/using/using-agents/" class="bare">https://www.jenkins.io/doc/book/using/using-agents/</a></p>
+</li>
+<li>
+<p><a id="docker-ssh-agent"></a>[7] <a href="https://github.com/jenkinsci/docker-ssh-agent" class="bare">https://github.com/jenkinsci/docker-ssh-agent</a></p>
+</li>
+<li>
+<p><a id="multiple-compose-files"></a>[8] <a href="https://docs.docker.com/compose/multiple-compose-files/merge/" class="bare">https://docs.docker.com/compose/multiple-compose-files/merge/</a></p>
+</li>
+<li>
+<p><a id="book-blueocean"></a>[9] <a href="https://www.jenkins.io/doc/book/blueocean/" class="bare">https://www.jenkins.io/doc/book/blueocean/</a></p>
+</li>
+<li>
+<p><a id="book-pipeline"></a>[9] <a href="https://www.jenkins.io/doc/book/pipeline/" class="bare">https://www.jenkins.io/doc/book/pipeline/</a></p>
+</li>
+<li>
+<p><a id="book-blueocean-gs"></a>[10] <a href="https://www.jenkins.io/doc/book/blueocean/getting-started/" class="bare">https://www.jenkins.io/doc/book/blueocean/getting-started/</a></p>
+</li>
+<li>
+<p><a id="pipeline-jenkinsfile"></a>[11] <a href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/" class="bare">https://www.jenkins.io/doc/book/pipeline/jenkinsfile/</a></p>
+</li>
+<li>
+<p><a id="pipeline-syntax"></a>[12] <a href="https://www.jenkins.io/doc/book/pipeline/syntax/" class="bare">https://www.jenkins.io/doc/book/pipeline/syntax/</a></p>
+</li>
+<li>
+<p><a id="pipeline-docker"></a>[13] <a href="https://www.jenkins.io/doc/book/pipeline/docker/" class="bare">https://www.jenkins.io/doc/book/pipeline/docker/</a></p>
+</li>
+<li>
+<p><a id="gitlab-jenkins"></a>[14] <a href="https://about.gitlab.com/solutions/jenkins/" class="bare">https://about.gitlab.com/solutions/jenkins/</a></p>
+</li>
+<li>
+<p><a id="sonatype-nexus-repository"></a>[15] <a href="https://www.sonatype.com/products/sonatype-nexus-repository" class="bare">https://www.sonatype.com/products/sonatype-nexus-repository</a></p>
+</li>
+<li>
+<p><a id="sonatype-nexus-oss-installation-methods"></a>[16] <a href="https://help.sonatype.com/en/installation-methods.html" class="bare">https://help.sonatype.com/en/installation-methods.html</a></p>
+</li>
+<li>
+<p><a id="docker-nexus3"></a>[17] <a href="https://hub.docker.com/r/sonatype/nexus3/" class="bare">https://hub.docker.com/r/sonatype/nexus3/</a></p>
+</li>
+<li>
+<p><a id="nexus-hosted-repository-for-docker"></a>[18] <a href="https://help.sonatype.com/en/hosted-repository-for-docker&#8212;&#8203;private-registry-for-docker-.html" class="bare">https://help.sonatype.com/en/hosted-repository-for-docker&#8212;&#8203;private-registry-for-docker-.html</a></p>
+</li>
+<li>
+<p><a id="nexus-nuget-hosted-repo"></a>[19] <a href="https://help.sonatype.com/en/nuget-hosted-repositories.html" class="bare">https://help.sonatype.com/en/nuget-hosted-repositories.html</a></p>
+</li>
+<li>
+<p><a id="install-gitlab"></a>[20] <a href="https://docs.gitlab.com/ee/install/docker.html" class="bare">https://docs.gitlab.com/ee/install/docker.html</a></p>
+</li>
+<li>
+<p><a id="gitlab-integration-jenkins"></a>[21] <a href="https://docs.gitlab.com/ee/integration/jenkins.html" class="bare">https://docs.gitlab.com/ee/integration/jenkins.html</a></p>
+</li>
+<li>
+<p><a id="gitlab-configuration"></a>[22] <a href="https://docs.gitlab.com/omnibus/settings/configuration.html" class="bare">https://docs.gitlab.com/omnibus/settings/configuration.html</a></p>
+</li>
+<li>
+<p><a id="jenkins-reverse-proxy-configuration-troubleshooting"></a>[23] <a href="https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/" class="bare">https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/</a></p>
+</li>
+<li>
+<p><a id="windows-openssh_overview"></a>[24] <a href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_overview" class="bare">https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_overview</a></p>
+</li>
+<li>
+<p><a id="windows-openssh_install_firstuse"></a>[25] <a href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" class="bare">https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse</a></p>
+</li>
+<li>
+<p><a id="windows-openssh_server_configuration"></a>[26] <a href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration" class="bare">https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_server_configuration</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Raw HTTP Message Logging for .NET HttpClient | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Raw HTTP Message Logging for .NET HttpClient" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Introduction Modern .NET applications frequently communicate with external services over HTTP, making observability of these interactions critical for development and debugging. This article explores a lightweight approach to capturing raw HTTP messages in protocol format, providing developers with immediate visibility into their HTTP traffic without external tooling. 1.1. The HTTP Visibility Problem Debugging HTTP integrations in .NET applications often requires seeing the exact messages being sent and received over the wire. While IHttpClientFactory provides excellent patterns for managing HttpClient instances, and ASP.NET Core offers built-in HTTP logging middleware, these solutions have limitations for certain debugging scenarios. The built-in HTTP…" />
+<meta name="twitter:description" property="og:description" content="1. Introduction Modern .NET applications frequently communicate with external services over HTTP, making observability of these interactions critical for development and debugging. This article explores a lightweight approach to capturing raw HTTP messages in protocol format, providing developers with immediate visibility into their HTTP traffic without external tooling. 1.1. The HTTP Visibility Problem Debugging HTTP integrations in .NET applications often requires seeing the exact messages being sent and received over the wire. While IHttpClientFactory provides excellent patterns for managing HttpClient instances, and ASP.NET Core offers built-in HTTP logging middleware, these solutions have limitations for certain debugging scenarios. The built-in HTTP…" />
+<link rel="canonical" href="https://blog.codefarm.me/raw-http-message-logging-for-net-httpclient/" />
+<meta property="og:url" content="https://blog.codefarm.me/raw-http-message-logging-for-net-httpclient/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-12-18T17:31:59+08:00" />
+<meta property="article:modified_time" content="2025-12-18T17:31:59+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Raw HTTP Message Logging for .NET HttpClient" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-12-18T17:31:59+08:00","datePublished":"2025-12-18T17:31:59+08:00","description":"1. Introduction Modern .NET applications frequently communicate with external services over HTTP, making observability of these interactions critical for development and debugging. This article explores a lightweight approach to capturing raw HTTP messages in protocol format, providing developers with immediate visibility into their HTTP traffic without external tooling. 1.1. The HTTP Visibility Problem Debugging HTTP integrations in .NET applications often requires seeing the exact messages being sent and received over the wire. While IHttpClientFactory provides excellent patterns for managing HttpClient instances, and ASP.NET Core offers built-in HTTP logging middleware, these solutions have limitations for certain debugging scenarios. The built-in HTTP…","headline":"Raw HTTP Message Logging for .NET HttpClient","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/raw-http-message-logging-for-net-httpclient/"},"url":"https://blog.codefarm.me/raw-http-message-logging-for-net-httpclient/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Raw HTTP Message Logging for .NET HttpClient</h1><p class="c-post-meta">18 Dec 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div class="sect1">
+<h2 id="introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Modern .NET applications frequently communicate with external services over HTTP, making observability of these interactions critical for development and debugging. This article explores a lightweight approach to capturing raw HTTP messages in protocol format, providing developers with immediate visibility into their HTTP traffic without external tooling.</p>
+</div>
+<div class="sect2">
+<h3 id="the-http-visibility-problem">1.1. The HTTP Visibility Problem</h3>
+<div class="paragraph">
+<p>Debugging HTTP integrations in .NET applications often requires seeing the exact messages being sent and received over the wire. While <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/httpclient-factory">IHttpClientFactory</a> provides excellent patterns for managing <code>HttpClient</code> instances, and ASP.NET Core offers <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-10.0">built-in HTTP logging middleware</a>, these solutions have limitations for certain debugging scenarios.</p>
+</div>
+<div class="paragraph">
+<p>The built-in HTTP logging uses structured logging with key-value pairs, which is excellent for telemetry and analytics. However, when troubleshooting API integrations during development, seeing the <strong>raw HTTP protocol format</strong> - headers and body as they appear on the wire - is often more valuable. This format matches what developers see in tools like Postman, Fiddler, or browser DevTools, making it easier to diagnose issues quickly.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="why-lightweight-logging-matters">1.2. Why Lightweight Logging Matters</h3>
+<div class="paragraph">
+<p>High-level observability tools like OpenTelemetry provide comprehensive telemetry for production systems, but they can be heavyweight for local development troubleshooting. A lightweight solution that outputs raw HTTP messages directly to console or debug logs fills a critical gap:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Immediate feedback</strong> during development without external tools</p>
+</li>
+<li>
+<p><strong>Easy reproduction</strong> by copying HTTP messages to curl or Postman</p>
+</li>
+<li>
+<p><strong>Quick diagnosis</strong> of header mismatches, authentication issues, or payload problems</p>
+</li>
+<li>
+<p><strong>Universal format</strong> that matches API documentation and can be shared with third-party support teams</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="solution-delegatinghandler-for-http-observability">2. Solution: DelegatingHandler for HTTP Observability</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://www.nuget.org/packages/Alyio.Extensions.Http.Logging"><code>Alyio.Extensions.Http.Logging</code></a> library addresses the HTTP visibility problem by implementing a custom <code>DelegatingHandler</code> that integrates seamlessly with .NET&#8217;s <code>IHttpClientFactory</code> infrastructure. This section examines the architectural approach and core components.</p>
+</div>
+<div class="sect2">
+<h3 id="architecture-overview">2.1. Architecture Overview</h3>
+<div class="paragraph">
+<p>The solution leverages the <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/httpclient-factory#configure-the-httpmessagehandler">DelegatingHandler pattern</a> within the <code>IHttpClientFactory</code> pipeline to intercept HTTP messages. This approach provides several advantages:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Non-invasive integration</strong> - works seamlessly with existing <code>HttpClient</code> configurations</p>
+</li>
+<li>
+<p><strong>Pipeline-aware</strong> - executes in the correct order with other handlers</p>
+</li>
+<li>
+<p><strong>Lifecycle managed</strong> - benefits from <code>IHttpClientFactory</code> connection pooling and handler recycling</p>
+</li>
+<li>
+<p><strong>DI-friendly</strong> - fully integrated with .NET dependency injection</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>DelegatingHandler</code> pattern allows message handlers to be chained together, with each handler able to inspect and modify requests before they&#8217;re sent and responses after they&#8217;re received. This makes it ideal for cross-cutting concerns like logging.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="key-components">2.2. Key Components</h3>
+<div class="paragraph">
+<p>The library consists of three primary components:</p>
+</div>
+<div class="paragraph">
+<p><strong>HttpRawMessageLoggingHandler</strong> - A <code>DelegatingHandler</code> implementation that intercepts HTTP messages and logs them in raw protocol format:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Captures request messages before they&#8217;re sent</p>
+</li>
+<li>
+<p>Measures request duration with high precision</p>
+</li>
+<li>
+<p>Captures response messages after receipt</p>
+</li>
+<li>
+<p>Handles errors gracefully and logs request context on failure</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>HttpRawMessageLoggingOptions</strong> - Configuration options that control logging behavior:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>LogLevel</code> - minimum log level for HTTP message logging</p>
+</li>
+<li>
+<p><code>CategoryName</code> - custom logger category for filtering</p>
+</li>
+<li>
+<p><code>IgnoreRequestContent</code>/<code>IgnoreResponseContent</code> - toggle body logging</p>
+</li>
+<li>
+<p><code>IgnoreRequestHeaders</code>/<code>IgnoreResponseHeaders</code> - exclude specific headers</p>
+</li>
+<li>
+<p><code>RedactRequestHeaders</code>/<code>RedactResponseHeaders</code> - mask sensitive header values</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Extension Methods</strong> - Clean API surface for registration:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>AddHttpRawMessageLogging()</code> - extends <code>IHttpClientBuilder</code> for easy integration</p>
+</li>
+<li>
+<p>Works with both global and named client configurations</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="key-features">3. Key Features</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The library provides three essential capabilities that distinguish it from existing logging solutions: authentic protocol format capture, security-conscious defaults, and flexible configuration options. Each feature addresses specific challenges in HTTP debugging workflows.</p>
+</div>
+<div class="sect2">
+<h3 id="raw-requestresponse-capture">3.1. Raw Request/Response Capture</h3>
+<div class="paragraph">
+<p>The library captures HTTP messages in authentic protocol format, not structured logs. This produces output like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/data/2.5/weather?q=London,uk&amp;appid=***</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">samples.openweathermap.org</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">***</span>
+<span class="na">User-Agent</span><span class="p">:</span> <span class="s">dotnet-docs</span>
+
+HTTP/1.1 200 OK
+Server: openresty/1.9.7.1
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+
+{"coord":{"lon":-0.13,"lat":51.51},"weather":[...]...}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This format is immediately recognizable and can be used directly with HTTP testing tools. The raw format shows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Complete HTTP message structure</p>
+</li>
+<li>
+<p>Actual header names and values</p>
+</li>
+<li>
+<p>Request/response body content</p>
+</li>
+<li>
+<p>Protocol version and status codes</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="security-first-with-auto-redaction">3.2. Security-First with Auto-Redaction</h3>
+<div class="paragraph">
+<p>Security is built into the default configuration. Sensitive headers are automatically redacted to prevent accidental exposure of credentials in logs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Default redaction</strong> - <code>Authorization</code> header is redacted by default</p>
+</li>
+<li>
+<p><strong>Configurable redaction</strong> - additional headers like <code>X-Api-Key</code>, <code>Cookie</code> can be added</p>
+</li>
+<li>
+<p><strong>Header filtering</strong> - specific headers can be excluded entirely from logs</p>
+</li>
+<li>
+<p><strong>Content control</strong> - request and response bodies are excluded by default to prevent PII leakage</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Example configuration with security controls:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddHttpClient</span><span class="p">(</span><span class="s">"SecureClient"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">AddHttpRawMessageLogging</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">RedactRequestHeaders</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+            <span class="s">"Authorization"</span><span class="p">,</span>
+            <span class="s">"X-Api-Key"</span><span class="p">,</span>
+            <span class="s">"Cookie"</span>
+        <span class="p">};</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreRequestContent</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>  <span class="c1">// No request body logging</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreResponseContent</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span> <span class="c1">// Response body OK to log</span>
+    <span class="p">});</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="flexible-configuration">3.3. Flexible Configuration</h3>
+<div class="paragraph">
+<p>The library supports both global and named client configurations, allowing fine-grained control over logging behavior:</p>
+</div>
+<div class="paragraph">
+<p><strong>Global Configuration</strong></p>
+</div>
+<div class="paragraph">
+<p>Apply logging to all HTTP clients in the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">ConfigureHttpClientDefaults</span><span class="p">(</span><span class="n">builder</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="n">builder</span><span class="p">.</span><span class="nf">AddHttpRawMessageLogging</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">Level</span> <span class="p">=</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Information</span><span class="p">;</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreRequestContent</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreResponseContent</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Named Client Configuration</strong></p>
+</div>
+<div class="paragraph">
+<p>Target specific clients for detailed logging:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span>
+    <span class="p">.</span><span class="n">AddHttpClient</span><span class="p">&lt;</span><span class="n">IWeatherService</span><span class="p">,</span> <span class="n">WeatherService</span><span class="p">&gt;(</span><span class="n">client</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">client</span><span class="p">.</span><span class="n">BaseAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="s">"https://api.openweathermap.org"</span><span class="p">);</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nf">AddHttpRawMessageLogging</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">CategoryName</span> <span class="p">=</span> <span class="s">"WeatherApi"</span><span class="p">;</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">Level</span> <span class="p">=</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">;</span>
+    <span class="p">});</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The named client approach is particularly useful when debugging specific API integrations while keeping other HTTP traffic quiet.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started">4. Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Integration of the library into existing .NET applications requires minimal setup. The following sections demonstrate installation, basic configuration, and common usage patterns.</p>
+</div>
+<div class="sect2">
+<h3 id="installation-and-basic-usage">4.1. Installation and Basic Usage</h3>
+<div class="paragraph">
+<p>Installation from NuGet is straightforward:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">dotnet add package Alyio.Extensions.Http.Logging</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Minimal setup requires just one line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddHttpClient</span><span class="p">&lt;</span><span class="n">IApiService</span><span class="p">,</span> <span class="n">ApiService</span><span class="p">&gt;()</span>
+    <span class="p">.</span><span class="nf">AddHttpRawMessageLogging</span><span class="p">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This enables logging with secure defaults:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Information</code> log level</p>
+</li>
+<li>
+<p>Request/response headers logged</p>
+</li>
+<li>
+<p>Request/response bodies excluded</p>
+</li>
+<li>
+<p><code>Authorization</code> header redacted</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Configure logging level in <code>appsettings.Development.json</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"Logging"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"LogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"Default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Warning"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"System.Net.Http.HttpClient"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Information"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuration-options">4.2. Configuration Options</h3>
+<div class="paragraph">
+<p>For more control, configure options during registration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddHttpClient</span><span class="p">(</span><span class="s">"MyApi"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">AddHttpRawMessageLogging</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="c1">// Custom logger category for filtering</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">CategoryName</span> <span class="p">=</span> <span class="s">"MyApi.HttpLogs"</span><span class="p">;</span>
+
+        <span class="c1">// Log level</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">Level</span> <span class="p">=</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">;</span>
+
+        <span class="c1">// Include message bodies</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreRequestContent</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreResponseContent</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+
+        <span class="c1">// Exclude noisy headers</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">IgnoreRequestHeaders</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"User-Agent"</span><span class="p">,</span> <span class="s">"Accept-Encoding"</span> <span class="p">};</span>
+
+        <span class="c1">// Redact sensitive headers</span>
+        <span class="n">options</span><span class="p">.</span><span class="n">RedactRequestHeaders</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+            <span class="s">"Authorization"</span><span class="p">,</span>
+            <span class="s">"X-Api-Key"</span>
+        <span class="p">};</span>
+    <span class="p">});</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example output with full configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">info: MyApi.HttpLogs[0]
+      Request-Queue: 1
+info: MyApi.HttpLogs[0]
+      Request-Message:
+
+      POST /api/users HTTP/1.1
+      Host: api.example.com
+      Content-Type: application/json
+      Authorization: ***
+      X-Api-Key: ***
+
+      {"name":"John Doe","email":"john@example.com"}
+
+info: MyApi.HttpLogs[0]
+      Response-Message: 234ms
+
+      HTTP/1.1 201 Created
+      Content-Type: application/json
+      Location: /api/users/12345
+
+      {"id":12345,"name":"John Doe","email":"john@example.com"}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="real-world-troubleshooting">5. Real-World Troubleshooting</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Raw HTTP logging proves most valuable in practical debugging scenarios. The following examples demonstrate how protocol-level visibility solves common integration problems encountered during development.</p>
+</div>
+<div class="sect2">
+<h3 id="debugging-third-party-apis">5.1. Debugging Third-Party APIs</h3>
+<div class="paragraph">
+<p><strong>Missing Headers</strong></p>
+</div>
+<div class="paragraph">
+<p>When integrating with third-party APIs, header mismatches are common. Raw logging reveals exactly what&#8217;s being sent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/api/orders</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">partner-api.example.com</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer ***</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The API documentation might require an additional <code>X-Correlation-Id</code> header. With raw logging, the absence is immediately visible, unlike structured logs where missing headers might not be obvious.</p>
+</div>
+<div class="paragraph">
+<p><strong>Payload Mismatches</strong></p>
+</div>
+<div class="paragraph">
+<p>API integrations often fail due to subtle payload differences. Raw logging shows the exact JSON structure being sent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"order_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2025-12-18T17:02:12+08:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the API expects <code>orderDate</code> (camelCase) instead of <code>order_date</code> (snake_case), the raw format makes this immediately apparent. The logged request can be copied directly into Postman to verify the issue.</p>
+</div>
+<div class="paragraph">
+<p><strong>Authentication Problems</strong></p>
+</div>
+<div class="paragraph">
+<p>OAuth and API key authentication failures are easier to diagnose with raw protocol logs. The complete request shows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Token format and structure (redacted but visible)</p>
+</li>
+<li>
+<p>Correct header name (<code>Authorization</code> vs <code>X-Api-Key</code>)</p>
+</li>
+<li>
+<p>Proper scheme (<code>Bearer</code> vs <code>Basic</code>)</p>
+</li>
+<li>
+<p>Request signing headers if required</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="local-development-and-testing">5.2. Local Development and Testing</h3>
+<div class="paragraph">
+<p><strong>Integration Testing</strong></p>
+</div>
+<div class="paragraph">
+<p>During development, raw HTTP logs provide valuable feedback without external monitoring tools:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+<span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Should_Send_Correct_Headers</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Arrange - logging is enabled in test setup</span>
+    <span class="kt">var</span> <span class="n">client</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="nf">CreateClient</span><span class="p">();</span>
+
+    <span class="c1">// Act</span>
+    <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="k">await</span> <span class="n">client</span><span class="p">.</span><span class="nf">GetAsync</span><span class="p">(</span><span class="s">"/api/users"</span><span class="p">);</span>
+
+    <span class="c1">// Assert - check console output for raw HTTP messages</span>
+    <span class="n">response</span><span class="p">.</span><span class="nf">Should</span><span class="p">().</span><span class="nf">BeSuccessful</span><span class="p">();</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The test output includes complete HTTP exchanges, making it easy to verify behavior without debugger breakpoints.</p>
+</div>
+<div class="paragraph">
+<p><strong>API Prototyping</strong></p>
+</div>
+<div class="paragraph">
+<p>When building new API integrations, raw logging accelerates development:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Enable logging for the API client</p>
+</li>
+<li>
+<p>Run the application</p>
+</li>
+<li>
+<p>Review console output for the HTTP exchange</p>
+</li>
+<li>
+<p>Copy the request to curl or Postman for refinement</p>
+</li>
+<li>
+<p>Iterate quickly without switching tools</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Request Queue Monitoring</strong></p>
+</div>
+<div class="paragraph">
+<p>The library logs the number of active requests, helping identify concurrent request issues:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">info: HttpClient.MyApi[0]
+      Request-Queue: 3</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This simple metric can reveal request throttling or connection pool exhaustion during development.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="implementation-insights">6. Implementation Insights</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Understanding the internal mechanics of the library provides context for its performance characteristics and design decisions. This section explores key implementation details and framework compatibility considerations.</p>
+</div>
+<div class="sect2">
+<h3 id="how-it-works">6.1. How It Works</h3>
+<div class="paragraph">
+<p>The implementation follows these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Registration</strong> - <code>AddHttpRawMessageLogging()</code> registers the handler in the <code>HttpClient</code> pipeline</p>
+</li>
+<li>
+<p><strong>Interception</strong> - When a request is made, <code>SendAsync()</code> is called on the handler</p>
+</li>
+<li>
+<p><strong>Request Capture</strong> - Request message is serialized to raw HTTP format</p>
+</li>
+<li>
+<p><strong>Timing</strong> - <code>Stopwatch</code> measures request duration</p>
+</li>
+<li>
+<p><strong>Execution</strong> - Request proceeds through remaining handlers to actual HTTP call</p>
+</li>
+<li>
+<p><strong>Response Capture</strong> - Response message is serialized to raw HTTP format</p>
+</li>
+<li>
+<p><strong>Logging</strong> - Request and response are logged with duration</p>
+</li>
+<li>
+<p><strong>Error Handling</strong> - Exceptions are caught and logged with request context</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Key implementation details:</p>
+</div>
+<div class="paragraph">
+<p><strong>Conditional Logging</strong></p>
+</div>
+<div class="paragraph">
+<p>The handler checks log level before processing to avoid performance impact when logging is disabled:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="k">protected</span> <span class="k">override</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">HttpResponseMessage</span><span class="p">&gt;</span> <span class="nf">SendAsync</span><span class="p">(</span>
+    <span class="n">HttpRequestMessage</span> <span class="n">request</span><span class="p">,</span>
+    <span class="n">CancellationToken</span> <span class="n">cancellationToken</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_logger</span><span class="p">.</span><span class="nf">IsEnabled</span><span class="p">(</span><span class="n">_loggingOptions</span><span class="p">.</span><span class="n">Level</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nf">SendCoreAsync</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cancellationToken</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">SendAsync</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">cancellationToken</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Async Stream Processing</strong></p>
+</div>
+<div class="paragraph">
+<p>Request and response bodies are read asynchronously without buffering entire content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">ReadRawMessageAsync</span><span class="p">(</span>
+    <span class="k">this</span> <span class="n">HttpRequestMessage</span> <span class="n">request</span><span class="p">,</span>
+    <span class="kt">bool</span> <span class="n">ignoreContent</span><span class="p">,</span>
+    <span class="kt">string</span><span class="p">[]</span> <span class="n">ignoreHeaders</span><span class="p">,</span>
+    <span class="kt">string</span><span class="p">[]</span> <span class="n">redactHeaders</span><span class="p">,</span>
+    <span class="n">CancellationToken</span> <span class="n">cancellationToken</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Stream processing implementation</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Header Redaction</strong></p>
+</div>
+<div class="paragraph">
+<p>Sensitive headers are replaced with <code><strong>*</strong></code> during serialization:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="csharp"><span class="k">if</span> <span class="p">(</span><span class="n">redactHeaders</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> <span class="n">StringComparer</span><span class="p">.</span><span class="n">OrdinalIgnoreCase</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">sb</span><span class="p">.</span><span class="nf">Append</span><span class="p">(</span><span class="s">"***"</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multi-framework-support">6.2. Multi-Framework Support</h3>
+<div class="paragraph">
+<p>The library targets multiple .NET versions to support a wide range of applications:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>.NET 6.0</strong> - LTS support through November 2024</p>
+</li>
+<li>
+<p><strong>.NET 8.0</strong> - LTS support through November 2026</p>
+</li>
+<li>
+<p><strong>.NET 9.0</strong> - STS support through May 2025</p>
+</li>
+<li>
+<p><strong>.NET 10.0</strong> - Latest features and performance improvements</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Multi-targeting configuration in the project file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;TargetFrameworks&gt;</span>net6.0;net8.0;net9.0;net10.0<span class="nt">&lt;/TargetFrameworks&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This ensures compatibility with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Legacy applications on .NET 6</p>
+</li>
+<li>
+<p>Long-term support deployments on .NET 8</p>
+</li>
+<li>
+<p>Modern applications on .NET 9 and 10</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The library uses only stable APIs available across all targeted frameworks, ensuring consistent behavior regardless of runtime version.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">7. Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Raw HTTP message logging bridges the gap between high-level telemetry and low-level network debugging. By providing HTTP protocol format logs through a lightweight <code>DelegatingHandler</code>, developers gain immediate visibility into HTTP traffic during local development and testing.</p>
+</div>
+<div class="paragraph">
+<p>The library is particularly valuable when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Debugging third-party API integrations</p>
+</li>
+<li>
+<p>Developing new HTTP-based services</p>
+</li>
+<li>
+<p>Troubleshooting authentication or header issues</p>
+</li>
+<li>
+<p>Needing copy-paste-friendly HTTP messages for testing tools</p>
+</li>
+<li>
+<p>Working without access to network inspection tools</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Security-first defaults ensure sensitive data is protected, while flexible configuration allows detailed logging when needed. Integration with <code>IHttpClientFactory</code> provides a familiar, .NET-idiomatic API that works seamlessly with existing code.</p>
+</div>
+<div class="paragraph">
+<p><strong>Project Resources:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>GitHub Repository: <a href="https://github.com/alyiox/Alyio.Extensions.Http.Logging" class="bare">https://github.com/alyiox/Alyio.Extensions.Http.Logging</a></p>
+</li>
+<li>
+<p>NuGet Package: <a href="https://www.nuget.org/packages/Alyio.Extensions.Http.Logging" class="bare">https://www.nuget.org/packages/Alyio.Extensions.Http.Logging</a></p>
+</li>
+<li>
+<p>License: MIT</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Comparison with Other Tools:</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Tool</th>
+<th class="tableblock halign-left valign-top">Use Case</th>
+<th class="tableblock halign-left valign-top">Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ASP.NET Core HTTP Logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Server-side structured telemetry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key-value pairs</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alyio.Extensions.Http.Logging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client-side development debugging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Raw HTTP protocol</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenTelemetry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Production observability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Distributed tracing</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fiddler/Postman</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External network inspection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Raw HTTP protocol</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The library complements existing tools by providing raw HTTP visibility directly in application logs, optimized for the development and troubleshooting workflow.</p>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

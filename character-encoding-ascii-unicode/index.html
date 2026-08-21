@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Character encoding, ASCII, Unicode | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Character encoding, ASCII, Unicode" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Character encoding 1.1. Terminology related to character encoding 1.2. Character repertoire (the abstract set of characters) 1.3. Glyphs, graphemes and characters 1.4. Example of a code unit 1.5. Code point 1.6. Unicode encoding model References 1. Character encoding Character encoding is the process of assigning numbers to graphical characters, especially the written characters of human language, allowing them to be stored, transmitted, and transformed using digital computers. The numerical values that make up a character encoding are known as code points and collectively comprise a code space, a code page, or a character map. [1] 1.1. Terminology related to…" />
+<meta name="twitter:description" property="og:description" content="1. Character encoding 1.1. Terminology related to character encoding 1.2. Character repertoire (the abstract set of characters) 1.3. Glyphs, graphemes and characters 1.4. Example of a code unit 1.5. Code point 1.6. Unicode encoding model References 1. Character encoding Character encoding is the process of assigning numbers to graphical characters, especially the written characters of human language, allowing them to be stored, transmitted, and transformed using digital computers. The numerical values that make up a character encoding are known as code points and collectively comprise a code space, a code page, or a character map. [1] 1.1. Terminology related to…" />
+<link rel="canonical" href="https://blog.codefarm.me/character-encoding-ascii-unicode/" />
+<meta property="og:url" content="https://blog.codefarm.me/character-encoding-ascii-unicode/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-06-30T08:56:55+08:00" />
+<meta property="article:modified_time" content="2023-06-30T08:56:55+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Character encoding, ASCII, Unicode" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-06-30T08:56:55+08:00","datePublished":"2023-06-30T08:56:55+08:00","description":"1. Character encoding 1.1. Terminology related to character encoding 1.2. Character repertoire (the abstract set of characters) 1.3. Glyphs, graphemes and characters 1.4. Example of a code unit 1.5. Code point 1.6. Unicode encoding model References 1. Character encoding Character encoding is the process of assigning numbers to graphical characters, especially the written characters of human language, allowing them to be stored, transmitted, and transformed using digital computers. The numerical values that make up a character encoding are known as code points and collectively comprise a code space, a code page, or a character map. [1] 1.1. Terminology related to…","headline":"Character encoding, ASCII, Unicode","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/character-encoding-ascii-unicode/"},"url":"https://blog.codefarm.me/character-encoding-ascii-unicode/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Character encoding, ASCII, Unicode</h1><p class="c-post-meta">30 Jun 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#character-encoding">1. Character encoding</a>
+<ul class="sectlevel2">
+<li><a href="#terminology-related-to-character-encoding">1.1. Terminology related to character encoding</a></li>
+<li><a href="#character-repertoire-the-abstract-set-of-characters">1.2. Character repertoire (the abstract set of characters)</a></li>
+<li><a href="#glyphs-graphemes-and-characters">1.3. Glyphs, graphemes and characters</a></li>
+<li><a href="#example-of-a-code-unit">1.4. Example of a code unit</a></li>
+<li><a href="#code-point">1.5. Code point</a></li>
+<li><a href="#unicode-encoding-model">1.6. Unicode encoding model</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="character-encoding">1. Character encoding</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Character encoding</strong> is the process of assigning <em>numbers</em> to <em>graphical characters</em>, especially the written characters of human language, allowing them to be <em>stored</em>, <em>transmitted</em>, and <em>transformed</em> using digital computers.</p>
+</div>
+<div class="paragraph">
+<p>The numerical values that make up a character encoding are known as <a href="https://en.wikipedia.org/wiki/Code_point"><em>code points</em></a> and collectively comprise a <em>code space</em>, a <em><a href="https://en.wikipedia.org/wiki/Code_page">code page</a></em>, or a <em>character map</em>. <a href="#1">[1]</a></p>
+</div>
+<div class="sect2">
+<h3 id="terminology-related-to-character-encoding">1.1. Terminology related to character encoding</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>A <em>character</em> is a minimal unit of text that has semantic value.</p>
+</li>
+<li>
+<p>A <em>character set</em> is a collection of characters that might be used by multiple languages.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<em>Example</em>: The Latin character set is used by English and most European languages, though the Greek character set is used only by the Greek language.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>A <em>coded character set</em> is a character set in which each character corresponds to a unique number.</p>
+</li>
+<li>
+<p>A <em>code point</em> of a coded character set is any allowed value in the character set or code space.</p>
+</li>
+<li>
+<p>A <em>code space</em> is a range of integers whose values are code points.</p>
+</li>
+<li>
+<p>A <em>code unit</em> is the "word size" of the character encoding scheme, such as 7-bit, 8-bit, 16-bit.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In some schemes, some characters are encoded using multiple code units, resulting in a variable-length encoding.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="character-repertoire-the-abstract-set-of-characters">1.2. Character repertoire (the abstract set of characters)</h3>
+<div class="paragraph">
+<p>The character repertoire (/ˈrepətwɑː(r)/) is an abstract set of more than one million characters found in a wide variety of scripts including Latin, Cyrillic, Chinese, Korean, Japanese, Hebrew, and Aramaic. Other symbols such as musical notation are also included in the character repertoire.</p>
+</div>
+<div class="paragraph">
+<p>Both the <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> and <a href="https://en.wikipedia.org/wiki/GB_18030">GB 18030</a> standards have a character repertoire. As new characters are added to one standard, the other standard also adds those characters, to maintain parity.</p>
+</div>
+<div class="paragraph">
+<p>The code unit size is equivalent to the bit measurement for the particular encoding:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A code unit in <a href="https://en.wikipedia.org/wiki/US-ASCII">US-ASCII</a> consists of 7 bits;</p>
+</li>
+<li>
+<p>A code unit in <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a>, <a href="https://en.wikipedia.org/wiki/EBCDIC">EBCDIC</a> and <a href="https://en.wikipedia.org/wiki/GB_18030">GB 18030</a> consists of 8 bits;</p>
+</li>
+<li>
+<p>A code unit in <a href="https://en.wikipedia.org/wiki/UTF-16">UTF-16</a> consists of 16 bits;</p>
+</li>
+<li>
+<p>A code unit in <a href="https://en.wikipedia.org/wiki/UTF-32">UTF-32</a> consists of 32 bits.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="glyphs-graphemes-and-characters">1.3. Glyphs, graphemes and characters</h3>
+<div class="paragraph">
+<p>In most languages written in any variety of the <em>Latin alphabet</em> except English, the use of <em>diacritics</em> to signify a sound mutation is common. For example, the <em>grapheme</em> ⟨à⟩ requires two <em>glyphs</em>: the basic <code>a</code> and the <em>grave accent</em> <code>`</code>. <a href="#2">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>In computing as well as <em>typography</em>, the term "<em>character</em>" refers to a grapheme or grapheme-like unit of text, as found in natural language writing systems (<em>scripts</em>).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>In linguistics, a <em>grapheme</em> is the smallest functional unit of a <em>writing system</em>. <a href="#3">[3]</a></p>
+</li>
+<li>
+<p>A <em>glyph</em> (/ɡlɪf/) is any kind of purposeful mark.</p>
+</li>
+<li>
+<p>In typography, a glyph is "the specific shape, design, or representation of a character".</p>
+<div class="paragraph">
+<p>It is a particular graphical representation, in a particular typeface, of an element of written language.</p>
+</div>
+<div class="paragraph">
+<p>A grapheme, or part of a grapheme (such as a diacritic), or sometimes several graphemes in combination (a composed glyph) can be represented by a glyph.</p>
+</div>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-of-a-code-unit">1.4. Example of a code unit</h3>
+<div class="paragraph">
+<p>Consider a string of the letters "ab̲c𐐀", that is, a string containing a Unicode combining character (<code>U+0332</code> <code>̲ </code>) as well a supplementary character (<code>U+1040</code> <code>𐐀</code>).</p>
+</div>
+<div class="paragraph">
+<p>It has several representations which are logically equivalent, yet while each is suited to a diverse set of circumstances or range of requirements:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Four <a href="https://en.wikipedia.org/wiki/Character_(computing)">composed characters</a>:</p>
+<div class="paragraph">
+<p><code>a</code>, <code>b̲</code>, <code>c</code>, <code>𐐀</code></p>
+</div>
+</li>
+<li>
+<p>Five <a href="https://en.wikipedia.org/wiki/Grapheme">graphemes</a>:</p>
+<div class="paragraph">
+<p><code>a</code>, <code>b</code>, <code>_</code>, <code>c</code>, <code>𐐀</code></p>
+</div>
+</li>
+<li>
+<p>Five Unicode <a href="https://en.wikipedia.org/wiki/Code_point">code points</a>:</p>
+<div class="paragraph">
+<p><code>U+0061</code>, <code>U+0062</code>, <code>U+0332</code>, <code>U+0063</code>, <code>U+10400</code></p>
+</div>
+</li>
+<li>
+<p>Five UTF-32 code units (32-bit integer values):</p>
+<div class="paragraph">
+<p><code>0x00000061</code>, <code>0x00000062</code>, <code>0x00000332</code>, <code>0x00000063</code>, <code>0x00010400</code></p>
+</div>
+</li>
+<li>
+<p>Six UTF-16 code units (16-bit integers)</p>
+<div class="paragraph">
+<p><code>0x0061</code>, <code>0x0062</code>, <code>0x0332</code>, <code>0x0063</code>, <code>0xd801</code>, <code>0xdc00</code></p>
+</div>
+</li>
+<li>
+<p>Nine UTF-8 code units (8-bit values, or <a href="https://en.wikipedia.org/wiki/Byte">bytes</a>)</p>
+<div class="paragraph">
+<p><code>0x61</code>, <code>0x62</code>, <code>0xCC</code>, <code>0xB2</code>, <code>0x63</code>, <code>0xf0</code>, <code>0x90</code>, <code>0x90</code>, <code>0x80</code></p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note in particular the last character, which is represented with either one <em>1</em> 32-bit value, <em>2</em> 16-bit values. or <em>4</em> 8-bit values. Although each of those forms uses the same total number of bits (32) to represent the glyph, the actual numeric byte values and their arrangement appear entirely unrelated.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="code-point">1.5. Code point</h3>
+<div class="paragraph">
+<p>The convention to refer to a character in Unicode is to start with <code>U+</code> followed by the codepoint value in hexadecimal.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The range of valid code points for the Unicode standard is <code>U+0000</code> to <code>U+10FFFF</code>, inclusive, divided in 17 <a href="https://en.wikipedia.org/wiki/Plane_(Unicode)">planes</a>, identified by the numbers 0 to 16.</p>
+</li>
+<li>
+<p>Characters in the range <code>U+0000</code> to <code>U+FFFF</code> are in plane 0, called the <a href="https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane">Basic Multilingual Plane (BMP)</a>.</p>
+<div class="paragraph">
+<p>This plane contains most commonly-used characters.</p>
+</div>
+</li>
+<li>
+<p>Characters in the range <code>U+10000</code> to <code>U+10FFFF</code> in the other planes are called <a href="https://en.wikipedia.org/wiki/Supplementary_characters">supplementary characters</a>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following table shows examples of code point values:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 42.8571%;">
+<col style="width: 14.2858%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Character</th>
+<th class="tableblock halign-left valign-top">Unicode code point</th>
+<th class="tableblock halign-left valign-top">Glyph</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Latin A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+0041</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Α</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Latin sharp S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+00DF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ß</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Han for East</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+6771</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">東</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ampersand</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+0026</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&amp;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inverted exclamation mark</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+00A1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¡</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Section sign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U+00A7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">§</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><em>A code point is represented by a sequence of code units.</em> The mapping is defined by the encoding. Thus, the number of code units required to represent a code point depends on the encoding:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>UTF-8</strong>: code points map to a sequence of one, two, three or four code units.</p>
+</li>
+<li>
+<p><strong>UTF-16</strong>: code units are twice as long as 8-bit code units.</p>
+<div class="paragraph">
+<p>Therefore, any code point with a scalar value less than <code>U+10000</code> is encoded with a single code unit.</p>
+</div>
+<div class="paragraph">
+<p>Code points with a value <code>U+10000</code> or higher require two code units each.</p>
+</div>
+<div class="paragraph">
+<p>These pairs of code units have a unique term in UTF-16: "<a href="https://en.wikipedia.org/wiki/UTF-16#Code_points_from_U+010000_to_U+10FFFF">Unicode surrogate pairs</a>".</p>
+</div>
+</li>
+<li>
+<p><strong>UTF-32</strong>: the 32-bit code unit is large enough that every code point is represented as a single code unit.</p>
+</li>
+<li>
+<p><strong>GB 18030</strong>: multiple code units per code point are common, because of the small code units. Code points are mapped to one, two, or four code units.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="unicode-encoding-model">1.6. Unicode encoding model</h3>
+<div class="paragraph">
+<p><a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> and its parallel standard, the ISO/IEC 10646 <a href="https://en.wikipedia.org/wiki/Universal_Character_Set">Universal Character Set</a>, together constitute a modern, unified character encoding.</p>
+</div>
+<div class="paragraph">
+<p>Rather than mapping characters directly to octets (<a href="https://en.wikipedia.org/wiki/Byte">bytes</a>), they separately define what characters are available, corresponding natural numbers (<a href="https://en.wikipedia.org/wiki/Code_point">code points</a>), how those numbers are encoded as a series of fixed-size natural numbers (<em>code units</em>), and finally how those units are encoded as a stream of octets.</p>
+</div>
+<div class="paragraph">
+<p>The purpose of this decomposition is to establish a universal set of characters that can be encoded in a variety of ways.</p>
+</div>
+<div class="paragraph">
+<p>To describe this model correctly requires more precise terms than "<em>character set</em>" and "<em>character encoding</em>." The terms used in the modern model follow:</p>
+</div>
+<div class="paragraph">
+<p>A <strong>character repertoire</strong> is the full set of abstract characters that a system supports.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The repertoire may be closed, i.e. no additions are allowed without creating a new standard (as is the case with ASCII and most of the ISO-8859 series), or it may be open, allowing additions (as is the case with Unicode and to a limited extent the <a href="https://en.wikipedia.org/wiki/Windows_code_page">Windows code pages</a>).</p>
+</li>
+<li>
+<p>The <strong>characters</strong> in a given repertoire reflect decisions that have been made about how to divide writing systems into basic information units.</p>
+<div class="paragraph">
+<p>The basic variants of the Latin, Greek and Cyrillic alphabets can be broken down into <em>letters</em>, <em>digits</em>, <em>punctuation</em>, and a few <em>special characters</em> such as the space, which can all be arranged in simple linear sequences that are displayed in the same order they are read.</p>
+</div>
+<div class="paragraph">
+<p>But even with these alphabets, <a href="https://en.wikipedia.org/wiki/Diacritic">diacritics</a> pose a complication: they can be regarded either as part of a single character containing a letter and diacritic (known as a precomposed character), or as separate characters.</p>
+</div>
+<div class="paragraph">
+<p>The former allows a far simpler text handling system but the latter allows any letter/diacritic combination to be used in text.</p>
+</div>
+</li>
+<li>
+<p>A <strong>coded character set (CCS)</strong> is a function that maps characters to <a href="https://en.wikipedia.org/wiki/Code_point">code points</a> (<em>each code point represents one character</em>).</p>
+<div class="paragraph">
+<p>For example, in a given repertoire, the capital letter "A" in the Latin alphabet might be represented by the code point 65, the character "B" to 66, and so on.</p>
+</div>
+<div class="paragraph">
+<p>Multiple coded character sets may share the same repertoire; for example ISO/IEC 8859-1 and IBM code pages 037 and 500 all cover the same repertoire but map them to different code points.</p>
+</div>
+</li>
+<li>
+<p>A <strong>character encoding form (CEF)</strong> is the mapping of code points to code units to facilitate storage in a system that represents numbers as bit sequences of fixed length (i.e. practically any computer system).</p>
+<div class="paragraph">
+<p>For example, a system that stores numeric information in 16-bit units can only directly represent code points 0 to 65,535 in each unit, but larger code points (say, 65,536 to 1.4 million) could be represented by using multiple 16-bit units. This correspondence is defined by a CEF.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Next, a <strong>character encoding scheme (CES)</strong> is the mapping of code units to a sequence of octets to facilitate storage on an octet-based file system or transmission over an octet-based network.</p>
+<div class="paragraph">
+<p><em>Simple character encoding schemes</em> include UTF-8, UTF-16BE, UTF-32BE, UTF-16LE or UTF-32LE; <em>compound character encoding schemes</em>, such as UTF-16, UTF-32 and ISO/IEC 2022, switch between several simple schemes by using a <a href="https://en.wikipedia.org/wiki/Byte_order_mark">byte order mark</a> or <a href="https://en.wikipedia.org/wiki/Byte_order_mark">escape sequences</a>; <em>compressing schemes</em> try to minimize the number of bytes used per code unit (such as SCSU, BOCU, and Punycode).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <em>byte order mark (BOM)</em> is a particular usage of the special Unicode character, <em>U+FEFF ZERO WIDTH NO-BREAK SPACE</em>, whose appearance as a magic number at the start of a text stream can signal several things to a program reading the text:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <em>byte order</em>, or <em>endianness</em>, of the text stream in the cases of 16-bit and 32-bit encodings;</p>
+</li>
+<li>
+<p>The fact that the text stream&#8217;s encoding is Unicode, to a high level of confidence;</p>
+</li>
+<li>
+<p>Which Unicode character encoding is used.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Unicode model uses the term character map for historical systems which directly assign a sequence of characters to a sequence of bytes, covering all of CCS, CEF and CES layers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="character_encoding"></a>[1] <a href="https://en.wikipedia.org/wiki/Character_encoding" class="bare">https://en.wikipedia.org/wiki/Character_encoding</a></p>
+</li>
+<li>
+<p><a id="Glyph"></a>[2] <a href="https://en.wikipedia.org/wiki/Glyph" class="bare">https://en.wikipedia.org/wiki/Glyph</a></p>
+</li>
+<li>
+<p><a id="Grapheme"></a>[3] <a href="https://en.wikipedia.org/wiki/Grapheme" class="bare">https://en.wikipedia.org/wiki/Grapheme</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

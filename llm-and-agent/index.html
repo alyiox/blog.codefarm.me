@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Language Models and Agents | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Language Models and Agents" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="An overview of how Large Language Models (LLMs) are evolving into intelligent agents. The article details fundamental concepts such as prompts, RAG, and tool calling, explains the ReAct reasoning loop, and provides an introduction to building and connecting agents using frameworks like LangChain and standards like the Model Context Protocol (MCP)." />
+<meta name="twitter:description" property="og:description" content="An overview of how Large Language Models (LLMs) are evolving into intelligent agents. The article details fundamental concepts such as prompts, RAG, and tool calling, explains the ReAct reasoning loop, and provides an introduction to building and connecting agents using frameworks like LangChain and standards like the Model Context Protocol (MCP)." />
+<link rel="canonical" href="https://blog.codefarm.me/llm-and-agent/" />
+<meta property="og:url" content="https://blog.codefarm.me/llm-and-agent/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-25T11:31:23+08:00" />
+<meta property="article:modified_time" content="2026-01-25T11:31:23+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Language Models and Agents" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-25T11:31:23+08:00","datePublished":"2026-01-25T11:31:23+08:00","description":"An overview of how Large Language Models (LLMs) are evolving into intelligent agents. The article details fundamental concepts such as prompts, RAG, and tool calling, explains the ReAct reasoning loop, and provides an introduction to building and connecting agents using frameworks like LangChain and standards like the Model Context Protocol (MCP).","headline":"Language Models and Agents","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/llm-and-agent/"},"url":"https://blog.codefarm.me/llm-and-agent/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Language Models and Agents</h1><p class="c-post-meta">25 Jan 2026</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#large-language-models">1. Large Language Models</a>
+<ul class="sectlevel2">
+<li><a href="#transformer">1.1. Transformer</a></li>
+<li><a href="#bert-and-gpt">1.2. BERT and GPT</a></li>
+<li><a href="#prompts-and-completions">1.3. Prompts and Completions</a></li>
+<li><a href="#rag">1.4. RAG</a></li>
+<li><a href="#tool-calling">1.5. Tool Calling</a></li>
+<li><a href="#thinking-and-reasoning">1.6. Thinking and Reasoning</a></li>
+<li><a href="#react">1.7. ReAct</a></li>
+</ul>
+</li>
+<li><a href="#agents">2. Agents</a>
+<ul class="sectlevel2">
+<li><a href="#memory">2.1. Memory</a></li>
+<li><a href="#mcp-model-context-protocol">2.2. MCP (Model Context Protocol)</a></li>
+<li><a href="#skills">2.3. Skills</a></li>
+<li><a href="#agents-md">2.4. AGENTS.md</a></li>
+<li><a href="#mas-multi-agent-systems">2.5. MAS (Multi-Agent Systems)</a></li>
+<li><a href="#acp-agent-client-protocol">2.6. ACP (Agent Client Protocol)</a></li>
+<li><a href="#langchain-and-langgraph">2.7. LangChain and LangGraph</a></li>
+</ul>
+</li>
+<li><a href="#non-determinism-and-hallucinations">3. Non-Determinism and Hallucinations</a>
+<ul class="sectlevel2">
+<li><a href="#hyperparameters">3.1. Hyperparameters</a></li>
+<li><a href="#hitl-human-in-the-loop">3.2. HITL (Human-in-the-Loop)</a></li>
+<li><a href="#ai-assisted-coding">3.3. AI-Assisted Coding</a></li>
+</ul>
+</li>
+<li><a href="#bibliography">Bibliography</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The field of artificial intelligence is evolving rapidly, with innovation shifting large language models from text predictors into intelligent agents that interact with external systems.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="large-language-models">1. Large Language Models</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Large Language Model (LLM) is a neural network (typically Transformer-based) trained on large-scale data that works mainly by predicting the next element in a sequence. Although originally text-focused, many of these models are now multimodal and can understand and generate text, images, audio, and video, supporting uses from text generation to image and multimodal question-answering. <a href="#ibm-topics-llms">[1]</a> <a href="#fundamentals-generative-ai">[2]</a> <a href="#primer-llm-embedding">[3]</a></p>
+</div>
+<div class="paragraph">
+<p>However, inherent limitations persist: models lack real-time information, cannot perform real-world actions, and their knowledge is fixed at training time.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Open-weight models (like LLaMA, Mistral, or Gemma) commonly use postfixes to signal how a shared base model was fine-tuned and what it is optimized for.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An <code>-instruct</code> postfix indicates a variant optimized for single-turn, structured outputs and reliable task-following, often with enhanced helpful/harmless behavior.</p>
+</li>
+<li>
+<p>A <code>-chat</code> postfix indicates a dialogue-optimized variant intended for multi-turn conversations using a specific chat template.</p>
+</li>
+<li>
+<p>A <code>-tools</code> postfix indicates a variant tuned to use external tools and to output structured <code>tool_calls</code>, a key capability for building agentic (ReAct-like) workflows.</p>
+</li>
+<li>
+<p>A <code>-thinking</code> postfix indicates a variant optimized for complex, multi-step reasoning and is particularly well-suited for Chain-of-Thought (CoT) prompting techniques.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In contrast, many managed API providers (like OpenAI, Anthropic, and Google) increasingly provide a single front-door model name (e.g., <code>gpt-4o</code>) and control its behavior through the API request&#8217;s structure and parameters.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Instruction-following is default with chat-structured APIs using system/user/assistant roles.</p>
+</li>
+<li>
+<p>Tool use is enabled by declaring tool definitions in the API request for the model to choose between text responses or a tool call.</p>
+</li>
+<li>
+<p>Enhanced reasoning is controlled by request-specific settings, product tiers, or internal routing, not by selecting a distinct <code>-thinking</code> model.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="transformer">1.1. Transformer</h3>
+<div class="paragraph">
+<p>A <code>transformer</code> is a neural network architecture composed of an <code>encoder</code> and a <code>decoder</code> that processes token sequences via attention and feed-forward layers to build contextual representations (i.e., embeddings) and predict the next token. <a href="#fundamentals-generative-ai">[2]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    subgraph Input
+        T[Token Sequence]
+    end
+
+    subgraph "Tokenizer"
+        T --&gt; ID[Integer IDs]
+    end
+
+    subgraph "Embeddings"
+        ID --&gt; E[Token Embeddings]
+    end
+
+    subgraph "Transformer"
+        subgraph Encoder
+            E --&gt; A1[Attention]
+            A1 --&gt; FF1[Feed-Forward]
+        end
+        subgraph Decoder
+            FF1 --&gt; A2[Attention]
+            A2 --&gt; FF2[Feed-Forward]
+        end
+    end
+
+    subgraph "Output"
+        FF2 --&gt; C[Contextual Representations]
+        C --&gt; P[Next Token Prediction]
+    end
+
+    subgraph "Context Window"
+        CW["Max tokens (input + output + reasoning)&lt;br /&gt;Exceeded → truncate/drop"]
+    end
+
+    E -.-&gt; CW</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>token</code> is a discrete unit produced by breaking a sequence (e.g. into words, subwords, punctuation, patches, frames), mapped to a unique integer identifier so the model operates over a fixed vocabulary.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Use the <a href="https://platform.openai.com/tokenizer">tokenizer tool</a>, built with the tiktoken library, to see how many tokens are in a particular string of text. <a href="#openai-conversation-state">[4]</a>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>A <code>context window</code> is the maximum number of tokens (input, output, and reasoning tokens) that an LLM can process in a single request, beyond which any content is truncated or dropped. <a href="#openai-conversation-state">[4]</a></p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When the prompt exceeds the available context, the application must manage the input length—for example by truncating older messages, summarizing prior turns, or using a sliding window of recent tokens so the most relevant content remains visible.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>An <code>embedding</code> is a vector representation of a token that encodes linguistic and semantic information from context, so that tokens used in similar contexts have similar vectors (e.g. measurable by cosine similarity). <a href="#primer-llm-embedding">[3]</a></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart TB
+    subgraph "Token → Embedding Lookup"
+        T1["token: 'cat'"] --&gt; E1["embedding: [0.2, 0.8, 0.1, …]"]
+        T2["token: 'dog'"] --&gt; E2["embedding: [0.3, 0.7, 0.2, …]"]
+        T3["token: 'xylophone'"] --&gt; E3["embedding: [-0.5, 0.1, -0.9, …]"]
+    end
+
+    subgraph "Similarity (e.g. cosine)"
+        E1 &lt;-.-&gt;|"high similarity"| E2
+        E1 -.-&gt;|"low similarity"| E3
+        E2 -.-&gt;|"low similarity"| E3
+    end
+
+    N["Similar context → similar vectors"]
+    E1 --&gt; N
+    E2 --&gt; N</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="bert-and-gpt">1.2. BERT and GPT</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>BERT</code> (Bidirectional Encoder Representations from Transformers) is an encoder-only model that uses bidirectional self-attention (each token attends to the full sequence) and is trained with masked language modeling for understanding tasks such as ranking and classification rather than generation. <a href="#bert-original">[5]</a></p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Google Search uses BERT-style models to interpret search queries and rank results.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Because BERT sees the full sequence at once, it captures nuance that keyword matching misses—for example, the difference between "medicine to someone" and "medicine for someone," or the intent behind long, natural queries like "do you need a prescription to get medicine at a pharmacy."</p>
+</li>
+<li>
+<p>In retrieval pipelines, a bi-encoder (encoding query and passages separately, then comparing embeddings) often does a fast initial retrieval, and a cross-encoder (encoding query and passage together) re-ranks the top candidates for better relevance.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><code>GPT</code> (Generative Pre-trained Transformer) is a decoder-only variant that uses causal (masked) self-attention (each token attends only to itself and previous tokens), trained for next-token prediction and suited for autoregressive text generation. <a href="#gpt-original">[6]</a></p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The term GPT is also used as a product name for OpenAI’s GPT series (e.g. GPT-4o, GPT-5) that power ChatGPT.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="prompts-and-completions">1.3. Prompts and Completions</h3>
+<div class="paragraph">
+<p>LLMs are prompt–completion systems, with input as the <code>prompt</code> (instruction or conditioning) and output as a <code>completion</code> generated token-by-token. <a href="#fundamentals-generative-ai">[2]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    I["Input&lt;br/&gt;Prompt / Messages"] --&gt; M["LLM Model"]
+    M --&gt; O["Output&lt;br/&gt;Completion / Response"]</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>message</code> is a single, discrete turn within a conversation, which is an object containing a <code>role</code> (who is speaking: <code>system</code>, <code>user</code>, <code>tool</code> or <code>assistant</code>) and <code>content</code> (what was said). <a href="#promptingguide">[7]</a> <a href="#completions-vs-responses">[8]</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>system</code> message, typically the first in a prompt, sets the AI&#8217;s overall behavior and persona by providing high-level instructions.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w"> </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"system"</span><span class="p">,</span><span class="w"> </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"You are a helpful assistant that provides concise answers."</span><span class="w"> </span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A <code>user</code> message conveys the input provided by the end-user or agentic application to elicit a response to a specific question or instruction.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w"> </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w"> </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"What is the capital of France?"</span><span class="w"> </span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>An <code>assistant</code> message holds the model&#8217;s responses, which can be either a final answer or a request to use a tool.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w"> </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w"> </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The capital of France is Paris."</span><span class="w"> </span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A <code>tool</code> message provides the output of a function call back to the model, allowing it to process the result of an external action.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w"> </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tool"</span><span class="p">,</span><span class="w"> </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{ </span><span class="se">\"</span><span class="s2">temperature</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">22</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">unit</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">celsius</span><span class="se">\"</span><span class="s2"> }"</span><span class="p">,</span><span class="w"> </span><span class="nl">"tool_call_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"call_abc123"</span><span class="w"> </span><span class="p">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <code>prompt</code>, representing the full message history processed by the model to generate a response, typically begins with an optional <code>system</code> message, followed by alternating <code>user</code> messages for user input and <code>assistant</code> messages for model responses, with <code>tool</code> messages providing function outputs after <code>assistant</code> tool calls.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"system"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"You are a helpful assistant."</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"What's the weather in Boston?"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tool_calls"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w">
+      </span><span class="nl">"function"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_current_weather"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{ </span><span class="se">\"</span><span class="s2">location</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">Boston, MA</span><span class="se">\"</span><span class="s2"> }"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tool"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{ </span><span class="se">\"</span><span class="s2">temperature</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">22</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">unit</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">celsius</span><span class="se">\"</span><span class="s2"> }"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tool_call_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"call_abc123"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rag">1.4. RAG</h3>
+<div class="paragraph">
+<p>Retrieval-Augmented Generation (<strong>RAG</strong>) is a powerful technique that addresses LLMs' frozen and limited knowledge by providing relevant, untrained context for each prompt.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    U[User Question] --&gt; QE[Query Embedding]
+    QE --&gt; VS[(Vector Store)]
+    KB[Knowledge Base Documents] --&gt; CH[Chunk + Embed]
+    CH --&gt; VS
+    VS --&gt; RC[Retrieve Top-K Chunks]
+    RC --&gt; AP[Augmented Prompt]
+    U --&gt; AP
+    AP --&gt; LLM[LLM]
+    LLM --&gt; A[Grounded Answer]</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A knowledge base is broken into chunks, converted into numerical <code>embeddings</code> by a specialized model, and stored in a <code>vector database</code>.</p>
+</li>
+<li>
+<p>A user&#8217;s question is converted into an embedding to retrieve the relevant document chunks from the vector database that are then placed into the prompt with the original question to augment the generation of the model.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tool-calling">1.5. Tool Calling</h3>
+<div class="paragraph">
+<p>Tool calling is a powerful mechanism that allows developers to enable an LLM to interact with external systems and overcome its inherent limitations.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+While the terms are often used interchangeably, it&#8217;s helpful to think of a <code>tool</code> as the general capability given to the model, and a <code>function</code> as the specific code implementation of that tool.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>A tool calling is a process where the model, after receiving a user&#8217;s message and a list of available tools from the application, responds with a <code>tool_calls</code> object that instructs the application to execute a specific function, and gives the call result back to the model to generate the final response. <a href="#function-calling">[9]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">sequenceDiagram
+    actor User
+    participant App as Application
+    participant LLM as Model
+    participant Tool as Weather Tool
+
+    User-&gt;&gt;App: Ask question
+    App-&gt;&gt;LLM: Messages + tool definitions
+    LLM--&gt;&gt;App: tool_calls(get_current_weather)
+    App-&gt;&gt;Tool: Execute function call
+    Tool--&gt;&gt;App: Return tool result
+    App-&gt;&gt;LLM: Append tool message
+    LLM--&gt;&gt;App: Final answer
+    App--&gt;&gt;User: Response</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The application sends the user&#8217;s message and a list of available tools to the model.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="o">{</span>
+  <span class="s2">"model"</span>: <span class="s2">"llama3.2:1b"</span>,
+  <span class="s2">"messages"</span>: <span class="o">[</span>
+    <span class="o">{</span> <span class="s2">"role"</span>: <span class="s2">"user"</span>, <span class="s2">"content"</span>: <span class="s2">"What is the weather like in Boston?"</span> <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"tools"</span>: <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"type"</span>: <span class="s2">"function"</span>,
+      <span class="s2">"function"</span>: <span class="o">{</span>
+        <span class="s2">"name"</span>: <span class="s2">"get_current_weather"</span>,
+        <span class="s2">"description"</span>: <span class="s2">"Get the current weather in a given location"</span>,
+        <span class="s2">"parameters"</span>: <span class="o">{</span>
+          <span class="s2">"type"</span>: <span class="s2">"object"</span>,
+          <span class="s2">"properties"</span>: <span class="o">{</span>
+            <span class="s2">"location"</span>: <span class="o">{</span>
+              <span class="s2">"type"</span>: <span class="s2">"string"</span>,
+              <span class="s2">"description"</span>: <span class="s2">"The city and state, e.g. San Francisco, CA"</span>
+            <span class="o">}</span>,
+            <span class="s2">"unit"</span>: <span class="o">{</span>
+              <span class="s2">"type"</span>: <span class="s2">"string"</span>,
+              <span class="s2">"enum"</span>: <span class="o">[</span><span class="s2">"celsius"</span>, <span class="s2">"fahrenheit"</span><span class="o">]</span>
+            <span class="o">}</span>
+          <span class="o">}</span>,
+          <span class="s2">"required"</span>: <span class="o">[</span><span class="s2">"location"</span><span class="o">]</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"stream"</span>: <span class="nb">false</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The model responds with a <code>tool_calls</code> object, instead of a text answer.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="jsonc"><span class="p">{</span><span class="w">
+  </span><span class="c1">// ...</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tool_calls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"function"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_current_weather"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boston, MA"</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="c1">// ...</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The application executes the requested function (e.g., <code>get_current_weather</code>), obtains the result (e.g., <code>{"temperature": "22", "unit": "celsius"}</code>), and sends it back to the model in a <code>tool</code> message.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tool"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{ </span><span class="se">\"</span><span class="s2">temperature</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">22</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">unit</span><span class="se">\"</span><span class="s2">: </span><span class="se">\"</span><span class="s2">celsius</span><span class="se">\"</span><span class="s2"> }"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"tool_call_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"call_abc123"</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>With the tool&#8217;s result in context, the model then generates the final, user-facing answer.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The current weather in Boston is 22 degrees Celsius."</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="thinking-and-reasoning">1.6. Thinking and Reasoning</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Chain of Thought (CoT) is a prompting and reasoning technique that asks a model to show its step-by-step reasoning before giving a final answer.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>It can be triggered by explicit instructions (e.g., “Let’s think step by step,” “Solve step by step”) or by including worked examples in the prompt.</p>
+</li>
+<li>
+<p>By making the reasoning visible, CoT improves performance on multi-step math, logic, and planning tasks, and is a widely used prompt-engineering method for boosting reasoning quality in standard LLMs.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Built-in reasoning is a native capability of advanced models (e.g., OpenAI o-series, Claude) trained with reinforcement learning to produce long internal chains of thought before responding, to autonomously plan multi-step strategies, evaluate task complexity, and determine optimal tool sequences for agentic workflows, moving beyond the mere syntactic pattern-matching typical of simple tool-use models. <a href="#openai-docs-reasoning">[10]</a> <a href="#ibm-topic-reasoning-model">[11]</a></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"qwen3.5:2b"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"messages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w"> </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"What is the weather like in Boston?"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"tools"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"function"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"function"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_current_weather"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Get the current weather in a given location"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"stream"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="jsonc"><span class="p">{</span><span class="w">
+  </span><span class="c1">// ...</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"reasoning"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The user is asking about the weather in Boston. I have access to a get_current_weather ..."</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tool_calls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"function"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_current_weather"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boston, MA"</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="c1">// ...</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="react">1.7. ReAct</h3>
+<div class="paragraph">
+<p>ReAct (Reason and Act) is a technique that uses a system message to guide a model through an iterative Thought-Action-Observation loop to solve multi-step problems and derive a final answer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    U[User Goal] --&gt; T[Thought&lt;br/&gt;Reason and plan]
+    T --&gt; A[Action&lt;br/&gt;Tool call]
+    A --&gt; O[Observation&lt;br/&gt;Tool result]
+    O --&gt; D{Solved?}
+    D -- No --&gt; T
+    D -- Yes --&gt; F[Final Answer]</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Thought: The model first thinks out loud by generating text that outlines its reasoning, analyzes the problem, and forms a plan.</p>
+</li>
+<li>
+<p>Action: Based on its thought process, the model outputs a structured request to use a specific tool (e.g., a <code>tool_calls</code> object).</p>
+</li>
+<li>
+<p>Observation: The application executes the requested tool, and the result of that tool (the observation) is fed back into the prompt for the next cycle.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"phi4-mini:3.8b"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"messages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"system"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"You are a helpful assistant that can use tools. To solve problems, you must reason about a plan and then take an action.
+When you need to use a tool, respond *only* with the following format:
+
+Thought:
+Your reasoning and plan for the next step.
+
+Action:
+A single tool call in a JSON object."</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"What is the weather like in Boston?"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"tools"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"function"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"function"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"get_current_weather"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Get the current weather in a given location"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The city and state, e.g. San Francisco, CA"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"stream"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">Thought:
+To provide an accurate answer to this question, I need current weather information for a specific location—in this case, Boston.
+
+Action:
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "get_current_weather",
+    ...
+  }
+}
+```</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="agents">2. Agents</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An agent is a composite of an LLM, tools, and an orchestration loop (e.g. ReAct), forming an autonomous system that perceives environments, makes decisions, plans and executes actions to achieve complex goals, and shifts from passive content generation to active problem-solving.</p>
+</div>
+<hr>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://opencode.ai/">OpenCode</a> is an open-source, provider-agnostic, terminal-first agent (TUI) that autonomously plans, implements, and refactors code across over 75 AI models.</p>
+</li>
+<li>
+<p><a href="https://claude.com/product/claude-code">Claude Code</a> is Anthropic’s coding agent that assists with writing, editing, and debugging code, navigating codebases, and running commands in an integrated development workflow.</p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs">Cursor</a> is an AI-native developer platform with an <code>Agent Mode</code> (GUI/CLI accessible) for planning multi-file refactors, running terminal tests, and handing off tasks to background cloud agents.</p>
+</li>
+<li>
+<p><a href="https://github.com/features/copilot">GitHub Copilot</a> is an ecosystem-integrated agent platform to automate the entire issue-to-PR lifecycle using a specialized Squad of Agents (Plan, Code, Repair, Review) for development tasks within GitHub, VS Code, and Visual Studio.</p>
+</li>
+<li>
+<p><a href="https://developers.openai.com/codex/">Codex</a> is OpenAI’s coding agent that reads, edits, and runs code to speed up development, fix bugs, and navigate codebases, with Codex Cloud running those tasks in the background in parallel in a dedicated cloud environment.</p>
+</li>
+<li>
+<p><a href="https://geminicli.com/">Gemini CLI</a> is an open-source, terminal-native agent providing direct command-line access to Gemini AI for code generation, automation, grounding with Google Search, and <a href="https://modelcontextprotocol.io/">MCP</a> extensions.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://openwork.software/">OpenWork</a> is an open-source, provider-agnostic agent for work and productivity that automates administrative tasks, manages workflows, and coordinates across tools and sub-agents.</p>
+</li>
+<li>
+<p><a href="https://code.claude.com/docs/en/desktop">Claude Desktop</a> is an AI application featuring <code>Cowork</code>, an autonomous agentic mode for administrative productivity that manages local files, organizes directories, and coordinates sub-agents to process complex document workflows.</p>
+</li>
+<li>
+<p><a href="https://chatgpt.com/">ChatGPT</a> is an AI application featuring <a href="https://openai.com/index/introducing-operator/"><code>Operator</code></a>, an autonomous agentic mode that performs web-based tasks such as booking travel and completing online forms.</p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/copilot/microsoft-365/">Microsoft 365 Copilot</a> is an enterprise productivity agent that orchestrates work across the Office suite, using agentic skills to manage inboxes, synthesize meeting data, and automate corporate workflows.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="memory">2.1. Memory</h3>
+<div class="paragraph">
+<p><code>Memory</code> is the mechanism an agent uses to store and retrieve information across turns and sessions, keeping state beyond what fits in a single prompt or context window, and its management—including truncation or summarization—is the application&#8217;s responsibility. <a href="#langchain-memory">[12]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    U[User Message] --&gt; ST[Short-term Memory&lt;br/&gt;Session History]
+    ST --&gt; P[Prompt Assembly]
+    P --&gt; LLM[LLM]
+    LLM --&gt; R[Response]
+    R --&gt; ST
+
+    LT[(Long-term Memory&lt;br/&gt;Vector Store / DB)]
+    ST --&gt;|Summaries / facts| LT
+    LT --&gt;|Relevant retrieval| P</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Short-term memory is the current conversation session’s message history, passed as the prompt to the model and dropped when the session ends unless the application persists it.</p>
+</li>
+<li>
+<p>Long-term memory is persistent storage (e.g. vector store, database) that the agent reads from and writes to across sessions for facts, summaries of past conversations, or user preferences, often via RAG-style retrieval or explicit updates by the agent.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mcp-model-context-protocol">2.2. MCP (Model Context Protocol)</h3>
+<div class="paragraph">
+<p>The <a href="https://modelcontextprotocol.io/">Model Context Protocol (MCP)</a> is an open-source standard, like a USB-C port for devices, for connecting AI applications to external systems, operating on a client-server architecture in which hosts coordinate clients that connect to servers to provide context. <a href="#mcp">[13]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    subgraph Host["MCP Host (IDE / CLI / App)"]
+        User[User]
+        Agent[LLM Agent]
+        Client[MCP Client]
+        User --&gt; Agent
+        Agent &lt;--&gt; Client
+    end
+
+    Client &lt;--&gt; Server[MCP Server]
+
+    subgraph External["External Systems"]
+        Tool["Tools (actions)"]
+        Resource["Resources (data)"]
+        Prompt["Prompts (templates)"]
+    end
+
+    Server --&gt; Tool
+    Server --&gt; Resource
+    Server --&gt; Prompt</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>MCP servers are programs that expose specific capabilities to AI applications through standardized protocol interfaces, through three building blocks tools, resources, and prompts.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>An MCP Server is the program that serves context data, which can execute either locally (e.g., Claude Desktop&#8217;s filesystem server using <code>STDIO</code> for a single client) or remotely (e.g., Sentry&#8217;s server using <code>Streamable HTTP</code> for many clients).</p>
+</div>
+<div class="paragraph">
+<p>A <a href="https://www.jsonrpc.org/">JSON-RPC 2.0</a> protocol is used for the data layer to define the actual communication and its core primitives, including <code>tools</code> (executable actions), <code>resources</code> (data sources), <code>prompts</code> (reusable prompt templates), and <code>notifications</code> (for real-time updates).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Tools</code> are functions that the model actively decides to call to perform actions like searching for flights or sending messages, giving it direct control over when and how it interacts with the outside world.</p>
+</li>
+<li>
+<p><code>Resources</code> are passive, read-only data sources, such as files or knowledge bases, that the application makes available to provide the model with contextual understanding, like retrieving a document.</p>
+</li>
+<li>
+<p><code>Prompts</code> are pre-built, reusable instruction templates defined by the application to guide the model on how to use specific tools and resources to accomplish a complex task, such as planning a vacation.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>MCP clients are components instantiated by host applications to communicate with a dedicated MCP server (one client per server), using context provided by that server and exposing capabilities to the host to enable richer interactions.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Elicitation</code> provides a structured way for a server to request specific user information on demand like asking for travel preferences to finalize a booking.</p>
+</li>
+<li>
+<p><code>Roots</code> securely communicate the client&#8217;s intended scope by defining which directories a server can access like a travel server reading a user&#8217;s calendar.</p>
+</li>
+<li>
+<p><code>Sampling</code> keeps the client in complete control of permissions by allowing a server to request an LLM completion for agentic workflows like picking the best flight from a list.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>MCP hosts (e.g. an IDE, a CLI, or a desktop app) are applications that instantiate and coordinate MCP clients with server connections defined in config files (global or project-local) in host-specific formats (e.g. JSON for Gemini and Cursor, TOML for Codex).</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When searching for MCP servers, consider the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/modelcontextprotocol/servers" class="bare">https://github.com/modelcontextprotocol/servers</a> is an official GitHub repository for discovering various MCP servers and their implementations.</p>
+</li>
+<li>
+<p><a href="https://mcpservers.org/" class="bare">https://mcpservers.org/</a> is a community registry that lists diverse available MCP server implementations.</p>
+</li>
+<li>
+<p><a href="https://smithery.ai/" class="bare">https://smithery.ai/</a> is a platform for developing, managing, and distributing MCP servers, offering built-in infrastructure and hosting capabilities, which differentiates it from a simple registry.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://geminicli.com/docs/tools/mcp-server/">Gemini CLI configures MCP servers</a> under <code>mcpServers</code> in <code>~/.gemini/settings.json</code> (global) or <code>.gemini/settings.json</code> (per-project).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> <i class="conum" data-value="1"></i><b>(1)</b>
+    </span><span class="nl">"serverName"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> <i class="conum" data-value="2"></i><b>(2)</b>
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"path/to/server"</span><span class="p">,</span><span class="w"> <i class="conum" data-value="3"></i><b>(3)</b>
+      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"--arg1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"value1"</span><span class="p">],</span><span class="w"> <i class="conum" data-value="4"></i><b>(4)</b>
+      </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> <i class="conum" data-value="5"></i><b>(5)</b>
+        </span><span class="nl">"API_KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$MY_API_TOKEN"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"cwd"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./server-directory"</span><span class="p">,</span><span class="w"> <i class="conum" data-value="6"></i><b>(6)</b>
+      </span><span class="nl">"timeout"</span><span class="p">:</span><span class="w"> </span><span class="mi">30000</span><span class="p">,</span><span class="w"> <i class="conum" data-value="7"></i><b>(7)</b>
+      </span><span class="nl">"trust"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> <i class="conum" data-value="8"></i><b>(8)</b>
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>mcpServers</code> object defines the set of MCP servers to discover and connect to, keyed by server name.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>serverName</code> object provides one server’s configuration and its key is used for status display and tool-name prefixing on conflicts.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>One transport is selected by providing <code>command</code> (local stdio), <code>url</code> (SSE), or <code>httpUrl</code> (streamable HTTP).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>args</code> array is used with <code>command</code> and provides argv parameters for the local stdio process.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <code>env</code> object is used with <code>command</code> and provides environment variables for the local stdio process, supporting <code>$VAR</code> and <code>${VAR}</code> expansion.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The <code>cwd</code> value is used with <code>command</code> and sets the working directory for starting the local stdio process.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>The <code>timeout</code> value sets the request timeout in milliseconds with a documented default of 600000ms when omitted.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>The <code>trust</code> flag controls confirmation behavior, where <code>true</code> bypasses tool-call confirmations and <code>false</code> preserves them.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"sqlite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uvx"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"mcp-server-sqlite"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--db-path"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/tmp/test.db"</span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"mssql"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dotnet"</span><span class="w">
+      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dnx"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alyio.McpMssql"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--prerelease"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--yes"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"MCP_MSSQL_CONNECTION_STRING"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Server=127.0.0.1;User ID=sa;Password=&lt;YourStrong@Passw0rd&gt;;Encrypt=True;TrustServerCertificate=True;"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/context/mcp">Cursor Agent</a> configures MCP servers in <code>~/.cursor/mcp.json</code> (global) or <code>.cursor/mcp.json</code> (per-project).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"sqlite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uvx"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"mcp-server-sqlite"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--db-path"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/tmp/test.db"</span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"mssql"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dotnet"</span><span class="w">
+    </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dnx"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alyio.McpMssql"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--prerelease"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--yes"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"MCP_MSSQL_CONNECTION_STRING"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Server=127.0.0.1;User ID=sa;Password=&lt;YourStrong@Passw0rd&gt;;Encrypt=True;TrustServerCertificate=True;"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://opencode.ai/">OpenCode AI</a> configures MCP servers in <code>~/.config/opencode/opencode.json</code> (global) or <code>opencode.json</code> (per-project).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://opencode.ai/config.json"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"mcp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"sqlite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"local"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"uvx"</span><span class="p">,</span><span class="w"> </span><span class="s2">"mcp-server-sqlite"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--db-path"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/tmp/test.db"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"mssql"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"local"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dotnet"</span><span class="p">,</span><span class="w"> </span><span class="s2">"dnx"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alyio.McpMssql"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--prerelease"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--yes"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"environment"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"MCP_MSSQL_CONNECTION_STRING"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Server=127.0.0.1;User ID=sa;Password=&lt;YourStrong@Passw0rd&gt;;Encrypt=True;TrustServerCertificate=True;"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://developers.openai.com/codex/mcp/">Codex</a> configures MCP servers in ~/.codex/config.toml (global) or .codex/config.toml (per-project).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[mcp_servers.sqlite]</span><span class="w">
+</span><span class="py">command</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"uvx"</span>
+<span class="py">args</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">["mcp-server-sqlite", "--db-path", "/tmp/test.db"]</span>
+<span class="w">
+</span><span class="nn">[mcp_servers.mssql]</span><span class="w">
+</span><span class="py">command</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"dotnet"</span>
+<span class="py">args</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">["dnx", "Alyio.McpMssql", "--prerelease", "--yes"]</span>
+<span class="w">
+</span><span class="nn">[mcp_servers.mssql.env]</span><span class="w">
+</span><span class="py">MCP_MSSQL_CONNECTION_STRING</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"Server=127.0.0.1;User ID=sa;Password=&lt;YourStrong@Passw0rd&gt;;Encrypt=True;TrustServerCertificate=True;"</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="skills">2.3. Skills</h3>
+<div class="paragraph">
+<p>An <a href="https://agentskills.io/">agent skill</a> is a lightweight, open-format folder of instructions, scripts, and resources for extending AI agent capabilities with specialized knowledge and workflows. <a href="#agentskills">[14]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">.agents/
+└── skills/
+    └── my-skill/
+</span><span class="gp">        ├── SKILL.md        #</span><span class="w"> </span>Required: instructions + metadata
+<span class="gp">        ├── scripts/        #</span><span class="w"> </span>Optional: executable code
+<span class="gp">        ├── references/     #</span><span class="w"> </span>Optional: documentation
+<span class="gp">        └── assets/         #</span><span class="w"> </span>Optional: templates, resources</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A skills-compatible agent manages context through <em>progressive disclosure</em> by discovering skills in configured directories to load only metadata (<code>name</code>, <code>description</code>) at startup, then matching user tasks to activate full <code>SKILL.md</code> instructions and execute scripts or resources only as needed.</p>
+</div>
+<div class="paragraph">
+<p>The <code>SKILL.md</code> file consists of a YAML metadata header for discovery followed by an unrestricted Markdown body containing the specific instructions and logic required for the agent to execute the task effectively.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="md"><span class="nn">---</span>
+<span class="na">name</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">skill-id</span><span class="pi">]</span>
+<span class="na">description</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">Short summary for discovery</span><span class="pi">]</span>
+<span class="nn">---</span>
+
+<span class="gh"># [Skill Name]</span>
+
+<span class="gu">## When to use</span>
+<span class="p">-</span> Use when [Trigger Scenario A] or [Trigger Scenario B] occurs.
+
+<span class="gu">## Instructions</span>
+<span class="p">1.</span> <span class="gs">**Analyze:**</span> Identify [Key Input].
+<span class="p">2.</span> <span class="gs">**Execute:**</span> Perform [Action] using bundled resources.
+<span class="p">3.</span> <span class="gs">**Output:**</span> Return [Result Format].</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="agents-md">2.4. AGENTS.md</h3>
+<div class="paragraph">
+<p><a href="https://agents.md/"><code>AGENTS.md</code></a> is a simple, open-format markdown file that serves as a README for coding agents, complementing <code>README.md</code> (for humans) with a dedicated place for context and instructions (e.g. setup, build, test, conventions), with no required structure and support across Codex, Cursor, and others. <a href="#agentsmd">[15]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>To verify that an agent is reading <code>AGENTS.md</code>, a test rule can be added whose behavior is easy to observe and unlikely to occur by chance. The following snippet can be placed in <code>AGENTS.md</code> for that purpose:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="md"><span class="gu">### TEST RULE</span>
+<span class="p">-</span> Whenever the user asks for a 'system check', the agent must respond with the word: "BANANAPANTS".
+<span class="p">-</span> All code comments must start with a 🍎 emoji.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the file is saved, a "system check" request can be sent in chat; a response of "BANANAPANTS" indicates that the corresponding <code>AGENTS.md</code> is in effect.</p>
+</div>
+<div class="paragraph">
+<p>A small code change can then be requested (e.g. "add a one-line comment to this function"); if the resulting comment starts with the 🍎 emoji, the test rule is being applied.</p>
+</div>
+<div class="paragraph">
+<p>It confirms both that <code>AGENTS.md</code> is loaded and which file takes precedence when project-level and user-level (or nested) files exist.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Configure Gemini CLI to use AGENTS.md in <code>.gemini/settings.json</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"context"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"GEMINI.md"</span><span class="p">,</span><span class="w"> </span><span class="s2">"AGENTS.md"</span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="mas-multi-agent-systems">2.5. MAS (Multi-Agent Systems)</h3>
+<div class="paragraph">
+<p>A multi-agent system (MAS) is a distributed network of autonomous agents that collaborate or compete within a shared environment to solve complex, large-scale tasks through collective decision-making, whereas a single-agent system relies on one entity working in isolation with centralized control, making it better suited for simpler, well-defined tasks.</p>
+</div>
+<div class="paragraph">
+<p>A multi-agent system operates through a continuous cycle—structured as a recursive, stateful graph—where individual agents perceive the environment and reason via an LLM brain to decompose intricate processes into specialized tasks, executing actions coordinated by orchestration frameworks like CrewAI or LangGraph to transform high-level goals into structured, autonomous workflows.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">graph TD
+    User([User Intent]) --&gt; LeadAgent[Lead Agent]
+
+    subgraph "Recursive Stateful Graph"
+        LeadAgent --&gt;|Perceive| Env[Environment]
+        Env --&gt;|Data| Brain{LLM Brain}
+        Brain --&gt;|Decompose| Tasks[Specialized Tasks]
+
+        subgraph "Agent Swarm"
+            Tasks --&gt; AgentA[Agent A: Specialist]
+            Tasks --&gt; AgentB[Agent B: Specialist]
+            Tasks --&gt; AgentC[Recursive Lead]
+            AgentC --&gt;|Sub-Tasks| SubAgent1[Sub-Agent 1]
+        end
+
+        AgentA &amp; AgentB &amp; SubAgent1 --&gt;|Actions| Orchestrator[Orchestration Framework]
+        Orchestrator --&gt;|State Update| Env
+        Orchestrator -.-&gt;|Loop/Self-Correct| Brain
+    end
+
+    Orchestrator --&gt; Result([Structured Workflow Output])
+
+    classDef lead fill:#f96,stroke:#333,stroke-width:2px;
+    classDef swarm fill:#dcf,stroke:#333;
+    class LeadAgent,AgentC lead;
+    class AgentA,AgentB,SubAgent1 swarm;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>A2A (Agent-to-Agent) is an open interoperability protocol that functions as a universal language, allowing autonomous agents to discover each other, communicate intent, and collaborate across different frameworks and platforms without custom integrations. <a href="#agent2agent-protocol">[17]</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="acp-agent-client-protocol">2.6. ACP (Agent Client Protocol)</h3>
+<div class="paragraph">
+<p><a href="https://agentclientprotocol.com/">Agent Client Protocol (ACP)</a> is an LSP‑like open standard for AI coding agents, giving code editors/IDEs a common framework to read project files, apply changes, and stream results across environments to reduce vendor lock‑in.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="langchain-and-langgraph">2.7. LangChain and LangGraph</h3>
+<div class="paragraph">
+<p>LangChain and LangGraph are the de facto standards for orchestrating complex agentic workflows, providing the nervous system required to manage state, memory, and iterative logic. While alternatives like <a href="https://learn.microsoft.com/en-us/semantic-kernel">Microsoft Semantic Kernel</a> or <a href="https://spring.io/projects/spring-ai">Spring AI</a> offer specialized abstractions for specific enterprise ecosystems, the LangChain suite remains the most comprehensive framework for building and scaling sophisticated, autonomous multi-agent swarms. <a href="#langchain-products">[18]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.langchain.com">LangChain</a> is an open-source framework that provides the foundational building blocks for LLM application development, offering a standardized model interface to prevent vendor lock-in and a vast library of integrations for diverse tools and data sources.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+LangChain is best for linear sequences (DAGs) where data flows from one point to another.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="py"><span class="n">model</span> <span class="o">=</span> <span class="nc">ChatOllama</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">llama3.2:1b</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="p">.</span><span class="nf">from_template</span><span class="p">(</span><span class="sh">"</span><span class="s">Tell me a fun fact about {city}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># A simple linear DAG: Prompt -&gt; LLM -&gt; String
+</span><span class="n">chain</span> <span class="o">=</span> <span class="n">prompt</span> <span class="o">|</span> <span class="n">model</span> <span class="o">|</span> <span class="nc">StrOutputParser</span><span class="p">()</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">chain</span><span class="p">.</span><span class="nf">invoke</span><span class="p">({</span><span class="sh">"</span><span class="s">city</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">San Francisco</span><span class="sh">"</span><span class="p">}))</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="py"><span class="nd">@tool</span>
+<span class="k">def</span> <span class="nf">get_weather</span><span class="p">(</span><span class="n">city</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Get the current weather for a specific city.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">It</span><span class="sh">'</span><span class="s">s 25°C and sunny in </span><span class="si">{</span><span class="n">city</span><span class="si">}</span><span class="s">!</span><span class="sh">"</span>
+
+<span class="c1"># Bind the tool to the LLM to enable reasoning over actions
+</span><span class="n">model_with_tools</span> <span class="o">=</span> <span class="nc">ChatOllama</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">llama3.2:1b</span><span class="sh">"</span><span class="p">).</span><span class="nf">bind_tools</span><span class="p">([</span><span class="n">get_weather</span><span class="p">])</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">model_with_tools</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="sh">"</span><span class="s">What is the weather in Paris?</span><span class="sh">"</span><span class="p">)</span>
+<span class="c1"># Returns structured 'tool_calls' rather than just plain text
+</span><span class="nf">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">tool_calls</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="py"><span class="n">model</span> <span class="o">=</span> <span class="nc">ChatOllama</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">llama3.2:1b</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="p">.</span><span class="nf">from_template</span><span class="p">(</span><span class="sh">"</span><span class="s">Answer based on: {context}. Question: {question}</span><span class="sh">"</span><span class="p">)</span>
+<span class="c1"># Simple lambda acting as a mock retriever
+</span><span class="n">retriever</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sh">"</span><span class="s">The weather protocol requires checking the local sensor.</span><span class="sh">"</span>
+
+<span class="n">rag_chain</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">{</span><span class="sh">"</span><span class="s">context</span><span class="sh">"</span><span class="p">:</span> <span class="n">retriever</span><span class="p">,</span> <span class="sh">"</span><span class="s">question</span><span class="sh">"</span><span class="p">:</span> <span class="nc">RunnablePassthrough</span><span class="p">()}</span>
+    <span class="o">|</span> <span class="n">prompt</span>
+    <span class="o">|</span> <span class="n">model</span>
+    <span class="o">|</span> <span class="nc">StrOutputParser</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">rag_chain</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="sh">"</span><span class="s">What is the weather protocol?</span><span class="sh">"</span><span class="p">))</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://www.langchain.com/langgraph">LangGraph</a> is an extension of the LangChain ecosystem designed for building durable, stateful multi-agent systems by representing workflows as cyclic graphs, enabling agents to self-correct through iterative loops and pause for human-in-the-loop interactions.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="py"><span class="c1"># LangGraph is the killer for complex agents because it supports cycles.
+</span>
+<span class="c1"># Defining a stateful, cyclic graph
+</span><span class="n">workflow</span> <span class="o">=</span> <span class="nc">StateGraph</span><span class="p">(</span><span class="n">AgentState</span><span class="p">)</span>
+
+<span class="c1"># Define nodes (the "Brains") and edges (the "Paths")
+</span><span class="n">workflow</span><span class="p">.</span><span class="nf">add_node</span><span class="p">(</span><span class="sh">"</span><span class="s">researcher</span><span class="sh">"</span><span class="p">,</span> <span class="n">research_node</span><span class="p">)</span>
+<span class="n">workflow</span><span class="p">.</span><span class="nf">add_node</span><span class="p">(</span><span class="sh">"</span><span class="s">reviewer</span><span class="sh">"</span><span class="p">,</span> <span class="n">review_node</span><span class="p">)</span>
+
+<span class="c1"># Create a cycle: The Reviewer can send the Researcher back to work
+</span><span class="n">workflow</span><span class="p">.</span><span class="nf">add_conditional_edges</span><span class="p">(</span>
+    <span class="sh">"</span><span class="s">reviewer</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">should_continue</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="sh">"</span><span class="s">retry</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">researcher</span><span class="sh">"</span><span class="p">,</span>  <span class="c1"># The Cycle!
+</span>        <span class="sh">"</span><span class="s">complete</span><span class="sh">"</span><span class="p">:</span> <span class="n">END</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">workflow</span><span class="p">.</span><span class="nf">compile</span><span class="p">()</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://www.langchain.com/langsmith">LangSmith</a> is a unified DevOps platform for the agentic lifecycle that provides full visibility into an LLM&#8217;s reasoning process, allowing developers to debug, test, evaluate, and monitor complex chains and graphs from prototype to enterprise-scale production.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="non-determinism-and-hallucinations">3. Non-Determinism and Hallucinations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Non-determinism and hallucinations are core LLM limitations that influence how AI systems are designed and operated.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LLMs are indeed trained as probabilistic models to predict the probability distribution of the next token based on a given context, using <code>temperature</code> to scale logits and <code>top-k/p</code> (nucleus) parameters to filter the sampling pool, resulting in non-deterministic completions. <a href="#ibm-topics-llm-parameters">[19]</a></p>
+</li>
+<li>
+<p>Hallucinations occur because LLMs prioritize linguistic plausibility over factual accuracy, generating fluent-but-false assertions when the training data is sparse, contradictory, or when the model over-extrapolates patterns from its internal weights.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="hyperparameters">3.1. Hyperparameters</h3>
+<div class="paragraph">
+<p>Temperature, top‑k, and top‑p (nucleus sampling) are three key hyperparameters that determine how the model selects tokens at each step, balancing consistency, creativity, and variability.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Temperature (typically <code>0</code> - <code>2</code>) rescales the model’s logits (pre‑softmax scores), adjusting the probability distribution before sampling.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A temperature setting of <code>1</code> uses the standard probability distribution.</p>
+</li>
+<li>
+<p>A higher temperature flattens the distribution, making lower-probability tokens more likely, so outputs are more varied.</p>
+</li>
+<li>
+<p>A lower temperature sharpens the distribution toward higher-probability tokens, producing more consistent outputs.</p>
+</li>
+<li>
+<p>A zero temperature triggers greedy decoding, always selecting the highest‑scoring token for deterministic generation.</p>
+</li>
+<li>
+<p>Use low temperature for precise, deterministic tasks (summaries, factual QA) and higher temperature for creative tasks (story generation, brainstorming).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Top‑k sampling limits the candidate pool to the <code>k</code> most probable tokens set before sampling.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Tokens outside that set are excluded (probability = <code>0</code>), and the remaining probabilities are renormalized.</p>
+</li>
+<li>
+<p>Smaller <code>k</code> reduces diversity and excludes long‑tail, very-low-probability tokens, while larger <code>k</code> increases diversity within the top candidates.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Top-p sampling selects the smallest set of tokens whose cumulative probability reaches <code>p</code> (e.g., <code>0.9</code>).</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Tokens are sorted by probability and included until the cumulative sum reaches <code>p</code>, then the rest are discarded and the remaining probabilities are renormalized.</p>
+</li>
+<li>
+<p>Top‑k uses a fixed number of tokens, while top‑p uses a variable set based on cumulative probability at each generation step.</p>
+</li>
+<li>
+<p>Top‑p is often preferred for creative or open-ended generation because it adapts to probability distributions dynamically, preventing overly unlikely tokens while still allowing variety.</p>
+</li>
+<li>
+<p>A combined strategy—moderate temperature with top‑p or top‑k—can give balanced outputs that are both coherent and varied.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="hitl-human-in-the-loop">3.2. HITL (Human-in-the-Loop)</h3>
+<div class="paragraph">
+<p>Human-in-the-Loop (HITL) is a design paradigm where humans actively participate in supervision or decision-making at critical points in an AI workflow, creating an iterative cycle of the system proposing, the human reviewing or correcting, and the system proceeding with validated output. <a href="#iibm-topics-hitl">[iibm-topics-hitl]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="mermaid">flowchart LR
+    A[Agent proposes plan or action] --&gt; G{High risk or ambiguity?}
+    G -- No --&gt; E[Execute automatically]
+    G -- Yes --&gt; H[Human review]
+    H --&gt;|Approve| E
+    H --&gt;|Reject / Edit| C[Provide correction or context]
+    C --&gt; A
+    E --&gt; O[Outcome]
+    O --&gt; L[Log feedback for future runs]</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>HITL provides a vital safeguard against LLM non-determinism and hallucinations by enabling domain experts to verify stochastic outputs and intercept factual errors before they impact downstream operations.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In machine learning, HITL contributes to model training through data labeling in supervised learning, preference feedback in reinforcement learning from human feedback (RLHF), and targeted annotation in active learning where the model selects its most uncertain predictions for human review.</p>
+</li>
+<li>
+<p>In agentic AI systems, HITL interventions are typically reactive and triggered only when the system detects ambiguity, missing information, or high-risk actions to keep human involvement meaningful without interrupting every step.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The agent proposes actions and the human <strong>validates</strong>, approves, or rejects them, for example a coding assistant may request confirmation before running a shell command.</p>
+</li>
+<li>
+<p>The agent <strong>interrupts reactively</strong>, pausing only when it detects ambiguity, missing information, or high-risk actions rather than at every step.</p>
+</li>
+<li>
+<p>The agent requests input from the human when it lacks domain-specific context and then continues with the <strong>enriched context</strong>.</p>
+</li>
+<li>
+<p>The human reviews a draft and requests <strong>refinements iteratively</strong> while the agent regenerates output in a feedback loop until the result is satisfactory.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ai-assisted-coding">3.3. AI-Assisted Coding</h3>
+<div class="paragraph">
+<p>Modern AI-assisted development leans on spec-driven and test-driven practices to mitigate non-determinism and hallucinations.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Spec-driven development (SDD) is a paradigm where specifications—not code—serve as the primary source of truth. <a href="#infoq-sdd">[21]</a> <a href="#sdd-3-tools">[22]</a> <a href="#spec-kit">[23]</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>SDD represents the next logical abstraction in programming—advancing from machine code and high-level languages to natural language and declarative intent, where implementation is treated as a mere derived artifact.</p>
+</li>
+<li>
+<p>SDD is not yet a canonical or universally standardized methodology; rather, it remains an emerging set of agentic workflows and best practices that vary across AI-integrated environments.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Test-Driven Development (TDD) is a practice of writing failing tests first (red), adding minimal code to pass them (green), then refactoring—using tests as executable specifications that drive design and support safe refactoring through rapid feedback and regression protection.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>TDD provides a deterministic safety net for non-deterministic AI outputs, transforming ambiguous natural language requests into verifiable objective truths.</p>
+</li>
+<li>
+<p>TDD establishes an automated run-and-fix loop, enabling agents to iterate independently by leveraging compiler errors and test failures to self-correct without constant human intervention.</p>
+</li>
+<li>
+<p>TDD optimizes agent reliability by ensuring the AI first confirms its understanding of the requirements through test criteria before committing to a specific implementation.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="bibliography">Bibliography</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="ibm-topics-llms"></a>[1] <a href="https://www.ibm.com/think/topics/large-language-models" class="bare">https://www.ibm.com/think/topics/large-language-models</a></p>
+</li>
+<li>
+<p><a id="fundamentals-generative-ai"></a>[2] <a href="https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/" class="bare">https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/</a></p>
+</li>
+<li>
+<p><a id="primer-llm-embedding"></a>[3] <a href="https://huggingface.co/spaces/hesamation/primer-llm-embedding" class="bare">https://huggingface.co/spaces/hesamation/primer-llm-embedding</a></p>
+</li>
+<li>
+<p><a id="openai-conversation-state"></a>[4] <a href="https://developers.openai.com/api/docs/guides/conversation-state" class="bare">https://developers.openai.com/api/docs/guides/conversation-state</a></p>
+</li>
+<li>
+<p><a id="bert-original"></a>[5] Devlin et al. (2018). BERT. <a href="https://arxiv.org/abs/1810.04805" class="bare">https://arxiv.org/abs/1810.04805</a></p>
+</li>
+<li>
+<p><a id="gpt-original"></a>[6] <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" class="bare">https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf</a></p>
+</li>
+<li>
+<p><a id="promptingguide"></a>[7] <a href="https://www.promptingguide.ai/" class="bare">https://www.promptingguide.ai/</a></p>
+</li>
+<li>
+<p><a id="completions-vs-responses"></a>[8] <a href="https://developers.openai.com/api/docs/guides/migrate-to-responses" class="bare">https://developers.openai.com/api/docs/guides/migrate-to-responses</a></p>
+</li>
+<li>
+<p><a id="function-calling"></a>[9] <a href="https://developers.openai.com/api/docs/guides/function-calling" class="bare">https://developers.openai.com/api/docs/guides/function-calling</a></p>
+</li>
+<li>
+<p><a id="openai-docs-reasoning"></a>[10] <a href="https://developers.openai.com/api/docs/guides/reasoning/" class="bare">https://developers.openai.com/api/docs/guides/reasoning/</a></p>
+</li>
+<li>
+<p><a id="ibm-topic-reasoning-model"></a>[11] <a href="https://www.ibm.com/think/topics/reasoning-model" class="bare">https://www.ibm.com/think/topics/reasoning-model</a></p>
+</li>
+<li>
+<p><a id="langchain-memory"></a>[12] <a href="https://docs.langchain.com/oss/python/concepts/memory" class="bare">https://docs.langchain.com/oss/python/concepts/memory</a></p>
+</li>
+<li>
+<p><a id="mcp"></a>[13] <a href="https://modelcontextprotocol.io/" class="bare">https://modelcontextprotocol.io/</a></p>
+</li>
+<li>
+<p><a id="agentskills"></a>[14] <a href="https://agentskills.io/" class="bare">https://agentskills.io/</a></p>
+</li>
+<li>
+<p><a id="agentsmd"></a>[15] <a href="https://agents.md/" class="bare">https://agents.md/</a></p>
+</li>
+<li>
+<p><a id="google-mas"></a>[16] <a href="https://cloud.google.com/discover/what-is-a-multi-agent-system" class="bare">https://cloud.google.com/discover/what-is-a-multi-agent-system</a></p>
+</li>
+<li>
+<p><a id="agent2agent-protocol"></a>[17] <a href="https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/" class="bare">https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/</a></p>
+</li>
+<li>
+<p><a id="langchain-products"></a>[18] <a href="https://docs.langchain.com/oss/python/concepts/products" class="bare">https://docs.langchain.com/oss/python/concepts/products</a></p>
+</li>
+<li>
+<p><a id="ibm-topics-llm-parameters"></a>[19] <a href="https://www.ibm.com/think/topics/llm-parameters" class="bare">https://www.ibm.com/think/topics/llm-parameters</a></p>
+</li>
+<li>
+<p><a id="ibm-topics-hitl"></a>[20] <a href="https://www.ibm.com/think/topics/human-in-the-loop" class="bare">https://www.ibm.com/think/topics/human-in-the-loop</a></p>
+</li>
+<li>
+<p><a id="infoq-sdd"></a>[21] <a href="https://www.infoq.com/articles/spec-driven-development/" class="bare">https://www.infoq.com/articles/spec-driven-development/</a></p>
+</li>
+<li>
+<p><a id="sdd-3-tools"></a>[22] <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" class="bare">https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html</a></p>
+</li>
+<li>
+<p><a id="spec-kit"></a>[23] <a href="https://github.com/github/spec-kit" class="bare">https://github.com/github/spec-kit</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

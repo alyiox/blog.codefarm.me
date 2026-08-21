@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Kubernetes Logging | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Kubernetes Logging" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Kubernetes Logging 1.1. Pod and container logs 1.2. How nodes handle container logs 1.3. Log locations and format 1.4. Cluster-level logging architectures 2. What is Fluent Bit? 2.1. Configuring 2.2. Multiline Parsing 2.3. Parsers 2.4. Parser Filter 2.5. Kubernetes Filter 3. Kubernetes References 1. Kubernetes Logging In a Kubernetes cluster, logs should have a separate storage and lifecycle independent of nodes, pods, or containers, that is called cluster-level logging. [1] 1.1. Pod and container logs Kubernetes captures logs from each container in a running Pod. # debug/counter-pod.yaml apiVersion: v1 kind: Pod metadata: name: counter spec: containers: - name: count…" />
+<meta name="twitter:description" property="og:description" content="1. Kubernetes Logging 1.1. Pod and container logs 1.2. How nodes handle container logs 1.3. Log locations and format 1.4. Cluster-level logging architectures 2. What is Fluent Bit? 2.1. Configuring 2.2. Multiline Parsing 2.3. Parsers 2.4. Parser Filter 2.5. Kubernetes Filter 3. Kubernetes References 1. Kubernetes Logging In a Kubernetes cluster, logs should have a separate storage and lifecycle independent of nodes, pods, or containers, that is called cluster-level logging. [1] 1.1. Pod and container logs Kubernetes captures logs from each container in a running Pod. # debug/counter-pod.yaml apiVersion: v1 kind: Pod metadata: name: counter spec: containers: - name: count…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-logging/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-logging/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-07T10:20:54+08:00" />
+<meta property="article:modified_time" content="2022-01-07T10:20:54+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Kubernetes Logging" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-01-07T10:20:54+08:00","datePublished":"2022-01-07T10:20:54+08:00","description":"1. Kubernetes Logging 1.1. Pod and container logs 1.2. How nodes handle container logs 1.3. Log locations and format 1.4. Cluster-level logging architectures 2. What is Fluent Bit? 2.1. Configuring 2.2. Multiline Parsing 2.3. Parsers 2.4. Parser Filter 2.5. Kubernetes Filter 3. Kubernetes References 1. Kubernetes Logging In a Kubernetes cluster, logs should have a separate storage and lifecycle independent of nodes, pods, or containers, that is called cluster-level logging. [1] 1.1. Pod and container logs Kubernetes captures logs from each container in a running Pod. # debug/counter-pod.yaml apiVersion: v1 kind: Pod metadata: name: counter spec: containers: - name: count…","headline":"Kubernetes Logging","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-logging/"},"url":"https://blog.codefarm.me/kubernetes-logging/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Kubernetes Logging</h1><p class="c-post-meta">04 Mar 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#kubernetes-logging">1. Kubernetes Logging</a>
+<ul class="sectlevel2">
+<li><a href="#pod-and-container-logs">1.1. Pod and container logs</a></li>
+<li><a href="#how-nodes-handle-container-logs">1.2. How nodes handle container logs</a></li>
+<li><a href="#log-locations-and-format">1.3. Log locations and format</a></li>
+<li><a href="#cluster-level-logging-architectures">1.4. Cluster-level logging architectures</a></li>
+</ul>
+</li>
+<li><a href="#what-is-fluent-bit">2. What is Fluent Bit?</a>
+<ul class="sectlevel2">
+<li><a href="#configuring">2.1. Configuring</a></li>
+<li><a href="#multiline-parsing">2.2. Multiline Parsing</a></li>
+<li><a href="#parsers">2.3. Parsers</a></li>
+<li><a href="#parser-filter">2.4. Parser Filter</a></li>
+<li><a href="#kubernetes-filter">2.5. Kubernetes Filter</a></li>
+</ul>
+</li>
+<li><a href="#kubernetes">3. Kubernetes</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="kubernetes-logging">1. Kubernetes Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In a Kubernetes cluster, logs should have a separate storage and lifecycle independent of nodes, pods, or containers, that is called <em>cluster-level logging</em>. <a href="#kube-logging">[1]</a></p>
+</div>
+<div class="sect2">
+<h3 id="pod-and-container-logs">1.1. Pod and container logs</h3>
+<div class="paragraph">
+<p>Kubernetes captures logs from each container in a running Pod.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="c1"># debug/counter-pod.yaml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">counter</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">count</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">busybox:1.28</span>
+    <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">/bin/sh</span><span class="pi">,</span> <span class="nv">-c</span><span class="pi">,</span>
+            <span class="s1">'</span><span class="s">i=0;</span><span class="nv"> </span><span class="s">while</span><span class="nv"> </span><span class="s">true;</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">echo</span><span class="nv"> </span><span class="s">"$i:</span><span class="nv"> </span><span class="s">$(date)";</span><span class="nv"> </span><span class="s">i=$((i+1));</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">1;</span><span class="nv"> </span><span class="s">done'</span><span class="pi">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To run this pod, use the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl apply <span class="nt">-f</span> https://k8s.io/examples/debug/counter-pod.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To fetch the logs, use the <code>kubectl logs</code> command, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># kubectl logs [--previous] counter [-c count] [-f] [--tail 10]</span>
+kubectl logs counter</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">627: Sun Mar  3 06:29:05 UTC 2024
+628: Sun Mar  3 06:29:06 UTC 2024
+629: Sun Mar  3 06:29:07 UTC 2024
+630: Sun Mar  3 06:29:08 UTC 2024
+631: Sun Mar  3 06:29:09 UTC 2024</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="how-nodes-handle-container-logs">1.2. How nodes handle container logs</h3>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/user-guide/logging/logging-node-level.png" alt="Node level logging" width="35%" height="35%">
+</div>
+</div>
+<div class="paragraph">
+<p>A <em>container runtime</em> handles and redirects any output generated to a containerized application&#8217;s <em>stdout</em> and <em>stderr</em> streams.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Different container runtimes implement this in different ways; however, the integration with the kubelet is standardized as the <em>CRI logging format</em>.</p>
+</li>
+<li>
+<p>By default, if a container restarts, the kubelet keeps one terminated container with its logs.</p>
+</li>
+<li>
+<p>If a pod is evicted from the node, all corresponding containers are also evicted, along with their logs.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="log-locations-and-format">1.3. Log locations and format</h3>
+<div class="paragraph">
+<p>On Linux nodes that use systemd, the kubelet and container runtime write to journald by default.</p>
+</div>
+<div class="paragraph">
+<p>For components that run in pods, these write to files inside the <code>/var/log</code> directory,and the kubelet always directs the container runtime to write logs into directories within <code>/var/log/pods</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo ls</span> <span class="nt">-l</span> /var/log/<span class="o">{</span>containers,pods<span class="o">}</span>
+<span class="go">/var/log/containers:
+total 116
+</span><span class="gp">... coredns-7b44686977-vlt44_kube-system_coredns-7...a.log -&gt;</span><span class="w"> </span>/var/log/pods/kube-system_coredns-7b44686977-vlt44_36dc81bd-f2eb-4870-be75-330cb10f61ab/coredns/0.log
+<span class="gp">... coredns-7b44686977-z9mwq_kube-system_coredns-3...e.log -&gt;</span><span class="w"> </span>/var/log/pods/kube-system_coredns-7b44686977-z9mwq_236098b7-9988-4c29-9498-041f95b3393d/coredns/0.log
+<span class="gp">... counter_default_count-4...f.log -&gt;</span><span class="w"> </span>/var/log/pods/default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8/count/0.log
+<span class="go">
+/var/log/pods:
+total 80
+... default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8
+... kube-system_coredns-7b44686977-vlt44_36dc81bd-f2eb-4870-be75-330cb10f61ab
+... kube-system_coredns-7b44686977-z9mwq_236098b7-9988-4c29-9498-041f95b3393d
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>tree /var/log/pods/
+<span class="go">/var/log/pods/
+├── default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8
+│   └── count
+│       └── 0.log
+</span><span class="c">...</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The containers logs under <code>/var/log/containers</code> are with pod and container metadata embedded in the filename: <code>/var/log/containers/&lt;pod_name&gt;_&lt;pod_namespace&gt;_&lt;container_name&gt;-&lt;container_id&gt;.log</code>. <a href="#kube-kubelet-cri-logging">[2]</a></p>
+</li>
+<li>
+<p>The the pod-level log directory <code>/var/log/pods</code> store all container logs with the format: <code>/var/log/pods/&lt;podUID&gt;/&lt;containerName&gt;_&lt;instance#&gt;.log</code>. <a href="#kube-kubelet-cri-logging">[2]</a></p>
+</li>
+<li>
+<p>The each log entry is decorated with a RFC 3339Nano <em>timestamp</em> prefix, the <em>stream</em> type (i.e., "stdout" or "stderr"), the <em>tags</em> of the log entry, the log <em>content</em> that ends with a newline. <a href="#kube-kubelet-cri-logging">[2]</a></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">2016-10-06T00:17:09.669794202Z stdout F The content of the log entry 1
+2016-10-06T00:17:09.669794202Z stdout P First line of log entry 2
+2016-10-06T00:17:09.669794202Z stdout P Second line of the log entry 2
+2016-10-06T00:17:10.113242941Z stderr F Last line of the log entry 2</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Use <code>crictl</code> to determine the log path of containers.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>List pods filtered by pod name:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl pods <span class="nt">--name</span> counter
+<span class="go">POD ID              CREATED             STATE               NAME                NAMESPACE           ATTEMPT             RUNTIME
+9509134c36363       15 minutes ago      Ready               counter             default             0                   (default)
+4246eaf3effc6       8c811b4aec35f       17 minutes ago      Running             count               0                   9509134c36363       counter</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Show the pod-level log directory:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl inspectp <span class="nt">-o</span> go-template <span class="nt">--template</span> <span class="s1">'{{.info.config.log_directory}}'</span> 9509134c36363
+<span class="go">/var/log/pods/default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>List containers filtered by pod id:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl ps <span class="nt">--pod</span> 9509134c36363
+<span class="go">CONTAINER           IMAGE               CREATED             STATE               NAME                ATTEMPT             POD ID              POD
+4246eaf3effc6       8c811b4aec35f       34 minutes ago      Running             count               0                   9509134c36363       counter</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Show the log path of a container:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl inspect <span class="nt">-o</span> go-template <span class="nt">--template</span> <span class="s1">'{{.status.logPath}}'</span> 4246eaf3effc6
+<span class="go">/var/log/pods/default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8/count/0.log</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Show the log content of a container:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo tail</span> <span class="nt">-n</span> 3 /var/log/pods/default_counter_5b0efb65-38fe-47f4-9d8d-dba07f9038b8/count/0.log
+<span class="go">2024-03-03T16:23:26.644901904+08:00 stdout F 2330: Sun Mar  3 08:23:26 UTC 2024
+2024-03-03T16:23:27.647833675+08:00 stdout F 2331: Sun Mar  3 08:23:27 UTC 2024
+2024-03-03T16:23:28.650085015+08:00 stdout F 2332: Sun Mar  3 08:23:28 UTC 2024</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cluster-level-logging-architectures">1.4. Cluster-level logging architectures</h3>
+<div class="paragraph">
+<p>While Kubernetes does not provide a native solution for cluster-level logging, there are several common approaches you can consider. Here are some options: <a href="#kube-logging">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use a node-level logging agent that runs on every node.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/user-guide/logging/logging-with-node-agent.png" alt="Using a node level logging agent" width="35%" height="35%">
+</div>
+</div>
+</li>
+<li>
+<p>Include a dedicated sidecar container for logging in an application pod.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/user-guide/logging/logging-with-streaming-sidecar.png" alt="Sidecar container with a streaming container" width="35%" height="35%">
+</div>
+</div>
+</li>
+<li>
+<p>Push logs directly to a backend from within an application.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/user-guide/logging/logging-with-sidecar-agent.png" alt="Sidecar container with a logging agent" width="35%" height="35%">
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-fluent-bit">2. What is Fluent Bit?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://fluentbit.io/">Fluent Bit</a> is a Fast and Lightweight  is a Fast and Lightweight <strong>Telemetry Agent</strong> for Logs, Metrics, and Traces, which is a <a href="https://cncf.io/">CNCF</a> sub-project under the umbrella of <a href="http://fluentd.org/">Fluentd</a>. <a href="#fluentbit-io">[3]</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Fluentd vs. Fluent Bit</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 42.8571%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top">Fluentd</th>
+<th class="tableblock halign-left valign-top">Fluent Bit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scope</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Containers / Servers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Embedded Linux / Containers / Servers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Language</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C &amp; Ruby</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 60MB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">~ 1MB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium Performance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High Performance</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dependencies</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built as a Ruby Gem, it requires a certain number of gems.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zero dependencies, unless some special plugin requires them.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Plugins</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">More than 1000 external plugins available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Around 100 built-in plugins available</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">License</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Every incoming piece of data that belongs to a log or a metric that is retrieved by Fluent Bit is considered an Event or a Record, represented as a 2-element array with a nested array as the first element: <code>[[TIMESTAMP, METADATA], MESSAGE]</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker run <span class="nt">--rm</span>  <span class="se">\</span>
+    fluent/fluent-bit:2.2 <span class="se">\</span>
+    <span class="nt">-q</span> <span class="se">\</span>
+    <span class="nt">-i</span> dummy <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'tag=dummy.data'</span> <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'samples=3'</span> <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'dummy={"data":"100 0.5 true This is example"}'</span> <span class="se">\</span>
+    <span class="nt">-o</span> stdout</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">[0] dummy.data: [[1709527380.566845126, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dummy.data: [[1709527381.561442519, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dummy.data: [[1709527382.561138285, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Fluent Bit versions prior to v2.1.0 instead used <code>[TIMESTAMP, MESSAGE]</code> to represent events, which is still supported for reading input event streams.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker run <span class="nt">--rm</span>  <span class="se">\</span>
+    fluent/fluent-bit:1.8 <span class="se">\</span>
+    /fluent-bit/bin/fluent-bit <span class="se">\</span>
+    <span class="nt">-q</span> <span class="se">\</span>
+    <span class="nt">-i</span> dummy <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'tag=dummy.data'</span> <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'samples=3'</span> <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s1">'dummy={"data":"100 0.5 true This is example"}'</span> <span class="se">\</span>
+    <span class="nt">-o</span> stdout</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">[0] dummy.data: [1709528329.573776918, {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[1] dummy.data: [1709528330.572099654, {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[2] dummy.data: [1709528331.573172190, {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Fluent Bit collects and process logs (records) from different input sources and allows to parse and filter these records before they hit the Storage interface. Once data is processed and it&#8217;s in a safe state (either in memory or the file system), the records are routed through the proper output destinations. <a href="#fluentbit-io-stream-processing">[4]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/efk/fluent-bit-data-pipeline.png" alt="fluent bit data pipeline" width="55%" height="55%">
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring">2.1. Configuring</h3>
+<div class="paragraph">
+<p>Fluent Bit supports two configuration formats, <a href="https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode">Classic mode</a> and <a href="https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/yaml">Yaml</a>.</p>
+</div>
+<div class="paragraph">
+<p>A simple example of a classic mode configuration file is as follows: <a href="#fluentbit-io-classic-mode-format-schema">[5]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf">[<span class="n">SERVICE</span>]
+    <span class="c"># This is a commented line
+</span>    <span class="n">daemon</span>    <span class="n">off</span>
+    <span class="n">log_level</span> <span class="n">debug</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The schema is defined by three concepts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sections</p>
+<div class="paragraph">
+<p>A <em>section</em> is defined by a name or title inside brackets, e.g.,<code>[SERVICE]</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All section content must be indented (4 spaces ideally).</p>
+</li>
+<li>
+<p>Multiple sections can exist on the same file.</p>
+</li>
+<li>
+<p>A section is expected to have comments and entries, it cannot be empty.</p>
+</li>
+<li>
+<p>Any commented line under a section, must be indented too.</p>
+</li>
+<li>
+<p>End-of-line comments are not supported, only full-line comments.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Entries: Key/Value</p>
+<div class="paragraph">
+<p>A section may contain <em>Entries</em>, an entry is defined by a line of text that contains a <code>Key</code> and a <code>Value</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An entry is defined by a key and a value.</p>
+</li>
+<li>
+<p>A key must be indented.</p>
+</li>
+<li>
+<p>A key must contain a value which ends in the breakline.</p>
+</li>
+<li>
+<p>Multiple keys with the same name can exist.</p>
+<div class="paragraph">
+<p>Also commented lines are set prefixing the <code>#</code> character, those lines are not processed but they must be indented too.</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Indented Configuration Mode</p>
+<div class="paragraph">
+<p>Fluent Bit configuration files are based in a strict <em>Indented Mode</em>, that means that each configuration file must follow the same pattern of alignment from left to right when writing text.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following example demonstrates how to use a main <a href="https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/configuration-file">configuration file</a> to generate and output dummy events:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># fluent-bit.conf
+</span>[<span class="n">SERVICES</span>]
+    <span class="n">flush</span>     <span class="m">1</span>
+    <span class="n">daemon</span>    <span class="n">off</span>
+
+[<span class="n">INPUT</span>]
+    <span class="n">name</span>        <span class="n">dummy</span>
+    <span class="n">tag</span>         <span class="n">dumy</span>.<span class="n">data</span>
+    <span class="n">samples</span>     <span class="m">3</span>
+    <span class="n">dummy</span>       {<span class="s2">"data"</span>:<span class="s2">"100 0.5 true This is example"</span>}
+
+[<span class="n">OUTPUT</span>]
+    <span class="n">name</span>    <span class="n">stdout</span>
+    <span class="n">match</span>   *</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker run <span class="nt">--rm</span> <span class="se">\</span>
+  <span class="nt">-v</span> <span class="nv">$PWD</span>/fluent-bit.conf:/etc/fluent-bit/fluent-bit.conf fluent/fluent-bit:2.2 <span class="se">\</span>
+  <span class="nt">-q</span> <span class="se">\</span>
+  <span class="nt">-c</span> /etc/fluent-bit/fluent-bit.conf</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">[0] dumy.data: [[1709531349.562834986, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dumy.data: [[1709531350.561133286, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dumy.data: [[1709531351.561125139, {}], {"data"=&gt;</span><span class="s2">"100 0.5 true This is example"</span><span class="o">}]</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multiline-parsing">2.2. Multiline Parsing</h3>
+<div class="paragraph">
+<p>In an ideal world, applications might log their messages within a single line, but in reality applications generate multiple log messages that sometimes belong to the same context, like  stack traces. <a href="#fluentbit-io-multiline-parsing">[6]</a></p>
+</div>
+<div class="paragraph">
+<p>The Multiline parser engine exposes two ways to configure and use the functionality:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Without any extra configuration, Fluent Bit exposes certain pre-configured parsers (built-in) to solve specific multiline parser cases, e.g: <code>docker</code>, <code>cri</code>.</p>
+</li>
+<li>
+<p>A  multiline parser is defined in a parsers configuration file by using a <code>[MULTILINE_PARSER]</code> section definition.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+It is not possible to get the time key from the body of the multiline message. However, it can be extracted and set as a new key by using a filter.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you wish to concatenate messages read from a log file, it is highly recommended to use the multiline support in the <a href="https://docs.fluentbit.io/manual/pipeline/inputs/tail#multiline-support">Tail plugin</a> itself. <a href="#fluentbit-io-filters-multiline-stacktrace">[7]</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="parsers">2.3. Parsers</h3>
+<div class="paragraph">
+<p>Parsers can be used to take any unstructured log entry and give them a structure that makes easier it processing and further filtering. <a href="#fluentbit-io-parsers">[8]</a></p>
+</div>
+<div class="paragraph">
+<p>The parser engine is fully configurable and can process log entries based in two types of format:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.fluentbit.io/manual/pipeline/parsers/json">JSON Maps</a></p>
+</li>
+<li>
+<p><a href="https://docs.fluentbit.io/manual/pipeline/parsers/regular-expression">Regular Expressions</a> (named capture)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All parsers must be defined in a <code>parsers.conf</code> file, not in the Fluent Bit global configuration file. The parsers file expose all parsers available that can be used by the Input plugins that are aware of this feature.</p>
+</div>
+<div class="paragraph">
+<p>For more information about the parsers available, please refer to the default parsers file distributed with Fluent Bit source code: <a href="https://github.com/fluent/fluent-bit/blob/v2.2.2/conf/parsers.conf" class="bare">https://github.com/fluent/fluent-bit/blob/v2.2.2/conf/parsers.conf</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="parser-filter">2.4. Parser Filter</h3>
+<div class="paragraph">
+<p>Filtering is implemented through plugins, used to match, exclude or enrich logs with some specific metadata. <a href="#fluentbit-io-data-pipeline-filter">[9]</a></p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://docs.fluentbit.io/manual/pipeline/filters/parser">Parser Filter</a> plugin allows for parsing fields in event records, which supports the following configuration parameters:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 9.0909%;">
+<col style="width: 81.8181%;">
+<col style="width: 9.091%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Key_Name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify field name in record to parse.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Parser</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify the parser name to interpret the field. Multiple Parser entries are allowed (one per line).</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Preserve_Key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keep original <code>Key_Name</code> field in the parsed result. If false, the field will be removed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>False</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Reserve_Data</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keep all other original fields in the parsed result. If false, all other original fields will be removed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>False</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Unescape_Key</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the key is an escaped string (e.g: stringify JSON), unescape the string before applying the parser.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>False</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The following is an example of parsing a record <code>{"data":"100 0.5 true This is example"}</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># parsers.conf
+</span>[<span class="n">PARSER</span>]
+    <span class="n">name</span> <span class="n">dummy_test</span>
+    <span class="n">format</span> <span class="n">regex</span>
+    <span class="n">regex</span> ^(?&lt;<span class="n">INT</span>&gt;[^ ]+) (?&lt;<span class="n">FLOAT</span>&gt;[^ ]+) (?&lt;<span class="n">BOOL</span>&gt;[^ ]+) (?&lt;<span class="n">STRING</span>&gt;.+)$</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># fluent-bit-with-parsers.conf
+</span>[<span class="n">SERVICE</span>]
+    <span class="n">parsers_file</span> <span class="n">parsers</span>.<span class="n">conf</span>
+
+[<span class="n">INPUT</span>]
+    <span class="n">name</span> <span class="n">dummy</span>
+    <span class="n">tag</span>  <span class="n">dummy</span>.<span class="n">data</span>
+    <span class="n">dummy</span> {<span class="s2">"data"</span>:<span class="s2">"100 0.5 true This is example"</span>}
+    <span class="n">samples</span> <span class="m">3</span>
+
+[<span class="n">FILTER</span>]
+    <span class="n">name</span> <span class="n">parser</span>
+    <span class="n">match</span> <span class="n">dummy</span>.*
+    <span class="n">key_name</span> <span class="n">data</span>
+    <span class="n">parser</span> <span class="n">dummy_test</span>
+
+[<span class="n">OUTPUT</span>]
+    <span class="n">name</span> <span class="n">stdout</span>
+    <span class="n">match</span> *</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The output after parser filtering is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c">#!/bin/sh</span>
+docker run <span class="nt">--rm</span> <span class="se">\</span>
+  <span class="nt">-v</span> <span class="nv">$PWD</span>/fluent-bit-with-parsers.conf:/etc/fluent-bit/fluent-bit.conf <span class="se">\</span>
+  <span class="nt">-v</span> <span class="nv">$PWD</span>/parsers.conf:/etc/fluent-bit/parsers.conf <span class="se">\</span>
+  fluent/fluent-bit:2.2 <span class="se">\</span>
+  <span class="nt">-q</span> <span class="se">\</span>
+  <span class="nt">-c</span> /etc/fluent-bit/fluent-bit.conf</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">[0] dummy.data: [[1709535476.570488151, {}], {"INT"=&gt;</span><span class="s2">"100"</span>, <span class="s2">"FLOAT"</span><span class="o">=&gt;</span><span class="s2">"0.5"</span>, <span class="s2">"BOOL"</span><span class="o">=&gt;</span><span class="s2">"true"</span>, <span class="s2">"STRING"</span><span class="o">=&gt;</span><span class="s2">"This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dummy.data: [[1709535477.573640185, {}], {"INT"=&gt;</span><span class="s2">"100"</span>, <span class="s2">"FLOAT"</span><span class="o">=&gt;</span><span class="s2">"0.5"</span>, <span class="s2">"BOOL"</span><span class="o">=&gt;</span><span class="s2">"true"</span>, <span class="s2">"STRING"</span><span class="o">=&gt;</span><span class="s2">"This is example"</span><span class="o">}]</span>
+<span class="gp">[0] dummy.data: [[1709535478.575603024, {}], {"INT"=&gt;</span><span class="s2">"100"</span>, <span class="s2">"FLOAT"</span><span class="o">=&gt;</span><span class="s2">"0.5"</span>, <span class="s2">"BOOL"</span><span class="o">=&gt;</span><span class="s2">"true"</span>, <span class="s2">"STRING"</span><span class="o">=&gt;</span><span class="s2">"This is example"</span><span class="o">}]</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="kubernetes-filter">2.5. Kubernetes Filter</h3>
+<div class="paragraph">
+<p>When Fluent Bit is deployed in Kubernetes as a DaemonSet and configured to read the log files from the containers (using tail or systemd input plugins), this filter aims to perform the following operations: <a href="#fluentbit-io-filters-kubernetes">[10]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Analyze the Tag and extract the metdata: Pod Name, Namespace, Container Name, Container ID.</p>
+</li>
+<li>
+<p>Query Kubernetes API Server to obtain extra metadata for the PID in question: Pod ID, Labels, Annotations.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A flexible feature of Fluent Bit Kubernetes filter is that allow Kubernetes Pods to suggest certain behaviors for the log processor pipeline when processing the records. At the moment it support:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>fluentbit.io/parser[_stream][-container]</code></p>
+<div class="paragraph">
+<p>Suggest a pre-defined parser. The parser must be registered already by Fluent Bit. This option will only be processed if Fluent Bit configuration (Kubernetes Filter) have enabled the option K8S-Logging.Parser. If present, the stream (stdout or stderr) will restrict that specific stream. If present, the container can override a specific container in a Pod.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Set <code>K8S-Logging.Parser: On</code> to allow Kubernetes Pods to suggest a pre-defined Parser.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><code>fluentbit.io/exclude[_stream][-container]</code></p>
+<div class="paragraph">
+<p>Request to Fluent Bit to exclude or not the logs generated by the Pod. This option will only be processed if Fluent Bit configuration (Kubernetes Filter) have enabled the option <code>K8S-Logging.Exclude</code>. Default is False.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Set <code>K8S-Logging.Exclude: On</code> to allow Kubernetes Pods to exclude their logs from the log processor.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kubernetes">3. Kubernetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Fluent Bit is a lightweight and extensible Log Processor that comes with full support for Kubernetes: <a href="#fluentbit-io-kubernetes">[11]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Process Kubernetes containers logs from the file system or Systemd/Journald.</p>
+</li>
+<li>
+<p>Enrich logs with Kubernetes Metadata.</p>
+</li>
+<li>
+<p>Centralize your logs in third party storage services like Elasticsearch, InfluxDB, HTTP, etc.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Kubernetes Filter depends on either <a href="https://docs.fluentbit.io/manual/pipeline/inputs/tail">Tail</a> and <a href="https://docs.fluentbit.io/manual/pipeline/inputs/systemd">Systemd</a> input plugins to process and enrich records with Kubernetes metadata. <a href="#fluentbit-io-filters-kubernetes">[10]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Fluent Bit Kubernetes filter has an optional feature flag <code>Use_Kubelet</code> to send the request to kubelet /pods endpoint instead of kube-apiserver to retrieve the pods information and use it to enrich the log.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf">[<span class="n">INPUT</span>]
+    <span class="n">name</span>              <span class="n">tail</span>
+    <span class="n">tag</span>               <span class="n">kube</span>.*
+    <span class="n">path</span>              /<span class="n">var</span>/<span class="n">log</span>/<span class="n">containers</span>/*.<span class="n">log</span>
+    <span class="c">#exclude_path      /var/log/containers/*_logging_*.log,/var/log/containers/*_default*.log
+</span>    <span class="n">multiline</span>.<span class="n">parser</span>  <span class="n">cri</span>,<span class="n">docker</span>
+    <span class="n">db</span>                /<span class="n">var</span>/<span class="n">log</span>/<span class="n">flb_kube</span>.<span class="n">db</span>
+    <span class="n">mem_buf_limit</span>     <span class="m">5</span><span class="n">MB</span>
+    <span class="n">skip_long_lines</span>   <span class="n">on</span>
+    <span class="n">refresh_interval</span>  <span class="m">10</span>
+
+[<span class="n">INPUT</span>]
+    <span class="n">name</span>              <span class="n">systemd</span>
+    <span class="n">tag</span>               <span class="n">host</span>.*
+    <span class="n">db</span>                /<span class="n">var</span>/<span class="n">log</span>/<span class="n">flb_host</span>.<span class="n">db</span>
+    <span class="n">systemd_filter</span>    <span class="err">_</span><span class="n">SYSTEMD_UNIT</span>=<span class="n">docker</span>.<span class="n">service</span>
+    <span class="n">systemd_filter</span>    <span class="err">_</span><span class="n">SYSTEMD_UNIT</span>=<span class="n">containerd</span>.<span class="n">service</span>
+    <span class="n">systemd_filter</span>    <span class="err">_</span><span class="n">SYSTEMD_UNIT</span>=<span class="n">kubelet</span>.<span class="n">service</span>
+    <span class="n">strip_underscores</span> <span class="n">on</span>
+
+[<span class="n">FILTER</span>]
+    <span class="n">name</span>                <span class="n">kubernetes</span>
+    <span class="n">match</span>               <span class="n">kube</span>.*
+    <span class="n">kube_url</span>            <span class="n">https</span>://<span class="n">kubernetes</span>.<span class="n">default</span>.<span class="n">svc</span>:<span class="m">443</span>
+    <span class="n">kube_ca_file</span>        /<span class="n">var</span>/<span class="n">run</span>/<span class="n">secrets</span>/<span class="n">kubernetes</span>.<span class="n">io</span>/<span class="n">serviceaccount</span>/<span class="n">ca</span>.<span class="n">crt</span>
+    <span class="n">kube_token_file</span>     /<span class="n">var</span>/<span class="n">run</span>/<span class="n">secrets</span>/<span class="n">kubernetes</span>.<span class="n">io</span>/<span class="n">serviceaccount</span>/<span class="n">token</span>
+    <span class="n">kube_tag_prefix</span>     <span class="n">kube</span>.<span class="n">var</span>.<span class="n">log</span>.<span class="n">containers</span>.
+    <span class="n">annotations</span>         <span class="n">off</span>
+    <span class="n">merge_log</span>           <span class="n">on</span>
+    <span class="c">#merge_log_key      merge_log
+</span>    <span class="n">k8s</span>-<span class="n">logging</span>.<span class="n">parser</span>  <span class="n">off</span>
+    <span class="n">k8s</span>-<span class="n">logging</span>.<span class="n">exclude</span> <span class="n">off</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Role Configuration for Fluent Bit DaemonSet Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbitds</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">fluentbit-system</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+<span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">]</span>
+    <span class="na">resources</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">namespaces</span>
+      <span class="pi">-</span> <span class="s">pods</span>
+      <span class="c1"># The difference is that kubelet need a special permission</span>
+      <span class="c1"># for resource `nodes/proxy` to get HTTP request in.</span>
+      <span class="pi">-</span> <span class="s">nodes</span>
+      <span class="pi">-</span> <span class="s">nodes/proxy</span>
+    <span class="na">verbs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">get</span>
+      <span class="pi">-</span> <span class="s">list</span>
+      <span class="pi">-</span> <span class="s">watch</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRoleBinding</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+<span class="na">roleRef</span><span class="pi">:</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+<span class="na">subjects</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbitds</span>
+    <span class="na">namespace</span><span class="pi">:</span> <span class="s">fluentbit-system</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>DaemonSet config Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">DaemonSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">fluentbit-system</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">serviceAccountName</span><span class="pi">:</span> <span class="s">fluentbitds</span>
+      <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">fluent-bit</span>
+          <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
+          <span class="na">image</span><span class="pi">:</span> <span class="s">fluent/fluent-bit:latest</span>
+          <span class="na">volumeMounts</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlog</span>
+              <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/log</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlibdockercontainers</span>
+              <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/lib/docker/containers</span>
+              <span class="na">readOnly</span><span class="pi">:</span> <span class="kc">true</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit-config</span>
+              <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/fluent-bit/etc/</span>
+          <span class="na">resources</span><span class="pi">:</span>
+            <span class="na">limits</span><span class="pi">:</span>
+              <span class="na">memory</span><span class="pi">:</span> <span class="s">1500Mi</span>
+            <span class="na">requests</span><span class="pi">:</span>
+              <span class="na">cpu</span><span class="pi">:</span> <span class="s">500m</span>
+              <span class="na">memory</span><span class="pi">:</span> <span class="s">500Mi</span>
+      <span class="c1"># The key point is to set `hostNetwork` to `true` and</span>
+      <span class="c1"># `dnsPolicy` to `ClusterFirstWithHostNet` that fluent</span>
+      <span class="c1"># bit DaemonSet could call Kubelet locally.</span>
+      <span class="na">hostNetwork</span><span class="pi">:</span> <span class="kc">true</span>
+      <span class="na">dnsPolicy</span><span class="pi">:</span> <span class="s">ClusterFirstWithHostNet</span>
+      <span class="na">volumes</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlog</span>
+          <span class="na">hostPath</span><span class="pi">:</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">/var/log</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlibdockercontainers</span>
+          <span class="na">hostPath</span><span class="pi">:</span>
+            <span class="na">path</span><span class="pi">:</span> <span class="s">/var/lib/docker/containers</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit-config</span>
+          <span class="na">configMap</span><span class="pi">:</span>
+            <span class="na">name</span><span class="pi">:</span> <span class="s">fluentbit-config</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There is also a logging solution based on EFK (Elastic Search, Fluent Bit, Kibana) for Kubernetes on <a href="https://github.com/ousiax/kube-addons/tree/main/logging">GitHub</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="kube-logging"></a>[1] <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/" class="bare">https://kubernetes.io/docs/concepts/cluster-administration/logging/</a></p>
+</li>
+<li>
+<p><a id="kube-kubelet-cri-logging"></a>[2] <a href="https://github.com/kubernetes/design-proposals-archive/blob/main/node/kubelet-cri-logging.md" class="bare">https://github.com/kubernetes/design-proposals-archive/blob/main/node/kubelet-cri-logging.md</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io"></a>[3] <a href="https://docs.fluentbit.io/" class="bare">https://docs.fluentbit.io/</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-stream-processing"></a>[4] <a href="https://docs.fluentbit.io/manual/stream-processing/overview" class="bare">https://docs.fluentbit.io/manual/stream-processing/overview</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-classic-mode-format-schema"></a>[5] <a href="https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/format-schema" class="bare">https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/format-schema</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-multiline-parsing"></a>[6] <a href="https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/multiline-parsing" class="bare">https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/multiline-parsing</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-filters-multiline-stacktrace"></a>[7] <a href="https://docs.fluentbit.io/manual/pipeline/filters/multiline-stacktrace" class="bare">https://docs.fluentbit.io/manual/pipeline/filters/multiline-stacktrace</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-parsers"></a>[8] <a href="https://docs.fluentbit.io/manual/pipeline/parsers/configuring-parser" class="bare">https://docs.fluentbit.io/manual/pipeline/parsers/configuring-parser</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-data-pipeline-filter"></a>[9] <a href="https://docs.fluentbit.io/manual/concepts/data-pipeline/filter" class="bare">https://docs.fluentbit.io/manual/concepts/data-pipeline/filter</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-filters-kubernetes"></a>[10] <a href="https://docs.fluentbit.io/manual/pipeline/filters/kubernetes" class="bare">https://docs.fluentbit.io/manual/pipeline/filters/kubernetes</a></p>
+</li>
+<li>
+<p><a id="fluentbit-io-kubernetes"></a>[11] <a href="https://docs.fluentbit.io/manual/installation/kubernetes" class="bare">https://docs.fluentbit.io/manual/installation/kubernetes</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

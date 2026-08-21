@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>A Guide to Shells on Windows: Git Bash, Cygwin, and WSL | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="A Guide to Shells on Windows: Git Bash, Cygwin, and WSL" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Git Bash Integration with Windows Terminal 1.1. Creating the Windows Terminal Profile 1.2. Displaying Unicode Filenames in Git 1.3. Disabling the Terminal Bell 1.4. Advanced SSH Configuration for Git 1.4.1. Generating a New SSH Key 1.4.2. Client Configuration 1.4.3. Multiple Users for the Same Host 1.4.4. Managing Host Keys 1.5. Configuring Git Proxy 1.5.1. HTTP/HTTPS Proxy 1.5.2. SOCKS5 Proxy 1.5.3. Using Netcat for Advanced Proxying 2. Cygwin: A Linux-like Environment on Windows 2.1. Installation and Package Management 2.2. Integrating with other Shells like Git Bash 3. Windows Subsystem for Linux (WSL) 3.1. Installation and Management Commands 3.1.1. Installation 3.1.2.…" />
+<meta name="twitter:description" property="og:description" content="1. Git Bash Integration with Windows Terminal 1.1. Creating the Windows Terminal Profile 1.2. Displaying Unicode Filenames in Git 1.3. Disabling the Terminal Bell 1.4. Advanced SSH Configuration for Git 1.4.1. Generating a New SSH Key 1.4.2. Client Configuration 1.4.3. Multiple Users for the Same Host 1.4.4. Managing Host Keys 1.5. Configuring Git Proxy 1.5.1. HTTP/HTTPS Proxy 1.5.2. SOCKS5 Proxy 1.5.3. Using Netcat for Advanced Proxying 2. Cygwin: A Linux-like Environment on Windows 2.1. Installation and Package Management 2.2. Integrating with other Shells like Git Bash 3. Windows Subsystem for Linux (WSL) 3.1. Installation and Management Commands 3.1.1. Installation 3.1.2.…" />
+<link rel="canonical" href="https://blog.codefarm.me/guide-to-shells-on-windows-git-bash-cygwin-wsl/" />
+<meta property="og:url" content="https://blog.codefarm.me/guide-to-shells-on-windows-git-bash-cygwin-wsl/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-29T16:32:49+08:00" />
+<meta property="article:modified_time" content="2024-08-29T16:32:49+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="A Guide to Shells on Windows: Git Bash, Cygwin, and WSL" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-29T16:32:49+08:00","datePublished":"2024-08-29T16:32:49+08:00","description":"1. Git Bash Integration with Windows Terminal 1.1. Creating the Windows Terminal Profile 1.2. Displaying Unicode Filenames in Git 1.3. Disabling the Terminal Bell 1.4. Advanced SSH Configuration for Git 1.4.1. Generating a New SSH Key 1.4.2. Client Configuration 1.4.3. Multiple Users for the Same Host 1.4.4. Managing Host Keys 1.5. Configuring Git Proxy 1.5.1. HTTP/HTTPS Proxy 1.5.2. SOCKS5 Proxy 1.5.3. Using Netcat for Advanced Proxying 2. Cygwin: A Linux-like Environment on Windows 2.1. Installation and Package Management 2.2. Integrating with other Shells like Git Bash 3. Windows Subsystem for Linux (WSL) 3.1. Installation and Management Commands 3.1.1. Installation 3.1.2.…","headline":"A Guide to Shells on Windows: Git Bash, Cygwin, and WSL","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/guide-to-shells-on-windows-git-bash-cygwin-wsl/"},"url":"https://blog.codefarm.me/guide-to-shells-on-windows-git-bash-cygwin-wsl/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">A Guide to Shells on Windows: Git Bash, Cygwin, and WSL</h1><p class="c-post-meta">26 Aug 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#git-bash-integration-with-windows-terminal">1. Git Bash Integration with Windows Terminal</a>
+<ul class="sectlevel2">
+<li><a href="#creating-the-windows-terminal-profile">1.1. Creating the Windows Terminal Profile</a></li>
+<li><a href="#displaying-unicode-filenames-in-git">1.2. Displaying Unicode Filenames in Git</a></li>
+<li><a href="#disabling-the-terminal-bell">1.3. Disabling the Terminal Bell</a></li>
+<li><a href="#advanced-ssh-configuration-for-git">1.4. Advanced SSH Configuration for Git</a>
+<ul class="sectlevel3">
+<li><a href="#generating-a-new-ssh-key">1.4.1. Generating a New SSH Key</a></li>
+<li><a href="#client-configuration">1.4.2. Client Configuration</a></li>
+<li><a href="#multiple-users-for-the-same-host">1.4.3. Multiple Users for the Same Host</a></li>
+<li><a href="#managing-host-keys">1.4.4. Managing Host Keys</a></li>
+</ul>
+</li>
+<li><a href="#configuring-git-proxy">1.5. Configuring Git Proxy</a>
+<ul class="sectlevel3">
+<li><a href="#httphttps-proxy">1.5.1. HTTP/HTTPS Proxy</a></li>
+<li><a href="#socks5-proxy">1.5.2. SOCKS5 Proxy</a></li>
+<li><a href="#using-netcat-for-advanced-proxying">1.5.3. Using Netcat for Advanced Proxying</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#cygwin-a-linux-like-environment-on-windows">2. Cygwin: A Linux-like Environment on Windows</a>
+<ul class="sectlevel2">
+<li><a href="#installation-and-package-management">2.1. Installation and Package Management</a></li>
+<li><a href="#integrating-with-other-shells-like-git-bash">2.2. Integrating with other Shells like Git Bash</a></li>
+</ul>
+</li>
+<li><a href="#windows-subsystem-for-linux-wsl">3. Windows Subsystem for Linux (WSL)</a>
+<ul class="sectlevel2">
+<li><a href="#installation-and-management-commands">3.1. Installation and Management Commands</a>
+<ul class="sectlevel3">
+<li><a href="#installation">3.1.1. Installation</a></li>
+<li><a href="#common-commands">3.1.2. Common Commands</a></li>
+</ul>
+</li>
+<li><a href="#wsl-networking">3.2. WSL Networking</a></li>
+<li><a href="#configuration">3.3. Configuration</a></li>
+<li><a href="#git-in-wsl">3.4. Git in WSL</a>
+<ul class="sectlevel3">
+<li><a href="#resolving-git-line-ending-issues">3.4.1. Resolving Git Line Ending Issues</a></li>
+<li><a href="#sharing-git-credentials-between-windows-and-wsl">3.4.2. Sharing Git Credentials Between Windows and WSL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="git-bash-integration-with-windows-terminal">1. Git Bash Integration with Windows Terminal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To enhance the command-line experience on Windows, Git Bash can be integrated directly into Windows Terminal. This process involves creating a dedicated profile that correctly launches the Bash shell and ensures full support for Unicode characters.</p>
+</div>
+<div class="sect2">
+<h3 id="creating-the-windows-terminal-profile">1.1. Creating the Windows Terminal Profile</h3>
+<div class="paragraph">
+<p>A new profile for Git Bash can be added within the Windows Terminal settings, which are accessible via the <code>Ctrl + ,</code> shortcut. Navigate to the "Add a new profile" section and select "New empty profile".</p>
+</div>
+<div class="paragraph">
+<p>The following settings should be configured for the new profile:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Name:</strong> <code>Git Bash</code></p>
+</li>
+<li>
+<p><strong>Command Line:</strong> <code>C:\Program Files\Git\bin\bash.exe -i -l</code></p>
+</li>
+<li>
+<p><strong>Starting Directory:</strong> <code>%USERPROFILE%</code></p>
+</li>
+<li>
+<p><strong>Icon:</strong> <code>C:\Program Files\Git\git-bash.exe</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>-i -l</code> (or <code>--interactive --login</code>) flags in the command line are essential. They instruct the shell to start as an interactive login shell, which properly loads configuration files and enables features like correct handling of non-ASCII text.</p>
+</div>
+<div class="paragraph">
+<p>For example, without these flags, Unicode filenames may appear garbled:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">ls</span> <span class="nt">-l</span> /tmp/hello/
+<span class="go">total 0
+</span><span class="gp">-rw-r--r-- 1 ousia 197121 0 Aug 29 16:46 '''□□'''$</span><span class="s1">'''\226''''''□'''$'''\225\214'''</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the flags, the same command correctly displays the filename:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">ls</span> <span class="nt">-l</span> /tmp/hello/
+<span class="go">total 0
+-rw-r--r-- 1 ousia 197121 0 Aug 29 16:46 世界</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once these options are set, the new profile can be saved.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="displaying-unicode-filenames-in-git">1.2. Displaying Unicode Filenames in Git</h3>
+<div class="paragraph">
+<p>By default, Git may escape non-ASCII characters in filenames when using commands like <code>git status</code>. This can make it difficult to read the output.</p>
+</div>
+<div class="paragraph">
+<p>Consider a file named <code>Hello 世界.txt</code>. The default output would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git status
+<span class="go">Untracked files:
+</span><span class="gp">  (use "git add &lt;file&gt;</span>...<span class="s2">" to include in what will be committed)
+</span><span class="go">        "Hello \344\270\226\347\225\214.txt"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To disable this behavior and display filenames literally, the <code>core.quotePath</code> configuration option should be set to <code>false</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config core.quotePath <span class="nb">false</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After applying this setting, <code>git status</code> will produce a much more readable output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>git status
+<span class="go">Untracked files:
+</span><span class="gp">  (use "git add &lt;file&gt;</span>...<span class="s2">" to include in what will be committed)
+</span><span class="go">        Hello 世界.txt</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To apply this configuration to all repositories for the current user, the <code>--global</code> flag should be used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> core.quotePath <span class="nb">false</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="disabling-the-terminal-bell">1.3. Disabling the Terminal Bell</h3>
+<div class="paragraph">
+<p>The Bash shell may produce an audible or visual "bell" for certain events, such as when a tab-completion search finds no results. This behavior is controlled by the Readline
+library.</p>
+</div>
+<div class="paragraph">
+<p>The bell effect can be disabled by creating or editing the <code>.inputrc</code> file located in the user&#8217;s home directory (<code>%USERPROFILE%</code> or <code>~</code>). The following line should be added:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># ~/.inputrc</span>
+
+<span class="c"># Disable bell</span>
+<span class="nb">set </span>bell-style none</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This change will take effect in any new Git Bash session.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="advanced-ssh-configuration-for-git">1.4. Advanced SSH Configuration for Git</h3>
+<div class="paragraph">
+<p>Managing SSH keys and configurations is a common task when working with Git repositories on multiple platforms or with multiple accounts.</p>
+</div>
+<div class="sect3">
+<h4 id="generating-a-new-ssh-key">1.4.1. Generating a New SSH Key</h4>
+<div class="paragraph">
+<p>Before configuring the client, a new SSH key pair may be needed. The <code>ssh-keygen</code> command is used for this purpose. It is best practice to use the modern and secure Ed25519
+algorithm.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># The -t flag specifies the key type, and -f specifies the output filename</span>
+ssh-keygen <span class="nt">-t</span> ed25519 <span class="nt">-f</span> ~/.ssh/&lt;your-private-key-filename&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command creates two files: <code>&lt;your-private-key-filename&gt;</code> (the private key that stays on the local machine) and <code>&lt;your-private-key-filename&gt;.pub</code> (the public key to be
+uploaded to services like GitHub).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="client-configuration">1.4.2. Client Configuration</h4>
+<div class="paragraph">
+<p>To ensure Git uses the correct SSH key for the right repository, the SSH client can be configured to present a specific key based on the host. This is managed in the SSH
+configuration file, located at <code>~/.ssh/config</code>.</p>
+</div>
+<div class="paragraph">
+<p>An example configuration block is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ssh-config"># ~/.ssh/config
+
+# Use a specific key for github.com
+Match host github.com
+  # Only use the identity specified below
+  IdentitiesOnly yes
+  # Path to the specific private key
+  IdentityFile ~/.ssh/&lt;your-private-key-filename&gt;</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Match host github.com</code>: Applies the following settings only when connecting to <code>github.com</code>.</p>
+</li>
+<li>
+<p><code>IdentitiesOnly yes</code>: A security measure that prevents the SSH client from trying every available key. It will only use the key specified by <code>IdentityFile</code>.</p>
+</li>
+<li>
+<p><code>IdentityFile</code>: Specifies the exact path to the private key to be used for this host.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="multiple-users-for-the-same-host">1.4.3. Multiple Users for the Same Host</h4>
+<div class="paragraph">
+<p>When managing multiple accounts for the same host (e.g., a personal and a work account on GitHub), it is necessary to use <strong>host aliases</strong> in the SSH configuration. This allows for differentiating between connections to the same real host.</p>
+</div>
+<div class="paragraph">
+<p>The setup for multiple users involves creating distinct <code>Host</code> blocks in the <code>~/.ssh/config</code> file, each with a unique alias.</p>
+</div>
+<div class="paragraph">
+<p><strong>1. Configure <code>~/.ssh/config</code></strong></p>
+</div>
+<div class="paragraph">
+<p>Two <code>Host</code> blocks are created, one for each alias:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ssh-config"># Example for a personal GitHub account
+Host github.com-personal
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_personal
+  IdentitiesOnly yes
+
+# Example for a work GitHub account
+Host github.com-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work
+  IdentitiesOnly yes</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Host github.com-personal</code>: This is a custom alias. The alias can be named arbitrarily.</p>
+</li>
+<li>
+<p><code>HostName github.com</code>: This specifies the <strong>real</strong> server address that SSH will connect to.</p>
+</li>
+<li>
+<p><code>IdentityFile</code>: This points to the specific key for that user.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>2. Clone Repositories Using the Alias</strong></p>
+</div>
+<div class="paragraph">
+<p>When cloning a repository, the real hostname (<code>github.com</code>) in the clone URL must be replaced with the appropriate alias.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>For a personal repository:</strong>
+The <code>github.com-personal</code> alias is used in the URL.
+<code><code>sh
+git clone <a href="mailto:git@github.com">git@github.com</a>-personal:personal-username/personal-repo.git
+</code></code></p>
+</li>
+<li>
+<p><strong>For a work repository:</strong>
+The <code>github.com-work</code> alias is used.
+<code><code>sh
+git clone <a href="mailto:git@github.com">git@github.com</a>-work:work-username/work-repo.git
+</code></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When these commands are executed, SSH interprets the alias (e.g., <code>github.com-personal</code>), consults the configuration file, and automatically uses the correct <code>HostName</code> (<code>github.com</code>) and <code>IdentityFile</code>. This ensures the appropriate key is presented to GitHub for each context.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="managing-host-keys">1.4.4. Managing Host Keys</h4>
+<div class="paragraph">
+<p>The first time a connection is made to a new host, its public key is stored in the <code>~/.ssh/known_hosts</code> file to prevent man-in-the-middle attacks. If a server&#8217;s host key changes
+(e.g., because the server was rebuilt), connection attempts will fail with a security warning.</p>
+</div>
+<div class="paragraph">
+<p>To remove the old host key from the <code>known_hosts</code> file, the <code>ssh-keygen -R</code> command is used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Remove all keys belonging to github.com from the known_hosts file</span>
+ssh-keygen <span class="nt">-R</span> github.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After removing the old key, the new key will be automatically added on the next connection attempt.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuring-git-proxy">1.5. Configuring Git Proxy</h3>
+<div class="paragraph">
+<p>In environments behind a corporate firewall or when using a SOCKS proxy, Git operations (like <code>clone</code>, <code>fetch</code>, <code>push</code>) may require proxy configuration. Git can be configured to
+use HTTP/HTTPS or SOCKS5 proxies.</p>
+</div>
+<div class="paragraph">
+<p>Git configurations can be set at three levels:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Local (per repository):</strong> Applies only to the current Git repository. Set by running <code>git config</code> without any scope flags.</p>
+</li>
+<li>
+<p><strong>Global (per user):</strong> Applies to all repositories for the current user. Set using <code>git config --global</code>.</p>
+</li>
+<li>
+<p><strong>System (all users):</strong> Applies to all repositories for all users on the system. Set using <code>git config --system</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The examples below use the <code>--global</code> flag, configuring the proxy for the current user across all their repositories.</p>
+</div>
+<div class="sect3">
+<h4 id="httphttps-proxy">1.5.1. HTTP/HTTPS Proxy</h4>
+<div class="paragraph">
+<p>To configure Git to use a standard HTTP or HTTPS proxy, the <code>http.proxy</code> and <code>https.proxy</code> configurations can be set:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># For HTTP traffic</span>
+git config <span class="nt">--global</span> http.proxy http://proxy.example.com:8080
+
+<span class="c"># For HTTPS traffic</span>
+git config <span class="nt">--global</span> https://proxy.example.com:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code><a href="http://proxy.example.com:8080" class="bare">http://proxy.example.com:8080</a></code> and <code><a href="https://proxy.example.com:8080" class="bare">https://proxy.example.com:8080</a></code> with the actual proxy address and port.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="socks5-proxy">1.5.2. SOCKS5 Proxy</h4>
+<div class="paragraph">
+<p>For SOCKS5 proxies, the configuration uses the <code>socks5://</code> protocol prefix:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># For HTTP traffic over SOCKS5</span>
+git config <span class="nt">--global</span> http.proxy socks5://127.0.0.1:1080
+
+<span class="c"># For HTTPS traffic over SOCKS5</span>
+git config <span class="nt">--global</span> https.proxy socks5://127.0.0.1:1080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>127.0.0.1:1080</code> with the SOCKS5 proxy address and port.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="using-netcat-for-advanced-proxying">1.5.3. Using Netcat for Advanced Proxying</h4>
+<div class="paragraph">
+<p>For more advanced scenarios, or when a SOCKS proxy needs to be used for SSH connections, <code>netcat</code> (or <code>nc</code>) can be configured as a proxy command. This is typically done in the `
+~/.ssh/config` file for SSH connections, but can also be used with <code>http.proxy</code> for HTTP/S traffic if <code>netcat</code> is set up to tunnel.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Example for SSH over SOCKS5 using netcat (in ~/.ssh/config)</span>
+Host github.com
+  ProxyCommand nc <span class="nt">-X</span> 5 <span class="nt">-x</span> 127.0.0.1:1080 %h %p</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To disable proxy settings, the configurations can be unset:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">git config <span class="nt">--global</span> <span class="nt">--unset</span> http.proxy
+git config <span class="nt">--global</span> <span class="nt">--unset</span> https.proxy</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cygwin-a-linux-like-environment-on-windows">2. Cygwin: A Linux-like Environment on Windows</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Cygwin provides a large collection of GNU and Open Source tools which provide functionality similar to a Linux distribution on Windows. It offers a powerful command-line environment with access to many standard Unix utilities.</p>
+</div>
+<div class="sect2">
+<h3 id="installation-and-package-management">2.1. Installation and Package Management</h3>
+<div class="paragraph">
+<p>The entire Cygwin environment is managed through a single executable, <code>setup-x86_64.exe</code>, which can be downloaded from the official Cygwin website. This setup tool handles the initial installation and is used subsequently for updating the core system or installing, updating, and removing individual packages.</p>
+</div>
+<div class="paragraph">
+<p>By default, the setup program attempts to run with administrative privileges to perform a system-wide installation. For a portable or user-specific installation that does not require administrator rights, the <code>--no-admin</code> flag can be used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">./setup-x86_64.exe <span class="nt">--no-admin</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To manage packages after the initial setup, the same <code>setup-x86_64.exe</code> file is run again. After proceeding to the "Select Packages" screen, the interface provides several options. Packages are grouped by category, and a search bar is available to find specific tools. To change a package&#8217;s status, click on the "New" column next to its name, which cycles through the following states:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>To install a package:</strong> Select a specific version number (instead of "Skip").</p>
+</li>
+<li>
+<p><strong>To update a package:</strong> Select the latest version number. The setup tool will often highlight upgradable packages automatically.</p>
+</li>
+<li>
+<p><strong>To remove a package:</strong> Cycle through the options until "Uninstall" is displayed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once all desired changes have been made, proceeding with the installation will apply the selected actions.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="integrating-with-other-shells-like-git-bash">2.2. Integrating with other Shells like Git Bash</h3>
+<div class="paragraph">
+<p>A key advantage of installing Cygwin is the ability to use its powerful command-line utilities from other shells. To make tools like <code>grep</code>, <code>sed</code>, and <code>awk</code> available within <strong>Git Bash</strong>, PowerShell, or the standard Command Prompt, the <code>bin</code> subdirectory of the Cygwin installation must be added to the Windows <code>PATH</code> environment variable.</p>
+</div>
+<div class="paragraph">
+<p>For a standard installation, this directory is typically located at:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">C:\cygwin64\bin</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once the <code>PATH</code> is configured, Cygwin commands can be executed seamlessly from any terminal on the system. This effectively augments the capabilities of shells like Git Bash with the rich toolset of a Linux-like environment.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="windows-subsystem-for-linux-wsl">3. Windows Subsystem for Linux (WSL)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Windows Subsystem for Linux (WSL) allows for running native Linux distributions directly on Windows, providing a tightly integrated and high-performance environment for development and system administration.</p>
+</div>
+<div class="sect2">
+<h3 id="installation-and-management-commands">3.1. Installation and Management Commands</h3>
+<div class="paragraph">
+<p>WSL is managed primarily through the <code>wsl.exe</code> command-line tool in PowerShell or Command Prompt.</p>
+</div>
+<div class="sect3">
+<h4 id="installation">3.1.1. Installation</h4>
+<div class="paragraph">
+<p>To install WSL along with its default distribution (Ubuntu), the following command is used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--install</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To install only the required WSL components without installing a Linux distribution, the <code>--no-distribution</code> flag can be used. This is useful for preparing a system where distributions will be imported manually later.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--install</span> <span class="nt">--no-distribution</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A list of available Linux distributions can be viewed with <code>wsl --list --online</code>. A specific distribution can then be installed using the <code>-d</code> flag:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--install</span> <span class="nt">-d</span> Debian</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="common-commands">3.1.2. Common Commands</h4>
+<div class="paragraph">
+<p>Here are some of the most common commands for managing distributions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>List installed distributions:</strong> Shows the state and WSL version of all installed distributions.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--list</span> <span class="nt">--verbose</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Shutdown all running distributions:</strong> Immediately terminates all running distributions and the WSL 2 virtual machine.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--shutdown</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Export a distribution:</strong> Creates a <code>.tar</code> archive of a distribution, which is useful for backups or for sharing a configured environment.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--export</span> &lt;DistroName&gt; &lt;FileName.tar&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Import a distribution:</strong> Imports a <code>.tar</code> archive as a new distribution.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--import</span> &lt;NewDistroName&gt; &lt;InstallLocation&gt; &lt;FileName.tar&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Unregister a distribution:</strong> Deletes a distribution, including its entire file system.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="nt">--unregister</span> &lt;DistroName&gt;</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Get primary IP address:</strong> Retrieves the primary IP address of the WSL distribution.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="o">[</span><span class="nt">-d</span> &lt;DistroName&gt;] <span class="nb">hostname</span> <span class="nt">-i</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Get all IP addresses:</strong> Retrieves all IP addresses assigned to the WSL distribution.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">wsl <span class="o">[</span><span class="nt">-d</span> &lt;DistroName&gt;] <span class="nb">hostname</span> <span class="nt">-I</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Get Windows host IP from within WSL:</strong> From inside a WSL2 Linux distribution, retrieves the Windows host&#8217;s IP address by querying the default gateway.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ip route show | <span class="nb">grep</span> <span class="nt">-i</span> default | <span class="nb">awk</span> <span class="s1">'{ print $3}'</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="wsl-networking">3.2. WSL Networking</h3>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/windows/wsl/networking">WSL&#8217;s networking</a> architecture dictates how distributions connect to the internet, Windows host, and local network.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By default, WSL uses a Network Address Translation (NAT) based architecture. In this mode, the Linux environment receives an IP address on a separate, private virtual network.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Windows to Linux:</strong> Windows can communicate with Linux applications via <code>localhost</code>. For example, a web server running in Linux on port 8000 is accessible from Windows at <code><a href="http://localhost:8000" class="bare">http://localhost:8000</a></code>.</p>
+</li>
+<li>
+<p><strong>Linux to Windows:</strong> Linux must use the Windows host&#8217;s IP address to communicate with Windows services. The <code>localhost</code> address inside Linux refers only to the Linux environment itself, not the Windows host.</p>
+</li>
+<li>
+<p><strong>Limitations:</strong> This virtualized networking can create challenges for some VPN configurations and does not provide direct access to WSL services from other devices on the local network.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Mirrored mode mirrors Windows network interfaces into Linux, enabled via <code>networkingMode=mirrored</code> in <code>.wslconfig</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>IPv6 support:</strong> IPv6 connectivity within the Linux virtual network</p>
+</li>
+<li>
+<p><strong>Localhost forwarding:</strong> Windows and Linux can communicate with each other via <code>127.0.0.1</code> (IPv6 <code>::1</code> not supported)</p>
+</li>
+<li>
+<p><strong>VPN compatibility:</strong> WSL can access resources through Windows VPN connections</p>
+</li>
+<li>
+<p><strong>Multicast support:</strong> Multicast network traffic for service discovery protocols</p>
+</li>
+<li>
+<p><strong>LAN accessibility:</strong> WSL services are directly reachable from other devices on the local network</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configuration">3.3. Configuration</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>.wslconfig</code> file in the Windows user profile directory (<code>%USERPROFILE%</code>) configures global WSL 2 settings for all distributions, primarily controlling hardware resources and networking.</p>
+<div class="paragraph">
+<p>An example configuration could be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="c"># Settings apply across all WSL 2 distros
+</span><span class="nn">[wsl2]</span><span class="w">
+
+</span><span class="c"># Limit VM memory to 10GB
+</span><span class="py">memory</span><span class="p">=</span><span class="s">10GB</span>
+<span class="w">
+</span><span class="c"># Disable the swap file for the WSL VM
+</span><span class="py">swap</span><span class="p">=</span><span class="s">0</span>
+<span class="w">
+</span><span class="c"># Use the mirrored networking mode for simpler network access
+</span><span class="py">networkingMode</span><span class="p">=</span><span class="s">mirrored</span>
+<span class="w">
+</span><span class="c"># Automatically configure proxy settings from Windows
+</span><span class="py">autoProxy</span><span class="p">=</span><span class="s">true</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Changes to <code>.wslconfig</code> only take effect after running <code>wsl --shutdown</code>.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>The <code>/etc/wsl.conf</code> file inside each distribution configures distribution-specific settings for boot behavior, networking, and user settings.</p>
+<div class="paragraph">
+<p>For example, to enable <code>systemd</code>, set a custom hostname, and define the. default user:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="c"># /etc/wsl.conf
+</span><span class="w">
+</span><span class="nn">[boot]</span><span class="w">
+</span><span class="c"># Enable systemd to run services like Docker
+</span><span class="py">systemd</span><span class="p">=</span><span class="s">true</span>
+<span class="w">
+</span><span class="nn">[network]</span><span class="w">
+</span><span class="c"># Set the hostname for this distribution
+</span><span class="py">hostname</span><span class="p">=</span><span class="s">&lt;your-hostname&gt;</span>
+<span class="w">
+</span><span class="nn">[user]</span><span class="w">
+</span><span class="c"># Set the default user to log in with
+</span><span class="py">default</span><span class="p">=</span><span class="s">&lt;your-username&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+After modifying <code>/etc/wsl.conf</code>, the specific distribution must be terminated (e.g., <code>wsl --terminate &lt;DistroName&gt;</code>) and restarted for the changes to apply.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="git-in-wsl">3.4. Git in WSL</h3>
+<div class="paragraph">
+<p>Specific configurations for Git within WSL enhance interoperability, particularly for repositories accessed from both Windows
+and the Linux environment. Key areas for configuration include line ending handling and credential management.</p>
+</div>
+<div class="sect3">
+<h4 id="resolving-git-line-ending-issues">3.4.1. Resolving Git Line Ending Issues</h4>
+<div class="paragraph">
+<p>The difference in default line endings between Windows (CRLF) and Linux (LF) can cause Git to report files as modified, which is addressed by configuring line ending handling, for example, with a <code>.gitattributes</code> file.</p>
+</div>
+<div class="paragraph">
+<p>A <code>.gitattributes</code> file in the root of the project with the following content can enforce consistent line endings:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="gitattributes">* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This configuration instructs Git to automatically manage line endings.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="sharing-git-credentials-between-windows-and-wsl">3.4.2. Sharing Git Credentials Between Windows and WSL</h4>
+<div class="paragraph">
+<p>Authentication to services like GitHub can be streamlined by configuring WSL to use the Git Credential Manager from the Windows
+environment to avoid separate authentication steps on each platform.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>First, Git for Windows should be configured to use the credential manager, which is often the default setting.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="c"># Run in PowerShell on Windows</span><span class="w">
+</span><span class="n">git</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="nt">--global</span><span class="w"> </span><span class="nx">credential.helper</span><span class="w"> </span><span class="nx">wincred</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Next, Git within the WSL distribution is configured to use the Windows credential manager executable.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Run in WSL terminal</span>
+git config <span class="nt">--global</span> credential.helper <span class="s2">"/mnt/c/Program</span><span class="se">\ </span><span class="s2">Files/Git/mingw64/bin/git-credential-manager.exe"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this configuration, credentials for a Git remote are stored once and are accessible to both Windows and WSL.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="https://github.com/git-ecosystem/git-credential-manager/">Git Credential Manager (GCM)</a> is a secure credential helper for HTTP(S) remotes (GitHub, Azure DevOps, Bitbucket) that stores
+authentication tokens securely in Windows Credential Manager.</p>
+</div>
+<div class="paragraph">
+<p>To set up GCM for use with WSL:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install the latest version of Git for Windows, which includes GCM.</p>
+</li>
+<li>
+<p>Configure WSL to use the GCM executable from the Git for Windows installation, as described in the "Sharing Git Credentials Between Windows and WSL" section above.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For Azure DevOps, an additional configuration might be needed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">git config <span class="nt">--global</span> credential.https://dev.azure.com.useHttpPath <span class="nb">true</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

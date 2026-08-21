@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Span and Memory in .NET | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Span and Memory in .NET" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="There are two kinds of types in C#: reference types and value types. Variables of reference types store references to their data (objects), while variables of value types directly contain their data. With reference types, two variables can reference the same object; therefore, operations on one variable can affect the object referenced by the other variable. With value types, each variable has its own copy of the data, and it&#8217;s not possible for operations on one variable to affect the other (except in the case of in, ref, and out parameter variables). Value types are lighter weight than reference types…" />
+<meta name="twitter:description" property="og:description" content="There are two kinds of types in C#: reference types and value types. Variables of reference types store references to their data (objects), while variables of value types directly contain their data. With reference types, two variables can reference the same object; therefore, operations on one variable can affect the object referenced by the other variable. With value types, each variable has its own copy of the data, and it&#8217;s not possible for operations on one variable to affect the other (except in the case of in, ref, and out parameter variables). Value types are lighter weight than reference types…" />
+<link rel="canonical" href="https://blog.codefarm.me/span-and-memory-in-net/" />
+<meta property="og:url" content="https://blog.codefarm.me/span-and-memory-in-net/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-21T15:01:26+08:00" />
+<meta property="article:modified_time" content="2023-01-21T15:01:26+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Span and Memory in .NET" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-01-21T15:01:26+08:00","datePublished":"2023-01-21T15:01:26+08:00","description":"There are two kinds of types in C#: reference types and value types. Variables of reference types store references to their data (objects), while variables of value types directly contain their data. With reference types, two variables can reference the same object; therefore, operations on one variable can affect the object referenced by the other variable. With value types, each variable has its own copy of the data, and it&#8217;s not possible for operations on one variable to affect the other (except in the case of in, ref, and out parameter variables). Value types are lighter weight than reference types…","headline":"Span and Memory in .NET","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/span-and-memory-in-net/"},"url":"https://blog.codefarm.me/span-and-memory-in-net/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Span and Memory in .NET</h1><p class="c-post-meta">21 Jan 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div class="paragraph">
+<p>There are two kinds of types in C#: <em>reference types</em> and <em>value types</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Variables of reference types store references to their data (objects), while variables of value types directly contain their data.</p>
+</li>
+<li>
+<p>With reference types, two variables can reference the same object; therefore, operations on one variable can affect the object referenced by the other variable.</p>
+</li>
+<li>
+<p>With value types, each variable has its own copy of the data, and it&#8217;s not possible for operations on one variable to affect the other (except in the case of <code>in</code>, <code>ref</code>, and <code>out</code> parameter variables).</p>
+</li>
+<li>
+<p>Value types are lighter weight than reference types because they are not allocated as objects in the managed heap, not garbage collected, and not referred to by pointers .</p>
+</li>
+<li>
+<p>A value type instances is usually allocated on a thread&#8217;s stack (although it can also be embedded as a field in a reference type object) .</p>
+</li>
+<li>
+<p>A value type as a field in a reference type is stored on the heap as part of the reference type instance.</p>
+</li>
+<li>
+<p>If a value type contains a data member of a reference type, only the reference to the instance of the reference type is copied when a value-type instance is copied.</p>
+</li>
+<li>
+<p>A nullable value type <code>T?</code> represents all values of its underlying value type <code>T</code> and an additional <code>null</code> value.</p>
+</li>
+<li>
+<p>A nullable reference of a reference type is not a new type, but rather an annotation on an existing reference type within a <em>nullable aware context</em> for compile-time analysis.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// M is a method that returns a reference to an integer.</span>
+<span class="c1">// 'in int x': x is passed as a read-only input parameter.</span>
+<span class="c1">// 'ref int a': a is passed by reference.</span>
+<span class="c1">// 'out int b': b is passed by reference as an output parameter.</span>
+<span class="k">ref</span> <span class="kt">int</span> <span class="nf">M</span><span class="p">(</span><span class="k">in</span> <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="k">ref</span> <span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="k">out</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// ref local or reference variable: an alias that refers to another variable called the referent.</span>
+    <span class="k">ref</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="k">ref</span> <span class="n">a</span><span class="p">;</span>
+
+    <span class="kt">int</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="p">[</span><span class="m">0</span><span class="p">];</span>
+    <span class="c1">// ref assign: makes its left-hand operand an alias to the right-hand operand.</span>
+    <span class="k">ref</span> <span class="kt">int</span> <span class="n">d</span> <span class="p">=</span> <span class="k">ref</span> <span class="n">array</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+    <span class="n">d</span> <span class="p">=</span> <span class="m">25</span><span class="p">;</span> <span class="c1">// array is [25]</span>
+
+    <span class="n">b</span> <span class="p">=</span> <span class="n">x</span> <span class="p">+</span> <span class="n">a</span> <span class="p">+</span> <span class="n">array</span><span class="p">[</span><span class="m">0</span><span class="p">];</span> <span class="c1">// assign a value by the callee.</span>
+
+    <span class="c1">// ref return: return a value to the caller by reference.</span>
+    <span class="k">return</span> <span class="k">ref</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// 'in T': The input parameter 'arg' is contravariant.</span>
+<span class="c1">// 'out TResult': The return type 'TResult' is covariant.</span>
+<span class="k">public</span> <span class="k">delegate</span> <span class="n">TResult</span> <span class="n">Func</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">,</span> <span class="k">out</span> <span class="n">TResult</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// a ref struct type are allocated on the stack and can't escape to the managed heap.</span>
+<span class="k">public</span> <span class="k">readonly</span> <span class="k">ref</span> <span class="k">struct</span> <span class="nc">Span</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="c1">// a ref field can have the null value.</span>
+    <span class="c1">// Use the Unsafe.IsNullRef&lt;T&gt;(T) method to determine if a ref field is null.</span>
+    <span class="k">internal</span> <span class="k">readonly</span> <span class="k">ref</span> <span class="n">T</span> <span class="n">_reference</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="kt">int</span> <span class="n">_length</span><span class="p">;</span>
+
+    <span class="c1">// Omitted for brevity...</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// a stackalloc expression allocates a block of memory on the stack.</span>
+<span class="kt">int</span> <span class="n">length</span> <span class="p">=</span> <span class="m">3</span><span class="p">;</span>
+<span class="n">Span</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">numbers</span> <span class="p">=</span> <span class="k">stackalloc</span> <span class="kt">int</span><span class="p">[</span><span class="n">length</span><span class="p">];</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+<span class="p">{</span>
+    <span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">unsafe</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">length</span> <span class="p">=</span> <span class="m">3</span><span class="p">;</span>
+    <span class="kt">int</span><span class="p">*</span> <span class="n">numbers</span> <span class="p">=</span> <span class="k">stackalloc</span> <span class="kt">int</span><span class="p">[</span><span class="n">length</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+    <span class="p">{</span>
+        <span class="n">numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// limit the amount of memory allocated with stackalloc, otherwise will overflow stack</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">MaxStackLimit</span> <span class="p">=</span> <span class="m">1024</span><span class="p">;</span>
+<span class="n">Span</span><span class="p">&lt;</span><span class="kt">byte</span><span class="p">&gt;</span> <span class="n">buffer</span> <span class="p">=</span> <span class="n">inputLength</span> <span class="p">&lt;=</span> <span class="n">MaxStackLimit</span> <span class="p">?</span> <span class="k">stackalloc</span> <span class="kt">byte</span><span class="p">[</span><span class="n">MaxStackLimit</span><span class="p">]</span> <span class="p">:</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">inputLength</span><span class="p">];</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Like Span&lt;T&gt;, Memory&lt;T&gt; represents a contiguous region of memory.</span>
+<span class="c1">// Unlike Span&lt;T&gt;, however, Memory&lt;T&gt; is not a ref struct.</span>
+<span class="c1">// Memory&lt;T&gt; can be placed on the managed heap, whereas Span&lt;T&gt; cannot.</span>
+<span class="k">public</span> <span class="k">readonly</span> <span class="k">struct</span> <span class="nc">Memory</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IEquatable</span><span class="p">&lt;</span><span class="n">Memory</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// ArraySegment&lt;T&gt; is a wrapper around an array that delimits a range of elements in that array.</span>
+<span class="c1">// Multiple ArraySegment&lt;T&gt; instances can refer to the same original array and can overlap.</span>
+<span class="c1">// The original array must be one-dimensional and must have zero-based indexing.</span>
+<span class="k">public</span> <span class="k">readonly</span> <span class="k">struct</span> <span class="nc">ArraySegment</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;,</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;,</span> <span class="n">IList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;,</span> <span class="n">IReadOnlyCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;,</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span></code></pre>
+</div>
+</div>
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="ref-type"></a>[1] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types</a></p>
+</li>
+<li>
+<p><a id="val-type"></a>[2] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types</a></p>
+</li>
+<li>
+<p><a id="ref-keyword"></a>[3] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref</a></p>
+</li>
+<li>
+<p><a id="span-memo-t"></a>[4] <a href="https://learn.microsoft.com/en-us/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay" class="bare">https://learn.microsoft.com/en-us/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay</a></p>
+</li>
+</ul>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

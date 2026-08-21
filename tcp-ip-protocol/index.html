@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>TCP/IP Protocol | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TCP/IP Protocol" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 3. 五类互联网地址 4. 数据进入协议栈时的封装过程 5. IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894) 5.1. SLIP 报文的封装 5.2. PPP 数据帧的格式 6. 环回接口处理 IP 数据报的过程 7. IP 数据报格式及首部各字段 8. 用于以太网的 ARP/RARP 请求或应答分组格式 9. ICMP 报文封装在 IP 数据报内部 9.1. ICMP 地址掩码请求和应答报文 9.2. ICMP 不可达差错 10. IP 层工作流程 11. RIP 路由信息协议 12. 单播, 多播, 广播 12.1. IGMP: Internet 组管理协议 13. UDP: 用户数据报协议 14. TCP: 传输控制协议 14.1. TCP 的状态变迁图 14.2. TCP 正常连接建立和终止所对应的状态 14.3. TCP 同时打开期间报文段的交换 14.4. TCP 同时关闭期间报文段的交换 14.5. RST 复位报文段 1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 &gt; What&#8217;s popular or common commands for the de-factor 5 network…" />
+<meta name="twitter:description" property="og:description" content="1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 3. 五类互联网地址 4. 数据进入协议栈时的封装过程 5. IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894) 5.1. SLIP 报文的封装 5.2. PPP 数据帧的格式 6. 环回接口处理 IP 数据报的过程 7. IP 数据报格式及首部各字段 8. 用于以太网的 ARP/RARP 请求或应答分组格式 9. ICMP 报文封装在 IP 数据报内部 9.1. ICMP 地址掩码请求和应答报文 9.2. ICMP 不可达差错 10. IP 层工作流程 11. RIP 路由信息协议 12. 单播, 多播, 广播 12.1. IGMP: Internet 组管理协议 13. UDP: 用户数据报协议 14. TCP: 传输控制协议 14.1. TCP 的状态变迁图 14.2. TCP 正常连接建立和终止所对应的状态 14.3. TCP 同时打开期间报文段的交换 14.4. TCP 同时关闭期间报文段的交换 14.5. RST 复位报文段 1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 &gt; What&#8217;s popular or common commands for the de-factor 5 network…" />
+<link rel="canonical" href="https://blog.codefarm.me/tcp-ip-protocol/" />
+<meta property="og:url" content="https://blog.codefarm.me/tcp-ip-protocol/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-19T18:03:47+08:00" />
+<meta property="article:modified_time" content="2018-05-19T18:03:47+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="TCP/IP Protocol" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-05-19T18:03:47+08:00","datePublished":"2018-05-19T18:03:47+08:00","description":"1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 3. 五类互联网地址 4. 数据进入协议栈时的封装过程 5. IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894) 5.1. SLIP 报文的封装 5.2. PPP 数据帧的格式 6. 环回接口处理 IP 数据报的过程 7. IP 数据报格式及首部各字段 8. 用于以太网的 ARP/RARP 请求或应答分组格式 9. ICMP 报文封装在 IP 数据报内部 9.1. ICMP 地址掩码请求和应答报文 9.2. ICMP 不可达差错 10. IP 层工作流程 11. RIP 路由信息协议 12. 单播, 多播, 广播 12.1. IGMP: Internet 组管理协议 13. UDP: 用户数据报协议 14. TCP: 传输控制协议 14.1. TCP 的状态变迁图 14.2. TCP 正常连接建立和终止所对应的状态 14.3. TCP 同时打开期间报文段的交换 14.4. TCP 同时关闭期间报文段的交换 14.5. RST 复位报文段 1. 局域网上运行 HTTP 的两台主机 2. TCP/IP 协议族中不同层次的协议 &gt; What&#8217;s popular or common commands for the de-factor 5 network…","headline":"TCP/IP Protocol","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/tcp-ip-protocol/"},"url":"https://blog.codefarm.me/tcp-ip-protocol/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">TCP/IP Protocol</h1><p class="c-post-meta">26 Sep 2021</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#局域网上运行-http-的两台主机">1. 局域网上运行 HTTP 的两台主机</a></li>
+<li><a href="#tcpip-协议族中不同层次的协议">2. TCP/IP 协议族中不同层次的协议</a></li>
+<li><a href="#五类互联网地址">3. 五类互联网地址</a></li>
+<li><a href="#数据进入协议栈时的封装过程">4. 数据进入协议栈时的封装过程</a></li>
+<li><a href="#ieee-802-2802-3-rfc-1042-和以太网的封装格式-rfc-894">5. IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894)</a>
+<ul class="sectlevel2">
+<li><a href="#slip-报文的封装">5.1. SLIP 报文的封装</a></li>
+<li><a href="#ppp-数据帧的格式">5.2. PPP 数据帧的格式</a></li>
+</ul>
+</li>
+<li><a href="#环回接口处理-ip-数据报的过程">6. 环回接口处理 IP 数据报的过程</a></li>
+<li><a href="#ip-数据报格式及首部各字段">7. IP 数据报格式及首部各字段</a></li>
+<li><a href="#用于以太网的-arprarp-请求或应答分组格式">8. 用于以太网的 ARP/RARP 请求或应答分组格式</a></li>
+<li><a href="#icmp-报文封装在-ip-数据报内部">9. ICMP 报文封装在 IP 数据报内部</a>
+<ul class="sectlevel2">
+<li><a href="#icmp-地址掩码请求和应答报文">9.1. ICMP 地址掩码请求和应答报文</a></li>
+<li><a href="#icmp-不可达差错">9.2. ICMP 不可达差错</a></li>
+</ul>
+</li>
+<li><a href="#ip-层工作流程">10. IP 层工作流程</a></li>
+<li><a href="#rip-路由信息协议">11. RIP 路由信息协议</a></li>
+<li><a href="#单播-多播-广播">12. 单播, 多播, 广播</a>
+<ul class="sectlevel2">
+<li><a href="#igmp-internet-组管理协议">12.1. IGMP: Internet 组管理协议</a></li>
+</ul>
+</li>
+<li><a href="#udp-用户数据报协议">13. UDP: 用户数据报协议</a></li>
+<li><a href="#tcp-传输控制协议">14. TCP: 传输控制协议</a>
+<ul class="sectlevel2">
+<li><a href="#tcp-的状态变迁图">14.1. TCP 的状态变迁图</a></li>
+<li><a href="#tcp-正常连接建立和终止所对应的状态">14.2. TCP 正常连接建立和终止所对应的状态</a></li>
+<li><a href="#tcp-同时打开期间报文段的交换">14.3. TCP 同时打开期间报文段的交换</a></li>
+<li><a href="#tcp-同时关闭期间报文段的交换">14.4. TCP 同时关闭期间报文段的交换</a></li>
+<li><a href="#rst-复位报文段">14.5. RST 复位报文段</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="局域网上运行-http-的两台主机">1. 局域网上运行 HTTP 的两台主机</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-ip-http-host-on-lan.svg" alt="局域网上运行 HTTP 的两台主机" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tcpip-协议族中不同层次的协议">2. TCP/IP 协议族中不同层次的协议</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-ip-family-layer.svg" alt="TCP/IP 协议族中不同层次的协议" width="55%" height="55%">
+</div>
+</div>
+<hr>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>> What&#8217;s popular or common commands for the de-factor 5 network layers in Linux?</p>
+</div>
+<div class="paragraph">
+<p>* Sure, here&#8217;s a brief rundown of common Linux commands used for various tasks across the five layers (Application, Transport, Network, Data Link, and Physical) of the conceptual network model:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Application Layer:</strong> This software layer interfaces with network services that implement communication protocols. Common commands include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ssh</code>: Used for secure remote login and command execution.</p>
+</li>
+<li>
+<p><code>telnet</code>: Test connectivity on a particular port.</p>
+</li>
+<li>
+<p><code>curl</code> and <code>wget</code>: Used for data transfer.</p>
+</li>
+<li>
+<p><code>ftp</code> and <code>sftp</code>: For file transfer.</p>
+</li>
+<li>
+<p><code>nslookup</code> and <code>dig</code>: For DNS troubleshooting.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Transport Layer:</strong> Manages data transmission, such as segmenting and sequencing. Common commands include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>netstat</code>: Shows network connections, routing tables, interface statistics, etc.</p>
+</li>
+<li>
+<p><code>ss</code>: Similar to <code>netstat</code> but faster and provides more information.</p>
+</li>
+<li>
+<p><code>nc</code> (or <code>netcat</code>): Utility READ/WRITE data across network connections, using TCP or UDP protocol.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Network Layer:</strong> Routes data packets from the sender to the destination. Commands include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ping</code>: Checks network connectivity to another host on an IP network.</p>
+</li>
+<li>
+<p><code>traceroute</code>: Displays route that packets take to reach network host.</p>
+</li>
+<li>
+<p><code>ip</code> or <code>ifconfig</code>: Used to display or manipulate routes and network interfaces.</p>
+</li>
+<li>
+<p><code>route</code>: Shows and Manipulate IP Routing table.</p>
+</li>
+<li>
+<p><code>iptables</code>: Controls the packet filter and NAT system.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Data Link Layer:</strong> Ensures error-free transmission over the physical layer. A frequently used command is <code>arp</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>arp</code>: Displays and modifies the kernel&#8217;s ARP cache table.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Physical Layer:</strong> Involves the actual process of transmitting raw bits over a communication channel. Direct interaction with this layer is rare in daily use, but some related commands would include:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ethtool</code>: Used to query and control network device driver and hardware settings.</p>
+</li>
+<li>
+<p><code>mii-tool</code>: Used to manipulate media-independent interface status.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Remember these layers and their associated commands are highly interdependent, so categorizing a command into a specific layer can sometimes be a conceptual approximation rather than a strict classification.</p>
+</div>
+<div class="paragraph">
+<p>Also, these are basic commands. Depending on your needs, there are many more commands in Linux for network administration and management.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="五类互联网地址">3. 五类互联网地址</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/ip-address-class.svg" alt="五类互联网地址">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="数据进入协议栈时的封装过程">4. 数据进入协议栈时的封装过程</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/data-segment-frame-wrapper.svg" alt="数据进入协议栈时的封装过程" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ieee-802-2802-3-rfc-1042-和以太网的封装格式-rfc-894">5. IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894)</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/ieee802.2-ethernet-frame-format.svg" alt="IEEE 802.2/802.3 (RFC 1042) 和以太网的封装格式 (RFC 894)" width="75%" height="75%">
+</div>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="slip-报文的封装">5.1. SLIP 报文的封装</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/slip.svg" alt="SLIP 报文的封装" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="ppp-数据帧的格式">5.2. PPP 数据帧的格式</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/ppp.svg" alt="PPP 数据帧的格式" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="环回接口处理-ip-数据报的过程">6. 环回接口处理 IP 数据报的过程</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/loopback-interface-ip-packet-handling.svg" alt="环回接口处理 IP 数据报的过程" width="65%" height="65%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ip-数据报格式及首部各字段">7. IP 数据报格式及首部各字段</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/ip-data-packet-format.svg" alt="IP 数据报格式及首部各字段" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="用于以太网的-arprarp-请求或应答分组格式">8. 用于以太网的 ARP/RARP 请求或应答分组格式</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/arp-rarp-packet-format.svg" alt="用于以太网的 ARP/RARP 请求或应答分组格式" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="icmp-报文封装在-ip-数据报内部">9. ICMP 报文封装在 IP 数据报内部</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/icmp.svg" alt="ICMP 报文" width="45%" height="45%">
+</div>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="icmp-地址掩码请求和应答报文">9.1. ICMP 地址掩码请求和应答报文</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/icmp-subnet-mask.svg" alt="ICMP 地址掩码请求和应答报文" width="45%" height="45%">
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="icmp-不可达差错">9.2. ICMP 不可达差错</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/icmp-unreachable.svg" alt="ICMP 不可达差错" width="65%" height="65%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ip-层工作流程">10. IP 层工作流程</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/ip-working.svg" alt="IP 层工作流程" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rip-路由信息协议">11. RIP 路由信息协议</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/rip.svg" alt="RIP 路由信息协议" width="75%" height="75%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="单播-多播-广播">12. 单播, 多播, 广播</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/uni-group-broad-cast.svg" alt="单播, 多播, 广播" width="80%" height="80%">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>单播</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ip a s
+<span class="gp">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+<span class="go">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+</span><span class="gp">2: ens32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+<span class="go">    link/ether 00:0c:29:8c:df:3f brd ff:ff:ff:ff:ff:ff
+    inet 192.168.91.128/24 brd 192.168.91.255 scope global dynamic ens32
+       valid_lft 1489sec preferred_lft 1489sec
+    inet6 fe80::20c:29ff:fe8c:df3f/64 scope link
+       valid_lft forever preferred_lft forever
+</span><span class="gp">$</span><span class="w"> </span>/sbin/arp
+<span class="go">Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.91.254           ether   00:50:56:ed:bf:01   C                     ens32
+192.168.91.2             ether   00:50:56:ee:e2:ae   C                     ens32
+192.168.91.1             ether   00:50:56:c0:00:08   C                     ens32
+</span><span class="gp">$</span><span class="w"> </span>ip ro s
+<span class="go">default via 192.168.91.2 dev ens32
+192.168.91.0/24 dev ens32 proto kernel scope link src 192.168.91.128</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ping <span class="nt">-c</span> 1 192.168.91.2
+<span class="go">PING 192.168.91.2 (192.168.91.2) 56(84) bytes of data.
+64 bytes from 192.168.91.2: icmp_seq=1 ttl=128 time=0.367 ms
+
+--- 192.168.91.2 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.367/0.367/0.367/0.000 ms
+</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">18:26:04.627111 00:0c:29:8c:df:3f &gt; 00:50:56:ee:e2:ae, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 40409, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 192.168.91.2: ICMP echo request, id 3129, seq 1, length 64
+18:26:04.627456 00:50:56:ee:e2:ae &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 12349, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 3129, seq 1, length 64</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>广播</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ip <span class="nt">-4</span> a s ens32
+<span class="gp">2: ens32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+<span class="go">    inet 192.168.91.128/24 brd 192.168.91.255 scope global ens32
+       valid_lft forever preferred_lft forever
+</span><span class="gp">$</span><span class="w"> </span>ping <span class="nt">-c</span> 4 <span class="nt">-b</span> 255.255.255.255
+<span class="go">WARNING: pinging broadcast address
+PING 255.255.255.255 (255.255.255.255) 56(84) bytes of data.
+64 bytes from 192.168.91.137: icmp_seq=1 ttl=64 time=0.253 ms
+64 bytes from 192.168.91.2: icmp_seq=1 ttl=128 time=0.268 ms (DUP!)
+64 bytes from 192.168.91.2: icmp_seq=2 ttl=128 time=0.237 ms
+64 bytes from 192.168.91.137: icmp_seq=2 ttl=64 time=0.511 ms (DUP!)
+64 bytes from 192.168.91.2: icmp_seq=3 ttl=128 time=0.305 ms
+64 bytes from 192.168.91.137: icmp_seq=3 ttl=64 time=0.473 ms (DUP!)
+64 bytes from 192.168.91.2: icmp_seq=4 ttl=128 time=0.323 ms
+
+--- 255.255.255.255 ping statistics ---
+4 packets transmitted, 4 received, +3 duplicates, 0% packet loss, time 20ms
+rtt min/avg/max/mdev = 0.237/0.338/0.511/0.103 ms</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">$ ip -4 a s ens32
+2: ens32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    inet 192.168.91.128/24 brd 192.168.91.255 scope global ens32
+       valid_lft forever preferred_lft forever
+$ tcpdump -envv icmp
+tcpdump: listening on ens32, link-type EN10MB (Ethernet), capture size 262144 bytes
+15:53:11.351131 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 1, length 64
+15:53:11.351348 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:49, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2253, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 1, length 64
+15:53:11.351349 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 49829, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 1, length 64
+15:53:12.362377 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 2, length 64
+15:53:12.362573 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2254, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 2, length 64
+15:53:12.362847 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 49979, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 2, length 64
+15:53:13.364595 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 3, length 64
+15:53:13.364863 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2255, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 3, length 64
+15:53:13.365031 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 50166, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 3, length 64
+15:53:14.368610 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 4, length 64
+15:53:14.368894 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2256, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 4, length 64
+15:53:14.369077 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 50192, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 4, length 64</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">$ ip -4 a show ens32
+2: ens32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+<span class="hll">    inet 192.168.91.137/24 brd 192.168.91.255 scope global dynamic ens32
+</span>       valid_lft 1279sec preferred_lft 1279sec
+<span class="hll">$ sysctl net.ipv4.icmp_echo_ignore_broadcasts=0
+</span>net.ipv4.icmp_echo_ignore_broadcasts = 0
+$ tcpdump -envv icmp
+tcpdump: listening on ens32, link-type EN10MB (Ethernet), capture size 262144 bytes
+15:53:11.354403 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 1, length 64
+15:53:11.354451 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 49829, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 1, length 64
+15:53:11.354483 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:49, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2253, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 1, length 64
+15:53:12.365702 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 2, length 64
+15:53:12.365797 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 49979, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 2, length 64
+15:53:12.365854 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2254, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 2, length 64
+15:53:13.367964 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 3, length 64
+15:53:13.368029 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 50166, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 3, length 64
+15:53:13.368116 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2255, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 3, length 64
+15:53:14.371990 00:0c:29:8c:df:3f &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 255.255.255.255: ICMP echo request, id 2421, seq 4, length 64
+15:53:14.372047 00:0c:29:85:26:07 &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 50192, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.137 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 4, length 64
+15:53:14.372121 00:50:56:f9:5e:df &gt; 00:0c:29:8c:df:3f, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 128, id 2256, offset 0, flags [none], proto ICMP (1), length 84)
+    192.168.91.2 &gt; 192.168.91.128: ICMP echo reply, id 2421, seq 4, length 64</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>* Both 192.168.1.255 and 255.255.255.255 are indeed types of broadcast addresses, but they operate at different levels and have different purposes.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>192.168.1.255</strong>: This is a directed broadcast address. A directed broadcast sends a packet to all hosts on a specific network. In this case, the specific network is 192.168.1.0 (assuming a subnet mask of 255.255.255.0). Packet sent to 192.168.1.255 will be delivered to all hosts on the 192.168.1.0 network.</p>
+</li>
+<li>
+<p><strong>255.255.255.255</strong>: This is a limited broadcast address. It is used for one-to-everyone delivery on the local network segment when the network portion of the IP address is unknown. This kind of broadcast is limited because routers will not forward this packet, ensuring it only reaches hosts within the local subnet. When a host sends a packet to this address, every machine on the local network (LAN) is intended to receive a copy of the packet.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Note that these addresses function as intended provided they are not blocked or filtered by network devices and the software receiving the packets is configured to accept broadcast packets.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>组播</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ping <span class="nt">-W</span> 1 <span class="nt">-c</span> 1 224.0.0.251
+<span class="go">PING 224.0.0.251 (224.0.0.251) 56(84) bytes of data.
+
+--- 224.0.0.251 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">18:16:41.207147 00:0c:29:8c:df:3f &gt; 01:00:5e:00:00:fb, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 1, id 0, offset 0, flags [DF], proto ICMP (1), length 84)
+    192.168.91.128 &gt; 224.0.0.251: ICMP echo request, id 3060, seq 1, length 64</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="igmp-internet-组管理协议">12.1. IGMP: Internet 组管理协议</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/igmp.svg" alt="IGMP Internet 组管理协议" width="65%" height="65%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="udp-用户数据报协议">13. UDP: 用户数据报协议</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/udp.svg" alt="UDP 报文" width="85%" height="85%">
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tcp-传输控制协议">14. TCP: 传输控制协议</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp.svg" alt="TCP 报文" width="75%" height="75%">
+</div>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="tcp-的状态变迁图">14.1. TCP 的状态变迁图</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-status.svg" alt="TCP 的状态变迁图" width="85%" height="85%">
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="tcp-正常连接建立和终止所对应的状态">14.2. TCP 正常连接建立和终止所对应的状态</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-open-close.svg" alt="TCP 正常连接建立和终止所对应的状态" width="55%" height="55%">
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="tcp-同时打开期间报文段的交换">14.3. TCP 同时打开期间报文段的交换</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-simultaneous-open.svg" alt="TCP 同时打开期间报文段的交换" width="55%" height="55%">
+</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="tcp-同时关闭期间报文段的交换">14.4. TCP 同时关闭期间报文段的交换</h3>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/tcp-ip-protocol/tcp-simultaneous-close.svg" alt="TCP 同时关闭期间报文段的交换" width="55%" height="55%">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rst-复位报文段">14.5. RST 复位报文段</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>到不存在的端口的连接请求</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp"> $</span><span class="w"> </span>telnet 10.200.40.55 80
+<span class="go"> Trying 10.200.40.55...
+ telnet: Unable to connect to remote host: Connection refused</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"> 00:00:00.000000 IP 192.168.66.128.33132 &gt; 10.200.40.55.80: Flags [S], seq 4228554322, win 29200, options [mss 1460,sackOK,TS val 1130179 ecr 0,nop,wscale 7], length 0
+ 00:00:01.009552 IP 192.168.66.128.33132 &gt; 10.200.40.55.80: Flags [S], seq 4228554322, win 29200, options [mss 1460,sackOK,TS val 1130432 ecr 0,nop,wscale 7], length 0
+ 00:00:00.078680 IP 10.200.40.55.80 &gt; 192.168.66.128.33132: Flags [R.], seq 970664811, ack 4228554323, win 64240, length 0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>异常终止一个连接</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp"> $</span><span class="w"> </span>telnet 192.168.171.1 9000
+<span class="go"> Trying 192.168.171.1...
+ Connected to 192.168.171.1.
+ Escape character is '^]'.
+ Connection closed by foreign host.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"> 00:00:00.000000 IP 192.168.66.128.37852 &gt; 192.168.171.1.9000: Flags [S], seq 2189393428, win 29200, options [mss 1460,sackOK,TS val 1446368 ecr 0,nop,wscale 7], length 0
+ 00:00:00.000557 IP 192.168.171.1.9000 &gt; 192.168.66.128.37852: Flags [S.], seq 1865883214, ack 2189393429, win 64240, options [mss 1460], length 0
+ 00:00:00.000067 IP 192.168.66.128.37852 &gt; 192.168.171.1.9000: Flags [.], ack 1, win 29200, length 0
+ 00:00:00.019830 IP 192.168.171.1.9000 &gt; 192.168.66.128.37852: Flags [P.], seq 1:20481, ack 1, win 64240, length 20480
+ 00:00:00.000152 IP 192.168.66.128.37852 &gt; 192.168.171.1.9000: Flags [.], ack 20481, win 64240, length 0
+ 00:00:00.000139 IP 192.168.171.1.9000 &gt; 192.168.66.128.37852: Flags [R.], seq 20481, ack 1, win 64240, length 0
+ 00:00:00.000056 IP 192.168.171.1.9000 &gt; 192.168.66.128.37852: Flags [R], seq 1865903695, win 32767, length 0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>检测半打开连接</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp"> $</span><span class="w"> </span>telnet 192.168.66.131 22
+<span class="go"> Trying 192.168.66.131...
+ Connected to 192.168.66.131.
+ Escape character is '^]'.
+ SSH-2.0-OpenSSH_4.3
+ ONE PIECE
+ Connection closed by foreign host.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"> 00:00:00.000000 IP 192.168.66.128.40868 &gt; 192.168.66.131.22: Flags [S], seq 556956684, win 29200, options [mss 1460,sackOK,TS val 1594879 ecr 0,nop,wscale 7], length 0
+ 00:00:00.000326 IP 192.168.66.131.22 &gt; 192.168.66.128.40868: Flags [S.], seq 1715689874, ack 556956685, win 5792, options [mss 1460,sackOK,TS val 4294894064 ecr 1594879,nop,wscale 7], length 0
+ 00:00:00.000049 IP 192.168.66.128.40868 &gt; 192.168.66.131.22: Flags [.], ack 1, win 229, options [nop,nop,TS val 1594879 ecr 4294894064], length 0
+ 00:00:00.011370 IP 192.168.66.131.22 &gt; 192.168.66.128.40868: Flags [P.], seq 1:21, ack 1, win 46, options [nop,nop,TS val 4294894075 ecr 1594879], length 20
+ 00:00:00.000076 IP 192.168.66.128.40868 &gt; 192.168.66.131.22: Flags [.], ack 21, win 229, options [nop,nop,TS val 1594882 ecr 4294894075], length 0
+ 00:03:12.727548 IP 192.168.66.128.40868 &gt; 192.168.66.131.22: Flags [P.], seq 1:12, ack 21, win 229, options [nop,nop,TS val 1643064 ecr 4294894075], length 11
+ 00:00:00.002127 IP 192.168.66.131.22 &gt; 192.168.66.128.40868: Flags [R], seq 1715689895, win 0, length 0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>主机不可达的连接请求(超时)</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp"> $</span><span class="w"> </span>telnet www.google.com 80
+<span class="go"> Trying 75.126.135.131...
+ telnet: Unable to connect to remote host: Connection refused</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"> 00:00:00.000000 IP 192.168.66.128.50448 &gt; 192.168.66.2.53: 5183+ A? www.google.com. (32)
+ 00:00:00.000093 IP 192.168.66.128.50448 &gt; 192.168.66.2.53: 21632+ AAAA? www.google.com. (32)
+ 00:00:00.004174 IP 192.168.66.2.53 &gt; 192.168.66.128.50448: 5183 1/0/0 A 75.126.135.131 (48)
+ 00:00:00.000047 IP 192.168.66.2.53 &gt; 192.168.66.128.50448: 21632 0/0/0 (32)
+ 00:00:00.000239 IP 192.168.66.128.41516 &gt; 75.126.135.131.80: Flags [S], seq 3229948700, win 29200, options [mss 1460,sackOK,TS val 1721759 ecr 0,nop,wscale 7], length 0
+ 00:00:01.026997 IP 192.168.66.128.41516 &gt; 75.126.135.131.80: Flags [S], seq 3229948700, win 29200, options [mss 1460,sackOK,TS val 1722016 ecr 0,nop,wscale 7], length 0
+ 00:00:02.015519 IP 192.168.66.128.41516 &gt; 75.126.135.131.80: Flags [S], seq 3229948700, win 29200, options [mss 1460,sackOK,TS val 1722520 ecr 0,nop,wscale 7], length 0
+ 00:00:04.256726 IP 192.168.66.128.41516 &gt; 75.126.135.131.80: Flags [S], seq 3229948700, win 29200, options [mss 1460,sackOK,TS val 1723584 ecr 0,nop,wscale 7], length 0
+ 00:00:08.192206 IP 192.168.66.128.41516 &gt; 75.126.135.131.80: Flags [S], seq 3229948700, win 29200, options [mss 1460,sackOK,TS val 1725632 ecr 0,nop,wscale 7], length 0
+ 00:00:05.510774 IP 75.126.135.131.80 &gt; 192.168.66.128.41516: Flags [R.], seq 1891069686, ack 3229948701, win 64240, length 0</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

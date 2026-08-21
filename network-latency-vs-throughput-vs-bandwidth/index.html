@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Network Latency vs. Throughput vs. Bandwidth | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Network Latency vs. Throughput vs. Bandwidth" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Use qperf to measure network throughput and latency # install qperf sudo apt-get install qperf # run qperf on one node in server mode by invoking it with no arguments qperf # run qperf on a client node to obtain measurements such as bandwidth, latency qperf -ip 19766 -t 10 -ub -vvs node-2 tcp_bw tcp_lat tcp_bw: bw = 1.94 Gb/sec msg_rate = 3.7 K/sec send_bytes = 2.43 GB send_msgs = 37,046 recv_bytes = 2.43 GB recv_msgs = 37,011 tcp_lat: latency = 366 us msg_rate = 2.73 K/sec loc_send_bytes = 13.7 KB loc_recv_bytes = 13.7 KB loc_send_msgs = 13,659 loc_recv_msgs =…" />
+<meta name="twitter:description" property="og:description" content="Use qperf to measure network throughput and latency # install qperf sudo apt-get install qperf # run qperf on one node in server mode by invoking it with no arguments qperf # run qperf on a client node to obtain measurements such as bandwidth, latency qperf -ip 19766 -t 10 -ub -vvs node-2 tcp_bw tcp_lat tcp_bw: bw = 1.94 Gb/sec msg_rate = 3.7 K/sec send_bytes = 2.43 GB send_msgs = 37,046 recv_bytes = 2.43 GB recv_msgs = 37,011 tcp_lat: latency = 366 us msg_rate = 2.73 K/sec loc_send_bytes = 13.7 KB loc_recv_bytes = 13.7 KB loc_send_msgs = 13,659 loc_recv_msgs =…" />
+<link rel="canonical" href="https://blog.codefarm.me/network-latency-vs-throughput-vs-bandwidth/" />
+<meta property="og:url" content="https://blog.codefarm.me/network-latency-vs-throughput-vs-bandwidth/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-03-08T14:30:33+08:00" />
+<meta property="article:modified_time" content="2022-03-08T14:30:33+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Network Latency vs. Throughput vs. Bandwidth" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-03-08T14:30:33+08:00","datePublished":"2022-03-08T14:30:33+08:00","description":"Use qperf to measure network throughput and latency # install qperf sudo apt-get install qperf # run qperf on one node in server mode by invoking it with no arguments qperf # run qperf on a client node to obtain measurements such as bandwidth, latency qperf -ip 19766 -t 10 -ub -vvs node-2 tcp_bw tcp_lat tcp_bw: bw = 1.94 Gb/sec msg_rate = 3.7 K/sec send_bytes = 2.43 GB send_msgs = 37,046 recv_bytes = 2.43 GB recv_msgs = 37,011 tcp_lat: latency = 366 us msg_rate = 2.73 K/sec loc_send_bytes = 13.7 KB loc_recv_bytes = 13.7 KB loc_send_msgs = 13,659 loc_recv_msgs =…","headline":"Network Latency vs. Throughput vs. Bandwidth","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/network-latency-vs-throughput-vs-bandwidth/"},"url":"https://blog.codefarm.me/network-latency-vs-throughput-vs-bandwidth/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Network Latency vs. Throughput vs. Bandwidth</h1><p class="c-post-meta">08 Mar 2022</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="https://www.dnsstuff.com/wp-content/uploads/2020/12/image-11.png" alt="image 11">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="use-qperf-to-measure-network-throughput-and-latency">Use <code>qperf</code> to measure network throughput and latency</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># install qperf</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>qperf</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># run qperf on one node in server mode by invoking it with no arguments</span>
+qperf</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># run qperf on a client node to obtain measurements such as bandwidth, latency</span>
+qperf <span class="nt">-ip</span> 19766 <span class="nt">-t</span> 10 <span class="nt">-ub</span> <span class="nt">-vvs</span> node-2 tcp_bw tcp_lat</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">tcp_bw:
+    bw          =    1.94 Gb/sec
+    msg_rate    =     3.7 K/sec
+    send_bytes  =    2.43 GB
+    send_msgs   =  37,046
+    recv_bytes  =    2.43 GB
+    recv_msgs   =  37,011
+tcp_lat:
+    latency         =     366 us
+    msg_rate        =    2.73 K/sec
+    loc_send_bytes  =    13.7 KB
+    loc_recv_bytes  =    13.7 KB
+    loc_send_msgs   =  13,659
+    loc_recv_msgs   =  13,658
+    rem_send_bytes  =    13.7 KB
+    rem_recv_bytes  =    13.7 KB
+    rem_send_msgs   =  13,658
+    rem_recv_msgs   =  13,658</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="use-iperf-to-measure-network-throughput">Use <code>iperf</code> to measure network throughput</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># install iperf3</span>
+<span class="nb">sudo </span>apt <span class="nb">install </span>iperf3</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># run iperf3 in server mode</span>
+iperf3 <span class="nt">-s</span>  <span class="c"># Server listening on 5201</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># run iperf3 in client mode</span>
+iperf3 <span class="nt">-c</span> node-2</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Connecting to host node-2, port 5201
+[  5] local 192.168.91.128 port 44372 connected to 192.168.91.129 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   239 MBytes  2.00 Gbits/sec    6   1.50 MBytes
+[  5]   1.00-2.00   sec   285 MBytes  2.39 Gbits/sec    0   1.61 MBytes
+[  5]   2.00-3.00   sec   255 MBytes  2.14 Gbits/sec    0   1.71 MBytes
+[  5]   3.00-4.00   sec   248 MBytes  2.07 Gbits/sec    0   1.79 MBytes
+[  5]   4.00-5.00   sec   271 MBytes  2.28 Gbits/sec   14   1.31 MBytes
+[  5]   5.00-6.00   sec   254 MBytes  2.13 Gbits/sec    0   1.43 MBytes
+[  5]   6.00-7.00   sec   234 MBytes  1.96 Gbits/sec    0   1.54 MBytes
+[  5]   7.00-8.00   sec   265 MBytes  2.22 Gbits/sec    0   1.65 MBytes
+[  5]   8.00-9.00   sec   256 MBytes  2.15 Gbits/sec    0   1.75 MBytes
+[  5]   9.00-10.00  sec   260 MBytes  2.18 Gbits/sec    0   1.84 MBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  2.51 GBytes  2.15 Gbits/sec   20             sender
+[  5]   0.00-10.01  sec  2.50 GBytes  2.15 Gbits/sec                  receiver
+
+iperf Done.</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Network_delay" class="bare">https://en.wikipedia.org/wiki/Network_delay</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Latency_(engineering)" class="bare">https://en.wikipedia.org/wiki/Latency_(engineering)</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Round-trip_delay" class="bare">https://en.wikipedia.org/wiki/Round-trip_delay</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/End-to-end_delay" class="bare">https://en.wikipedia.org/wiki/End-to-end_delay</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Bandwidth_(computing)" class="bare">https://en.wikipedia.org/wiki/Bandwidth_(computing)</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Throughput" class="bare">https://en.wikipedia.org/wiki/Throughput</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Goodput" class="bare">https://en.wikipedia.org/wiki/Goodput</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Measuring_network_throughput" class="bare">https://en.wikipedia.org/wiki/Measuring_network_throughput</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Binary_prefix" class="bare">https://en.wikipedia.org/wiki/Binary_prefix</a></p>
+</li>
+<li>
+<p><a href="https://www.dnsstuff.com/latency-throughput-bandwidth" class="bare">https://www.dnsstuff.com/latency-throughput-bandwidth</a></p>
+</li>
+<li>
+<p><a href="https://www.keycdn.com/blog/network-bandwidth" class="bare">https://www.keycdn.com/blog/network-bandwidth</a></p>
+</li>
+<li>
+<p><a href="https://www.allconnect.com/blog/difference-between-bandwidth-and-latency" class="bare">https://www.allconnect.com/blog/difference-between-bandwidth-and-latency</a></p>
+</li>
+<li>
+<p><a href="https://flexnetworks.ca/latency-and-bandwidth/" class="bare">https://flexnetworks.ca/latency-and-bandwidth/</a></p>
+</li>
+<li>
+<p><a href="https://www.highspeedinternet.com/resources/bandwidth-vs-latency-what-is-the-difference" class="bare">https://www.highspeedinternet.com/resources/bandwidth-vs-latency-what-is-the-difference</a></p>
+</li>
+<li>
+<p><a href="https://iperf.fr/" class="bare">https://iperf.fr/</a></p>
+</li>
+<li>
+<p><a href="https://www.ateam-oracle.com/post/testing-latency-and-throughput" class="bare">https://www.ateam-oracle.com/post/testing-latency-and-throughput</a></p>
+</li>
+<li>
+<p><a href="https://access.redhat.com/solutions/2122681" class="bare">https://access.redhat.com/solutions/2122681</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

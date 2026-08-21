@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>kubernetes Users and RBAC | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="kubernetes Users and RBAC" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Users in Kubernetes 2. Authentication 2.1. X509 client certificates 2.2. Service Account Tokens 2.3. User impersonation 2.4. API access to authentication information for a client 3. Authorization 3.1. Determine the Request Verb 3.2. Authorization Modes 3.3. Checking API Access 3.4. RBAC Authorization 3.4.1. Role and ClusterRole 3.4.2. RoleBinding and ClusterRoleBinding 3.4.3. Referring to Resources 3.4.4. Aggregated ClusterRoles 3.4.5. Referring to Subjects 3.4.6. Default Roles and Role Bindings 3.4.7. Command-line utilities 4. Certificates and Certificate Signing Requests 4.1. Signers 4.2. Kubernetes signers 4.3. How to issue a certificate for a user References 1. Users in Kubernetes Users access the Kubernetes…" />
+<meta name="twitter:description" property="og:description" content="1. Users in Kubernetes 2. Authentication 2.1. X509 client certificates 2.2. Service Account Tokens 2.3. User impersonation 2.4. API access to authentication information for a client 3. Authorization 3.1. Determine the Request Verb 3.2. Authorization Modes 3.3. Checking API Access 3.4. RBAC Authorization 3.4.1. Role and ClusterRole 3.4.2. RoleBinding and ClusterRoleBinding 3.4.3. Referring to Resources 3.4.4. Aggregated ClusterRoles 3.4.5. Referring to Subjects 3.4.6. Default Roles and Role Bindings 3.4.7. Command-line utilities 4. Certificates and Certificate Signing Requests 4.1. Signers 4.2. Kubernetes signers 4.3. How to issue a certificate for a user References 1. Users in Kubernetes Users access the Kubernetes…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-authn-authz/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-authn-authz/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-11T13:40:22+08:00" />
+<meta property="article:modified_time" content="2021-11-11T13:40:22+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="kubernetes Users and RBAC" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-11-11T13:40:22+08:00","datePublished":"2021-11-11T13:40:22+08:00","description":"1. Users in Kubernetes 2. Authentication 2.1. X509 client certificates 2.2. Service Account Tokens 2.3. User impersonation 2.4. API access to authentication information for a client 3. Authorization 3.1. Determine the Request Verb 3.2. Authorization Modes 3.3. Checking API Access 3.4. RBAC Authorization 3.4.1. Role and ClusterRole 3.4.2. RoleBinding and ClusterRoleBinding 3.4.3. Referring to Resources 3.4.4. Aggregated ClusterRoles 3.4.5. Referring to Subjects 3.4.6. Default Roles and Role Bindings 3.4.7. Command-line utilities 4. Certificates and Certificate Signing Requests 4.1. Signers 4.2. Kubernetes signers 4.3. How to issue a certificate for a user References 1. Users in Kubernetes Users access the Kubernetes…","headline":"kubernetes Users and RBAC","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-authn-authz/"},"url":"https://blog.codefarm.me/kubernetes-authn-authz/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">kubernetes Users and RBAC</h1><p class="c-post-meta">05 Mar 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#users-in-kubernetes">1. Users in Kubernetes</a></li>
+<li><a href="#authentication">2. Authentication</a>
+<ul class="sectlevel2">
+<li><a href="#x509-client-certificates">2.1. X509 client certificates</a></li>
+<li><a href="#service-account-tokens">2.2. Service Account Tokens</a></li>
+<li><a href="#user-impersonation">2.3. User impersonation</a></li>
+<li><a href="#api-access-to-authentication-information-for-a-client">2.4. API access to authentication information for a client</a></li>
+</ul>
+</li>
+<li><a href="#authorization">3. Authorization</a>
+<ul class="sectlevel2">
+<li><a href="#determine-the-request-verb">3.1. Determine the Request Verb</a></li>
+<li><a href="#authorization-modes">3.2. Authorization Modes</a></li>
+<li><a href="#checking-api-access">3.3. Checking API Access</a></li>
+<li><a href="#rbac-authorization">3.4. RBAC Authorization</a>
+<ul class="sectlevel3">
+<li><a href="#role-and-clusterrole">3.4.1. Role and ClusterRole</a></li>
+<li><a href="#rolebinding-and-clusterrolebinding">3.4.2. RoleBinding and ClusterRoleBinding</a></li>
+<li><a href="#referring-to-resources">3.4.3. Referring to Resources</a></li>
+<li><a href="#aggregated-clusterroles">3.4.4. Aggregated ClusterRoles</a></li>
+<li><a href="#referring-to-subjects">3.4.5. Referring to Subjects</a></li>
+<li><a href="#default-roles-and-role-bindings">3.4.6. Default Roles and Role Bindings</a></li>
+<li><a href="#command-line-utilities">3.4.7. Command-line utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#certificates-and-certificate-signing-requests">4. Certificates and Certificate Signing Requests</a>
+<ul class="sectlevel2">
+<li><a href="#signers">4.1. Signers</a></li>
+<li><a href="#kubernetes-signers">4.2. Kubernetes signers</a></li>
+<li><a href="#how-to-issue-a-certificate-for-a-user">4.3. How to issue a certificate for a user</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="users-in-kubernetes">1. Users in Kubernetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Users access the <a href="https://kubernetes.io/docs/concepts/overview/kubernetes-api/">Kubernetes API</a> using <a href="https://kubernetes.io/docs/reference/kubectl/"><code>kubectl</code></a>, <a href="https://kubernetes.io/docs/reference/using-api/client-libraries/">client libraries</a>, or by making REST requests, through several stages, illustrated in the following diagram: <a href="#k8s-io-controlling-access">[1]</a></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="https://kubernetes.io/images/docs/components-of-kubernetes.svg" alt="Components of Kubernetes" width="45%" height="45%"></span>
+<span class="image"><img src="https://kubernetes.io/images/docs/admin/access-control-overview.svg" alt="Diagram of request handling steps for Kubernetes API request" width="45%" height="45%"></span></p>
+</div>
+<div class="paragraph">
+<p>All Kubernetes clusters have two categories of users: service accounts managed by Kubernetes, and normal users. <a href="#k8s-io-authn">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>It is assumed that a cluster-independent service manages normal users in the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>an administrator distributing private keys</p>
+</li>
+<li>
+<p>a user store like Keystone or Google Accounts</p>
+</li>
+<li>
+<p>a file with a list of usernames and passwords</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Kubernetes does not have objects which represent normal user accounts.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Any user that presents a valid certificate signed by the cluster&#8217;s certificate authority (CA) is considered authenticated. API requests are tied to either a normal user or a service account, or are treated as <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#anonymous-requests">anonymous requests</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kubernetes determines the username from the common name and groups from organization name in the 'subject' of the cert (e.g., "/CN=bob/O=group1/O=group2").</p>
+</li>
+<li>
+<p>The role based access control (RBAC) sub-system would determine whether the user or group is authorized to perform a specific operation on a resource.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In contrast, <a href="https://kubernetes.io/docs/concepts/security/service-accounts/">service accounts</a> are users managed by the Kubernetes API.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>They are bound to specific namespaces, and created automatically by the API server or manually through API calls.</p>
+</li>
+<li>
+<p>Service accounts are tied to a set of credentials stored as <code>Secrets</code>, mounted into pods allowing <em>in-cluster</em> processes to talk to the Kubernetes API.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="authentication">2. Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes uses client certificates, bearer tokens, an authenticating proxy to authenticate API requests through authentication plugins. <a href="#k8s-io-authn">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>As HTTP requests are made to the API server, plugins attempt to associate the following attributes with the request:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Username: a string which identifies the end user.</p>
+<div class="paragraph">
+<p>Common values might be <code>kube-admin</code> or <code>jane@example.com</code>.</p>
+</div>
+</li>
+<li>
+<p>UID: a string which identifies the end user and attempts to be more consistent and unique than username.</p>
+</li>
+<li>
+<p><code>Groups</code>: a set of strings, each of which indicates the user&#8217;s membership in a named logical collection of users.</p>
+<div class="paragraph">
+<p>Common values might be <code>system:masters</code> or <code>devops-team</code>.</p>
+</div>
+</li>
+<li>
+<p><code>Extra fields</code>: a map of strings to list of strings which holds additional information authorizers may find useful.</p>
+</li>
+<li>
+<p>The <code>system:authenticated</code> group is included in the list of groups for all authenticated users.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="x509-client-certificates">2.1. X509 client certificates</h3>
+<div class="paragraph">
+<p>Client certificate authentication is enabled by passing the <code>--client-ca-file=SOMEFILE</code> option to API server. The referenced file must contain one or more certificate authorities to use to validate client certificates presented to the API server.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a client certificate is presented and verified, the common name of the subject is used as the user name for the request.</p>
+</li>
+<li>
+<p>Client certificates can also indicate a user&#8217;s group memberships using the certificate&#8217;s organization fields.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example, using the <code>openssl</code> command line tool to generate a certificate signing request:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">openssl req <span class="se">\</span>
+    <span class="nt">-nodes</span> <span class="nt">-newkey</span> rsa <span class="nt">-keyout</span> jbeda.pem <span class="se">\</span>
+    <span class="nt">-out</span> jbeda-csr.pem <span class="nt">-subj</span> <span class="s2">"/CN=jbeda/O=app1/O=app2"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would create a CSR for the username "jbeda", belonging to two groups, "app1" and "app2".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="service-account-tokens">2.2. Service Account Tokens</h3>
+<div class="paragraph">
+<p>A service account is an automatically enabled authenticator that uses signed bearer tokens to verify requests.</p>
+</div>
+<div class="paragraph">
+<p>The plugin takes two optional flags:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--service-account-key-file</code></p>
+<div class="paragraph">
+<p>File containing PEM-encoded x509 RSA or ECDSA private or public keys, used to verify ServiceAccount tokens.</p>
+</div>
+<div class="paragraph">
+<p>The specified file can contain multiple keys, and the flag can be specified multiple times with different files. If unspecified, <code>--tls-private-key-file</code> is used.</p>
+</div>
+</li>
+<li>
+<p><code>--service-account-lookup</code></p>
+<div class="paragraph">
+<p>If enabled, tokens which are deleted from the API will be revoked.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Service accounts are usually created automatically by the API server and associated with pods running in the cluster through the <code>ServiceAccount</code> Admission Controller.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Bearer tokens are mounted into pods at well-known locations, and allow in-cluster processes to talk to the API server.</p>
+</li>
+<li>
+<p>Accounts may be explicitly associated with pods using the <code>serviceAccountName</code> field of a <code>PodSpec</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get <span class="nt">-n</span> kube-system po coredns-7b44686977-vlt44 <span class="nt">-oyaml</span>
+<span class="c">...</span>
+<span class="go">spec:</span>
+<span class="go">  containers:</span>
+<span class="go">  - args:</span>
+<span class="go">    volumeMounts:</span>
+<span class="hll"><span class="go">    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount</span>
+</span><span class="go">      name: kube-api-access-7xmwj</span>
+<span class="go">      readOnly: true</span>
+<span class="go">  serviceAccount: coredns</span>
+<span class="hll"><span class="go">  serviceAccountName: coredns</span>
+</span><span class="go">  volumes:</span>
+<span class="go">  - name: kube-api-access-7xmwj</span>
+<span class="go">    projected:</span>
+<span class="go">      defaultMode: 420</span>
+<span class="go">      sources:</span>
+<span class="hll"><span class="go">      - serviceAccountToken:</span>
+</span><span class="go">          expirationSeconds: 3607</span>
+<span class="go">          path: token</span>
+<span class="go">      - configMap:</span>
+<span class="go">          items:</span>
+<span class="go">          - key: ca.crt</span>
+<span class="go">            path: ca.crt</span>
+<span class="go">          name: kube-root-ca.crt</span>
+<span class="go">      - downwardAPI:</span>
+<span class="go">          items:</span>
+<span class="go">          - fieldRef:</span>
+<span class="go">              apiVersion: v1</span>
+<span class="go">              fieldPath: metadata.namespace</span>
+<span class="go">            path: namespace</span>
+<span class="c">...</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Service account bearer tokens are perfectly valid to use outside the cluster and can be used to create identities for long standing jobs that wish to talk to the Kubernetes API.</p>
+</div>
+<div class="paragraph">
+<p>To manually create a service account, use the <code>kubectl create serviceaccount (NAME)</code> command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># creates a service account in the current namespace.</span>
+kubectl create serviceaccount jenkins
+<span class="c"># create an associated token, a signed JSON Web Token (JWT).</span>
+kubectl create token jenkins</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The signed JWT can be used as a bearer token (i.e., <code>Authorization: Bearer &lt;token&gt;</code>) to authenticate as the given service account.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>JSON Web Tokens consist of three parts separated by dots (.), which are: <code>&lt;Header&gt;.&lt;Payload&gt;.&lt;Signature&gt;</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create token jenkins | <span class="nb">cut</span> <span class="nt">-d</span> <span class="s1">'.'</span> <span class="nt">-f2</span> | <span class="nb">base64</span> <span class="nt">-d</span> | jq
+<span class="go">{
+  "aud": [
+    "https://kubernetes.default.svc.cluster.local"
+  ],
+  "exp": 1709617047,
+  "iat": 1709613447,
+  "iss": "https://kubernetes.default.svc.cluster.local",
+  "kubernetes.io": {
+    "namespace": "default",
+    "serviceaccount": {
+      "name": "jenkins",
+      "uid": "7456ed0e-5b31-444e-85c0-d9db42f3984a"
+    }
+  },
+  "nbf": 1709613447,
+  "sub": "system:serviceaccount:default:jenkins"
+}</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Service accounts authenticate with the username <code>system:serviceaccount:(NAMESPACE):(SERVICEACCOUNT)</code>, and are assigned to the groups <code>system:serviceaccounts</code> and <code>system:serviceaccounts:(NAMESPACE)</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="user-impersonation">2.3. User impersonation</h3>
+<div class="paragraph">
+<p>A user can act as another user through impersonation headers, which can let requests manually override the user info a request authenticates as. For example, an admin could use this feature to debug an authorization policy by temporarily impersonating another user and seeing if a request was denied.</p>
+</div>
+<div class="paragraph">
+<p>Impersonation requests first authenticate as the requesting user, then switch to the impersonated user info.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A user makes an API call with their credentials and impersonation headers.</p>
+</li>
+<li>
+<p>API server authenticates the user.</p>
+</li>
+<li>
+<p>API server ensures the authenticated users have impersonation privileges.</p>
+</li>
+<li>
+<p>Request user info is replaced with impersonation values.</p>
+</li>
+<li>
+<p>Request is evaluated, authorization acts on impersonated user info.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When using <code>kubectl</code> set the <code>--as</code> flag to configure the <code>Impersonate-User</code> header, set the <code>--as-group</code> flag to configure the <code>Impersonate-Group</code> header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get pod <span class="nt">--as</span> nobody
+<span class="go">Error from server (Forbidden): pods is forbidden: User "nobody" cannot list resource "pods" in API group "" in the namespace "default"</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="api-access-to-authentication-information-for-a-client">2.4. API access to authentication information for a client</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.28 [stable]</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>If your cluster has the API enabled, you can use the <code>SelfSubjectReview</code> API to find out how your Kubernetes cluster maps your authentication information to identify you as a client.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">POST /apis/authentication.k8s.io/v1/selfsubjectreviews
+
+{
+  "apiVersion": "authentication.k8s.io/v1",
+  "kind": "SelfSubjectReview"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For convenience, the <code>kubectl auth whoami</code> command is present.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl auth <span class="nb">whoami</span> <span class="nt">-oyaml</span>
+<span class="go">apiVersion: authentication.k8s.io/v1
+kind: SelfSubjectReview
+metadata:
+  creationTimestamp: "2024-03-05T05:31:48Z"
+status:
+  userInfo:
+    groups:
+    - kubeadm:cluster-admins
+    - system:authenticated
+    username: kubernetes-admin</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="authorization">3. Authorization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes authorizes API requests using the API server, and evaluates all of the authenticated request attributes against all policies and allows or denies the request. <a href="#k8s-io-authz">[3]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>user</strong> - The <code>user</code> string provided during authentication.</p>
+</li>
+<li>
+<p><strong>group</strong> - The list of group names to which the authenticated user belongs.</p>
+</li>
+<li>
+<p><strong>extra</strong> - A map of arbitrary string keys to string values, provided by the authentication layer.</p>
+</li>
+<li>
+<p><strong>API</strong> - Indicates whether the request is for an API resource.</p>
+</li>
+<li>
+<p><strong>Request path</strong> - Path to miscellaneous non-resource endpoints like <code>/api</code> or <code>/healthz</code>.</p>
+</li>
+<li>
+<p><strong>API request verb</strong> - API verbs like <code>get</code>, <code>list</code>, <code>create</code>, <code>update</code>, <code>patch</code>, <code>watch</code>, <code>delete</code>, and <code>deletecollection</code> are used for resource requests.</p>
+</li>
+<li>
+<p><strong>HTTP request verb</strong> - Lowercased HTTP methods like <code>get</code>, <code>post</code>, <code>put</code>, and <code>delete</code> are used for non-resource requests.</p>
+</li>
+<li>
+<p><strong>Resource</strong> - The ID or name of the resource that is being accessed (for resource requests only)&#8201;&#8212;&#8201;For resource requests using <code>get</code>, <code>update</code>, <code>patch</code>, and <code>delete</code> verbs, you must provide the resource name.</p>
+</li>
+<li>
+<p><strong>Subresource</strong> - The subresource that is being accessed (for resource requests only).</p>
+</li>
+<li>
+<p><strong>Namespace</strong> - The namespace of the object that is being accessed (for namespaced resource requests only).</p>
+</li>
+<li>
+<p><strong>API group</strong> - The API Group being accessed (for resource requests only). An empty string designates the core API group.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="determine-the-request-verb">3.1. Determine the Request Verb</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Non-resource requests</p>
+<div class="paragraph">
+<p>Requests to endpoints other than <code>/api/v1/&#8230;&#8203;</code> or <code>/apis/&lt;group&gt;/&lt;version&gt;/&#8230;&#8203;</code> are considered "non-resource requests", and use the lower-cased HTTP method of the request as the verb.</p>
+</div>
+<div class="paragraph">
+<p>For example, a GET request to endpoints like <code>/api</code> or <code>/healthz</code> would use <code>get</code> as the verb.</p>
+</div>
+</li>
+<li>
+<p>Resource requests</p>
+<div class="paragraph">
+<p>To determine the request verb for a resource API endpoint, review the HTTP verb used and whether or not the request acts on an individual resource or a collection of resources:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 75%;">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 83.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">HTTP verb</th>
+<th class="tableblock halign-left valign-top">request verb</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">create</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET, HEAD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">get (for individual resources), list (for collections, including full object content), watch (for watching an individual resource or collection of resources)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PUT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">update</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PATCH</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">patch</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DELETE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">delete (for individual resources), deletecollection (for collections)</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Kubernetes sometimes checks authorization for additional permissions using specialized verbs. For example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>RBAC</p>
+<div class="paragraph">
+<p><code>bind</code> and <code>escalate</code> verbs on <code>roles</code> and <code>clusterroles</code> resources in the <code>rbac.authorization.k8s.io</code> API group.</p>
+</div>
+</li>
+<li>
+<p>Authentication</p>
+<div class="paragraph">
+<p><code>impersonate</code> verb on <code>users</code>, <code>groups</code>, and <code>serviceaccounts</code> in the core API group, and the <code>userextras</code> in the <code>authentication.k8s.io</code> API group.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="authorization-modes">3.2. Authorization Modes</h3>
+<div class="paragraph">
+<p>The Kubernetes API server may authorize a request using one of several authorization modes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/node/">Node</a> - A special-purpose authorization mode that grants permissions to kubelets based on the pods they are scheduled to run.</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/abac/">ABAC</a> - Attribute-based access control (ABAC) defines an access control paradigm whereby access rights are granted to users through the use of policies which combine attributes together.</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">RBAC</a> - Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within an enterprise.</p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/webhook/">Webhook</a> - A WebHook is an HTTP callback: an HTTP POST that occurs when something happens; a simple event-notification via HTTP POST.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="checking-api-access">3.3. Checking API Access</h3>
+<div class="paragraph">
+<p>The command <code>kubectl</code> provides the <code>auth can-i</code> subcommand for quickly querying the API authorization layer, that uses the <code>SelfSubjectAccessReview</code> API to determine if the current user can perform a given action, and works regardless of the authorization mode used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth can-i create deployments <span class="nt">--namespace</span> dev</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">yes</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth can-i create deployments <span class="nt">--namespace</span> prod</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">no</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth can-i list secrets <span class="nt">--namespace</span> dev <span class="nt">--as</span> dave</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">no</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth can-i list pods <span class="se">\</span>
+	<span class="nt">--namespace</span> target <span class="se">\</span>
+	<span class="nt">--as</span> system:serviceaccount:dev:dev-sa</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">yes</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These <code>SelfSubjectRulesReview</code> API can be queried by creating normal Kubernetes resources, where the response "status" field of the returned object is the result of the query.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create <span class="nt">-f</span> - <span class="nt">-o</span> yaml <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+apiVersion: authorization.k8s.io/v1
+kind: SelfSubjectAccessReview
+spec:
+  resourceAttributes:
+    group: apps
+    resource: deployments
+    verb: create
+    namespace: dev
+EOF</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">apiVersion: authorization.k8s.io/v1
+kind: SelfSubjectAccessReview
+</span><span class="c">...
+</span><span class="go">status:
+  allowed: true
+  reason: 'RBAC: allowed by ClusterRoleBinding "kubeadm:cluster-admins" of ClusterRole
+    "cluster-admin" to Group "kubeadm:cluster-admins"'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rbac-authorization">3.4. RBAC Authorization</h3>
+<div class="paragraph">
+<p>Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within your organization.</p>
+</div>
+<div class="paragraph">
+<p>RBAC authorization uses the <code>rbac.authorization.k8s.io</code> API group to drive authorization decisions, allowing you to dynamically configure policies through the Kubernetes API.</p>
+</div>
+<div class="sect3">
+<h4 id="role-and-clusterrole">3.4.1. Role and ClusterRole</h4>
+<div class="paragraph">
+<p>An RBAC <code>Role</code> or <code>ClusterRole</code> contains rules that represent a set of permissions. Permissions are purely additive (there are no "deny" rules).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A Role always sets permissions within a particular namespace; when you create a Role, you have to specify the namespace it belongs in.</p>
+</li>
+<li>
+<p>By contrast, ClusterRole, is a non-namespaced resource.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The resources have different names (Role and ClusterRole) because a Kubernetes object always has to be either namespaced or not namespaced; it can&#8217;t be both.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s an example Role in the "default" namespace that can be used to grant read access to pods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">pod-reader</span>
+<span class="na">rules</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">]</span> <span class="c1"># "" indicates the core API group</span>
+  <span class="na">resources</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">pods"</span><span class="pi">]</span>
+  <span class="na">verbs</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">get"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">watch"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">list"</span><span class="pi">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because ClusterRoles are cluster-scoped, they can also used to grant access to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>cluster-scoped resources (like <code>nodes</code>)</p>
+</li>
+<li>
+<p>non-resource endpoints (like <code>/healthz</code>)</p>
+</li>
+<li>
+<p>namespaced resources (like <code>Pods</code>), across all namespaces</p>
+<div class="paragraph">
+<p>For example: use a ClusterRole to allow a particular user to run <code>kubectl get pods --all-namespaces</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Here is an example of a ClusterRole that can be used to grant read access to secrets in any particular namespace, or across all namespaces (depending on how it is bound):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="c1"># "namespace" omitted since ClusterRoles are not namespaced</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">secret-reader</span>
+<span class="na">rules</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">]</span>
+  <span class="c1">#</span>
+  <span class="c1"># at the HTTP level, the name of the resource for accessing Secret</span>
+  <span class="c1"># objects is "secrets"</span>
+  <span class="na">resources</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">secrets"</span><span class="pi">]</span>
+  <span class="na">verbs</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">get"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">watch"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">list"</span><span class="pi">]</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="rolebinding-and-clusterrolebinding">3.4.2. RoleBinding and ClusterRoleBinding</h4>
+<div class="paragraph">
+<p>A role binding grants the permissions defined in a role to a user or set of users.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It holds a list of <code>subjects</code> (users, groups, or service accounts), and a reference to the role being granted.</p>
+</li>
+<li>
+<p>A <code>RoleBinding</code> grants permissions within a specific namespace whereas a <code>ClusterRoleBinding</code> grants that access cluster-wide.</p>
+</li>
+<li>
+<p>A RoleBinding may reference any Role in the same namespace.</p>
+</li>
+<li>
+<p>A RoleBinding can also reference a ClusterRole to grant the permissions defined in that ClusterRole to resources inside the RoleBinding&#8217;s namespace.</p>
+</li>
+<li>
+<p>To bind a ClusterRole to all the namespaces in a cluster, use a ClusterRoleBinding.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Here is an example of a RoleBinding that grants the "pod-reader" Role to the user "jane" within the "default" namespace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="c1"># This role binding allows "jane" to read pods in the "default" namespace.</span>
+<span class="c1"># You need to already have a Role named "pod-reader" in that namespace.</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">RoleBinding</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">read-pods</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">subjects</span><span class="pi">:</span>
+<span class="c1"># You can specify more than one "subject"</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">User</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">jane</span> <span class="c1"># "name" is case sensitive</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+<span class="na">roleRef</span><span class="pi">:</span>
+  <span class="c1"># "roleRef" specifies the binding to a Role / ClusterRole</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span> <span class="c1">#this must be Role or ClusterRole</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">pod-reader</span> <span class="c1"># this must match the name of the Role or ClusterRole you wish to bind to</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For instance, even though the following RoleBinding refers to a ClusterRole, "dave" (the subject, case sensitive) will only be able to read Secrets in the "dev" namespace, because the RoleBinding&#8217;s namespace (in its metadata) is "dev".</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="c1"># This role binding allows "dave" to read secrets in the "dev" namespace.</span>
+<span class="c1"># You need to already have a ClusterRole named "secret-reader".</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">RoleBinding</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">read-secrets</span>
+  <span class="c1">#</span>
+  <span class="c1"># The namespace of the RoleBinding determines where the permissions are granted.</span>
+  <span class="c1"># This only grants permissions within the "dev" namespace.</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">dev</span>
+<span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">User</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">dave</span> <span class="c1"># Name is case sensitive</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+<span class="na">roleRef</span><span class="pi">:</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">secret-reader</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following ClusterRoleBinding allows any user in the group "manager" to read secrets in any namespace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="c1"># This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRoleBinding</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">read-secrets-global</span>
+<span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">manager</span> <span class="c1"># Name is case sensitive</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+<span class="na">roleRef</span><span class="pi">:</span>
+  <span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">secret-reader</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="referring-to-resources">3.4.3. Referring to Resources</h4>
+<div class="paragraph">
+<p>In the Kubernetes API, most resources (including subresources) are represented and accessed using a string representation of their object name, such as <code>pods</code> for a Pod. RBAC refers to resources using exactly the same name that appears in the URL for the relevant API endpoint.</p>
+</div>
+<div class="paragraph">
+<p>A request for a Pod&#8217;s logs looks like: <code>GET /api/v1/namespaces/{namespace}/pods/{name}/log</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In this case, <code>pods</code> is the namespaced resource for Pod resources, and <code>log</code> is a subresource of pods.</p>
+</li>
+<li>
+<p>To represent this in an RBAC role, use a slash (<code>/</code>) to delimit the resource and subresource.</p>
+</li>
+<li>
+<p>To allow a subject to read <code>pods</code> and also access the <code>log</code> subresource for each of those Pods, write:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">pod-and-pod-logs-reader</span>
+<span class="na">rules</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">]</span>
+  <span class="na">resources</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">pods"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">pods/log"</span><span class="pi">]</span>
+  <span class="na">verbs</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">get"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">list"</span><span class="pi">]</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To restrict to individual instances of a resource, refer to resources by name for certain requests through the <code>resourceNames</code> list. Here is an example that restricts its subject to only <code>get</code> or <code>update</code> a ConfigMap named <code>my-configmap</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Role</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">configmap-updater</span>
+<span class="na">rules</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">"</span><span class="pi">]</span>
+  <span class="c1">#</span>
+  <span class="c1"># at the HTTP level, the name of the resource for accessing ConfigMap</span>
+  <span class="c1"># objects is "configmaps"</span>
+  <span class="na">resources</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">configmaps"</span><span class="pi">]</span>
+  <span class="na">resourceNames</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">my-configmap"</span><span class="pi">]</span>
+  <span class="na">verbs</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">update"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">get"</span><span class="pi">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rather than referring to individual <code>resources</code>, <code>apiGroups</code>, and <code>verbs</code>, use the wildcard <code>*</code> symbol to refer to all such objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For <code>nonResourceURLs</code>, use the wildcard <code>*</code> as a suffix glob match.</p>
+</li>
+<li>
+<p>For <code>resourceNames</code>, an empty set means that everything is allowed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Here is the definition of the built-in <code>cluster-admin</code> ClusterRole.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="c1"># ...</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">cluster-admin</span>
+<span class="na">rules</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">apiGroups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s1">'</span><span class="s">*'</span>
+  <span class="na">resources</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s1">'</span><span class="s">*'</span>
+  <span class="na">verbs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s1">'</span><span class="s">*'</span>
+<span class="pi">-</span> <span class="na">nonResourceURLs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s1">'</span><span class="s">*'</span>
+  <span class="na">verbs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s1">'</span><span class="s">*'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="aggregated-clusterroles">3.4.4. Aggregated ClusterRoles</h4>
+<div class="paragraph">
+<p>A controller, running as part of the cluster control plane, watches for ClusterRole objects with an <code>aggregationRule</code> set that defines a label selector to match other ClusterRole objects that should be combined into the <code>rules</code> field of this one.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example aggregated ClusterRole:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterRole</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">monitoring</span>
+<span class="na">aggregationRule</span><span class="pi">:</span>
+  <span class="na">clusterRoleSelectors</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">rbac.example.com/aggregate-to-monitoring</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+<span class="na">rules</span><span class="pi">:</span> <span class="pi">[]</span> <span class="c1"># The control plane automatically fills in the rules</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="referring-to-subjects">3.4.5. Referring to Subjects</h4>
+<div class="paragraph">
+<p>A RoleBinding or ClusterRoleBinding binds a role to subjects which can be groups, users or ServiceAccounts.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The prefix <code>system:</code> is reserved for Kubernetes system use, so you should ensure that you don&#8217;t have users or groups with names that start with <code>system:</code> by accident. Other than this special prefix, the RBAC authorization system does not require any format for usernames.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>ServiceAccounts have names prefixed with <code>system:serviceaccount:</code>, and belong to groups that have names prefixed with <code>system:serviceaccounts:</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>system:serviceaccount:</code> (singular) is the prefix for service account usernames.</p>
+</li>
+<li>
+<p><code>system:serviceaccounts:</code> (plural) is the prefix for service account groups.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For a user named <code>alice@example.com</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">User</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">alice@example.com"</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For a group named <code>frontend-admins</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">frontend-admins"</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the <code>default</code> service account in the "kube-system" namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">ServiceAccount</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For all service accounts in the "qa" namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:serviceaccounts:qa</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For all service accounts in any namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:serviceaccounts</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For all authenticated users:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:authenticated</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For all unauthenticated users:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:unauthenticated</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For all users:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">subjects</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:authenticated</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span>
+<span class="pi">-</span> <span class="na">kind</span><span class="pi">:</span> <span class="s">Group</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">system:unauthenticated</span>
+  <span class="na">apiGroup</span><span class="pi">:</span> <span class="s">rbac.authorization.k8s.io</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="default-roles-and-role-bindings">3.4.6. Default Roles and Role Bindings</h4>
+<div class="paragraph">
+<p>API servers create a set of default ClusterRole and ClusterRoleBinding objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Many of these are <code>system:</code> prefixed, which indicates that the resource is directly managed by the cluster control plane.</p>
+</li>
+<li>
+<p>All of the default ClusterRoles and ClusterRoleBindings are labeled with <code>kubernetes.io/bootstrapping=rbac-defaults</code>.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Take care when modifying ClusterRoles and ClusterRoleBindings with names that have a <code>system:</code> prefix. Modifications to these resources can result in non-functional clusters.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>At each start-up, the API server updates default cluster roles with any missing permissions, and updates default cluster role bindings with any missing subjects.</p>
+</div>
+<div class="paragraph">
+<p>Some of the default ClusterRoles are not <code>system:</code> prefixed which are intended to be user-facing roles that include super-user roles (<code>cluster-admin</code>), roles intended to be granted cluster-wide using ClusterRoleBindings, and roles intended to be granted within particular namespaces using RoleBindings (<code>admin</code>, <code>edit</code>, <code>view</code>).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="command-line-utilities">3.4.7. Command-line utilities</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Create a Role named "pod-reader" that allows users to perform <code>get</code>, <code>watch</code> and <code>list</code> on pods:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create role pod-reader <span class="nt">--verb</span><span class="o">=</span>get <span class="nt">--verb</span><span class="o">=</span>list <span class="nt">--verb</span><span class="o">=</span>watch <span class="nt">--resource</span><span class="o">=</span>pods</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Role named "pod-reader" with resourceNames specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create role pod-reader <span class="nt">--verb</span><span class="o">=</span>get <span class="nt">--resource</span><span class="o">=</span>pods <span class="nt">--resource-name</span><span class="o">=</span>readablepod <span class="nt">--resource-name</span><span class="o">=</span>anotherpod</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Role named "foo" with apiGroups specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create role foo <span class="nt">--verb</span><span class="o">=</span>get,list,watch <span class="nt">--resource</span><span class="o">=</span>replicasets.apps</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Role named "foo" with subresource permissions:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create role foo <span class="nt">--verb</span><span class="o">=</span>get,list,watch <span class="nt">--resource</span><span class="o">=</span>pods,pods/status</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a Role named "my-component-lease-holder" with permissions to get/update a resource with a specific name:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create role my-component-lease-holder <span class="nt">--verb</span><span class="o">=</span>get,list,watch,update <span class="nt">--resource</span><span class="o">=</span>lease <span class="nt">--resource-name</span><span class="o">=</span>my-component</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "pod-reader" that allows user to perform <code>get</code>, <code>watch</code> and <code>list</code> on pods:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole pod-reader <span class="nt">--verb</span><span class="o">=</span>get,list,watch <span class="nt">--resource</span><span class="o">=</span>pods</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "pod-reader" with resourceNames specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole pod-reader <span class="nt">--verb</span><span class="o">=</span>get <span class="nt">--resource</span><span class="o">=</span>pods <span class="nt">--resource-name</span><span class="o">=</span>readablepod <span class="nt">--resource-name</span><span class="o">=</span>anotherpod</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "foo" with apiGroups specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole foo <span class="nt">--verb</span><span class="o">=</span>get,list,watch <span class="nt">--resource</span><span class="o">=</span>replicasets.apps</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "foo" with subresource permissions:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole foo <span class="nt">--verb</span><span class="o">=</span>get,list,watch <span class="nt">--resource</span><span class="o">=</span>pods,pods/status</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "foo" with nonResourceURL specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole <span class="s2">"foo"</span> <span class="nt">--verb</span><span class="o">=</span>get <span class="nt">--non-resource-url</span><span class="o">=</span>/logs/<span class="k">*</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterRole named "monitoring" with an aggregationRule specified:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrole monitoring <span class="nt">--aggregation-rule</span><span class="o">=</span><span class="s2">"rbac.example.com/aggregate-to-monitoring=true"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Within the namespace "acme", grant the permissions in the "admin" ClusterRole to a user named "bob":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create rolebinding bob-admin-binding <span class="nt">--clusterrole</span><span class="o">=</span>admin <span class="nt">--user</span><span class="o">=</span>bob <span class="nt">--namespace</span><span class="o">=</span>acme</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Within the namespace "acme", grant the permissions in the "view" ClusterRole to the service account in the namespace "acme" named "myapp":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create rolebinding myapp-view-binding <span class="nt">--clusterrole</span><span class="o">=</span>view <span class="nt">--serviceaccount</span><span class="o">=</span>acme:myapp <span class="nt">--namespace</span><span class="o">=</span>acme</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Within the namespace "acme", grant the permissions in the "view" ClusterRole to a service account in the namespace "myappnamespace" named "myapp":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create rolebinding myappnamespace-myapp-view-binding <span class="nt">--clusterrole</span><span class="o">=</span>view <span class="nt">--serviceaccount</span><span class="o">=</span>myappnamespace:myapp <span class="nt">--namespace</span><span class="o">=</span>acme</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Across the entire cluster, grant the permissions in the "cluster-admin" ClusterRole to a user named "root":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrolebinding root-cluster-admin-binding <span class="nt">--clusterrole</span><span class="o">=</span>cluster-admin <span class="nt">--user</span><span class="o">=</span>root</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Across the entire cluster, grant the permissions in the "system:node-proxier" ClusterRole to a user named "system:kube-proxy":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrolebinding kube-proxy-binding <span class="nt">--clusterrole</span><span class="o">=</span>system:node-proxier <span class="nt">--user</span><span class="o">=</span>system:kube-proxy</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Across the entire cluster, grant the permissions in the "view" ClusterRole to a service account named "myapp" in the namespace "acme":</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create clusterrolebinding myapp-view-binding <span class="nt">--clusterrole</span><span class="o">=</span>view <span class="nt">--serviceaccount</span><span class="o">=</span>acme:myapp</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test applying a manifest file of RBAC objects, displaying changes that would be made:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth reconcile <span class="nt">-f</span> my-rbac-rules.yaml <span class="nt">--dry-run</span><span class="o">=</span>client</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Apply a manifest file of RBAC objects, preserving any extra permissions (in roles) and any extra subjects (in bindings):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth reconcile <span class="nt">-f</span> my-rbac-rules.yaml</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Apply a manifest file of RBAC objects, removing any extra permissions (in roles) and any extra subjects (in bindings):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl auth reconcile <span class="nt">-f</span> my-rbac-rules.yaml <span class="nt">--remove-extra-subjects</span> <span class="nt">--remove-extra-permissions</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="certificates-and-certificate-signing-requests">4. Certificates and Certificate Signing Requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <code>CertificateSigningRequest</code> (CSR) resource is used to request that a certificate be signed by a denoted signer, after which the request may be approved or denied before finally being signed. <a href="#k8s-io-auth-csr">[4]</a></p>
+</div>
+<div class="sect2">
+<h3 id="signers">4.1. Signers</h3>
+<div class="paragraph">
+<p>Signers abstractly represent the entity or entities that might sign, or have signed, a security certificate.</p>
+</div>
+<div class="paragraph">
+<p>Any signer that is made available for outside a particular cluster should provide information about how the signer works, so that consumers can understand what that means for CertifcateSigningRequests and (if enabled) ClusterTrustBundles which are cluster-scoped objects for distributing X.509 trust anchors (root certificates) to workloads within the cluster. .</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Trust distribution</strong>: how trust anchors (CA certificates or certificate bundles) are distributed.</p>
+</li>
+<li>
+<p><strong>Permitted subjects</strong>: any restrictions on and behavior when a disallowed subject is requested.</p>
+</li>
+<li>
+<p><strong>Permitted x509 extensions</strong>: including IP subjectAltNames, DNS subjectAltNames, Email subjectAltNames, URI subjectAltNames etc, and behavior when a disallowed extension is requested.</p>
+</li>
+<li>
+<p><strong>Permitted key usages / extended key usages</strong>: any restrictions on and behavior when usages different than the signer-determined usages are specified in the CSR.</p>
+</li>
+<li>
+<p><strong>Expiration/certificate lifetime</strong>: whether it is fixed by the signer, configurable by the admin, determined by the CSR <code>spec.expirationSeconds</code> field, etc and the behavior when the signer-determined expiration is different from the CSR <code>spec.expirationSeconds</code> field.</p>
+</li>
+<li>
+<p><strong>CA bit allowed/disallowed</strong>: and behavior if a CSR contains a request a for a CA certificate when the signer does not permit it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Commonly, the <code>status.certificate</code> field of a CertificateSigningRequest contains a single PEM-encoded X.509 certificate once the CSR is approved and the certificate is issued.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="kubernetes-signers">4.2. Kubernetes signers</h3>
+<div class="paragraph">
+<p>Kubernetes provides built-in signers that each have a well-known <code>signerName</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>kubernetes.io/kube-apiserver-client</code>: signs certificates that will be honored as client certificates by the API server. Never auto-approved by kube-controller-manager.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Trust distribution: signed certificates must be honored as client certificates by the API server. The CA bundle is not distributed by any other means.</p>
+</li>
+<li>
+<p>Permitted subjects: no subject restrictions, but approvers and signers may choose not to approve or sign.</p>
+</li>
+<li>
+<p>Permitted x509 extensions - honors subjectAltName and key usage extensions and discards other extensions.</p>
+</li>
+<li>
+<p>Permitted key usages: Must include <code>["client auth"]</code>. Must not include key usages beyond <code>["digital signature", "key encipherment", "client auth"]</code>.</p>
+</li>
+<li>
+<p>Expiration/certificate lifetime: for the kube-controller-manager implementation of this signer, set to the minimum of the <code>--cluster-signing-duration</code> option or, if specified, the <code>spec.expirationSeconds</code> field of the CSR object.</p>
+</li>
+<li>
+<p>CA bit allowed/disallowed: not allowed.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>kubernetes.io/kube-apiserver-client-kubelet</code>: signs client certificates that will be honored as client certificates by the API server. May be auto-approved by kube-controller-manager.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Trust distribution: signed certificates must be honored as client certificates by the API server. The CA bundle is not distributed by any other means.</p>
+</li>
+<li>
+<p>Permitted subjects: organizations are exactly <code>["system:nodes"]</code>, common name starts with <code>system:node:</code>.</p>
+</li>
+<li>
+<p>Permitted x509 extensions: honors key usage extensions, forbids subjectAltName extensions and drops other extensions.</p>
+</li>
+<li>
+<p>Permitted key usages: <code>["key encipherment", "digital signature", "client auth"]</code> or <code>["digital signature", "client auth"]</code>.</p>
+</li>
+<li>
+<p>Expiration/certificate lifetime: for the kube-controller-manager implementation of this signer, set to the minimum of the <code>--cluster-signing-duration</code> option or, if specified, the <code>spec.expirationSeconds</code> field of the CSR object.</p>
+</li>
+<li>
+<p>CA bit allowed/disallowed - not allowed.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>kubernetes.io/kubelet-serving</code>: signs serving certificates that are honored as a valid kubelet serving certificate by the API server, but has no other guarantees. Never auto-approved by kube-controller-manager.</p>
+<div class="openblock">
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Trust distribution: signed certificates must be honored by the API server as valid to terminate connections to a kubelet. The CA bundle is not distributed by any other means.</p>
+</li>
+<li>
+<p>Permitted subjects: organizations are exactly <code>["system:nodes"]</code>, common name starts with <code>system:node:</code>.</p>
+</li>
+<li>
+<p>Permitted x509 extensions: honors key usage and DNSName/IPAddress subjectAltName extensions, forbids EmailAddress and URI subjectAltName extensions, drops other extensions. At least one DNS or IP subjectAltName must be present.</p>
+</li>
+<li>
+<p>Permitted key usages: <code>["key encipherment", "digital signature", "server auth"]</code> or <code>["digital signature", "server auth"]</code>.</p>
+</li>
+<li>
+<p>Expiration/certificate lifetime: for the kube-controller-manager implementation of this signer, set to the minimum of the <code>--cluster-signing-duration</code> option or, if specified, the <code>spec.expirationSeconds</code> field of the CSR object.</p>
+</li>
+<li>
+<p>CA bit allowed/disallowed - not allowed.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The kube-controller-manager implements control plane signing for each of the built in signers. Failures for all of these are only reported in kube-controller-manager logs.</p>
+</div>
+<div class="paragraph">
+<p>A Kubernetes administrator (with appropriate permissions) can manually approve (or deny) CertificateSigningRequests by using the <code>kubectl certificate approve</code> and <code>kubectl certificate deny</code> commands.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="how-to-issue-a-certificate-for-a-user">4.3. How to issue a certificate for a user</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Generate a certificate signing request:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">openssl req <span class="se">\</span>
+  <span class="nt">-nodes</span> <span class="se">\</span>
+  <span class="nt">-newkey</span> rsa <span class="se">\</span>
+  <span class="nt">-subj</span> <span class="s2">"/CN=developer/O=developers"</span> <span class="se">\</span>
+  <span class="nt">-keyout</span> developer.key <span class="se">\</span>
+  <span class="nt">-out</span> developer-csr.pem</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a CertificateSigningRequest and submit it to Kubernetes Cluster:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl apply <span class="nt">-f</span> - <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: developers
+spec:
+  username: developer
+  groups: ["developers"]
+  request: </span><span class="si">$(</span><span class="nb">base64</span> &lt;<span class="o">(</span><span class="nb">cat </span>developer-csr.pem<span class="o">)</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s1">'\n'</span><span class="si">)</span><span class="sh">
+  usages: ["digital signature", "key encipherment", "client auth"]
+  #expirationSeconds: 7200
+  signerName: kubernetes.io/kube-apiserver-client
+EOF</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">certificatesigningrequest.certificates.k8s.io/developers created</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Approve the CertificateSigningRequest via <code>kubectl</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl get csr developers</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">NAME         AGE   SIGNERNAME                            REQUESTOR          REQUESTEDDURATION   CONDITION
+</span><span class="gp">developers   17s   kubernetes.io/kube-apiserver-client   kubernetes-admin   &lt;none&gt;</span><span class="w">              </span>Pending</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl certificate approve developers</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">certificatesigningrequest.certificates.k8s.io/developers approved</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Retrieve the certificate from the CSR object:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl get csr developers <span class="se">\</span>
+    <span class="nt">-ojsonpath</span><span class="o">=</span><span class="s1">'{.status.certificate}'</span> <span class="se">\</span>
+    | <span class="nb">base64</span> <span class="nt">-d</span> <span class="o">&gt;</span> developer.crt</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a kubeconfig file:</p>
+<div class="paragraph">
+<p>Below is a script to generate the kubeconfig named <code>developer.config</code> in the current directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace the CA file with your cluster</span>
+<span class="nv">certificate_authority</span><span class="o">=</span>/etc/kubernetes/pki/ca.crt
+
+kubectl config set-cluster <span class="se">\</span>
+    kubernetes <span class="se">\</span>
+    <span class="nt">--kubeconfig</span> developer.config <span class="se">\</span>
+    <span class="nt">--server</span> <span class="si">$(</span>kubectl config view <span class="nt">--minify</span> | <span class="nb">grep </span>server | <span class="nb">awk</span> <span class="s1">'{print $NF}'</span><span class="si">)</span> <span class="se">\</span>
+    <span class="nt">--certificate-authority</span> <span class="nv">$certificate_authority</span> <span class="se">\</span>
+    <span class="nt">--embed-certs</span>
+
+kubectl config set-credentials <span class="se">\</span>
+    developer <span class="se">\</span>
+    <span class="nt">--kubeconfig</span> developer.config <span class="se">\</span>
+    <span class="nt">--user</span> developer <span class="se">\</span>
+    <span class="nt">--client-key</span> developer.key <span class="se">\</span>
+    <span class="nt">--client-certificate</span> developer.crt <span class="se">\</span>
+    <span class="nt">--embed-certs</span>
+
+kubectl config set-context <span class="se">\</span>
+    developer@kubernetes <span class="se">\</span>
+    <span class="nt">--kubeconfig</span> developer.config <span class="se">\</span>
+    <span class="nt">--cluster</span> kubernetes <span class="se">\</span>
+    <span class="nt">--user</span> developer <span class="se">\</span>
+    <span class="nt">--namespace</span> default</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create Role and RoleBinding:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># create a cluster role named developer:namespace:view</span>
+<span class="c"># and assign the `get` and `list` permissions on `namespace` resources.</span>
+kubectl create clusterrole developer:namespace:view <span class="se">\</span>
+    <span class="nt">--resource</span> namespace <span class="se">\</span>
+    <span class="nt">--verb</span> get <span class="se">\</span>
+    <span class="nt">--verb</span> list
+
+kubectl create clusterrolebinding developer:namespace:view <span class="se">\</span>
+    <span class="nt">--clusterrole</span><span class="o">=</span>developer:namespace:view <span class="se">\</span>
+    <span class="nt">--user</span> developer</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get ns <span class="nt">--kubeconfig</span> developer.config
+<span class="go">NAME              STATUS   AGE
+default           Active   152d
+kube-node-lease   Active   152d
+kube-public       Active   152d
+kube-system       Active   152d</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="k8s-io-controlling-access"></a>[1] <a href="https://kubernetes.io/docs/concepts/security/controlling-access/" class="bare">https://kubernetes.io/docs/concepts/security/controlling-access/</a></p>
+</li>
+<li>
+<p><a id="k8s-io-authn"></a>[2] <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/" class="bare">https://kubernetes.io/docs/reference/access-authn-authz/authentication/</a></p>
+</li>
+<li>
+<p><a id="k8s-io-authz"></a>[3] <a href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/" class="bare">https://kubernetes.io/docs/reference/access-authn-authz/authorization/</a></p>
+</li>
+<li>
+<p><a id="k8s-io-auth-csr"></a>[4] <a href="https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/" class="bare">https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/</a></p>
+</li>
+<li>
+<p><a id="cncf-io-rbac"></a>[5] <a href="https://www.cncf.io/blog/2018/08/01/demystifying-rbac-in-kubernetes/" class="bare">https://www.cncf.io/blog/2018/08/01/demystifying-rbac-in-kubernetes/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

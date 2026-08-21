@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>TCP/IP: TCP Keepalive | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TCP/IP: TCP Keepalive" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Under some circumstances, it is useful for a client or server to become aware of the termination or loss of connection with its peer. In other circumstances, it is desirable to keep a minimal amount of data flowing over a connection, even if the applications do not have any to exchange. TCP keepalive provides a capability useful for both cases. Keepalive is a method for TCP to probe its peer without affecting the content of the data stream. It is driven by a keepalive timer. When the timer fires, a keepalive probe (keepalive for short) is sent, and the peer…" />
+<meta name="twitter:description" property="og:description" content="Under some circumstances, it is useful for a client or server to become aware of the termination or loss of connection with its peer. In other circumstances, it is desirable to keep a minimal amount of data flowing over a connection, even if the applications do not have any to exchange. TCP keepalive provides a capability useful for both cases. Keepalive is a method for TCP to probe its peer without affecting the content of the data stream. It is driven by a keepalive timer. When the timer fires, a keepalive probe (keepalive for short) is sent, and the peer…" />
+<link rel="canonical" href="https://blog.codefarm.me/tcp-ip-tcp-keepalive/" />
+<meta property="og:url" content="https://blog.codefarm.me/tcp-ip-tcp-keepalive/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-02-08T13:23:50+08:00" />
+<meta property="article:modified_time" content="2023-02-08T13:23:50+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="TCP/IP: TCP Keepalive" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-02-08T13:23:50+08:00","datePublished":"2023-02-08T13:23:50+08:00","description":"Under some circumstances, it is useful for a client or server to become aware of the termination or loss of connection with its peer. In other circumstances, it is desirable to keep a minimal amount of data flowing over a connection, even if the applications do not have any to exchange. TCP keepalive provides a capability useful for both cases. Keepalive is a method for TCP to probe its peer without affecting the content of the data stream. It is driven by a keepalive timer. When the timer fires, a keepalive probe (keepalive for short) is sent, and the peer…","headline":"TCP/IP: TCP Keepalive","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/tcp-ip-tcp-keepalive/"},"url":"https://blog.codefarm.me/tcp-ip-tcp-keepalive/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">TCP/IP: TCP Keepalive</h1><p class="c-post-meta">21 Jul 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Under some circumstances, it is useful for a client or server to become aware of the termination or loss of connection with its peer. In other circumstances, it is desirable to keep a minimal amount of data flowing over a connection, even if the applications do not have any to exchange. TCP <strong><em>keepalive</em></strong> provides a capability useful for both cases.</p>
+</div>
+<div class="paragraph">
+<p>Keepalive is a method for TCP to probe its peer without affecting the content of the data stream. It is driven by a <strong><em>keepalive timer</em></strong>. When the timer fires, a <strong><em>keepalive probe</em></strong> (<strong><em>keepalive</em></strong> for short) is sent, and the peer receiving the probe responds with an ACK.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Keepalives are not part of the TCP specification. The Host Requirements RFC [RFC1122] says that this is because they could</p>
+</div>
+<div class="paragraph">
+<p>(1) cause perfectly good connections to break during transient Internet failures,</p>
+</div>
+<div class="paragraph">
+<p>(2) consume unnecessary bandwidth, and</p>
+</div>
+<div class="paragraph">
+<p>(3) cost money for an Internet path that charges for packets.</p>
+</div>
+<div class="paragraph">
+<p>Nevertheless, most implementations provide the keepalive capability.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>TCP keepalive is a controversial feature. Many feel that polling of the other end has no place in TCP and should be done by the application, if desired. On the other hand, if many applications require such functionality, it is convenient to place it in TCP so that its implementation can be shared.</p>
+</div>
+<div class="paragraph">
+<p>The keepalive is an optionally enabled feature that can cause an otherwise good connection between two processes to be terminated because of a temporary loss of connectivity in the network joining the two end systems.</p>
+</div>
+<div class="paragraph">
+<p>The keepalive feature was originally intended for server applications that might tie up resources on behalf of a client and want to know if the client host crashes or goes away.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using TCP keepalive to detect dead clients is most useful for servers that expect to have a relatively short-duration dialogue with a noninteractive client (e.g., Web servers, POP and IMAP e-mail servers).</p>
+</li>
+<li>
+<p>Servers implementing more interactive-style services that last for a long time (e.g., remote login such as ssh and Windows Remote Desktop) might wish to avoid using keepalives.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Either end of a TCP connection may request keepalives, which are turned off by default, for their respective direction of the connection. A keepalive can be set for one side, both sides, or neither side.</p>
+</div>
+<div class="paragraph">
+<p>There are several configurable parameters that control the operation of keepalives.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If there is no activity on the connection for some period of time (called the <strong>keepalive time</strong>), the side(s) with keepalive enabled sends a keepalive probe to its peer(s).</p>
+</li>
+<li>
+<p>If no response is received, the probe is repeated periodically with a period set by the <strong>keepalive interval</strong> until a number of probes equal to the number <strong>keepalive probes</strong> is reached.</p>
+</li>
+<li>
+<p>If this happens, the peer&#8217;s system is determined to be unreachable and the connection is terminated.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A keepalive probe is an empty (or 1-byte) segment with sequence number equal to one less than the largest ACK number seen from the peer so far. Because this sequence number has already been ACKed by the receiving TCP, the arriving segment does no harm, but it elicits an ACK that is used to determine whether the connection is still operating.</p>
+</div>
+<div class="paragraph">
+<p>Anytime it is operating, a TCP using keepalives may find its peer in one of four states:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The peer host is still up and running and reachable.</p>
+<div class="paragraph">
+<p>The peer&#8217;s TCP responds normally and the requestor knows that the other end is still up.</p>
+</div>
+<div class="paragraph">
+<p>The requestor&#8217;s TCP resets the keepalive timer for later (equal to the value of the keepalive time).</p>
+</div>
+<div class="paragraph">
+<p>If there is application traffic across the connection before the next timer expires, the timer is reset back to the value of keepalive time.</p>
+</div>
+</li>
+<li>
+<p>The peer&#8217;s host has crashed and is either down or in the process of rebooting.</p>
+<div class="paragraph">
+<p>In either case, its TCP is not responding.</p>
+</div>
+<div class="paragraph">
+<p>The requestor does not receive a response to its probe, and it times out after a time specified by the <strong>keepalive interval</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The requestor sends a total of <strong>keepalive probes</strong> of these probes, <em>keepalive interval</em> time apart, and if it does not receive a response, the requestor considers the peer&#8217;s host as down and terminates the connection.</p>
+</div>
+</li>
+<li>
+<p>The client&#8217;s host has crashed and rebooted.</p>
+<div class="paragraph">
+<p>In this case, the server receives a response to its keepalive probe, but the response is a reset segment, causing the requestor to terminate the connection.</p>
+</div>
+</li>
+<li>
+<p>The peer&#8217;s host is up and running but is unreachable from the requestor for some reason (e.g., the network cannot deliver traffic and may or may not inform the peers of this fact using ICMP).</p>
+<div class="paragraph">
+<p>This is effectively the same as state 2, because TCP cannot distinguish between the two. All TCP can tell is that no replies are received to its probes.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>It is transparent to the application until one of states 2, 3, or 4 is determined. In these three cases, an error is returned to the requestor&#8217;s application by its TCP. (Normally the requestor has issued a read from the network, waiting for data from the peer. If the keepalive feature returns an error, it is returned to the requestor as the return value from the read.)</p>
+</div>
+<div class="paragraph">
+<p>In scenario 2 the error is something like “Connection timed out,” and in scenario 3 we expect “Connection reset by peer.” The fourth scenario may look as if the connection timed out, or may cause another error to be returned, depending on whether an ICMP error related to the connection is received and how it is processed.</p>
+</div>
+<div class="paragraph">
+<p>The values of the variables <em>keepalive time</em>, <em>keepalive interval</em>, and <em>keepalive probes</em> can usually be changed. Some systems allow these changes on a per-connection basis, while others allow them to be set only system-wide (or both in some cases).</p>
+</div>
+<div class="paragraph">
+<p>In Linux, these values are available as <code>sysctl</code> variables with the names <code>net.ipv4.tcp_keepalive_time</code>, <code>net.ipv4.tcp_keepalive_intvl</code>, and <code>net.ipv4.tcp_keepalive_probes</code>, respectively. The defaults are 7200 (seconds, or 2 hours), 75 (seconds), and 9 (probes).</p>
+</div>
+<div class="paragraph">
+<p>In FreeBSD and Mac OS X, the first two values are also available as <code>sysctl</code> variables called <code>net.inet.tcp.keepidle</code> and <code>net.inet.tcp.keepintvl</code>, with default values 7,200,000 (milliseconds, or 2 hours) and 75,000 (milliseconds, or 75s), respectively. These systems also have a Boolean variable called <code>net.inet.tcp.always_keepalive</code>. If this value is enabled, all TCP connections have the keepalive function enabled, even if the application did not request it. In these systems, the number of probes is a fixed default value: 8 (FreeBSD) or 9 (Mac OS X).</p>
+</div>
+<div class="paragraph">
+<p>In Windows, these values are available for modification via registry entries under the system key:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The value <code>KeepAliveTime</code> defaults to 7,200,000ms (2 hours); <code>KeepAlive-Interval</code> defaults to 1000ms (1s). If there is no response to ten keepalive probes, Windows terminates the connection.</p>
+</div>
+<div class="paragraph">
+<p>TCP keepalives contain no user-level data, so the use of encryption is limited at best. The consequence is that TCP keepalives may be spoofed. When TCP keepalives are spoofed, the victim can be coerced into keeping resources allocated for a period longer than intended.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="TCPIPV1"></a>[TCPIPV1] Kevin Fall, W. Stevens <em>TCP/IP Illustrated: The Protocols, Volume 1</em>. 2nd edition, Addison-Wesley Professional, 2011</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

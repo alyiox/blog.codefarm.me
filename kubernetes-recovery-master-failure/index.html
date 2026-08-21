@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Kubernetes Recovery from Master Failure with Kubeadm | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Kubernetes Recovery from Master Failure with Kubeadm" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="# Backup Kubernetes PKI #!/bin/sh KUBE_CERT_DIR=&quot;/etc/kubernetes/pki&quot; BACKUP_CERT_DIR=&quot;/backup&quot; if [ ! -d $BACKUP_CERT_DIR ] then mkdir -p $BACKUP_CERT_DIR fi cp -a $KUBE_CERT_DIR $BACKUP_CERT_DIR # Backup Kubernetes Etcd database with a CronJob object The CronJob must be scheduled to Kubernetes Master node. apiVersion: batch/v1beta1 kind: CronJob metadata: name: etcd-snapshot namespace: kube-system spec: schedule: &quot;59 23 * * *&quot; jobTemplate: spec: template: spec: containers: - name: backup # Same image as in /etc/kubernetes/manifests/etcd.yaml image: k8s.gcr.io/etcd:3.3.10 env: - name: ETCDCTL_API value: &quot;3&quot; command: [&quot;/bin/sh&quot;] args: [&quot;-c&quot;, &quot;etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key snapshot save /backup/etcd/snapshot-$(date +%Y-%m-%d_%H-%M-%S_%Z).db&quot;] volumeMounts: - mountPath: /etc/kubernetes/pki/etcd name: etcd-certs readOnly: true -…" />
+<meta name="twitter:description" property="og:description" content="# Backup Kubernetes PKI #!/bin/sh KUBE_CERT_DIR=&quot;/etc/kubernetes/pki&quot; BACKUP_CERT_DIR=&quot;/backup&quot; if [ ! -d $BACKUP_CERT_DIR ] then mkdir -p $BACKUP_CERT_DIR fi cp -a $KUBE_CERT_DIR $BACKUP_CERT_DIR # Backup Kubernetes Etcd database with a CronJob object The CronJob must be scheduled to Kubernetes Master node. apiVersion: batch/v1beta1 kind: CronJob metadata: name: etcd-snapshot namespace: kube-system spec: schedule: &quot;59 23 * * *&quot; jobTemplate: spec: template: spec: containers: - name: backup # Same image as in /etc/kubernetes/manifests/etcd.yaml image: k8s.gcr.io/etcd:3.3.10 env: - name: ETCDCTL_API value: &quot;3&quot; command: [&quot;/bin/sh&quot;] args: [&quot;-c&quot;, &quot;etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key snapshot save /backup/etcd/snapshot-$(date +%Y-%m-%d_%H-%M-%S_%Z).db&quot;] volumeMounts: - mountPath: /etc/kubernetes/pki/etcd name: etcd-certs readOnly: true -…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-recovery-master-failure/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-recovery-master-failure/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-05-22T11:21:04+08:00" />
+<meta property="article:modified_time" content="2019-05-22T11:21:04+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Kubernetes Recovery from Master Failure with Kubeadm" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-05-22T11:21:04+08:00","datePublished":"2019-05-22T11:21:04+08:00","description":"# Backup Kubernetes PKI #!/bin/sh KUBE_CERT_DIR=&quot;/etc/kubernetes/pki&quot; BACKUP_CERT_DIR=&quot;/backup&quot; if [ ! -d $BACKUP_CERT_DIR ] then mkdir -p $BACKUP_CERT_DIR fi cp -a $KUBE_CERT_DIR $BACKUP_CERT_DIR # Backup Kubernetes Etcd database with a CronJob object The CronJob must be scheduled to Kubernetes Master node. apiVersion: batch/v1beta1 kind: CronJob metadata: name: etcd-snapshot namespace: kube-system spec: schedule: &quot;59 23 * * *&quot; jobTemplate: spec: template: spec: containers: - name: backup # Same image as in /etc/kubernetes/manifests/etcd.yaml image: k8s.gcr.io/etcd:3.3.10 env: - name: ETCDCTL_API value: &quot;3&quot; command: [&quot;/bin/sh&quot;] args: [&quot;-c&quot;, &quot;etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt --key=/etc/kubernetes/pki/etcd/healthcheck-client.key snapshot save /backup/etcd/snapshot-$(date +%Y-%m-%d_%H-%M-%S_%Z).db&quot;] volumeMounts: - mountPath: /etc/kubernetes/pki/etcd name: etcd-certs readOnly: true -…","headline":"Kubernetes Recovery from Master Failure with Kubeadm","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-recovery-master-failure/"},"url":"https://blog.codefarm.me/kubernetes-recovery-master-failure/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Kubernetes Recovery from Master Failure with Kubeadm</h1><p class="c-post-meta">22 May 2019</p>
+  </header>
+
+  <div class="c-post-content">
+    <h4 id="-backup-kubernetes-pki"># Backup Kubernetes PKI</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+
+<span class="nv">KUBE_CERT_DIR</span><span class="o">=</span><span class="s2">"/etc/kubernetes/pki"</span>
+<span class="nv">BACKUP_CERT_DIR</span><span class="o">=</span><span class="s2">"/backup"</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-d</span> <span class="nv">$BACKUP_CERT_DIR</span> <span class="o">]</span>
+<span class="k">then
+    </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$BACKUP_CERT_DIR</span> 
+<span class="k">fi
+
+</span><span class="nb">cp</span> <span class="nt">-a</span> <span class="nv">$KUBE_CERT_DIR</span> <span class="nv">$BACKUP_CERT_DIR</span>
+</code></pre></div></div>
+
+<h4 id="-backup-kubernetes-etcd-database-with-a-cronjob-object"># Backup Kubernetes Etcd database with a CronJob object</h4>
+
+<p><strong><em>The CronJob must be scheduled to Kubernetes Master node.</em></strong></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">batch/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">CronJob</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">etcd-snapshot</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">schedule</span><span class="pi">:</span> <span class="s2">"</span><span class="s">59</span><span class="nv"> </span><span class="s">23</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">*"</span>
+  <span class="na">jobTemplate</span><span class="pi">:</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">template</span><span class="pi">:</span>
+        <span class="na">spec</span><span class="pi">:</span>
+          <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">backup</span>
+              <span class="c1"># Same image as in /etc/kubernetes/manifests/etcd.yaml</span>
+              <span class="na">image</span><span class="pi">:</span> <span class="s">k8s.gcr.io/etcd:3.3.10</span>
+              <span class="na">env</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">ETCDCTL_API</span>
+                  <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3"</span>
+              <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/sh"</span><span class="pi">]</span>
+              <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">etcdctl</span><span class="nv"> </span><span class="s">--endpoints=https://127.0.0.1:2379</span><span class="nv"> </span><span class="s">--cacert=/etc/kubernetes/pki/etcd/ca.crt</span><span class="nv"> </span><span class="s">--cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt</span><span class="nv"> </span><span class="s">--key=/etc/kubernetes/pki/etcd/healthcheck-client.key</span><span class="nv"> </span><span class="s">snapshot</span><span class="nv"> </span><span class="s">save</span><span class="nv"> </span><span class="s">/backup/etcd/snapshot-$(date</span><span class="nv"> </span><span class="s">+%Y-%m-%d_%H-%M-%S_%Z).db"</span><span class="pi">]</span>
+              <span class="na">volumeMounts</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/etc/kubernetes/pki/etcd</span>
+                  <span class="na">name</span><span class="pi">:</span> <span class="s">etcd-certs</span>
+                  <span class="na">readOnly</span><span class="pi">:</span> <span class="kc">true</span>
+                <span class="pi">-</span> <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/backup/etcd</span>
+                  <span class="na">name</span><span class="pi">:</span> <span class="s">backup</span>
+          <span class="na">hostNetwork</span><span class="pi">:</span> <span class="kc">true</span>
+          <span class="na">restartPolicy</span><span class="pi">:</span> <span class="s">OnFailure</span>
+          <span class="na">affinity</span><span class="pi">:</span>
+            <span class="na">nodeAffinity</span><span class="pi">:</span>
+              <span class="na">requiredDuringSchedulingIgnoredDuringExecution</span><span class="pi">:</span>
+                <span class="na">nodeSelectorTerms</span><span class="pi">:</span>
+                  <span class="pi">-</span> <span class="na">matchExpressions</span><span class="pi">:</span>
+                    <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">node-role.kubernetes.io/master</span>
+                      <span class="na">operator</span><span class="pi">:</span> <span class="s">Exists</span>
+          <span class="na">tolerations</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">effect</span><span class="pi">:</span> <span class="s">NoSchedule</span>
+              <span class="na">operator</span><span class="pi">:</span> <span class="s">Exists</span>
+          <span class="na">volumes</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">etcd-certs</span>
+              <span class="na">hostPath</span><span class="pi">:</span>
+                <span class="na">path</span><span class="pi">:</span> <span class="s">/etc/kubernetes/pki/etcd</span>
+                <span class="na">type</span><span class="pi">:</span> <span class="s">Directory</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">backup</span>
+              <span class="na">hostPath</span><span class="pi">:</span>
+                <span class="na">path</span><span class="pi">:</span> <span class="s">/backup/etcd</span>
+                <span class="na">type</span><span class="pi">:</span> <span class="s">DirectoryOrCreate</span>
+</code></pre></div></div>
+
+<h4 id="-recovery-from-master-failure-with-kubeadm"># Recovery from Master Failure with Kubeadm</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#/bin/sh</span>
+
+<span class="c">#####################################</span>
+<span class="c"># Recovery from Master Failure      #</span>
+<span class="c">#####################################</span>
+
+<span class="k">if </span>kubectl cluster-info <span class="o">&gt;</span> /dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then
+    </span>kubectl cluster-info
+    <span class="nb">exit </span>0
+<span class="k">fi</span>
+
+<span class="c"># Restore Kubernetes certificates</span>
+<span class="nv">KUBE_CERT_DIR</span><span class="o">=</span><span class="s2">"/etc/kubernetes"</span>
+<span class="nv">BACKUP_CERT_DIR</span><span class="o">=</span><span class="s2">"/backup/pki"</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$KUBE_CERT_DIR</span> 
+<span class="nb">cp</span> <span class="nt">-a</span> <span class="nv">$BACKUP_CERT_DIR</span> <span class="nv">$KUBE_CERT_DIR</span>
+
+<span class="c"># Restore etcd data</span>
+<span class="nv">ETCD_IMAGE</span><span class="o">=</span><span class="s2">"k8s.gcr.io/etcd:3.3.10"</span>
+<span class="c"># ETCD_SNAPSHOT="snapshot-2019-05-21_06-48-06_UTC.db"</span>
+<span class="nv">ETCD_SNAPSHOT</span><span class="o">=</span><span class="s2">"snapshot-2019-05-21_09-05-11_UTC.db"</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> /var/lib/etcd
+docker run <span class="nt">--rm</span> <span class="se">\</span>
+    <span class="nt">-v</span> <span class="s1">'/backup:/backup'</span> <span class="se">\</span>
+    <span class="nt">-v</span> <span class="s1">'/var/lib/etcd:/var/lib/etcd'</span> <span class="se">\</span>
+    <span class="nt">--env</span> <span class="nv">ETCDCTL_API</span><span class="o">=</span>3 <span class="se">\</span>
+    <span class="s2">"</span><span class="nv">$ETCD_IMAGE</span><span class="s2">"</span> <span class="se">\</span>
+    /bin/sh <span class="nt">-c</span> <span class="s2">"etcdctl snapshot restore '/backup/etcd/</span><span class="nv">$ETCD_SNAPSHOT</span><span class="s2">' ; mv /default.etcd/member/ /var/lib/etcd/"</span>
+
+<span class="c"># Init Kubernetes with Kubeadm</span>
+kubeadm init <span class="se">\</span>
+    <span class="nt">--ignore-preflight-errors</span><span class="o">=</span>DirAvailable--var-lib-etcd
+</code></pre></div></div>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Intro to .NET (Core) | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Intro to .NET (Core)" />
+<meta property="og:locale" content="en" />
+<meta name="description" content=".NET .NET Standard specification .NET Framework .NET Core Xamarin/Mono Deep into .NET Core Packages Metapackages .NET Core SDK .NET Core CLI Target frameworks .NET Standard framework .NET Core Application framework .NET Framework Introduction to ASP.NET Core References .NET .NET is a free, cross-platform, open source developer platform for building many different types of applications. With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, gaming, and IoT. .NET Framework/.NET Core/Mono (Xamarin) C#/VB.NET/F# Assembly/DLL/MSIL Common Language Runtime (CLR) GC/JIT CoreCLR Base Class Library (BCL) CoreFX Framework Class Library (FCL) ASP.NET/Windows Forms/WPF ASP.NET Core .NET Standard…" />
+<meta name="twitter:description" property="og:description" content=".NET .NET Standard specification .NET Framework .NET Core Xamarin/Mono Deep into .NET Core Packages Metapackages .NET Core SDK .NET Core CLI Target frameworks .NET Standard framework .NET Core Application framework .NET Framework Introduction to ASP.NET Core References .NET .NET is a free, cross-platform, open source developer platform for building many different types of applications. With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, gaming, and IoT. .NET Framework/.NET Core/Mono (Xamarin) C#/VB.NET/F# Assembly/DLL/MSIL Common Language Runtime (CLR) GC/JIT CoreCLR Base Class Library (BCL) CoreFX Framework Class Library (FCL) ASP.NET/Windows Forms/WPF ASP.NET Core .NET Standard…" />
+<link rel="canonical" href="https://blog.codefarm.me/intro-to-net-core/" />
+<meta property="og:url" content="https://blog.codefarm.me/intro-to-net-core/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-04-07T17:10:15+08:00" />
+<meta property="article:modified_time" content="2018-04-07T17:10:15+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Intro to .NET (Core)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-04-07T17:10:15+08:00","datePublished":"2018-04-07T17:10:15+08:00","description":".NET .NET Standard specification .NET Framework .NET Core Xamarin/Mono Deep into .NET Core Packages Metapackages .NET Core SDK .NET Core CLI Target frameworks .NET Standard framework .NET Core Application framework .NET Framework Introduction to ASP.NET Core References .NET .NET is a free, cross-platform, open source developer platform for building many different types of applications. With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, gaming, and IoT. .NET Framework/.NET Core/Mono (Xamarin) C#/VB.NET/F# Assembly/DLL/MSIL Common Language Runtime (CLR) GC/JIT CoreCLR Base Class Library (BCL) CoreFX Framework Class Library (FCL) ASP.NET/Windows Forms/WPF ASP.NET Core .NET Standard…","headline":"Intro to .NET (Core)","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/intro-to-net-core/"},"url":"https://blog.codefarm.me/intro-to-net-core/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Intro to .NET (Core)</h1><p class="c-post-meta">07 Apr 2018</p>
+  </header>
+
+  <div class="c-post-content">
+    <ul id="markdown-toc">
+  <li><a href="#net" id="markdown-toc-net">.NET</a>    <ul>
+      <li><a href="#net-standard-specification" id="markdown-toc-net-standard-specification">.NET Standard <small>specification</small></a></li>
+      <li><a href="#net-framework" id="markdown-toc-net-framework">.NET Framework</a></li>
+      <li><a href="#net-core" id="markdown-toc-net-core">.NET Core</a></li>
+      <li><a href="#xamarinmono" id="markdown-toc-xamarinmono">Xamarin/Mono</a></li>
+    </ul>
+  </li>
+  <li><a href="#deep-into-net-core" id="markdown-toc-deep-into-net-core">Deep into .NET Core</a>    <ul>
+      <li><a href="#packages" id="markdown-toc-packages">Packages</a></li>
+      <li><a href="#metapackages" id="markdown-toc-metapackages">Metapackages</a></li>
+      <li><a href="#net-core-sdk" id="markdown-toc-net-core-sdk">.NET Core SDK</a></li>
+      <li><a href="#net-core-cli" id="markdown-toc-net-core-cli">.NET Core CLI</a></li>
+    </ul>
+  </li>
+  <li><a href="#target-frameworks" id="markdown-toc-target-frameworks">Target frameworks</a>    <ul>
+      <li><a href="#net-standard-framework" id="markdown-toc-net-standard-framework">.NET Standard <small>framework</small></a></li>
+      <li><a href="#net-core-application-framework" id="markdown-toc-net-core-application-framework">.NET Core Application <small>framework</small></a></li>
+      <li><a href="#net-framework-1" id="markdown-toc-net-framework-1">.NET Framework</a></li>
+    </ul>
+  </li>
+  <li><a href="#introduction-to-aspnet-core" id="markdown-toc-introduction-to-aspnet-core">Introduction to ASP.NET Core</a></li>
+  <li><a href="#references" id="markdown-toc-references">References</a></li>
+</ul>
+<hr />
+
+<h2 id="net">.NET</h2>
+
+<p><img src="/assets/intro-dot-net/dot-net-arch.png" alt=".NET" /></p>
+
+<ul>
+  <li>.NET is a free, cross-platform, open source developer platform for building many different types of applications.</li>
+  <li>With .NET, you can use multiple languages, editors, and libraries to build for web, mobile, desktop, gaming, and IoT.</li>
+  <li>.NET Framework/.NET Core/Mono (Xamarin)
+    <ul>
+      <li><strong>C#</strong>/VB.NET/F#</li>
+      <li>Assembly/DLL/MS<strong>IL</strong></li>
+    </ul>
+  </li>
+  <li>Common Language Runtime (CLR)
+    <ul>
+      <li>GC/JIT</li>
+      <li><strong>CoreCLR</strong></li>
+    </ul>
+  </li>
+  <li>Base Class Library (BCL)
+    <ul>
+      <li><strong>CoreFX</strong></li>
+    </ul>
+  </li>
+  <li>Framework Class Library (FCL)
+    <ul>
+      <li>ASP.NET/Windows Forms/WPF</li>
+      <li><strong>ASP.NET Core</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="net-standard-specification">.NET Standard <small>specification</small></h3>
+
+<ul>
+  <li>The .NET Standard is <strong>a formal specification of .NET APIs that are intended to be available on all .NET implementations</strong>. The motivation behind the .NET Standard is establishing greater uniformity in the <strong>.NET ecosystem</strong>.</li>
+  <li>The .NET Standard enables the following key scenarios:
+    <ul>
+      <li>Defines uniform set of BCL APIs for all .NET implementations to implement, independent of workload.</li>
+      <li>Enables developers to produce <strong>portable libraries</strong> that are usable <strong>across .NET implementations</strong>, using this same set of APIs.</li>
+      <li>Reduces or even eliminates conditional compilation of shared source due to .NET APIs, only for OS APIs.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/assets/intro-dot-net/dot-net-standard-implementation-support.png" alt=".NET Standard" /></p>
+
+<h3 id="net-framework">.NET Framework</h3>
+
+<ul>
+  <li>
+    <p>An implementation of .NET that <strong>runs only on Windows</strong>.</p>
+  </li>
+  <li>
+    <p>Includes the Common Language Runtime (CLR), the Base Class Library, and application framework libraries such as ASP.NET, Windows Forms, and WPF.</p>
+  </li>
+</ul>
+
+<h3 id="net-core">.NET Core</h3>
+
+<ul>
+  <li>A <strong>cross-platform</strong>, high-performance, open source implementation of .NET.</li>
+  <li>Includes the Core Common Language Runtime (<strong>CoreCLR</strong>), the Core AOT Runtime (<strong>CoreRT</strong>, in development), the Core Base Class Library (<strong>CoreFX</strong>), and the <strong>Core SDK</strong>.</li>
+  <li>.NET Core can be thought of as a cross-platform version of the .NET Framework, at the layer of the .NET Framework Base Class Libraries (BCL). It <strong>implements the .NET Standard specification</strong>. .NET Core provides a subset of the APIs that are available in the .NET Framework or Mono/Xamarin.</li>
+  <li><strong>Flexible deployment</strong>: Can be included in your app or installed side-by-side user- or machine-wide.</li>
+  <li><strong>Cross-platform</strong>: Runs on Windows, macOS and Linux; can be ported to other operating systems.</li>
+  <li><strong>Command-line tools</strong>: All product scenarios can be exercised at the command-line.</li>
+  <li><strong>Compatible</strong>: .NET Core is compatible with .NET Framework, Xamarin and Mono, via the .NET Standard.</li>
+  <li><strong>Open source</strong>: The .NET Core platform is open source, using MIT and Apache 2 licenses. Documentation is licensed under CC-BY. .NET Core is a .NET Foundation project.</li>
+  <li><strong>Supported by Microsoft</strong>: .NET Core is supported by Microsoft, per .NET Core Support</li>
+</ul>
+
+<h3 id="xamarinmono">Xamarin/Mono</h3>
+
+<ul>
+  <li>Mono is a .NET implementation that is mainly used when a <strong>small runtime</strong> is required.</li>
+  <li>It is the runtime that powers <strong>Xamarin</strong> applications on <strong>Android</strong>, <strong>Mac</strong>, <strong>iOS</strong>, <strong>tvOS</strong> and <strong>watchOS</strong> and is focused primarily on apps that require a small footprint.</li>
+  <li>Historically, Mono implemented the larger API of the .NET Framework and emulated some of the most popular capabilities on Unix.</li>
+</ul>
+
+<h2 id="deep-into-net-core">Deep into .NET Core</h2>
+
+<ul>
+  <li>.NET Core is a platform made of NuGet <strong>packages</strong>. Some product experiences benefit from fine-grained definition of packages while others from coarse-grained. To accommodate this duality, the product is distributed as a fine-grained set of packages and then described in coarser chunks with a package type informally called a “<strong>metapackage</strong>”.</li>
+  <li>Each of the .NET Core packages support being run on multiple .NET implementations, represented as <strong>frameworks</strong>. Some of those frameworks are traditional frameworks, like <strong>net461</strong>, representing the .NET Framework. Another set is new frameworks that can be thought of as “<strong>package-based frameworks</strong>”, like <strong>netcoreapp2.0</strong>, which establish a new model for defining frameworks. These package-based frameworks are entirely formed and defined as packages, forming a strong relationship between packages and frameworks.</li>
+</ul>
+
+<h3 id="packages">Packages</h3>
+
+<ul>
+  <li>.NET Core is split into a set of packages, which provide primitives, higher-level data types, app composition types and common utilities. **Each of these packages represent a single assembly of the same name. **</li>
+  <li>There are advantages to defining packages in a fine-grained manner:
+    <ul>
+      <li>Fine-grained packages can ship on their own schedule with relatively limited testing of other packages.</li>
+      <li>Fine-grained packages can provide differing OS and CPU support.</li>
+      <li>Fine-grained packages can have dependencies specific to only one library.</li>
+      <li>Apps are smaller because unreferenced packages don’t become part of the app distribution.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="metapackages">Metapackages</h3>
+
+<ul>
+  <li>Metapackages are a NuGet package convention for describing a set of packages that are meaningful together. They represent this set of packages by making them dependencies. They can optionally establish a framework for this set of packages by specifying a framework (<strong>Package-based Frameworks</strong>).</li>
+  <li><strong>NETStandard.Library</strong> - Describes the libraries that are part of the “.NET Standard”. Applies to all .NET implementations (for example, .NET Framework, .NET Core and Mono) that support .NET Standard. Establishes the ‘netstandard’ framework.</li>
+  <li><strong>Microsoft.NETCore.App</strong> - Describes the libraries that are part of the .NET Core distribution. Establishes the <strong>.NETCoreApp</strong> framework.</li>
+</ul>
+
+<h3 id="net-core-sdk">.NET Core SDK</h3>
+
+<ul>
+  <li>.NET Core Software Development Kit (SDK) is a set of libraries and tools that allow developers to create .NET Core applications and libraries.</li>
+  <li>It contains the following components:
+    <ul>
+      <li>The .NET Core Command Line Tools that are used to build applications</li>
+      <li>.NET Core (libraries and runtime) that allow applications to both be built and run</li>
+      <li>The <strong>dotnet</strong> driver for running the CLI commands as well as running applications</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="net-core-cli">.NET Core CLI</h3>
+
+<ul>
+  <li>The .NET Core command-line interface (CLI) is <strong>a new cross-platform toolchain for developing .NET applications</strong>.</li>
+  <li>The CLI is a foundation upon which higher-level tools, such as Integrated Development Environments (IDEs), editors, and build orchestrators, can rest.</li>
+  <li>Basic commands
+    <ul>
+      <li>restore/<strong>build</strong>/<strong>publish</strong>/<strong>run</strong>/test/<strong>pack</strong>/clean/help</li>
+    </ul>
+  </li>
+  <li>Project modification commands
+    <ul>
+      <li>add package/add reference/remove package/remove reference/list reference</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="target-frameworks">Target frameworks</h2>
+
+<ul>
+  <li>The collection of APIs that a .NET app or library relies on.</li>
+  <li>An app or library can target <strong>a version of .NET Standard</strong> (for example, .NET Standard 2.0), which is specification for a standardized set of APIs across all .NET implementations.</li>
+  <li>An app or library can also target <strong>a version of a specific .NET implementation</strong>, in which case it gets access to implementation-specific APIs. For example, an app that targets Xamarin.iOS gets access to Xamarin-provided iOS API wrappers.</li>
+</ul>
+
+<h3 id="net-standard-framework">.NET Standard <small>framework</small></h3>
+
+<ul>
+  <li>The .NET Standard (TFM: <strong>netstandard</strong>) framework represents the APIs defined by and built on top of the .NET Standard. Libraries that are intended to run on multiple runtimes should target this framework.</li>
+  <li>They will be <strong>supported on any .NET Standard compliant runtime</strong>, such as .NET Core, .NET Framework and Mono/Xamarin. Each of these runtimes supports a set of .NET Standard versions, depending on which APIs they implement.</li>
+  <li>The <strong>netstandard framework</strong> implicitly references the <strong>NETStandard.Library</strong> metapackage.</li>
+</ul>
+
+<h3 id="net-core-application-framework">.NET Core Application <small>framework</small></h3>
+
+<ul>
+  <li>The .NET Core Application (TFM: <strong>netcoreapp</strong>) framework represents the packages and associated APIs that come with the .NET Core distribution and the <strong>console application model</strong> that it provides.</li>
+  <li><strong>.NET Core apps must use this framework, due to targeting the console application model</strong>, as should libraries that intended to run only on .NET Core. Using this framework restricts apps and libraries to running only on .NET Core.</li>
+</ul>
+
+<h3 id="net-framework-1">.NET Framework</h3>
+
+<ul>
+  <li>The .NET Framework (TFM: <strong>net</strong>) represents the available APIs defined by the assemblies that a .NET implementation installs on Windows platform, which includes application framework APIs (for example, ASP.NET, WinForms and WPF).</li>
+</ul>
+
+<h2 id="introduction-to-aspnet-core">Introduction to ASP.NET Core</h2>
+
+<ul>
+  <li>ASP.NET Core is a cross-platform, high-performance, open-source framework for building modern, cloud-based, Internet-connected applications.</li>
+  <li>Startup / DI / Middleware / Routing / Hosting</li>
+  <li>Model Binding / Controllers / Views / Filters</li>
+  <li>Kestrel (libuv) / IIS (ANCM) / Nginx</li>
+</ul>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// An ASP.NET Core application is a console app that creates a web server in its Main method:</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Hosting</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">aspnetcoreapp</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nf">BuildWebHost</span><span class="p">(</span><span class="n">args</span><span class="p">).</span><span class="nf">Run</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="k">public</span> <span class="k">static</span> <span class="n">IWebHost</span> <span class="nf">BuildWebHost</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">=&gt;</span>
+            <span class="n">WebHost</span><span class="p">.</span><span class="nf">CreateDefaultBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+                <span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>What is .NET?, <a href="https://www.microsoft.com/net/learn/what-is-dotnet">https://www.microsoft.com/net/learn/what-is-dotnet</a></li>
+  <li>.NET Glossary, <a href="https://docs.microsoft.com/en-us/dotnet/standard/glossary">https://docs.microsoft.com/en-us/dotnet/standard/glossary</a></li>
+  <li>.NET architectural components, <a href="https://docs.microsoft.com/en-us/dotnet/standard/components">https://docs.microsoft.com/en-us/dotnet/standard/components</a></li>
+  <li>.NET Standard, <a href="https://docs.microsoft.com/en-us/dotnet/standard/net-standard">https://docs.microsoft.com/en-us/dotnet/standard/net-standard</a></li>
+  <li>Introduction to ASP.NET Core, <a href="https://docs.microsoft.com/en-us/aspnet/core/">https://docs.microsoft.com/en-us/aspnet/core/</a></li>
+  <li><a href="https://github.com/dotnet">https://github.com/dotnet</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

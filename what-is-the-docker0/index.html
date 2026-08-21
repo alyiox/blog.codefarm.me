@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>What is the docker0 in Docker | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="What is the docker0 in Docker" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Docker network overview 2. Bridge network driver 2.1. Configure the default bridge network 2.2. Configure the user-defined bridge network 2.3. Reset the bridge network settings References TL.DR: The docker0 is the default bridge when starting the Docker daemon. 1. Docker network overview Container networking refers to the ability for containers to connect to and communicate with each other, or to non-Docker workloads. [1] Containers have networking enabled by default, and they can make outgoing connections. A container has no information about what kind of network it&#8217;s attached to, or whether their peers are also Docker workloads or not. A…" />
+<meta name="twitter:description" property="og:description" content="1. Docker network overview 2. Bridge network driver 2.1. Configure the default bridge network 2.2. Configure the user-defined bridge network 2.3. Reset the bridge network settings References TL.DR: The docker0 is the default bridge when starting the Docker daemon. 1. Docker network overview Container networking refers to the ability for containers to connect to and communicate with each other, or to non-Docker workloads. [1] Containers have networking enabled by default, and they can make outgoing connections. A container has no information about what kind of network it&#8217;s attached to, or whether their peers are also Docker workloads or not. A…" />
+<link rel="canonical" href="https://blog.codefarm.me/what-is-the-docker0/" />
+<meta property="og:url" content="https://blog.codefarm.me/what-is-the-docker0/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-25T11:56:05+08:00" />
+<meta property="article:modified_time" content="2024-01-25T11:56:05+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="What is the docker0 in Docker" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-01-25T11:56:05+08:00","datePublished":"2024-01-25T11:56:05+08:00","description":"1. Docker network overview 2. Bridge network driver 2.1. Configure the default bridge network 2.2. Configure the user-defined bridge network 2.3. Reset the bridge network settings References TL.DR: The docker0 is the default bridge when starting the Docker daemon. 1. Docker network overview Container networking refers to the ability for containers to connect to and communicate with each other, or to non-Docker workloads. [1] Containers have networking enabled by default, and they can make outgoing connections. A container has no information about what kind of network it&#8217;s attached to, or whether their peers are also Docker workloads or not. A…","headline":"What is the docker0 in Docker","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/what-is-the-docker0/"},"url":"https://blog.codefarm.me/what-is-the-docker0/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">What is the docker0 in Docker</h1><p class="c-post-meta">25 Jan 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#docker-network-overview">1. Docker network overview</a></li>
+<li><a href="#bridge-network-driver">2. Bridge network driver</a>
+<ul class="sectlevel2">
+<li><a href="#configure-the-default-bridge-network">2.1. Configure the default bridge network</a></li>
+<li><a href="#configure-the-user-defined-bridge-network">2.2. Configure the user-defined bridge network</a></li>
+<li><a href="#reset-the-bridge-network-settings">2.3. Reset the bridge network settings</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>TL.DR: The <code>docker0</code> is the default bridge when starting the Docker daemon.</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="docker-network-overview">1. Docker network overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Container networking refers to the ability for containers to connect to and communicate with each other, or to non-Docker workloads. <a href="#network-overview">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>Containers have networking enabled by default, and they can make outgoing connections. A container has no information about what kind of network it&#8217;s attached to, or whether their peers are also Docker workloads or not. A container only sees a network interface with an IP address, a gateway, a routing table, DNS services, and other networking details. That is, unless the container uses the <code>none</code> network driver.</p>
+</div>
+<div class="paragraph">
+<p>You can create custom, user-defined networks, and connect multiple containers to the same network. Once connected to a user-defined network, containers can communicate with each other using container IP addresses or container names.</p>
+</div>
+<div class="paragraph">
+<p>The following example creates a network using the bridge network driver and running a container in the created network:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create <span class="nt">-d</span> bridge my-net
+docker run <span class="nt">--network</span><span class="o">=</span>my-net <span class="nt">-itd</span> <span class="nt">--name</span><span class="o">=</span>container3 busybox</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following network drivers are available by default, and provide core networking functionality:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 65%;">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 87.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Driver</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bridge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default network driver.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Remove network isolation between the container and the Docker host.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">none</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Completely isolate a container from the host and other containers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">overlay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Overlay networks connect multiple Docker daemons together.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ipvlan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IPvlan networks provide full control over both IPv4 and IPv6 addressing.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">macvlan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Assign a MAC address to a container.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="bridge-network-driver">2. Bridge network driver</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In terms of networking, a bridge network is a Link Layer device which forwards traffic between network segments. A bridge can be a hardware device or a software device running within a host machine&#8217;s kernel. <a href="#network-bridge">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>In terms of Docker, a bridge network uses a software bridge which lets containers connected to the same bridge network communicate, while providing isolation from containers that aren&#8217;t connected to that bridge network. The Docker bridge driver automatically installs rules in the host machine so that containers on different bridge networks can&#8217;t communicate directly with each other.</p>
+</div>
+<div class="paragraph">
+<p>Bridge networks apply to containers running on the same Docker daemon host. For communication among containers running on different Docker daemon hosts, you can either manage routing at the OS level, or you can use an <a href="https://docs.docker.com/network/drivers/overlay/">overlay network</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>When you start Docker, a default bridge network (also called <code>bridge</code>) is created automatically, and newly-started containers connect to it unless otherwise specified.</strong> You can also create user-defined custom bridge networks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> qqbuby/net-tools:1.0 <span class="nb">hostname</span> <span class="nt">-i</span>
+<span class="go">172.17.0.2
+</span><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> qqbuby/net-tools:1.0 ip r
+<span class="go">default via 172.17.0.1 dev eth0
+172.17.0.0/16 dev eth0 proto kernel scope link src 172.17.0.2</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker network <span class="nb">ls</span>
+<span class="go">NETWORK ID     NAME      DRIVER    SCOPE</span>
+<span class="hll"><span class="go">78ec0b2e6034   bridge    bridge    local</span>
+</span><span class="go">52eb0b3c3639   host      host      local</span>
+<span class="go">97378c7bca5f   none      null      local</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>The <code>docker0</code> is the default bridge when starting the Docker daemon.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>brctl show docker0
+<span class="go">bridge name	bridge id		STP enabled	interfaces
+docker0		8000.0242551ba65a	no		vetha8a58d9
+							vethf304814
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>brctl showmacs docker0
+<span class="go">port no	mac addr		is local?	ageing timer
+  2	02:42:ac:11:00:03	no		 111.50
+  2	5e:ef:3e:55:82:19	yes		   0.00
+  2	5e:ef:3e:55:82:19	yes		   0.00
+  1	ba:dc:9d:e6:d2:f3	yes		   0.00
+  1	ba:dc:9d:e6:d2:f3	yes		   0.00
+</span><span class="gp">$</span><span class="w"> </span>ip <span class="nb">link</span>
+<span class="gp">8: vetha8a58d9@if7: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+<span class="go">    link/ether ba:dc:9d:e6:d2:f3 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+</span><span class="gp">10: vethf304814@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+<span class="go">    link/ether 5e:ef:3e:55:82:19 brd ff:ff:ff:ff:ff:ff link-netnsid 1</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker inspect bridge
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        "Name": "bridge",</span>
+<span class="go">        "Id": "78ec0b2e60344ad1ee80c77589c467236693d7fb0b22964854cf34460184b163",</span>
+<span class="go">        "Created": "2024-01-25T12:36:59.025362533+08:00",</span>
+<span class="go">        "Scope": "local",</span>
+<span class="go">        "Driver": "bridge",</span>
+<span class="go">        "EnableIPv6": false,</span>
+<span class="go">        "IPAM": {</span>
+<span class="go">            "Driver": "default",</span>
+<span class="go">            "Options": null,</span>
+<span class="go">            "Config": [</span>
+<span class="go">                {</span>
+<span class="hll"><span class="go">                    "Subnet": "172.17.0.0/16",</span>
+</span><span class="hll"><span class="go">                    "Gateway": "172.17.0.1"</span>
+</span><span class="go">                }</span>
+<span class="go">            ]</span>
+<span class="go">        },</span>
+<span class="go">        "Internal": false,</span>
+<span class="go">        "Attachable": false,</span>
+<span class="go">        "Ingress": false,</span>
+<span class="go">        "ConfigFrom": {</span>
+<span class="go">            "Network": ""</span>
+<span class="go">        },</span>
+<span class="go">        "ConfigOnly": false,</span>
+<span class="go">        "Containers": {},</span>
+<span class="go">        "Options": {</span>
+<span class="go">            "com.docker.network.bridge.default_bridge": "true",</span>
+<span class="go">            "com.docker.network.bridge.enable_icc": "true",</span>
+<span class="go">            "com.docker.network.bridge.enable_ip_masquerade": "true",</span>
+<span class="go">            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",</span>
+<span class="hll"><span class="go">            "com.docker.network.bridge.name": "docker0",</span>
+</span><span class="go">            "com.docker.network.driver.mtu": "1500"</span>
+<span class="go">        },</span>
+<span class="go">        "Labels": {}</span>
+<span class="go">    }</span>
+<span class="go">]</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ip a show docker0
+<span class="gp">11: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;</span><span class="w"> </span>mtu 1500 qdisc noqueue state DOWN group default
+<span class="go">    link/ether 02:42:67:64:cd:53 brd ff:ff:ff:ff:ff:ff</span>
+<span class="go">    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0</span>
+<span class="go">       valid_lft forever preferred_lft forever</span>
+<span class="gp">$</span><span class="w"> </span>ip r
+<span class="go">default via 192.168.56.2 dev ens32</span>
+<span class="go">172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown</span>
+<span class="go">192.168.56.0/24 dev ens32 proto kernel scope link src 192.168.56.130</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="configure-the-default-bridge-network">2.1. Configure the default bridge network</h3>
+<div class="paragraph">
+<p>To configure the default bridge network, you specify options in <code>daemon.json</code>. Here is an example <code>daemon.json</code> with several options specified. Only specify the settings you need to customize. <a href="#dockerd">[3]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"bip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.1/24"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"fixed-cidr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.0/25"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"fixed-cidr-v6"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2001:db8::/64"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"mtu"</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"default-gateway"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.254"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"default-gateway-v6"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2001:db8:abcd::89"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"10.20.1.2"</span><span class="p">,</span><span class="s2">"10.20.1.3"</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart Docker for the changes to take effect.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ip a show docker0
+<span class="gp">11: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;</span><span class="w"> </span>mtu 1500 qdisc noqueue state DOWN group default
+<span class="go">    link/ether 02:42:67:64:cd:53 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.1/24 brd 192.168.1.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:67ff:fe64:cd53/64 scope link
+       valid_lft forever preferred_lft forever
+</span><span class="gp">$</span><span class="w"> </span>docker inspect bridge
+<span class="go">[
+    {
+        "Name": "bridge",
+        "Id": "335bd5ba267bde54a9b125270c4a010d0031ece7e75f43addf70df04571290b1",
+        "Created": "2024-01-25T12:54:54.930262205+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "192.168.1.0/24",
+                    "IPRange": "192.168.1.0/25",
+                    "Gateway": "192.168.1.1",
+                    "AuxiliaryAddresses": {
+                        "DefaultGatewayIPv4": "192.168.1.254"
+                    }
+                },
+                {
+                    "Subnet": "2001:db8::/64",
+                    "AuxiliaryAddresses": {
+                        "DefaultGatewayIPv6": "2001:db8:abcd::89"
+                    }
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+</span><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> qqbuby/net-tools:1.0 <span class="nb">hostname</span> <span class="nt">-i</span>
+<span class="go">192.168.1.2
+</span><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> qqbuby/net-tools:1.0 ip r
+<span class="go">default via 192.168.1.254 dev eth0
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.2</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configure-the-user-defined-bridge-network">2.2. Configure the user-defined bridge network</h3>
+<div class="paragraph">
+<p>Use the <code>docker network create</code> command to create a user-defined bridge network.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">docker network create my-net</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can specify the subnet, the IP address range, the gateway, and other options. See the <a href="https://docs.docker.com/engine/reference/commandline/network_create/#specify-advanced-options">docker network create reference</a> or the output of <code>docker network create --help</code> for details.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker network create my-net
+<span class="go">6fae1652e77ea4aa5452ce8f7321005dec3cbdfd5480bd6ad2caf92ae2646f85</span>
+<span class="gp">$</span><span class="w"> </span>docker network <span class="nb">ls</span>
+<span class="go">NETWORK ID     NAME      DRIVER    SCOPE</span>
+<span class="go">449f407d5f92   bridge    bridge    local</span>
+<span class="go">e25b7a4625b8   host      host      local</span>
+<span class="hll"><span class="go">6fae1652e77e   my-net    bridge    local</span>
+</span><span class="go">8c9b745f69e5   none      null      local</span>
+<span class="gp">$</span><span class="w"> </span>docker inspect my-net
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        "Name": "my-net",</span>
+<span class="go">        "Id": "6fae1652e77ea4aa5452ce8f7321005dec3cbdfd5480bd6ad2caf92ae2646f85",</span>
+<span class="go">        "Created": "2024-01-25T14:05:37.630914427+08:00",</span>
+<span class="go">        "Scope": "local",</span>
+<span class="go">        "Driver": "bridge",</span>
+<span class="go">        "EnableIPv6": false,</span>
+<span class="go">        "IPAM": {</span>
+<span class="go">            "Driver": "default",</span>
+<span class="go">            "Options": {},</span>
+<span class="go">            "Config": [</span>
+<span class="go">                {</span>
+<span class="hll"><span class="go">                    "Subnet": "172.17.0.0/16",</span>
+</span><span class="hll"><span class="go">                    "Gateway": "172.17.0.1"</span>
+</span><span class="go">                }</span>
+<span class="go">            ]</span>
+<span class="go">        },</span>
+<span class="go">        "Internal": false,</span>
+<span class="go">        "Attachable": false,</span>
+<span class="go">        "Ingress": false,</span>
+<span class="go">        "ConfigFrom": {</span>
+<span class="go">            "Network": ""</span>
+<span class="go">        },</span>
+<span class="go">        "ConfigOnly": false,</span>
+<span class="go">        "Containers": {},</span>
+<span class="go">        "Options": {},</span>
+<span class="go">        "Labels": {}</span>
+<span class="go">    }</span>
+<span class="go">]</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The IP range of the network <code>my-net</code> is still <code>172.17.0.0/16</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To configure the default address range, specify options in <code>daemon.json</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span>
+<span class="w">  </span><span class="nl">"bip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.1/24"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"fixed-cidr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.0/25"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"fixed-cidr-v6"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2001:db8::/64"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"mtu"</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"default-gateway"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.254"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"default-gateway-v6"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2001:db8:abcd::89"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"dns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"10.20.1.2"</span><span class="p">,</span><span class="s2">"10.20.1.3"</span><span class="p">],</span>
+<span class="hll"><span class="w">  </span><span class="nl">"default-address-pools"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span class="hll"><span class="w">    </span><span class="p">{</span>
+</span><span class="hll"><span class="w">      </span><span class="nl">"base"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10.201.0.0/16"</span><span class="p">,</span>
+</span><span class="hll"><span class="w">      </span><span class="nl">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">24</span>
+</span><span class="hll"><span class="w">    </span><span class="p">},</span>
+</span><span class="hll"><span class="w">    </span><span class="p">{</span>
+</span><span class="hll"><span class="w">      </span><span class="nl">"base"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10.202.0.0/16"</span><span class="p">,</span>
+</span><span class="hll"><span class="w">      </span><span class="nl">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">24</span>
+</span><span class="hll"><span class="w">    </span><span class="p">}</span>
+</span><span class="hll"><span class="w">  </span><span class="p">]</span>
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart Docker for the changes to take effect.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker info
+<span class="c">...</span>
+<span class="hll"><span class="go"> Default Address Pools:</span>
+</span><span class="hll"><span class="go">   Base: 10.201.0.0/16, Size: 24</span>
+</span><span class="hll"><span class="go">   Base: 10.202.0.0/16, Size: 24</span>
+</span>
+<span class="gp">$</span><span class="w"> </span>docker network create my-net2
+<span class="go">c77a9f13ba7732575a3d99d5bfde8852ee5c6827a3cad7d7f268be306394856e</span>
+<span class="gp">$</span><span class="w"> </span>docker inspect my-net2
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        "Name": "my-net2",</span>
+<span class="go">        "Id": "c77a9f13ba7732575a3d99d5bfde8852ee5c6827a3cad7d7f268be306394856e",</span>
+<span class="go">        "Created": "2024-01-25T14:10:14.285419243+08:00",</span>
+<span class="go">        "Scope": "local",</span>
+<span class="go">        "Driver": "bridge",</span>
+<span class="go">        "EnableIPv6": false,</span>
+<span class="go">        "IPAM": {</span>
+<span class="go">            "Driver": "default",</span>
+<span class="go">            "Options": {},</span>
+<span class="go">            "Config": [</span>
+<span class="go">                {</span>
+<span class="hll"><span class="go">                    "Subnet": "10.201.0.0/24",</span>
+</span><span class="hll"><span class="go">                    "Gateway": "10.201.0.1"</span>
+</span><span class="go">                }</span>
+<span class="go">            ]</span>
+<span class="go">        },</span>
+<span class="go">        "Internal": false,</span>
+<span class="go">        "Attachable": false,</span>
+<span class="go">        "Ingress": false,</span>
+<span class="go">        "ConfigFrom": {</span>
+<span class="go">            "Network": ""</span>
+<span class="go">        },</span>
+<span class="go">        "ConfigOnly": false,</span>
+<span class="go">        "Containers": {},</span>
+<span class="go">        "Options": {},</span>
+<span class="go">        "Labels": {}</span>
+<span class="go">    }</span>
+<span class="go">]</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> <span class="nt">--network</span> my-net2 qqbuby/net-tools:1.0 <span class="nb">hostname</span> <span class="nt">-i</span>
+<span class="go">10.201.0.2</span>
+<span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">-it</span> <span class="nt">--network</span> my-net2 qqbuby/net-tools:1.0 ip r
+<span class="go">default via 10.201.0.1 dev eth0</span>
+<span class="go">10.201.0.0/24 dev eth0 proto kernel scope link src 10.201.0.2</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The IP range of the <code>my-net</code> created previously is still <code>172.17.0.0/16</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker inspect my-net
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        "Name": "my-net",</span>
+<span class="go">        "Id": "6fae1652e77ea4aa5452ce8f7321005dec3cbdfd5480bd6ad2caf92ae2646f85",</span>
+<span class="go">        "Created": "2024-01-25T14:05:37.630914427+08:00",</span>
+<span class="go">        "Scope": "local",</span>
+<span class="go">        "Driver": "bridge",</span>
+<span class="go">        "EnableIPv6": false,</span>
+<span class="go">        "IPAM": {</span>
+<span class="go">            "Driver": "default",</span>
+<span class="go">            "Options": {},</span>
+<span class="go">            "Config": [</span>
+<span class="go">                {</span>
+<span class="hll"><span class="go">                    "Subnet": "172.17.0.0/16",</span>
+</span><span class="hll"><span class="go">                    "Gateway": "172.17.0.1"</span>
+</span><span class="go">                }</span>
+<span class="go">            ]</span>
+<span class="go">        },</span>
+<span class="go">        "Internal": false,</span>
+<span class="go">        "Attachable": false,</span>
+<span class="go">        "Ingress": false,</span>
+<span class="go">        "ConfigFrom": {</span>
+<span class="go">            "Network": ""</span>
+<span class="go">        },</span>
+<span class="go">        "ConfigOnly": false,</span>
+<span class="go">        "Containers": {},</span>
+<span class="go">        "Options": {},</span>
+<span class="go">        "Labels": {}</span>
+<span class="go">    }</span>
+<span class="go">]</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="reset-the-bridge-network-settings">2.3. Reset the bridge network settings</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Remove the user-defined network.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker network <span class="nb">rm </span>my-net my-net2
+<span class="go">my-net
+my-net2</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The default <code>bridge</code> can&#8217;t be removed by <code>docker network rm</code> command.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Stop the Docker, delete the <code>docker0</code>, and clean the network config files.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>systemctl stop docker.service docker.socket
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ip <span class="nb">link </span>delete docker0
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo rm</span> /var/lib/docker/network/files/local-kv.db</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+It will reset all the networking in the current Docker instance.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Start the Docker and check the changes.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>systemctl start docker.service
+<span class="gp">$</span><span class="w"> </span>ip a show docker0
+<span class="gp">24: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;</span><span class="w"> </span>mtu 1500 qdisc noqueue state DOWN group default
+<span class="go">    link/ether 02:42:e6:78:3a:e3 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="network-overview"></a>[1] <a href="https://docs.docker.com/network/" class="bare">https://docs.docker.com/network/</a></p>
+</li>
+<li>
+<p><a id="network-bridge"></a>[2] <a href="https://docs.docker.com/network/drivers/bridge/" class="bare">https://docs.docker.com/network/drivers/bridge/</a></p>
+</li>
+<li>
+<p><a id="dockerd"></a>[3] <a href="https://docs.docker.com/engine/reference/commandline/dockerd/" class="bare">https://docs.docker.com/engine/reference/commandline/dockerd/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

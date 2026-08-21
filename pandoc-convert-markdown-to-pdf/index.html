@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Pandoc Convert Markdown to PDF | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Pandoc Convert Markdown to PDF" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="$ fc-list :lang=zh-cn # list chinese fonts /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf: AR PL KaitiM GB,文鼎ＰＬ简中楷:style=Regular $ fc-scan /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf Pattern has 24 elts (size 32) family: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) familylang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) style: &quot;Regular&quot;(s) stylelang: &quot;zh-tw&quot;(s) fullname: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) fullnamelang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) slant: 0(i)(s) weight: 80(f)(s) width: 100(f)(s) spacing: 90(i)(s) foundry: &quot;ARPH&quot;(s) file: &quot;/usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf&quot;(s) $ pandoc README.md --pdf-engine=xelatex -V CJKmainfont=&quot;AR PL KaitiM GB&quot; -o x.pdf" />
+<meta name="twitter:description" property="og:description" content="$ fc-list :lang=zh-cn # list chinese fonts /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf: AR PL KaitiM GB,文鼎ＰＬ简中楷:style=Regular $ fc-scan /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf Pattern has 24 elts (size 32) family: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) familylang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) style: &quot;Regular&quot;(s) stylelang: &quot;zh-tw&quot;(s) fullname: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) fullnamelang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) slant: 0(i)(s) weight: 80(f)(s) width: 100(f)(s) spacing: 90(i)(s) foundry: &quot;ARPH&quot;(s) file: &quot;/usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf&quot;(s) $ pandoc README.md --pdf-engine=xelatex -V CJKmainfont=&quot;AR PL KaitiM GB&quot; -o x.pdf" />
+<link rel="canonical" href="https://blog.codefarm.me/pandoc-convert-markdown-to-pdf/" />
+<meta property="og:url" content="https://blog.codefarm.me/pandoc-convert-markdown-to-pdf/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-09-03T15:38:00+08:00" />
+<meta property="article:modified_time" content="2019-09-03T15:38:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Pandoc Convert Markdown to PDF" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-09-03T15:38:00+08:00","datePublished":"2019-09-03T15:38:00+08:00","description":"$ fc-list :lang=zh-cn # list chinese fonts /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf: AR PL KaitiM GB,文鼎ＰＬ简中楷:style=Regular $ fc-scan /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf Pattern has 24 elts (size 32) family: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) familylang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) style: &quot;Regular&quot;(s) stylelang: &quot;zh-tw&quot;(s) fullname: &quot;AR PL KaitiM GB&quot;(s) &quot;文鼎ＰＬ简中楷&quot;(s) fullnamelang: &quot;zh-tw&quot;(s) &quot;zh-cn&quot;(s) slant: 0(i)(s) weight: 80(f)(s) width: 100(f)(s) spacing: 90(i)(s) foundry: &quot;ARPH&quot;(s) file: &quot;/usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf&quot;(s) $ pandoc README.md --pdf-engine=xelatex -V CJKmainfont=&quot;AR PL KaitiM GB&quot; -o x.pdf","headline":"Pandoc Convert Markdown to PDF","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/pandoc-convert-markdown-to-pdf/"},"url":"https://blog.codefarm.me/pandoc-convert-markdown-to-pdf/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Pandoc Convert Markdown to PDF</h1><p class="c-post-meta">03 Sep 2019</p>
+  </header>
+
+  <div class="c-post-content">
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>fc-list :lang<span class="o">=</span>zh-cn <span class="c"># list chinese fonts</span>
+/usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf: AR PL KaitiM GB,文鼎ＰＬ简中楷:style<span class="o">=</span>Regular
+<span class="nv">$ </span>fc-scan /usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf
+Pattern has 24 elts <span class="o">(</span>size 32<span class="o">)</span>
+    family: <span class="s2">"AR PL KaitiM GB"</span><span class="o">(</span>s<span class="o">)</span> <span class="s2">"文鼎ＰＬ简中楷"</span><span class="o">(</span>s<span class="o">)</span>
+    familylang: <span class="s2">"zh-tw"</span><span class="o">(</span>s<span class="o">)</span> <span class="s2">"zh-cn"</span><span class="o">(</span>s<span class="o">)</span>
+    style: <span class="s2">"Regular"</span><span class="o">(</span>s<span class="o">)</span>
+    stylelang: <span class="s2">"zh-tw"</span><span class="o">(</span>s<span class="o">)</span>
+    fullname: <span class="s2">"AR PL KaitiM GB"</span><span class="o">(</span>s<span class="o">)</span> <span class="s2">"文鼎ＰＬ简中楷"</span><span class="o">(</span>s<span class="o">)</span>
+    fullnamelang: <span class="s2">"zh-tw"</span><span class="o">(</span>s<span class="o">)</span> <span class="s2">"zh-cn"</span><span class="o">(</span>s<span class="o">)</span>
+    slant: 0<span class="o">(</span>i<span class="o">)(</span>s<span class="o">)</span>
+    weight: 80<span class="o">(</span>f<span class="o">)(</span>s<span class="o">)</span>
+    width: 100<span class="o">(</span>f<span class="o">)(</span>s<span class="o">)</span>
+    spacing: 90<span class="o">(</span>i<span class="o">)(</span>s<span class="o">)</span>
+    foundry: <span class="s2">"ARPH"</span><span class="o">(</span>s<span class="o">)</span>
+    file: <span class="s2">"/usr/share/fonts/truetype/arphic-gkai00mp/gkai00mp.ttf"</span><span class="o">(</span>s<span class="o">)</span>
+<span class="nv">$ </span>pandoc README.md <span class="nt">--pdf-engine</span><span class="o">=</span>xelatex <span class="nt">-V</span> <span class="nv">CJKmainfont</span><span class="o">=</span><span class="s2">"AR PL KaitiM GB"</span> <span class="nt">-o</span> x.pdf
+</code></pre></div></div>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

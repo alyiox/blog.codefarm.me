@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Proxies in Docker and containerd | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Proxies in Docker and containerd" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy 2. Unveiling the Proxy Trio with Docker and containerd 3. Install Docker Engine on Debian 1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy Ever tried downloading a file online but encountered a restrictive firewall (security barrier) blocking your way? Fear not! This guide unveils the magic behind http_proxy and https_proxy, the environment variables that act as passports for your tools to navigate these gatekeepers. Imagine curl, a popular Swiss army knife tool for downloading files from the internet, needs to access a website, but a firewall stands between them, potentially…" />
+<meta name="twitter:description" property="og:description" content="1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy 2. Unveiling the Proxy Trio with Docker and containerd 3. Install Docker Engine on Debian 1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy Ever tried downloading a file online but encountered a restrictive firewall (security barrier) blocking your way? Fear not! This guide unveils the magic behind http_proxy and https_proxy, the environment variables that act as passports for your tools to navigate these gatekeepers. Imagine curl, a popular Swiss army knife tool for downloading files from the internet, needs to access a website, but a firewall stands between them, potentially…" />
+<link rel="canonical" href="https://blog.codefarm.me/proxies-in-docker-containerd/" />
+<meta property="og:url" content="https://blog.codefarm.me/proxies-in-docker-containerd/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-06-15T10:36:13+08:00" />
+<meta property="article:modified_time" content="2024-06-15T10:36:13+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Proxies in Docker and containerd" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-06-15T10:36:13+08:00","datePublished":"2024-06-15T10:36:13+08:00","description":"1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy 2. Unveiling the Proxy Trio with Docker and containerd 3. Install Docker Engine on Debian 1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy Ever tried downloading a file online but encountered a restrictive firewall (security barrier) blocking your way? Fear not! This guide unveils the magic behind http_proxy and https_proxy, the environment variables that act as passports for your tools to navigate these gatekeepers. Imagine curl, a popular Swiss army knife tool for downloading files from the internet, needs to access a website, but a firewall stands between them, potentially…","headline":"Proxies in Docker and containerd","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/proxies-in-docker-containerd/"},"url":"https://blog.codefarm.me/proxies-in-docker-containerd/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Proxies in Docker and containerd</h1><p class="c-post-meta">15 Jun 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#unveiling-the-proxy-trio-http_proxy-https_proxy-and-no_proxy">1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy</a></li>
+<li><a href="#unveiling-the-proxy-trio-with-docker-and-containerd">2. Unveiling the Proxy Trio with Docker and containerd</a></li>
+<li><a href="#install-docker-engine-on-debian">3. Install Docker Engine on Debian</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="unveiling-the-proxy-trio-http_proxy-https_proxy-and-no_proxy">1. Unveiling the Proxy Trio: http_proxy, https_proxy, and no_proxy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ever tried downloading a file online but encountered a restrictive firewall (security barrier) blocking your way?</p>
+</div>
+<div class="paragraph">
+<p>Fear not! This guide unveils the magic behind <code>http_proxy</code> and <code>https_proxy</code>, the environment variables that act as passports for your tools to navigate these gatekeepers.</p>
+</div>
+<div class="paragraph">
+<p>Imagine <code>curl</code>, a popular Swiss army knife tool for downloading files from the internet, needs to access a website, but a firewall stands between them, potentially for restriction of information access, and security reasons. Here is where the environment variables <code>http_proxy</code> and <code>https_proxy</code> come in:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>http_proxy</code> specifies the address and port of a proxy server specifically for handling <strong>regular, unencrypted HTTP traffic</strong>.</p>
+<div class="paragraph">
+<p>Think of it as a translator, converting your request into a format the proxy understands before forwarding it to the website.</p>
+</div>
+</li>
+<li>
+<p><code>https_proxy</code>: caters to <strong>HTTPS traffic</strong>, which is encrypted for security.</p>
+<div class="paragraph">
+<p>When set, <code>curl</code> establishes a secure tunnel with the proxy server using TLS/SSL before sending any data. It&#8217;s like whispering your request through a hidden passage.</p>
+</div>
+</li>
+<li>
+<p><code>no_proxy</code> specifies a list of hostnames, domains, or IP addresses that should bypass the proxy server. Traffic destined for these entries will be sent directly to the internet without going through the proxy.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">"localhost,127.0.0.1,internal.mycompany.com"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>no_proxy</code> list takes precedence over <code>http_proxy</code> and <code>https_proxy</code>. Any traffic destined for a hostname or IP address listed in <code>no_proxy</code> will bypass the proxy, even if a proxy server is defined using the other variables.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In most cases, <strong>setting <code>http_proxy</code> and <code>https_proxy</code> to the same value (pointing to the same proxy server)</strong> is the common practice for proxying all traffic.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>It&#8217;s important to note that <code>no_proxy</code> might support wildcard patterns (e.g., <code>*.mycompany.com</code>) depending on the specific tool or library interpreting the environment variable. However, it is not a guaranteed feature, and its behavior can vary across applications.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Whenever possible, it&#8217;s safer and more reliable to specify exact hostnames or IP addresses in <code>no_proxy</code> instead of relying on wildcards.</p>
+</li>
+<li>
+<p>If you must use wildcards, thoroughly consult the documentation for the specific tool or library to understand how it interprets wildcard patterns in <code>no_proxy</code>.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Imagine you want to download a file using <code>curl</code> but a firewall with a proxy server is in place. Here&#8217;s how you would use the environment variables:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Set the proxy server address and port (replace with your actual details)</span>
+<span class="nb">export </span><span class="nv">https_proxy</span><span class="o">=</span>http://your_proxy_server:port
+
+<span class="c"># Now, use curl to download the file</span>
+curl https://example.com/file.txt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By setting <code>https_proxy</code>, <code>curl</code> knows to route its request through the specified proxy server, allowing you to download the file despite the firewall and proxy combination.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+While <code>curl</code> itself is generally case-insensitive for these variables, using lowercase (<code>http_proxy</code> and <code>https_proxy</code>) is recommended for consistency.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>While <code>http_proxy</code> and <code>https_proxy</code> can be configured for SOCKS proxies by including the <code>socks5://</code> prefix in the URL, it&#8217;s important to understand some limitations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span>socks5://proxy_server:port
+<span class="nb">export </span><span class="nv">https_proxy</span><span class="o">=</span>socks5://proxy_server:port</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SOCKS proxies typically don&#8217;t handle DNS resolution themselves. You might need to configure a separate DNS server for your system to work correctly with a SOCKS proxy.</p>
+</li>
+<li>
+<p>Not all applications are SOCKS proxy aware. Some applications might require additional configuration or may not work correctly through a SOCKS proxy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With the understanding of <code>http_proxy</code> and <code>https_proxy</code>, you can navigate proxy servers and access the resources you need!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="unveiling-the-proxy-trio-with-docker-and-containerd">2. Unveiling the Proxy Trio with Docker and containerd</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When working with containerized applications, pulling images from registries is a common task. But what if your network environment requires a proxy server for internet access? This guide explores how to configure <code>https_proxy</code> for secure communication with container image registries using Docker and containerd.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Docker</strong>: A container engine built on top of containerd, offering a user-friendly interface and additional functionalities for managing images and containers.</p>
+</li>
+<li>
+<p><strong>containerd</strong>: A container runtime engine that manages the lifecycle of containers (creation, starting, stopping, and deletion).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>While Docker, built on top of containerd, manages container image pulling by default, containerd also has its own built-in image pulling plugin (e.g., used by Kubernetes).</p>
+</div>
+<div class="paragraph">
+<p>To ensure consistent proxy behavior regardless of which tool pulls the image, it&#8217;s recommended to configure the proxy for both Docker and containerd.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Set the <code>HTTPS_PROXY</code> environment variable on systemd service files:</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Locate the systemd service file for containerd and dockerd (e.g., <code>/etc/systemd/system/docker.service</code>).</p>
+</li>
+<li>
+<p>Edit the file (e.g., <code>sudo systemctl edit docker.service</code>) and add the following lines under the <code>[Service]</code> section:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf">[<span class="n">Service</span>]
+<span class="n">Environment</span>=<span class="s2">"HTTPS_PROXY=https://your_proxy_server:port"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Reload systemd and restart the service:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl daemon-reload
+<span class="nb">sudo </span>systemctl restart docker</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://docs.docker.com/config/daemon/systemd/#httphttps-proxy">Configure the Docker daemon to use a proxy server</a> in the <a href="https://docs.docker.com/config/daemon/#configure-the-docker-daemon">daemon.json</a> file (Recommended for Docker only):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"proxies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"http-proxy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://proxy.example.com:3128"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"https-proxy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://proxy.example.com:3129"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"no-proxy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.test.example.com,.example.org,127.0.0.0/8"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="install-docker-engine-on-debian">3. Install Docker Engine on Debian</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Set up Docker&#8217;s <code>apt</code> repository.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Add Docker's official GPG key:</span>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>ca-certificates curl
+<span class="nb">sudo install</span> <span class="nt">-m</span> 0755 <span class="nt">-d</span> /etc/apt/keyrings
+<span class="nb">sudo </span>curl <span class="nt">-fsSL</span> https://download.docker.com/linux/debian/gpg <span class="nt">-o</span> /etc/apt/keyrings/docker.asc
+<span class="nb">sudo chmod </span>a+r /etc/apt/keyrings/docker.asc
+
+<span class="c"># Add the repository to Apt sources:</span>
+<span class="nb">echo</span> <span class="se">\</span>
+  <span class="s2">"deb [arch=</span><span class="si">$(</span>dpkg <span class="nt">--print-architecture</span><span class="si">)</span><span class="s2"> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian </span><span class="se">\</span><span class="s2">
+  </span><span class="si">$(</span><span class="nb">.</span> /etc/os-release <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$VERSION_CODENAME</span><span class="s2">"</span><span class="si">)</span><span class="s2"> stable"</span> | <span class="se">\</span>
+  <span class="nb">sudo tee</span> /etc/apt/sources.list.d/docker.list <span class="o">&gt;</span> /dev/null
+<span class="nb">sudo </span>apt-get update</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>To use the APT source mirro from Alibaba Cloud, replace the <code><a href="https://download.docker.com" class="bare">https://download.docker.com</a></code> with <code><a href="https://mirrors.aliyun.com/docker-ce" class="bare">https://mirrors.aliyun.com/docker-ce</a></code> at the <code>/etc/apt/sources.list.d/docker.list</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Install the Docker packages.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>To install the latest version, run:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To install a specific version of Docker Engine, start by listing the available versions in the repository:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># List the available versions:</span>
+apt-cache madison docker-ce | <span class="nb">awk</span> <span class="s1">'{ print $3 }'</span>
+
+5:26.1.0-1~debian.12~bookworm
+5:26.0.2-1~debian.12~bookworm
+...</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Select the desired version and install:</span>
+<span class="nv">VERSION_STRING</span><span class="o">=</span>5:26.1.0-1~debian.12~bookworm
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-ce<span class="o">=</span><span class="nv">$VERSION_STRING</span> docker-ce-cli<span class="o">=</span><span class="nv">$VERSION_STRING</span> containerd.io docker-buildx-plugin docker-compose-plugin</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

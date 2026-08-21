@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Service Mesh | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Service Mesh" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Istio addresses the challenges developers and operators face with a distributed or microservices architecture. [1] Figure 1. By adding a proxy &quot;sidecar&quot; along with every application deployed, Istio lets you program application-aware traffic management, incredible observability, and robust security capabilities into your network. 1. What is a Service Mesh 2. What&#8217;s Istio? 2.1. Architecture 2.2. Install Istio References 1. What is a Service Mesh Modern applications are typically architected as distributed collections of microservices, with each collection of microservices performing some discrete business function. [1] A service mesh is a dedicated infrastructure layer that you can add to your applications.…" />
+<meta name="twitter:description" property="og:description" content="Istio addresses the challenges developers and operators face with a distributed or microservices architecture. [1] Figure 1. By adding a proxy &quot;sidecar&quot; along with every application deployed, Istio lets you program application-aware traffic management, incredible observability, and robust security capabilities into your network. 1. What is a Service Mesh 2. What&#8217;s Istio? 2.1. Architecture 2.2. Install Istio References 1. What is a Service Mesh Modern applications are typically architected as distributed collections of microservices, with each collection of microservices performing some discrete business function. [1] A service mesh is a dedicated infrastructure layer that you can add to your applications.…" />
+<link rel="canonical" href="https://blog.codefarm.me/service-mesh/" />
+<meta property="og:url" content="https://blog.codefarm.me/service-mesh/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-02-29T14:15:22+08:00" />
+<meta property="article:modified_time" content="2024-02-29T14:15:22+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Service Mesh" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-02-29T14:15:22+08:00","datePublished":"2024-02-29T14:15:22+08:00","description":"Istio addresses the challenges developers and operators face with a distributed or microservices architecture. [1] Figure 1. By adding a proxy &quot;sidecar&quot; along with every application deployed, Istio lets you program application-aware traffic management, incredible observability, and robust security capabilities into your network. 1. What is a Service Mesh 2. What&#8217;s Istio? 2.1. Architecture 2.2. Install Istio References 1. What is a Service Mesh Modern applications are typically architected as distributed collections of microservices, with each collection of microservices performing some discrete business function. [1] A service mesh is a dedicated infrastructure layer that you can add to your applications.…","headline":"Service Mesh","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/service-mesh/"},"url":"https://blog.codefarm.me/service-mesh/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Service Mesh</h1><p class="c-post-meta">29 Feb 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://istio.io/">Istio</a> addresses the challenges developers and operators face with a distributed or microservices architecture. <a href="#istio-service-mesh">[1]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://istio.io/latest/img/service-mesh.svg" alt="Service mesh" width="45%" height="45%">
+</div>
+<div class="title">Figure 1. By adding a proxy "sidecar" along with every application deployed, Istio lets you program application-aware traffic management, incredible observability, and robust security capabilities into your network.</div>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#what-is-a-service-mesh">1. What is a Service Mesh</a></li>
+<li><a href="#whats-istio">2. What&#8217;s Istio?</a>
+<ul class="sectlevel2">
+<li><a href="#architecture">2.1. Architecture</a></li>
+<li><a href="#install-istio">2.2. Install Istio</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-a-service-mesh">1. What is a Service Mesh</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Modern applications are typically architected as distributed collections of microservices, with each collection of microservices performing some discrete business function. <a href="#istio-service-mesh">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>A <em>service mesh</em> is a dedicated infrastructure layer that you can add to your applications. It allows you to transparently add capabilities like <em>observability</em>, <em>traffic management</em>, and <em>security</em>, without adding them to your own code.</p>
+</div>
+<div class="paragraph">
+<p>The term “service mesh” describes both the type of software you use to implement this pattern, and the security or network domain that is created when you use that software.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="whats-istio">2. What&#8217;s Istio?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Istio is an open source service mesh that layers transparently onto existing distributed applications.</p>
+</div>
+<div class="paragraph">
+<p>Istio’s powerful features provide a uniform and more efficient way to secure, connect, and monitor services. Istio is the path to load balancing, service-to-service authentication, and monitoring – with few or no service code changes. Its powerful control plane brings vital features, including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Secure service-to-service communication in a cluster with TLS encryption, strong identity-based authentication and authorization</p>
+</li>
+<li>
+<p>Automatic load balancing for HTTP, gRPC, WebSocket, and TCP traffic</p>
+</li>
+<li>
+<p>Fine-grained control of traffic behavior with rich routing rules, retries, failovers, and fault injection</p>
+</li>
+<li>
+<p>A pluggable policy layer and configuration API supporting access controls, rate limits and quotas</p>
+</li>
+<li>
+<p>Automatic metrics, logs, and traces for all traffic within a cluster, including cluster ingress and egress</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Istio’s control plane runs on Kubernetes, and you can add applications deployed in that cluster to your mesh, extend the mesh to other clusters, or even connect VMs or other endpoints running outside of Kubernetes.</p>
+</div>
+<div class="sect2">
+<h3 id="architecture">2.1. Architecture</h3>
+<div class="paragraph">
+<p>An Istio service mesh is logically split into a data plane and a control plane. <a href="#istio-architecture">[2]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <em>data plane</em> is composed of a set of intelligent proxies (<a href="https://www.envoyproxy.io/">Envoy</a>) deployed as sidecars. These proxies mediate and control all network communication between microservices. They also collect and report telemetry on all mesh traffic.</p>
+</li>
+<li>
+<p>The <em>control plane</em> manages and configures the proxies to route traffic.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://istio.io/latest/docs/ops/deployment/architecture/arch.svg" alt="The overall architecture of an Istio-based application." width="55%" height="55%">
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Envoy</strong></p>
+</div>
+<div class="paragraph">
+<p>Istio uses an extended version of the <a href="https://www.envoyproxy.io/">Envoy</a> proxy. Envoy is a high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh. Envoy proxies are the only Istio components that interact with data plane traffic.</p>
+</div>
+<div class="paragraph">
+<p><strong>Istiod</strong></p>
+</div>
+<div class="paragraph">
+<p>Istiod provides service discovery, configuration and certificate management.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="install-istio">2.2. Install Istio</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go the the <a href="https://github.com/istio/istio/releases">Istio release</a> page to download the installation file for your OS, or download and extract the latest release automatically (Linux or macOS): <a href="#istio-getting-started">[3]</a></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl <span class="nt">-L</span> https://istio.io/downloadIstio | sh -</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Move to the Istio package directory. For example, if the package is <code>istio-1.20.3</code>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>istio-1.20.3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The installation directory contains:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Sample applications in <code>samples/</code></p>
+</li>
+<li>
+<p>The <code>istioctl</code> client binary in the <code>bin/</code> directory.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Add the <code>istioctl</code> client to your path (Linux or macOS):</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PWD</span>/bin:<span class="nv">$PATH</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>For this installation, we use the <code>demo</code> <a href="https://istio.io/latest/docs/setup/additional-setup/config-profiles/">configuration profile</a>. It’s selected to have a good set of defaults for testing, but there are other profiles for production or performance testing.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>istioctl <span class="nb">install</span> <span class="nt">--set</span> <span class="nv">profile</span><span class="o">=</span>demo <span class="nt">-y</span>
+<span class="go">✔ Istio core installed
+✔ Istiod installed
+✔ Egress gateways installed
+✔ Ingress gateways installed
+✔ Installation complete
+Made this installation the default for injection and validation.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add a namespace label to instruct Istio to automatically inject Envoy sidecar proxies when you deploy your application later:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl label namespace default istio-injection<span class="o">=</span>enabled
+<span class="go">namespace/default labeled</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Uninstall</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The Istio uninstall deletes the RBAC permissions and all resources hierarchically under the <code>istio-system</code> namespace. It is safe to ignore errors for non-existent resources because they may have been deleted hierarchically.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">istioctl uninstall <span class="nt">-y</span> <span class="nt">--purge</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>istio-system</code> namespace is not removed by default. If no longer needed, use the following command to remove it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl delete namespace istio-system</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The label to instruct Istio to automatically inject Envoy sidecar proxies is not removed by default. If no longer needed, use the following command to remove it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl label namespace default istio-injection-</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="istio-service-mesh"></a>[1] <a href="https://istio.io/latest/about/service-mesh/" class="bare">https://istio.io/latest/about/service-mesh/</a></p>
+</li>
+<li>
+<p><a id="istio-architecture"></a>[2] <a href="https://istio.io/latest/docs/ops/deployment/architecture/" class="bare">https://istio.io/latest/docs/ops/deployment/architecture/</a></p>
+</li>
+<li>
+<p><a id="istio-getting-started"></a>[3] <a href="https://istio.io/latest/docs/setup/getting-started/" class="bare">https://istio.io/latest/docs/setup/getting-started/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

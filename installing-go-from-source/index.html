@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Installing-Go-from-source | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Installing-Go-from-source" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Except as noted, the content of this page is licensed under the Creative Commons Attribution 3.0 License, and code is licensed under a BSD license. Reference: Installing Go from source Installing Go from source Introduction Install Go compiler binaries Install Git, if needed Fetch the repository (Optional) Switch to the master branch Install Go Testing your installation Set up your work environment Install additional tools Community resources Keeping up with releases Optional environment variables Introduction Go is an open source project, distributed under a BSD-style license. This document explains how to check out the sources, build them on your own…" />
+<meta name="twitter:description" property="og:description" content="Except as noted, the content of this page is licensed under the Creative Commons Attribution 3.0 License, and code is licensed under a BSD license. Reference: Installing Go from source Installing Go from source Introduction Install Go compiler binaries Install Git, if needed Fetch the repository (Optional) Switch to the master branch Install Go Testing your installation Set up your work environment Install additional tools Community resources Keeping up with releases Optional environment variables Introduction Go is an open source project, distributed under a BSD-style license. This document explains how to check out the sources, build them on your own…" />
+<link rel="canonical" href="https://blog.codefarm.me/installing-go-from-source/" />
+<meta property="og:url" content="https://blog.codefarm.me/installing-go-from-source/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-03-26T00:11:25+08:00" />
+<meta property="article:modified_time" content="2016-03-26T00:11:25+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Installing-Go-from-source" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2016-03-26T00:11:25+08:00","datePublished":"2016-03-26T00:11:25+08:00","description":"Except as noted, the content of this page is licensed under the Creative Commons Attribution 3.0 License, and code is licensed under a BSD license. Reference: Installing Go from source Installing Go from source Introduction Install Go compiler binaries Install Git, if needed Fetch the repository (Optional) Switch to the master branch Install Go Testing your installation Set up your work environment Install additional tools Community resources Keeping up with releases Optional environment variables Introduction Go is an open source project, distributed under a BSD-style license. This document explains how to check out the sources, build them on your own…","headline":"Installing-Go-from-source","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/installing-go-from-source/"},"url":"https://blog.codefarm.me/installing-go-from-source/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Installing-Go-from-source</h1><p class="c-post-meta">26 Mar 2016</p>
+  </header>
+
+  <div class="c-post-content">
+    <h6 id="except-as-noted-the-content-of-this-page-is-licensed-under-the-creative-commons-attribution-30-license-and-code-is-licensed-under-a-bsd-license">Except as noted, the content of this page is licensed under the Creative Commons Attribution 3.0 License, and code is licensed under a BSD license.</h6>
+
+<p><a href="https://golang.org/doc/install/source" title="Installing Go from source">Reference: Installing Go from source</a></p>
+
+<h2 id="installing-go-from-source">Installing Go from source</h2>
+
+<ul>
+  <li>Introduction</li>
+  <li>Install Go compiler binaries</li>
+  <li>Install Git, if needed</li>
+  <li>Fetch the repository</li>
+  <li>(Optional) Switch to the master branch</li>
+  <li>Install Go</li>
+  <li>Testing your installation</li>
+  <li>Set up your work environment</li>
+  <li>Install additional tools</li>
+  <li>Community resources</li>
+  <li>Keeping up with releases</li>
+  <li>Optional environment variables</li>
+</ul>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Go is an open source project, distributed under a <a href="https://golang.org/LICENSE">BSD-style license</a>. This document explains how to check out the sources, build them on your own machine, and run them.</p>
+
+<p>Most users don’t need to do this, and will instead install from precompiled binary packages as described in <a href="https://golang.org/doc/install">Getting Started</a>, a much simpler process. If you want to help develop what goes into those precompiled packages, though, read on.</p>
+
+<p>There is two official Go compiler tools chains. This document focused on the <em>gc</em> Go compiler and tools. For information on how to work on <em>gccgo</em>, a more traditional compiler using the GCC back end, see <a href="https://golang.org/doc/install/gccgo">Setting up and using gccgo</a>.</p>
+
+<p>The Go compiler support five instrution sets. There are important differences in the quality of the compilers for the different architectures.</p>
+
+<h5 id="amd64-also-known-as-x86-64">amd64 (also known as x86-64)</h5>
+
+<ul>
+  <li>amd64 (also known as x86-64)
+  A mature implementation. The compiler has an effective optimizer (registerizer) and generates good code (although gccgo can do noticeably better sometimes).</li>
+  <li>386 (x86 or x86-32)
+  Comparable to the amd64 port.</li>
+  <li>arm (ARM)
+  Supports Linux, FreeBSD, NetBSD and Darwin binaries. Less widely used than the other ports.</li>
+  <li>arm64 (AArch64)
+  Supports Linux and Darwin binaries. New in 1.5 and not as well excercised as other ports.</li>
+  <li>ppc64, ppc64le (64-bit PowerPC big- and little-endian)
+  Supports Linux binaries. New in 1.5 and not as well excercised as other ports.</li>
+</ul>
+
+<p>Except for things like low-level operating system interface code, the run-time support is the same in all ports and includes a mark-and-sweep garbage collector, efficient array and string slicing, and support for efficient goroutings, such as stacks that grow and shrink on demand.</p>
+
+<p>The compilers can target the DragonFly BSD, FreeBSD, Linux, NetBSD, OpenBSD, OS X (Darwin), Plan 9, Solaris and Windows operating systems. The full set of supported combinations is listed in the discussion of <a href="https://golang.org/doc/install/source#environment">environment variables</a> below.</p>
+
+<h3 id="install-go-compiler-binaries">Install Go compiler binaries</h3>
+
+<p>The Go tool chain is written in Go. To build it, you need a Go compiler installed. The scripts that do the initial build of the tools look for an existing Go tool chain in <em>$HOME/go1.4</em>. (This path may be overridden by setting the <em>GOROOT_BOOTSTRAP</em> environment variable.)</p>
+
+<p>Build the tools with Go version 1.4 or a point release (1.4.1, 1.4.2 etc.). Go 1.4 binaries can be found at <a href="https://golang.org/dl/">the downloads page</a>.</p>
+
+<p>Download the zip or tarball of Go 1.4 for your platform and extract it to <em>$HOME/go1.4</em> (or your nominated <em>GOROOT_BOOTSTRAP</em> location).</p>
+
+<p>If you want to install Go 1.5 on a system that not supported by Go 1.4 (such as <em>linux/pcc64</em>) you can either use <a href="https://golang.org/src/bootstrap.bash">bootstrap.bash</a> on a system that can bootstrap GO 1.5 normally, or bootstrap with gccgo 5.</p>
+
+<p>When run as (for example)
+    $ GOOS=linux GOARCH=pcc64 ./bootstrap.bash</p>
+
+<p><em>bootstrap.bash</em> cross-compiles a toolchain for that <em>GOOS/GOARCH</em> combination, leaving the resulting tree in <em>../../go-${GOOS}-${GOARCH}-bootstrap</em>. That tree can be copied to a machine fo the given target type and used as <em>GOROOT_BOOTSTRAP</em> to bootstrap a local build.</p>
+
+<p>To use gccgo, you need to arrange for <em>$GOROOT_BOOTSTRAP/bin/go</em> to be the go tool that comes as part of gccgo 5.</p>
+
+<p>For example on Ubuntu Vivid:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo apt-get install gccgo-5
+$ sudo update-alternatives --set go /usr/bin/go-5
+$ GOROOT_BOOTSTRAP=/usr ./make.bash
+</code></pre></div></div>
+
+<h3 id="install-git-if-needed">Install Git, if needed</h3>
+
+<p>To perform the next step you must have Git installed. (Check that you have a <em>git</em> command before proceeding.)</p>
+
+<p>If you do not have a working Git installation, follow the instructions on the <a href="http://git-scm.com/downloads">Git downloads</a> page.</p>
+
+<h3 id="fetch-the-repository">Fetch the repository</h3>
+
+<p>Go will install to a directory named <em>go</em>. Change to the directory that will be its parent and make sure the <em>go</em> directory does not exist. Then clone the repository and check out the latest release tag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git clone https://go.googlesource.com/go
+$ cd go
+$ git checkout go1.5.1
+</code></pre></div></div>
+
+<h3 id="optional-switch-to-the-master-branch">(Optional) Switch to the master branch</h3>
+
+<p>If you intend to modify the go source code, and <a href="https://golang.org/doc/contribute.html">contribute your changes</a> to the project, then move your repository off the release branch, and onto the master (development) branch. Otherwise, skip this step.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git checkout master
+</code></pre></div></div>
+
+<h3 id="install-go">Install Go</h3>
+
+<p>To build Go distribution, run</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd src
+$ ./all.bash
+</code></pre></div></div>
+
+<p>(To build under Windows use <em>all.bat</em>.)</p>
+
+<p>If all goes well, it will finish by printing output like:</p>
+<blockquote>
+  <p>ALL TESTS PASSED</p>
+
+  <hr />
+  <p>Installed Go for linux/amd64 in /home/you/go.
+Installed commands in /home/you/go/bin.
+<em>** You need to add /home/you/go/bin to your $PATH. **</em></p>
+</blockquote>
+
+<p>where the details on the last few lines reflect the operating system, architecture, and root directory used during the install.</p>
+
+<p>For more informaiton about ways to control the build, see the discussion of <a href="https://golang.org/doc/install/source#environment">environment variables</a> below.</p>
+
+<p><em>all.bash</em> (or <em>all.bat</em>) run important tests for Go, which can take more time than simply building Go. If you do not want to run the test suite use <em>make.bash</em> (or <em>make.bat</em>) instead.</p>
+
+<h3 id="testing-your-installation">Testing your installation</h3>
+
+<p>Check that Go is installed correctly by building a simple program.</p>
+
+<p>Create a file named <em>hello.go</em> and put the following program in it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package main
+
+import "fmt"
+
+func main() {
+    fmt.Printf("hello, world\n")
+}
+</code></pre></div></div>
+
+<p>Then run it with the <em>go</em> tool:
+    $go run hello.go
+    hello, world</p>
+
+<p>If you see the “hello, world” message then Go is installed correctly.</p>
+
+<h3 id="set-up-your-work-enviroment">Set up your work enviroment</h3>
+
+<p>You’re almost done. You just need to do a litte more setup.</p>
+
+<p>The <a href="https://golang.org/doc/code.html">How to Write Go Code</a> document provides <strong>essential setup instructions</strong> for using the Go tools.</p>
+
+<h3 id="install-additional-tools">Install additional tools</h3>
+
+<p>The source code for several Go tools (including <a href="https://golang.org/cmd/godoc/">godoc</a>) is kept in <a href="https://golang.org/x/tools">the go.tools repository</a>. To install all of them, run the <em>go get</em> command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ go get golang.org/x/tools/cmd/...
+</code></pre></div></div>
+
+<p>Or if you want to install a specific command (<em>godoc</em> in this case):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ go get golang.org/x/tools/cmd/godoc
+</code></pre></div></div>
+
+<p>To install these tools, the <em>go get</em> command requires that <a href="https://golang.org/doc/install/source#git">Git</a> be installed locally.</p>
+
+<p>You must also have a workspace (<em>GOPATH</em>) set up; see <a href="https://golang.org/doc/code.html">How to Write Go Code</a> for the details.</p>
+
+<p><strong>Note</strong>: The <em>go</em> command will install the <em>godoc</em> binary to <em>$GOROOT/bin</em> (or <em>$GOBIN</em>) and the <em>cover</em> and <em>vet</em> binaries to <em>$GOROOT/pkg/tool/$GOOS_$GOARCH</em>. You can access the latter commands with “<em>go tool cover</em>” and “<em>go tool vet</em>”.</p>
+
+<h3 id="community-resources">Community resources</h3>
+
+<p>The usual community resources such as <em>#go-nuts</em> on the <a href="http://freenode.net/">Freenode</a> IRC server and the <a href="https://groups.google.com/group/golang-nuts">Go Nuts</a> mailing list have active developers that can help you with problems with your installation or your development work. For those who wish to keep up to date, there is another mailing list, <a href="https://groups.google.com/group/golang-checkins">golang-chekins</a>, that receives a message summarizing each checkin to the Go repository.</p>
+
+<p>Bugs can be reported using the <a href="https://golang.org/issue/new">Go issue tracker</a>.</p>
+
+<h3 id="keeping-up-with-releases">Keeping up with releases</h3>
+
+<p>New release are announced on the <a href="https://groups.google.com/group/golang-announce">golang-announce</a> mailing list. Each announcement mentions the latest release tag, for instance, <em>go1.5.1</em>.</p>
+
+<p>To update an existing tree to the latest release, you can run: 
+    $ cd go/src
+    $ git fetch
+    $ git checkout <tag>
+    $ ./all.bash</tag></p>
+
+<p>What *<tag>* is the version string of the release.</tag></p>
+
+<h3 id="optional-enviroment-variables">Optional enviroment variables</h3>
+
+<p>The Go compilation environment can be customized by environment variables. <em>None is required by the build</em>, but you may wish to set some to override the defaults.</p>
+
+<ul>
+  <li><em>$GOROOT</em></li>
+</ul>
+
+<blockquote>
+  <p>The root of the Go tree, often <em>$HOME/go</em>. Its values is built into the tree when it is compiled, and defaults to the parent of the directory when <em>all.bash</em> was run. There is no need to set this unless you want to switch between multiple local copies of the repository.</p>
+</blockquote>
+
+<ul>
+  <li><em>$GOROOT_FINAL</em></li>
+</ul>
+
+<blockquote>
+  <p>The value assumed by installed binaries and scripts when <em>$GOROOT</em> is not set explicitly. It defaults to the value of <em>$GOROOT</em>. If you want to build the Go tree in one location but move it elsewhere after the build, set <em>$GOROOT_FINAL</em> to the eventual location.</p>
+</blockquote>
+
+<ul>
+  <li><em>$GOOS</em> and <em>$GOARCH</em></li>
+</ul>
+
+<blockquote>
+  <p>The name fo the target operating system and compilation architecture. These default to the values of <em>$GOHOSTOS</em> and <em>$GOHOSTARCH</em> respectively (described below).</p>
+
+  <p>Choice for <em>$GOOS</em> are <em>darwin</em> (Mac OS X 10.7 and above and iOS), <em>dragonfly, freebsd, linux, netbsd, openbsd, plan9, solaris</em> and <em>windows</em>. Choices for <em>$GOARCH</em> are <em>amd64 (640bit x86, the most mature port), *386</em> (32-bit x86), <em>arm</em> (32-bit ARM), <em>arm64</em> (64-bit ARM), <em>ppc64le</em> (PowerPC 64-bit, little-endian), and <em>ppc64</em> (PowerPC 64-bit, big-endian). The valid combinations of <em>$GOOS</em> and <em>$GOARCH</em> are:</p>
+  <table cellpadding="0" border="0">
+<tbody><tr>
+<th width="50"></th><th align="left" width="100"><code>$GOOS</code></th> <th align="left" width="100"><code>$GOARCH</code></th>
+</tr>
+<tr>
+<td></td><td><code>darwin</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>darwin</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>darwin</code></td> <td><code>arm</code></td>
+</tr>
+<tr>
+<td></td><td><code>darwin</code></td> <td><code>arm64</code></td>
+</tr>
+<tr>
+<td></td><td><code>dragonfly</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>freebsd</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>freebsd</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>freebsd</code></td> <td><code>arm</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>arm</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>arm64</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>ppc64</code></td>
+</tr>
+<tr>
+<td></td><td><code>linux</code></td> <td><code>ppc64le</code></td>
+</tr>
+<tr>
+<td></td><td><code>netbsd</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>netbsd</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>netbsd</code></td> <td><code>arm</code></td>
+</tr>
+<tr>
+<td></td><td><code>openbsd</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>openbsd</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>openbsd</code></td> <td><code>arm</code></td>
+</tr>
+<tr>
+<td></td><td><code>plan9</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>plan9</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>solaris</code></td> <td><code>amd64</code></td>
+</tr>
+<tr>
+<td></td><td><code>windows</code></td> <td><code>386</code></td>
+</tr>
+<tr>
+<td></td><td><code>windows</code></td> <td><code>amd64</code></td>
+</tr>
+</tbody></table>
+</blockquote>
+
+<ul>
+  <li><em>$GOBIN</em></li>
+</ul>
+
+<blockquote>
+  <p>The location where Go binaries will be installed. The default is <em>$GOROOT/bin</em>. After installing, you will want to arrange to add this directory to your <em>$PATH</em>, so you can use the tools. If <em>$GOBIN</em> is set, the <a href="https://golang.org/cmd/go">go command</a> installs all commands there.</p>
+</blockquote>
+
+<ul>
+  <li><em>$GO386</em> (for <em>386</em> only, default is auto-detected if built on either <em>386</em> or <em>amd64</em>, <em>387</em> otherwise)</li>
+</ul>
+
+<blockquote>
+  <p>This controls the code generated by gc to use either the 387 floating-point unit (set to <em>387</em>) or SSE2 instructions (set to <em>sse2</em>) for floating point computations.</p>
+  <ul>
+    <li><em>GO386=387</em>: use x87 for floating point operations; should support aull x86 chips (Pentium MMX or later).</li>
+    <li><em>GO386=sse2</em>: use SSE2 for floating operations; has better performance than 387, but only avaliable on Pentium 4/Opteron/Athlon 64 or later.</li>
+  </ul>
+</blockquote>
+
+<ul>
+  <li><em>$GOARM</em> (for <em>arm</em> only; default is auto-detected if building on the target processor, 6 if not)</li>
+</ul>
+
+<blockquote>
+  <p>This sets the ARM floating point co-processor architecture version the run-time should target. If you are compiling on the target system, its values will be auto-detected.</p>
+  <ul>
+    <li><em>GOARM=5</em>: use software floating point; when CPU doesn’t have VFP co-processor</li>
+    <li><em>GOARM=6</em>: use VFPv1 only; default if cross compiling; usually ARM11 or better cores (VFPv2 or better is also supported)</li>
+    <li><em>GOArM=7</em>: use VFPv3; usually Cortex-A cores
+If in doubt, leave this variable unset, and adjust it if required when you first run the Go executable. The <a href="https://golang.org/wiki/GoArm">GoARM</a> page on the <a href="https://golang.org/wiki">Go community wiki</a> contains further details regarding Go’s ARM support.</li>
+  </ul>
+</blockquote>
+
+<p>Note that <em>$GOARCH</em> and <em>$GOOS</em> identify the <em>target</em> environment, not the environment you are running on. In effect, you are always cross-compiling. By architecture, we mean the kind of binaries that the target environment can run: an x86-64 system running a 32-bit-only operating system must set <em>GOARCH</em> to <em>386</em>, not <em>amd64</em>.</p>
+
+<p>If you choose to override the defaults, set these variables in your shell profile (<em>$HOME/.bashrc, $HOME/.profile</em>, or equivalent). The settings might look something like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export GOROOT=$HOME/go
+export GOARCH=amd64
+export GOOS=linux
+</code></pre></div></div>
+
+<p>although, to reiterate, none of these variables needs to be set to build, install, and develop the Go tree.</p>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

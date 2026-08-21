@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Model validation in ASP.NET Core | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Model validation in ASP.NET Core" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Model validation is a crucial aspect of building robust ASP.NET Core applications, ensuring data integrity and providing a smooth user experience. This post explores the various mechanisms for validating data, from built-in attributes and custom validation logic to handling non-nullable reference types and top-level node validation. 1. Model state 2. Validation 3. Validation attributes 4. Error messages 5. Non-nullable reference types and [Required] attribute 6. Custom attributes 7. Refereces 1. Model state Model state represents data binding and validation errors that occur before action execution, which web apps typically handle by redisplaying pages, while ApiController-decorated Web APIs automatically return a…" />
+<meta name="twitter:description" property="og:description" content="Model validation is a crucial aspect of building robust ASP.NET Core applications, ensuring data integrity and providing a smooth user experience. This post explores the various mechanisms for validating data, from built-in attributes and custom validation logic to handling non-nullable reference types and top-level node validation. 1. Model state 2. Validation 3. Validation attributes 4. Error messages 5. Non-nullable reference types and [Required] attribute 6. Custom attributes 7. Refereces 1. Model state Model state represents data binding and validation errors that occur before action execution, which web apps typically handle by redisplaying pages, while ApiController-decorated Web APIs automatically return a…" />
+<link rel="canonical" href="https://blog.codefarm.me/model-validation-in-asp-net-core/" />
+<meta property="og:url" content="https://blog.codefarm.me/model-validation-in-asp-net-core/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-07-15T10:25:45+08:00" />
+<meta property="article:modified_time" content="2025-07-15T10:25:45+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Model validation in ASP.NET Core" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-07-15T10:25:45+08:00","datePublished":"2025-07-15T10:25:45+08:00","description":"Model validation is a crucial aspect of building robust ASP.NET Core applications, ensuring data integrity and providing a smooth user experience. This post explores the various mechanisms for validating data, from built-in attributes and custom validation logic to handling non-nullable reference types and top-level node validation. 1. Model state 2. Validation 3. Validation attributes 4. Error messages 5. Non-nullable reference types and [Required] attribute 6. Custom attributes 7. Refereces 1. Model state Model state represents data binding and validation errors that occur before action execution, which web apps typically handle by redisplaying pages, while ApiController-decorated Web APIs automatically return a…","headline":"Model validation in ASP.NET Core","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/model-validation-in-asp-net-core/"},"url":"https://blog.codefarm.me/model-validation-in-asp-net-core/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Model validation in ASP.NET Core</h1><p class="c-post-meta">15 Jul 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Model validation is a crucial aspect of building robust ASP.NET Core applications, ensuring data integrity and providing a smooth user experience. This post explores the various mechanisms for validating data, from built-in attributes and custom validation logic to handling non-nullable reference types and top-level node validation.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#model-state">1. Model state</a></li>
+<li><a href="#validation">2. Validation</a></li>
+<li><a href="#validation-attributes">3. Validation attributes</a></li>
+<li><a href="#error-messages">4. Error messages</a></li>
+<li><a href="#non-nullable-reference-types-and-required-attribute">5. Non-nullable reference types and [Required] attribute</a></li>
+<li><a href="#custom-attributes">6. Custom attributes</a></li>
+<li><a href="#refereces">7. Refereces</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="model-state">1. Model state</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Model state represents data binding and validation errors that occur before action execution, which web apps typically handle by redisplaying pages, while <a href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.apicontrollerattribute"><code>ApiController</code></a>-decorated Web APIs automatically return a <a href="https://learn.microsoft.com/en-us/aspnet/core/web-api/#automatic-http-400-responses">400 response</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="p">[</span><span class="n">ApiController</span><span class="p">]</span>
+<span class="p">[</span><span class="nf">Route</span><span class="p">(</span><span class="s">"api/[controller]"</span><span class="p">)]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MoviesController</span><span class="p">(</span><span class="n">IDbContextFactory</span><span class="p">&lt;</span><span class="n">MovieContext</span><span class="p">&gt;</span> <span class="n">contextFactory</span><span class="p">)</span> <span class="p">:</span> <span class="n">ControllerBase</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">HttpPost</span><span class="p">]</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">IActionResult</span><span class="p">&gt;</span> <span class="nf">CreateMoviesAsync</span><span class="p">(</span><span class="n">Movie</span> <span class="n">movie</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// Not required when annotated with [ApiController]</span>
+        <span class="c1">//</span>
+        <span class="c1">// if (!ModelState.IsValid)</span>
+        <span class="c1">// {</span>
+        <span class="c1">//     return BadRequest(ModelState);</span>
+        <span class="c1">// }</span>
+
+        <span class="k">using</span> <span class="nn">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">contextFactory</span><span class="p">.</span><span class="nf">CreateDbContext</span><span class="p">();</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">Movies</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">movie</span><span class="p">);</span>
+        <span class="k">await</span> <span class="n">context</span><span class="p">.</span><span class="nf">SaveChangesAsync</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="nf">Ok</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="validation">2. Validation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Validation is automatic but can be manually re-run by clearing the validation state and then calling <a href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.tryvalidatemodel"><code>TryValidateModel</code></a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// To rerun validation, call ModelStateDictionary.ClearValidationState to clear validation specific to the model being validated followed by TryValidateModel:</span>
+<span class="n">ModelState</span><span class="p">.</span><span class="nf">ClearValidationState</span><span class="p">(</span><span class="k">nameof</span><span class="p">(</span><span class="n">movie</span><span class="p">));</span>
+<span class="k">if</span> <span class="p">(!</span><span class="nf">TryValidateModel</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="k">nameof</span><span class="p">(</span><span class="n">movie</span><span class="p">)))</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nf">BadRequest</span><span class="p">(</span><span class="n">ModelState</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Validate the movie object using data annotations without using controller context</span>
+<span class="kt">var</span> <span class="n">validatetionContext</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContext</span><span class="p">(</span><span class="n">movie</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">validationResults</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">ValidationResult</span><span class="p">&gt;();</span>
+<span class="kt">bool</span> <span class="n">isValid</span> <span class="p">=</span> <span class="n">Validator</span><span class="p">.</span><span class="nf">TryValidateObject</span><span class="p">(</span>
+    <span class="n">instance</span><span class="p">:</span> <span class="n">movie</span><span class="p">,</span>
+    <span class="n">validationContext</span><span class="p">:</span> <span class="n">validatetionContext</span><span class="p">,</span>
+    <span class="n">validationResults</span><span class="p">:</span> <span class="n">validationResults</span><span class="p">,</span>
+    <span class="n">validateAllProperties</span><span class="p">:</span> <span class="k">true</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">isValid</span> <span class="k">is</span> <span class="k">false</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nf">BadRequest</span><span class="p">(</span><span class="n">validationResults</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <a href="https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.ivalidatableobject"><code>IValidatableObject</code></a> interface provides model-level, custom cross-property self-validation by returning <code>ValidationResult</code> objects, with its <code>Validate</code> method automatically invoked by <code>Validator.TryValidateObject</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="validation-attributes">3. Validation attributes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Validation attributes, both built-in and custom, define validation rules for model properties, ensuring data conforms to specified formats, ranges, and other criteria.</p>
+</div>
+<div class="paragraph">
+<p>Here are some of the built-in validation attributes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[ValidateNever]</code>: Indicates that a property or parameter should be excluded from validation.</p>
+</li>
+<li>
+<p><code>[CreditCard]</code>: Validates that the property has a credit card format.</p>
+</li>
+<li>
+<p><code>[Compare]</code>: Validates that two properties in a model match.</p>
+</li>
+<li>
+<p><code>[EmailAddress]</code>: Validates that the property has an email format.</p>
+</li>
+<li>
+<p><code>[Phone]</code>: Validates that the property has a telephone number format.</p>
+</li>
+<li>
+<p><code>[Range]</code>: Validates that the property value falls within a specified range.</p>
+</li>
+<li>
+<p><code>[RegularExpression]</code>: Validates that the property value matches a specified regular expression.</p>
+</li>
+<li>
+<p><code>[Required]</code>: Validates that the field isn&#8217;t null.</p>
+</li>
+<li>
+<p><code>[StringLength]</code>: Validates that a string property value doesn&#8217;t exceed a specified length limit.</p>
+</li>
+<li>
+<p><code>[Url]</code>: Validates that the property has a URL format.</p>
+</li>
+<li>
+<p><code>[Remote]</code>: Validates input on the client by calling an action method on the server. See [Remote] attribute for details about this attribute&#8217;s behavior.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A complete list of validation attributes can be found in the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations"><code>System.ComponentModel.DataAnnotations</code></a> namespace.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="error-messages">4. Error messages</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Validation attributes allow custom error messages using <code>String.Format</code>, which can include placeholders for dynamic content like field names and length limits.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// When applied to a Name property, the error message created by the preceding code would be "Name length must be between 6 and 8.".</span>
+<span class="p">[</span><span class="nf">StringLength</span><span class="p">(</span><span class="m">8</span><span class="p">,</span> <span class="n">ErrorMessage</span> <span class="p">=</span> <span class="s">"{0} length must be between {2} and {1}."</span><span class="p">,</span> <span class="n">MinimumLength</span> <span class="p">=</span> <span class="m">6</span><span class="p">)]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To find out which parameters are passed to <code>String.Format</code> for a particular attribute&#8217;s error message, see the <a href="https://github.com/dotnet/runtime/tree/main/src/libraries/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations">DataAnnotations source code</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// https://github.com/dotnet/runtime/blob/74be414d84c84f353ae2e471e63e431703efd398/src/libraries/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/StringLengthAttribute.cs#L74</span>
+<span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">FormatErrorMessage</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nf">EnsureLegalLengths</span><span class="p">();</span>
+
+    <span class="kt">bool</span> <span class="n">useErrorMessageWithMinimum</span> <span class="p">=</span> <span class="n">MinimumLength</span> <span class="p">!=</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">CustomErrorMessageSet</span><span class="p">;</span>
+    <span class="kt">string</span> <span class="n">errorMessage</span> <span class="p">=</span> <span class="n">useErrorMessageWithMinimum</span>
+        <span class="p">?</span> <span class="n">SR</span><span class="p">.</span><span class="n">StringLengthAttribute_ValidationErrorIncludingMinimum</span>
+        <span class="p">:</span> <span class="n">ErrorMessageString</span><span class="p">;</span>
+
+    <span class="c1">// it's ok to pass in the minLength even for the error message without a {2} param since string.Format will just</span>
+    <span class="c1">// ignore extra arguments</span>
+    <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="n">CultureInfo</span><span class="p">.</span><span class="n">CurrentCulture</span><span class="p">,</span> <span class="n">errorMessage</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">MaximumLength</span><span class="p">,</span> <span class="n">MinimumLength</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="non-nullable-reference-types-and-required-attribute">5. Non-nullable reference types and [Required] attribute</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When Nullable contexts are enabled with <code>&lt;Nullable&gt;enable&lt;/Nullable&gt;</code>, non-nullable reference types are implicitly validated as required, leading to errors for missing or empty string inputs unless the type is made nullable or the implicit behavior is suppressed by configuring <code>SuppressImplicitRequiredAttributeForNonNullableReferenceTypes</code> in <code>Program.cs</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddControllers</span><span class="p">(</span>
+    <span class="n">options</span> <span class="p">=&gt;</span> <span class="n">options</span><span class="p">.</span><span class="n">SuppressImplicitRequiredAttributeForNonNullableReferenceTypes</span> <span class="p">=</span> <span class="k">true</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-attributes">6. Custom attributes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Custom validation attributes extend validation capabilities beyond built-in options by inheriting <a href="https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.validationattribute"><code>ValidationAttribute</code></a> and overriding <code>IsValid</code> to implement custom logic, optionally using <code>ValidationContext</code> for additional model information.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">class</span> <span class="nc">ClassicMovieAttribute</span> <span class="p">:</span> <span class="n">ValidationAttribute</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ClassicMovieAttribute</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">Year</span> <span class="p">=</span> <span class="n">year</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Year</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">string</span> <span class="nf">GetErrorMessage</span><span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="s">$"Classic movies must have a release year no later than </span><span class="p">{</span><span class="n">Year</span><span class="p">}</span><span class="s">."</span><span class="p">;</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="n">ValidationResult</span><span class="p">?</span> <span class="nf">IsValid</span><span class="p">(</span>
+        <span class="kt">object</span><span class="p">?</span> <span class="k">value</span><span class="p">,</span> <span class="n">ValidationContext</span> <span class="n">validationContext</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">movie</span> <span class="p">=</span> <span class="p">(</span><span class="n">Movie</span><span class="p">)</span><span class="n">validationContext</span><span class="p">.</span><span class="n">ObjectInstance</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">releaseYear</span> <span class="p">=</span> <span class="p">((</span><span class="n">DateTime</span><span class="p">)</span><span class="k">value</span><span class="p">!).</span><span class="n">Year</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">movie</span><span class="p">.</span><span class="n">Genre</span> <span class="p">==</span> <span class="n">Genre</span><span class="p">.</span><span class="n">Classic</span> <span class="p">&amp;&amp;</span> <span class="n">releaseYear</span> <span class="p">&gt;</span> <span class="n">Year</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">ValidationResult</span><span class="p">(</span><span class="nf">GetErrorMessage</span><span class="p">());</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">.</span><span class="n">Success</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="refereces">7. Refereces</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation" class="bare">https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

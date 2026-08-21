@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Install a Kafka cluster in KRaft mode | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Install a Kafka cluster in KRaft mode" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Apache Kafka Raft (KRaft, pronounced craft) is the consensus protocol that was introduced in KIP-500 to remove Apache Kafka’s dependency on ZooKeeper for metadata management. KRaft mode makes use of a new quorum controller service in Kafka which replaces the previous controller and makes use of an event-based variant of the Raft consensus protocol. [1] KRaft mode is production ready for new clusters as of Apache Kafka 3.3. The development progress for additional features like migration from ZooKeeper is tracked in KIP-833. The KRaft controller nodes comprise a Raft quorum which manages the Kafka metadata log. This log contains information…" />
+<meta name="twitter:description" property="og:description" content="Apache Kafka Raft (KRaft, pronounced craft) is the consensus protocol that was introduced in KIP-500 to remove Apache Kafka’s dependency on ZooKeeper for metadata management. KRaft mode makes use of a new quorum controller service in Kafka which replaces the previous controller and makes use of an event-based variant of the Raft consensus protocol. [1] KRaft mode is production ready for new clusters as of Apache Kafka 3.3. The development progress for additional features like migration from ZooKeeper is tracked in KIP-833. The KRaft controller nodes comprise a Raft quorum which manages the Kafka metadata log. This log contains information…" />
+<link rel="canonical" href="https://blog.codefarm.me/install-kafka-with-kraft/" />
+<meta property="og:url" content="https://blog.codefarm.me/install-kafka-with-kraft/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-12T22:01:27+08:00" />
+<meta property="article:modified_time" content="2024-01-12T22:01:27+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Install a Kafka cluster in KRaft mode" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-01-12T22:01:27+08:00","datePublished":"2024-01-12T22:01:27+08:00","description":"Apache Kafka Raft (KRaft, pronounced craft) is the consensus protocol that was introduced in KIP-500 to remove Apache Kafka’s dependency on ZooKeeper for metadata management. KRaft mode makes use of a new quorum controller service in Kafka which replaces the previous controller and makes use of an event-based variant of the Raft consensus protocol. [1] KRaft mode is production ready for new clusters as of Apache Kafka 3.3. The development progress for additional features like migration from ZooKeeper is tracked in KIP-833. The KRaft controller nodes comprise a Raft quorum which manages the Kafka metadata log. This log contains information…","headline":"Install a Kafka cluster in KRaft mode","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/install-kafka-with-kraft/"},"url":"https://blog.codefarm.me/install-kafka-with-kraft/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Install a Kafka cluster in KRaft mode</h1><p class="c-post-meta">12 Jan 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Apache Kafka Raft (KRaft, pronounced craft) is the consensus protocol that was introduced in <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum">KIP-500</a> to remove Apache Kafka’s dependency on ZooKeeper for metadata management.</p>
+</div>
+<div class="paragraph">
+<p>KRaft mode makes use of a new quorum controller service in Kafka which replaces the previous controller and makes use of an event-based variant of the Raft consensus protocol. <a href="#learn-kraft">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>KRaft mode is production ready for new clusters as of Apache Kafka 3.3. The development progress for additional features like migration from ZooKeeper is tracked in <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-833%3A+Mark+KRaft+as+Production+Ready">KIP-833</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.confluent.io/platform/current/_images/KRaft-isolated-mode.png" alt="KRaft running in Isolated Mode" width="55%" height="55%">
+</div>
+</div>
+<div class="paragraph">
+<p>The KRaft controller nodes comprise a Raft quorum which manages the Kafka metadata log. This log contains information about each change to the cluster metadata. Everything that is currently stored in ZooKeeper, such as topics, partitions, ISRs, configurations, and so on, is stored in this log. <a href="#kafka-metadata-kraft">[2]</a></p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#control-plane-and-data-plane">1. Control plane and Data plane</a></li>
+<li><a href="#install-using-tar-archives">2. Install using TAR Archives</a>
+<ul class="sectlevel2">
+<li><a href="#setup-a-standalone-server-in-kraft-combined-mode-as-a-proof-of-concept">2.1. Setup a standalone server in KRaft combined mode as a proof of concept.</a></li>
+<li><a href="#setup-a-kafka-cluster-in-kraft">2.2. Setup a Kafka cluster in KRaft</a>
+<ul class="sectlevel3">
+<li><a href="#setup-schema-registry">2.2.1. Setup Schema Registry</a>
+<ul class="sectlevel4">
+<li><a href="#installation">2.2.1.1. Installation</a></li>
+</ul>
+</li>
+<li><a href="#setup-ui-for-apache-kafka">2.2.2. Setup UI for Apache Kafka</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#install-using-docker">3. Install using Docker</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="control-plane-and-data-plane">1. Control plane and Data plane</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Kafka cluster can be broken down into two components: a control plane and a data plane, each with its own responsibilities that work together to transfer data where it needs to go. <a href="#redhat-ha-kafka">[3]</a></p>
+</div>
+<div class="paragraph">
+<p><strong>Control plane responsibilities include:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Knowing which servers are alive.</p>
+</li>
+<li>
+<p>Making appropriate changes when a server is detected as down.</p>
+</li>
+<li>
+<p>Storing and exchanging metadata.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Data plane responsibilities include:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Handling requests to produce and fetch records and other application requests.</p>
+</li>
+<li>
+<p>Reacting to metadata changes from the control plane.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Historically, Kafka used an Apache ZooKeeper cluster to provide most of its control plane functionality. ZooKeeper tracks each broker and provides replicated and consistent storage for the cluster metadata. ZooKeeper also elects one Kafka broker to be the controller. The controller has extra, non data plane duties to manage the state of the cluster, such as responding to brokers that crash or restart.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://www.redhat.com/rhdc/managed-files/Kafka-Diagrams_3C%20copy%209.png" alt="ZooKeeper architecture for Kafka" width="35%" height="35%">
+</div>
+</div>
+<div class="paragraph">
+<p>The new architecture removes the ZooKeeper dependency and replaces it with a flavor of the <a href="https://raft.github.io/">Raft consensus protocol</a>, allowing each server in the Kafka cluster to take the role of <em>broker</em>, <em>controller</em>, or both. The controller cluster will perform the same roles as the cluster of ZooKeeper nodes did previously, but the Kafka controller will now be elected from the controllers instead of the brokers.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://www.redhat.com/rhdc/managed-files/cl-high-availability-kafka-detail-f31411_fig2.PNG" alt="KRaft architecture for Kafka" width="35%" height="35%">
+</div>
+</div>
+<div class="paragraph">
+<p>For a Kafka cluster to be highly available, you need to make certain both the data plane and control plane (whichever kind is being used) are highly available.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="install-using-tar-archives">2. Install using TAR Archives</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title"><em>Your local environment must have Java 8+ installed.</em></div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <a href="https://adoptium.net/temurin/releases/?os=linux&amp;arch=x64&amp;package=jdk&amp;version=17">Eclipse Temurin</a>, and download <a href="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.9_9.tar.gz">JDK 17-LTS</a>.</p>
+</li>
+<li>
+<p>Extract the tar to <em>/usr/local/jdk</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo mkdir</span> /usr/local/jdk
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar </span>xf OpenJDK17U-jdk_x64_linux_hotspot_17.0.9_9.tar.gz <span class="nt">-C</span> /usr/local/jdk  <span class="nt">--strip-components</span><span class="o">=</span>1</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Set <code>JAVA_HOME</code> in <em>/etc/profile.d/java.sh</em> with the following content:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/local/jdk
+<span class="nv">PATH</span><span class="o">=</span><span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$PATH</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Load the environment variables to the current shell and verify the installation:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">source</span> /etc/profile
+<span class="gp">$</span><span class="w"> </span>java <span class="nt">-version</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="setup-a-standalone-server-in-kraft-combined-mode-as-a-proof-of-concept">2.1. Setup a standalone server in KRaft combined mode as a proof of concept.</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to  <a href="https://kafka.apache.org/" class="bare">https://kafka.apache.org/</a>, download the <a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/3.6.1/kafka_2.13-3.6.1.tgz">latest</a> Kafka:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-LO</span> https://dlcdn.apache.org/kafka/3.6.1/kafka_2.13-3.6.1.tgz</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <code>kafka</code> user and extract the tar to the home:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>useradd <span class="nt">-m</span> kafka <span class="c"># [-s /bin/bash] Specify the login shell of the new account.</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>su - kafka
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar </span>xf kafka_2.13-3.6.1.tgz <span class="nt">-C</span> /home/kafka/ <span class="nt">--strip-components</span><span class="o">=</span>1</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Running Kafka as root is not a recommended configuration.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Generate a Cluster UUID:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">KAFKA_CLUSTER_ID</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>bin/kafka-storage.sh random-uuid<span class="si">)</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Format Log Directories:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-storage.sh format <span class="nt">-t</span> <span class="nv">$KAFKA_CLUSTER_ID</span> <span class="nt">-c</span> config/kraft/server.properties
+<span class="go">Formatting /tmp/kraft-combined-logs with metadata.version 3.6-IV2.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the Kafka Server:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-server-start.sh config/kraft/server.properties
+<span class="c">...
+</span><span class="go">[2024-01-12 23:22:34,872] INFO [SocketServer listenerType=CONTROLLER, nodeId=1] Enabling request processing. (kafka.network.SocketServer)
+[2024-01-12 23:22:34,881] INFO [MetadataLoader id=1] InitializeNewPublishers: initializing ScramPublisher controller id=1 with a snapshot at offset 4 (org.apache.kafka.image.loader.MetadataLoader)
+[2024-01-12 23:22:34,911] INFO Awaiting socket connections on 0.0.0.0:9093. (kafka.network.DataPlaneAcceptor)
+</span><span class="c">...
+</span><span class="go">[2024-01-12 23:22:36,629] INFO [SocketServer listenerType=BROKER, nodeId=1] Enabling request processing. (kafka.network.SocketServer)
+[2024-01-12 23:22:36,629] INFO Awaiting socket connections on 0.0.0.0:9092. (kafka.network.DataPlaneAcceptor)
+</span><span class="c">...</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The logs (not to be confused with the commit log) are located at <code>logs</code> which are configured in the <em>log4j.properties</em>.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Once the Kafka server has successfully launched:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open another terminal session and create a topic:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-topics.sh <span class="nt">--create</span> <span class="nt">--topic</span> quickstart-events <span class="nt">--bootstrap-server</span> localhost:9092
+<span class="go">Created topic quickstart-events.
+</span><span class="gp">$</span><span class="w"> </span>bin/kafka-topics.sh <span class="nt">--describe</span> <span class="nt">--topic</span> quickstart-events <span class="nt">--bootstrap-server</span> localhost:9092
+<span class="go">Topic: quickstart-events	TopicId: wx6vplZjRHaJubPnPP3_QQ	PartitionCount: 1	ReplicationFactor: 1	Configs: segment.bytes=1073741824
+	Topic: quickstart-events	Partition: 0	Leader: 1	Replicas: 1	Isr: 1</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the console producer client to write a few events into your topic:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-console-producer.sh <span class="nt">--topic</span> quickstart-events <span class="nt">--bootstrap-server</span> localhost:9092
+<span class="go">This is my first event
+This is my second event</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open another terminal session and run the console consumer client to read the events you just created:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-console-consumer.sh <span class="nt">--topic</span> quickstart-events <span class="nt">--from-beginning</span> <span class="nt">--bootstrap-server</span> localhost:9092
+<span class="go">This is my first event
+This is my second event</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="setup-a-kafka-cluster-in-kraft">2.2. Setup a Kafka cluster in KRaft</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make sure the nodes in the cluster could be reachable each other:</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can use the hostname, DNS name, or even IP address to connect each other.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can run the <code>ip a s</code> to show the addresses assigned to all network interfaces.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following steps will be demostrated with the following two nodes (<em>/etc/hosts</em>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">192.168.46.131	node-1
+192.168.46.132	node-2</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a <code>kafka</code> user and extract the tar to the home at each node:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>useradd <span class="nt">-m</span> kafka <span class="c"># [-s /bin/bash] Specify the login shell of the new account.</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>su - kafka
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo tar </span>xf kafka_2.13-3.6.1.tgz <span class="nt">-C</span> /home/kafka/ <span class="nt">--strip-components</span><span class="o">=</span>1</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Running Kafka as root is not a recommended configuration.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Generate a Cluster UUID:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">KAFKA_CLUSTER_ID</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>bin/kafka-storage.sh random-uuid<span class="si">)</span><span class="s2">"</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="nv">$KAFKA_CLUSTER_ID</span>
+<span class="go">MkU3OEVBNTcwNTJENDM2Qk</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note down the value of <code>KAFKA_CLUSTER_ID</code> and copy it to each node in <code>/etc/profile.d/kafka.sh</code> with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">KAFKA_CLUSTER_ID</span><span class="o">=</span>MkU3OEVBNTcwNTJENDM2Qk</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Load the environment variables to the current shell with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">source</span> /etc/profile</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Backup the orignal <em>config</em> directory on each node:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cp</span> <span class="nt">-a</span> config config.org</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create <em>log.dirs</em> with the following commands on each node:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo mkdir</span> <span class="nt">-p</span> /var/lib/kafka
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo chown </span>kafka:kafka /var/lib/kafka</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Update the <em>config/kraft/controller.properties</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="c"># The node id associated with this instance's roles
+# !!! on the second node, set the node.id to be 3002.
+</span><span class="py">node.id</span><span class="p">=</span><span class="s">3001</span>
+
+<span class="c"># The connect string for the controller quorum
+</span><span class="py">controller.quorum.voters</span><span class="p">=</span><span class="s">3001@node-1:9093,3002@node-2:9093</span>
+
+<span class="c"># Use to specify where the metadata log for clusters in KRaft mode is placed.
+</span><span class="py">log.dirs</span><span class="p">=</span><span class="s">/var/lib/kafka/controller</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Each node ID (<code>node.id</code>) must be unique across all the servers in a particular cluster.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Update the <em>config/kraft/broker.properties</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="c"># The node id associated with this instance's roles
+# !!! on the second node, set the node.id to be 1002.
+</span><span class="py">node.id</span><span class="p">=</span><span class="s">1001</span>
+
+<span class="c"># The connect string for the controller quorum
+</span><span class="py">controller.quorum.voters</span><span class="p">=</span><span class="s">3001@node-1:9093,3002@node-2:9093</span>
+
+<span class="c"># The address the socket server listens on.
+</span><span class="py">listeners</span><span class="p">=</span><span class="s">PLAINTEXT://:9092</span>
+
+<span class="c"># Listener name, hostname and port the broker will advertise to clients.
+# !!! on the second node, set it to be `PLAINTEXT://node-2:9092`.
+</span><span class="py">advertised.listeners</span><span class="p">=</span><span class="s">PLAINTEXT://node-1:9092</span>
+
+<span class="c"># The directory in which the log data is kept。
+</span><span class="py">log.dirs</span><span class="p">=</span><span class="s">/var/lib/kafka/data</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Each node ID (<code>node.id</code>) must be unique across all the servers in a particular cluster.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>advertised.listeners</code> should be reachable by the clients outside the cluster. You could set it with a reachable hostname or DNS name, or an external IP address. <a href="#kafka-listeners-explained">[7]</a>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Format Log Directories:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-storage.sh format <span class="nt">-t</span> <span class="nv">$KAFKA_CLUSTER_ID</span> <span class="nt">-c</span> config/kraft/controller.properties
+<span class="go">Formatting /var/lib/kafka/controller with metadata.version 3.6-IV2.
+</span><span class="gp">$</span><span class="w"> </span>bin/kafka-storage.sh format <span class="nt">-t</span> <span class="nv">$KAFKA_CLUSTER_ID</span> <span class="nt">-c</span> config/kraft/broker.properties
+<span class="go">Formatting /var/lib/kafka/data with metadata.version 3.6-IV2.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the Kafka Controller and Broker on each node:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-server-start.sh <span class="nt">-daemon</span> config/kraft/controller.properties
+<span class="gp">$</span><span class="w"> </span>bin/kafka-server-start.sh <span class="nt">-daemon</span> config/kraft/broker.properties</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that authentication is disabled for JMX by default in Kafka and security configs must be overridden for production deployments by setting the environment variable <code>KAFKA_JMX_OPTS</code> for processes started using the CLI or by setting appropriate Java system properties. <a href="#kafka-monitoring">[5]</a><a href="#redhat-kafka-monitoring">[6]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">JMX_PORT</span><span class="o">=</span>9101 bin/kafka-server-start.sh <span class="nt">-daemon</span> config/kraft/broker.properties</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Use the <code>kafka-metadata-quorum</code> tool to query the metadata quorum status.</p>
+<div class="paragraph">
+<p>The following code example displays a summary of the metadata quorum:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-metadata-quorum.sh <span class="nt">--bootstrap-server</span> node-1:9092 describe <span class="nt">--status</span>
+<span class="go">bin/kafka-metadata-quorum.sh --bootstrap-server node-1:9092 describe --status
+ClusterId:              MkU3OEVBNTcwNTJENDM2Qg
+LeaderId:               3002
+LeaderEpoch:            83
+HighWatermark:          779
+MaxFollowerLag:         0
+MaxFollowerLagTimeMs:   408
+CurrentVoters:          [3001,3002]
+CurrentObservers:       [1001,1002]</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="setup-schema-registry">2.2.1. Setup Schema Registry</h4>
+<div class="paragraph">
+<p>Schema Registry provides a centralized repository for managing and validating schemas for topic message data, and for serialization and deserialization of the data over the network. <a href="#confluent-schema-registry">[8]</a> <a href="#conduktor-schema-registry">[9]</a></p>
+</div>
+<div class="paragraph">
+<p>The Schema Registry is not part of Apache Kafka but there are several open source options to choose from. Here we use the Confluent Schema Registry for this example. <a href="#kafka-the-definitive-guide">[10]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.confluent.io/platform/current/_images/schema-registry-and-kafka.png" alt="Confluent Schema Registry for storing and retrieving schemas" width="55%" height="55%">
+</div>
+</div>
+<div class="paragraph">
+<p>Schema Registry lives outside of and separately from your Kafka brokers. Your producers and consumers still talk to Kafka to publish and read data (messages) to topics. Concurrently, they can also talk to Schema Registry to send and retrieve schemas that describe the data models for the messages. <a href="#schema-registry-fundamentals">[14]</a></p>
+</div>
+<div class="paragraph">
+<p>Schema Registry is a distributed storage layer for schemas which uses Kafka as its underlying storage mechanism. Some key design decisions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Assigns globally unique ID to each registered schema. Allocated IDs are guaranteed to be monotonically increasing and unique, but not necessarily consecutive.</p>
+</li>
+<li>
+<p>Kafka provides the durable backend, and functions as a write-ahead changelog for the state of Schema Registry and the schemas it contains.</p>
+</li>
+<li>
+<p>Schema Registry is designed to be distributed, with single-primary architecture, and ZooKeeper/Kafka coordinates primary election (based on the configuration).</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="installation">2.2.1.1. Installation</h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download Confluent Platform using only Confluent Community components by using the <code>curl</code> command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-O</span> https://packages.confluent.io/archive/7.5/confluent-community-7.5.3.tar.gz</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Extract the contents of the archive to <em>/home/kafka/confluent</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">mkdir</span> /home/kafka/confluent
+<span class="gp">$</span><span class="w"> </span><span class="nb">tar </span>xf confluent-community-7.5.3.tar.gz <span class="nt">-C</span> /home/kafka/confluent/ <span class="nt">--strip-components</span><span class="o">=</span>1
+<span class="gp">$</span><span class="w"> </span><span class="nb">cd</span> /home/kafka/confluent
+<span class="gp">$</span><span class="w"> </span><span class="nb">cp</span> <span class="nt">-a</span> etc/ etc.org</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Navigate to the Schema Registry properties file (<em>etc/schema-registry/schema-registry.properties</em>) and specify or update the following properties:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="c"># Specify the address the socket server listens on, e.g. listeners = PLAINTEXT://your.host.name:9092
+</span><span class="py">listeners</span><span class="p">=</span><span class="s">http://0.0.0.0:8081</span>
+
+<span class="c"># The advertised host name. Make sure to set this if running Schema Registry with multiple nodes.
+</span><span class="py">host.name</span><span class="p">=</span><span class="s">node-1</span>
+
+<span class="c"># List of Kafka brokers to connect to, e.g. PLAINTEXT://hostname:9092,SSL://hostname2:9092
+</span><span class="py">kafkastore.bootstrap.servers</span><span class="p">=</span><span class="s">PLAINTEXT://node-1:9092,PLAINTEXT://node-1:9092</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Schema Registry on Confluent Platform can be deployed using a single primary source, with either Kafka or ZooKeeper leader election. You can also set up multiple Schema Registry servers for high availability deployments, where you switch to a secondary Schema Registry cluster if the primary goes down, and for data migration, one time or as a continuous feed. <a href="#schema-registry-multidc">[13]</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start Schema Registry. Run this command in its own terminal:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/schema-registry-start <span class="nt">-daemon</span> etc/schema-registry/schema-registry.properties</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>View the runtime logs of Schema Registry:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">tail</span> <span class="nt">-f</span> logs/schema-registry.log
+<span class="go">[2024-01-13 01:58:05,916] INFO DefaultSessionIdManager workerName=node0 (org.eclipse.jetty.server.session)
+[2024-01-13 01:58:05,916] INFO No SessionScavenger set, using defaults (org.eclipse.jetty.server.session)
+[2024-01-13 01:58:05,918] INFO node0 Scavenging every 600000ms (org.eclipse.jetty.server.session)
+[2024-01-13 01:58:06,798] INFO HV000001: Hibernate Validator 6.1.7.Final (org.hibernate.validator.internal.util.Version)
+[2024-01-13 01:58:07,291] INFO Started o.e.j.s.ServletContextHandler@53a84ff4{/,null,AVAILABLE} (org.eclipse.jetty.server.handler.ContextHandler)
+[2024-01-13 01:58:07,319] INFO Started o.e.j.s.ServletContextHandler@5807efad{/ws,null,AVAILABLE} (org.eclipse.jetty.server.handler.ContextHandler)
+[2024-01-13 01:58:07,349] INFO Started NetworkTrafficServerConnector@65a15628{HTTP/1.1, (http/1.1, h2c)}{0.0.0.0:8081} (org.eclipse.jetty.server.AbstractConnector)
+[2024-01-13 01:58:07,354] INFO Started @9485ms (org.eclipse.jetty.server.Server)
+[2024-01-13 01:58:07,355] INFO Schema Registry version: 7.5.3 commitId: 03b675da443c5687684ecae6736d873560f7c441 (io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain)
+[2024-01-13 01:58:07,356] INFO Server started, listening for requests... (io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Show the <code>_schemas</code> information:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>bin/kafka-topics.sh <span class="nt">--describe</span> <span class="nt">--topic</span> _schemas <span class="nt">--bootstrap-server</span> node-1:9092
+<span class="go">Topic: _schemas	TopicId: 9A_-36hMRYuTfUyhQwMm6Q	PartitionCount: 1	ReplicationFactor: 2	Configs: cleanup.policy=compact,segment.bytes=1073741824
+	Topic: _schemas	Partition: 0	Leader: 1001	Replicas: 1001,1002	Isr: 1001,1002</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="setup-ui-for-apache-kafka">2.2.2. Setup UI for Apache Kafka</h4>
+<div class="paragraph">
+<p><a href="https://github.com/provectus/kafka-ui">UI for Apache Kafka</a> is a free, open-source web UI to monitor and manage Apache Kafka clusters. <a href="#kafka-ui-getting-started">[15]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">-it</span> <span class="nt">-p</span> 8080:8080 <span class="nt">-e</span> <span class="nv">DYNAMIC_CONFIG_ENABLED</span><span class="o">=</span><span class="nb">true </span>provectuslabs/kafka-ui</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="install-using-docker">3. Install using Docker</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Make sure the nodes in the cluster could be reachable each other.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can use the hostname, DNS name, or an external IP address to connect each other.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can run the <code>ip a s</code> to show the addresses assigned to all network interfaces.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The following steps will be demostrated with the following two nodes:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">192.168.56.131 node-1
+192.168.56.132 node-2</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Optional: Install Docker Engine</p>
+<div class="paragraph">
+<p>See <a href="https://docs.docker.com/engine/install/" class="bare">https://docs.docker.com/engine/install/</a> to install Docker Engine.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">You might need to configure the Docker daemon to use a different data directory (by default: <em>/var/lib/docker</em> on Linux) and the log driver options.</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create the configuration file at <em>/etc/docker/daemon.json</em> with the following content:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"data-root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/mnt/docker-data"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"log-opts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"max-file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"max-size"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10m"</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Restart Docker:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl start docker</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Show Docker version:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>docker <span class="nt">--version</span>
+<span class="go">Docker version 24.0.7, build afdd53b</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Optional: Stop and disable the <em>firewalld.service</em>.</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>View the current status:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>firewall-cmd <span class="nt">--state</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Stop the FirewallD service:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl stop firewalld.service</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>List the rules:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>iptables <span class="nt">-L</span>
+<span class="go">Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Disable the FirewallD service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl disable firewalld.service</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Optional: Generate a Cluster UUID:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">KAFKA_CLUSTER_ID</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>docker run <span class="nt">--rm</span> confluentinc/cp-kafka:7.5.3 kafka-storage random-uuid<span class="si">)</span><span class="s2">"</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">echo</span> <span class="nv">$KAFKA_CLUSTER_ID</span>
+<span class="go">MkU3OEVBNTcwNTJENDM2Qg</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy the <a href="https://github.com/ousiax/kafka-dotnet-getting-started/tree/main/docker"><em>docker/</em></a> directory to all the nodes in the Kafka cluster:</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="https://github.com/ousiax/kafka-dotnet-getting-started/tree/main/docker" class="bare">https://github.com/ousiax/kafka-dotnet-getting-started/tree/main/docker</a>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Start the controllers:</p>
+<div class="paragraph">
+<p>On node-1:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Update the <em>compose.override.yml</em> in <em>docker/controller/compose.override.yml</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2.4"</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">controller</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">KAFKA_NODE_ID</span><span class="pi">:</span> <span class="m">3001</span>
+      <span class="na">KAFKA_CONTROLLER_QUORUM_VOTERS</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3001@node-1:9093,3002@node-2:9093'</span>
+      <span class="na">CLUSTER_ID</span><span class="pi">:</span> <span class="s1">'</span><span class="s">MkU3OEVBNTcwNTJENDM2Qg'</span>
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-1:192.168.56.131"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-2:192.168.56.132"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Update the <code>CLUSTER_ID</code> with the <code>KAFKA_CLUSTER_ID</code> that generated at the above step.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Each node ID (<code>KAFKA_NODE_ID</code>) must be unique across all the nodes in a particular cluster.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Start the Kraft controller:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>docker/controller
+docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On node-2:</p>
+</div>
+</li>
+<li>
+<p>Repeat the above steps and update the <code>KAFKA_NODE_ID</code> with <code>3002</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Start the brokers:</p>
+<div class="paragraph">
+<p>On node-1:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Update the <em>compose.override.yml</em> in <em>docker/broker/compose.override.yml</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2.4"</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">controller</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">KAFKA_NODE_ID</span><span class="pi">:</span> <span class="m">1001</span>
+      <span class="na">KAFKA_ADVERTISED_LISTENERS</span><span class="pi">:</span> <span class="s1">'</span><span class="s">PLAINTEXT://node-1:9092'</span>
+      <span class="na">KAFKA_CONTROLLER_QUORUM_VOTERS</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3001@node-1:9093,3002@node-2:9093'</span>
+      <span class="na">CLUSTER_ID</span><span class="pi">:</span> <span class="s1">'</span><span class="s">MkU3OEVBNTcwNTJENDM2Qg'</span>
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-1:192.168.56.131"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-2:192.168.56.132"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Update the <code>CLUSTER_ID</code> with the <code>KAFKA_CLUSTER_ID</code> that generated at step 2.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Each node ID (<code>KAFKA_NODE_ID</code>) must be unique across all the nodes in a particular cluster.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>KAFKA_ADVERTISED_LISTENERS</code> should be reachable by the clients outside the cluster. You could set it with a reachable hostname or DNS name, or an external IP address.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Start the broker:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>docker/broker
+docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use <code>kcat</code> to display the current state of the Kafka cluster and its topics, partitions, replicas and in-sync replicas (ISR).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">--add-host</span> node-1:192.168.56.131 confluentinc/cp-kcat:7.5.3 <span class="nt">-b</span> node-1:9092 <span class="nt">-L</span>
+<span class="go">Metadata for all topics (from broker -1: node-1:9092/bootstrap):
+ 1 brokers:
+  broker 1001 at node-1:9092 (controller)
+ 0 topics:</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use the <code>kafka-metadata-quorum</code> tool to view the metadata quorum status.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">--add-host</span> node-1:192.168.56.131 confluentinc/cp-kafka:7.5.3 kafka-metadata-quorum <span class="nt">--bootstrap-server</span> node-1:9092 describe <span class="nt">--status</span>
+<span class="go">ClusterId:              MkU3OEVBNTcwNTJENDM2Qg
+LeaderId:               3002
+LeaderEpoch:            28
+HighWatermark:          47816
+MaxFollowerLag:         0
+MaxFollowerLagTimeMs:   32
+CurrentVoters:          [3001,3002]
+CurrentObservers:       [1001]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On node-2:</p>
+</div>
+</li>
+<li>
+<p>Repeat the above steps and update the <code>KAFKA_NODE_ID</code> with <code>1002</code>, and <code>KAFKA_ADVERTISED_LISTENERS</code> with <code>'PLAINTEXT://node-2:9092'</code>.</p>
+</li>
+<li>
+<p>Use <code>kcat</code> to display the current state of the Kafka cluster and its topics, partitions, replicas and in-sync replicas (ISR).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">--add-host</span> node-2:192.168.56.132 confluentinc/cp-kcat:7.5.3 <span class="nt">-b</span> node-2:9092 <span class="nt">-L</span>
+<span class="go">Metadata for all topics (from broker 1002: node-2:9092/1002):
+ 2 brokers:
+  broker 1001 at node-2:9092
+  broker 1002 at node-2:9092 (controller)
+ 0 topics:</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Use the <code>kafka-metadata-quorum</code> tool to view the metadata quorum status.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--rm</span> <span class="nt">--add-host</span> node-2:192.168.56.132 confluentinc/cp-kafka:7.5.3 kafka-metadata-quorum <span class="nt">--bootstrap-server</span> node-2:9092 describe <span class="nt">--status</span>
+<span class="go">ClusterId:              MkU3OEVBNTcwNTJENDM2Qg
+LeaderId:               3002
+LeaderEpoch:            28
+HighWatermark:          47816
+MaxFollowerLag:         0
+MaxFollowerLagTimeMs:   32
+CurrentVoters:          [3001,3002]
+CurrentObservers:       [1001,1002]</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Start the Schema Registry:</p>
+<div class="paragraph">
+<p>On node-1:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Update the <em>compose.override.yml</em> in <em>docker/schema-registry/compose.override.yml</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2.4"</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">schema-registry</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">SCHEMA_REGISTRY_HOST_NAME</span><span class="pi">:</span> <span class="s">node-1</span>
+      <span class="na">SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS</span><span class="pi">:</span> <span class="s">node-1:9092,node-2:9092</span>
+      <span class="na">SCHEMA_REGISTRY_DEBUG</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-1:192.168.56.131"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-2:192.168.56.132"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the Schema Registry:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>docker/schema-registry:
+docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On node-2:</p>
+</div>
+</li>
+<li>
+<p>Repeat the above steps, and replace the <code>SCHEMA_REGISTRY_HOST_NAME</code> with <code>node-2</code> to setup a replication if you need to support high available service.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Start the UI Kafka:</p>
+<div class="paragraph">
+<p>On node-1:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Update the <em>compose.override.yml</em> in <em>docker/controller/compose.override.yml</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2.4"</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">kafka-ui</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">KAFKA_CLUSTERS_0_NAME</span><span class="pi">:</span> <span class="s">iot</span>
+      <span class="na">KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS</span><span class="pi">:</span> <span class="s">node-1:9092,node-2:9092</span>
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-1:192.168.56.131"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">node-2:192.168.56.132"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the kafka-ui:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cd </span>docker/kafka-ui
+docker compose up <span class="nt">-d</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Go to <a href="http://node-1:8080" class="bare">http://node-1:8080</a> with your browser to view the cluster status.</p>
+<div class="paragraph">
+<p>On node-2:</p>
+</div>
+</li>
+<li>
+<p>Repeat the above steps to setup a replication of the kafka-ui if you need to support high available service.</p>
+</li>
+<li>
+<p>Go to <a href="http://node-2:8080" class="bare">http://node-2:8080</a> with your browser to view the cluster status.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="learn-kraft"></a>[1] <a href="https://developer.confluent.io/learn/kraft/" class="bare">https://developer.confluent.io/learn/kraft/</a></p>
+</li>
+<li>
+<p><a id="kafka-metadata-kraft"></a>[2] <a href="https://docs.confluent.io/platform/current/kafka-metadata/kraft.html" class="bare">https://docs.confluent.io/platform/current/kafka-metadata/kraft.html</a></p>
+</li>
+<li>
+<p><a id="redhat-ha-kafka"></a>[3] <a href="https://www.redhat.com/en/resources/high-availability-for-apache-kafka-detail" class="bare">https://www.redhat.com/en/resources/high-availability-for-apache-kafka-detail</a></p>
+</li>
+<li>
+<p><a id="quickstart"></a>[4] <a href="https://kafka.apache.org/quickstart" class="bare">https://kafka.apache.org/quickstart</a></p>
+</li>
+<li>
+<p><a id="kafka-monitoring"></a>[5] <a href="https://kafka.apache.org/documentation/#monitoring" class="bare">https://kafka.apache.org/documentation/#monitoring</a></p>
+</li>
+<li>
+<p><a id="redhat-kafka-monitoring"></a>[6] <a href="https://access.redhat.com/documentation/en-us/red_hat_amq_streams/2.5/html/using_amq_streams_on_rhel/monitoring-str" class="bare">https://access.redhat.com/documentation/en-us/red_hat_amq_streams/2.5/html/using_amq_streams_on_rhel/monitoring-str</a></p>
+</li>
+<li>
+<p><a id="kafka-listeners-explained"></a>[7] <a href="https://www.confluent.io/blog/kafka-listeners-explained/" class="bare">https://www.confluent.io/blog/kafka-listeners-explained/</a></p>
+</li>
+<li>
+<p><a id="confluent-schema-registry"></a>[8] <a href="https://docs.confluent.io/platform/current/schema-registry/index.html" class="bare">https://docs.confluent.io/platform/current/schema-registry/index.html</a></p>
+</li>
+<li>
+<p><a id="conduktor-schema-registry"></a>[9] <a href="https://www.conduktor.io/blog/what-is-the-schema-registry-and-why-do-you-need-to-use-it/" class="bare">https://www.conduktor.io/blog/what-is-the-schema-registry-and-why-do-you-need-to-use-it/</a></p>
+</li>
+<li>
+<p><a id="kafka-the-definitive-guide"></a>[10] "20170707-EB-Confluent_Kafka_Definitive-Guide_Complete", <a href="https://www.confluent.io/resources/kafka-the-definitive-guide/" class="bare">https://www.confluent.io/resources/kafka-the-definitive-guide/</a></p>
+</li>
+<li>
+<p><a id="installing_cp-zip-tar"></a>[11] <a href="https://docs.confluent.io/platform/current/installation/installing_cp/zip-tar.html" class="bare">https://docs.confluent.io/platform/current/installation/installing_cp/zip-tar.html</a></p>
+</li>
+<li>
+<p><a id="schema-registry-installation"></a>[12] <a href="https://docs.confluent.io/platform/current/schema-registry/installation/deployment.html" class="bare">https://docs.confluent.io/platform/current/schema-registry/installation/deployment.html</a></p>
+</li>
+<li>
+<p><a id="schema-registry-multidc"></a>[13] <a href="https://docs.confluent.io/platform/current/schema-registry/multidc.html" class="bare">https://docs.confluent.io/platform/current/schema-registry/multidc.html</a></p>
+</li>
+<li>
+<p><a id="schema-registry-fundamentals"></a>[14] <a href="https://docs.confluent.io/platform/current/schema-registry/fundamentals/index.html" class="bare">https://docs.confluent.io/platform/current/schema-registry/fundamentals/index.html</a></p>
+</li>
+<li>
+<p><a id="kafka-ui-getting-started"></a>[15] <a href="https://docs.kafka-ui.provectus.io/overview/getting-started" class="bare">https://docs.kafka-ui.provectus.io/overview/getting-started</a></p>
+</li>
+<li>
+<p><a id="kafka-serdes-develop"></a>[16] <a href="https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html" class="bare">https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html</a></p>
+</li>
+<li>
+<p><a id="avro-kafka-data"></a>[17] <a href="https://www.confluent.io/blog/avro-kafka-data/" class="bare">https://www.confluent.io/blog/avro-kafka-data/</a></p>
+</li>
+<li>
+<p><a id="avro"></a>[18] <a href="https://avro.apache.org/" class="bare">https://avro.apache.org/</a></p>
+</li>
+<li>
+<p><a id="docker-installation"></a>[19] <a href="https://docs.confluent.io/platform/current/installation/docker/installation.html" class="bare">https://docs.confluent.io/platform/current/installation/docker/installation.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

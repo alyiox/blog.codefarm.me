@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Node.js, NPM, NVM | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Node.js, NPM, NVM" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Node.js 2. NPM package manager 2.1. About packages and modules 2.2. Introduction to npm CLI 2.3. Packages 2.3.1. Installing all dependencies 2.3.2. Installing a single package 2.3.3. Updating packages 2.3.4. Versioning 2.4. Running Tasks 2.5. What is the difference between npm and NPX? 2.5.1. Which is better npx vs npm? 2.5.2. Is NPX installed with npm? 2.5.3. Why we use NPX instead of npm? 3. Node Version Manager References 1. Node.js Node.js is an open-source and cross-platform JavaScript runtime environment, that runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. [1] V8 is the…" />
+<meta name="twitter:description" property="og:description" content="1. Node.js 2. NPM package manager 2.1. About packages and modules 2.2. Introduction to npm CLI 2.3. Packages 2.3.1. Installing all dependencies 2.3.2. Installing a single package 2.3.3. Updating packages 2.3.4. Versioning 2.4. Running Tasks 2.5. What is the difference between npm and NPX? 2.5.1. Which is better npx vs npm? 2.5.2. Is NPX installed with npm? 2.5.3. Why we use NPX instead of npm? 3. Node Version Manager References 1. Node.js Node.js is an open-source and cross-platform JavaScript runtime environment, that runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. [1] V8 is the…" />
+<link rel="canonical" href="https://blog.codefarm.me/nodejs-nvm-npm/" />
+<meta property="og:url" content="https://blog.codefarm.me/nodejs-nvm-npm/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-07-27T11:16:29+08:00" />
+<meta property="article:modified_time" content="2023-07-27T11:16:29+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Node.js, NPM, NVM" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-07-27T11:16:29+08:00","datePublished":"2023-07-27T11:16:29+08:00","description":"1. Node.js 2. NPM package manager 2.1. About packages and modules 2.2. Introduction to npm CLI 2.3. Packages 2.3.1. Installing all dependencies 2.3.2. Installing a single package 2.3.3. Updating packages 2.3.4. Versioning 2.4. Running Tasks 2.5. What is the difference between npm and NPX? 2.5.1. Which is better npx vs npm? 2.5.2. Is NPX installed with npm? 2.5.3. Why we use NPX instead of npm? 3. Node Version Manager References 1. Node.js Node.js is an open-source and cross-platform JavaScript runtime environment, that runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. [1] V8 is the…","headline":"Node.js, NPM, NVM","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/nodejs-nvm-npm/"},"url":"https://blog.codefarm.me/nodejs-nvm-npm/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Node.js, NPM, NVM</h1><p class="c-post-meta">27 Jul 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#node-js">1. Node.js</a></li>
+<li><a href="#npm-package-manager">2. NPM package manager</a>
+<ul class="sectlevel2">
+<li><a href="#about-packages-and-modules">2.1. About packages and modules</a></li>
+<li><a href="#introduction-to-npm-cli">2.2. Introduction to npm CLI</a></li>
+<li><a href="#packages">2.3. Packages</a>
+<ul class="sectlevel3">
+<li><a href="#installing-all-dependencies">2.3.1. Installing all dependencies</a></li>
+<li><a href="#installing-a-single-package">2.3.2. Installing a single package</a></li>
+<li><a href="#updating-packages">2.3.3. Updating packages</a></li>
+<li><a href="#versioning">2.3.4. Versioning</a></li>
+</ul>
+</li>
+<li><a href="#running-tasks">2.4. Running Tasks</a></li>
+<li><a href="#what-is-the-difference-between-npm-and-npx">2.5. What is the difference between npm and NPX?</a>
+<ul class="sectlevel3">
+<li><a href="#which-is-better-npx-vs-npm">2.5.1. Which is better npx vs npm?</a></li>
+<li><a href="#is-npx-installed-with-npm">2.5.2. Is NPX installed with npm?</a></li>
+<li><a href="#why-we-use-npx-instead-of-npm">2.5.3. Why we use NPX instead of npm?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#node-version-manager">3. Node Version Manager</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="node-js">1. Node.js</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Node.js is an open-source and cross-platform JavaScript runtime environment, that runs the V8 JavaScript engine, the core of Google Chrome, outside of the browser. <a href="#intro-nodejs">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>V8 is the name of the JavaScript engine that powers Google Chrome. It&#8217;s the thing that takes our JavaScript and executes it while browsing with Chrome. V8 provides the runtime environment in which JavaScript executes. The DOM and the other Web Platform APIs are provided by the browser.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A Node.js app runs in a single process, without creating a new thread for every request.</p>
+</li>
+<li>
+<p>Node.js provides a set of asynchronous I/O primitives in its standard library that prevent JavaScript code from blocking and generally, libraries in Node.js are written using non-blocking paradigms, making blocking behavior the exception rather than the norm.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Both the browser and Node.js use JavaScript as their programming language.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the browser, most of the time what you are doing is interacting with the DOM, or other Web Platform APIs like Cookies.</p>
+<div class="paragraph">
+<p>Those do not exist in Node.js, of course. You don&#8217;t have the <code>document</code>, <code>window</code> and all the other objects that are provided by the browser.</p>
+</div>
+</li>
+<li>
+<p>And in the browser, we don&#8217;t have all the nice APIs that Node.js provides through its modules, like the filesystem access functionality.</p>
+</li>
+<li>
+<p>Since JavaScript moves so fast, but browsers can be a bit slow to upgrade, sometimes on the web you are stuck with using older JavaScript / ECMAScript releases.</p>
+<div class="paragraph">
+<p>You can use Babel to transform your code to be ES5-compatible before shipping it to the browser, but in Node.js, you won&#8217;t need that.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Node.js assumes it&#8217;s always running in a development environment. You can signal Node.js that you are running in production by setting the <code>NODE_ENV=production</code> environment variable.</p>
+</div>
+<div class="paragraph">
+<p>This is usually done by executing the command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">export </span><span class="nv">NODE_ENV</span><span class="o">=</span>production</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>in the shell, but it&#8217;s better to put it in your shell configuration file (e.g. <code>.bash_profile</code> with the Bash shell) because otherwise the setting does not persist in case of a system restart.</p>
+</div>
+<div class="paragraph">
+<p>You can also apply the environment variable by prepending it to your application initialization command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">NODE_ENV</span><span class="o">=</span>production node app.js</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This environment variable is a convention that is widely used in external libraries as well.</p>
+</div>
+<div class="paragraph">
+<p>Setting the environment to production generally ensures that</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>logging is kept to a minimum, essential level</p>
+</li>
+<li>
+<p>more caching levels take place to optimize performance</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can use conditional statements to execute code in different environments:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="js"><span class="k">if </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">development</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="k">if </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">production</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="k">if </span><span class="p">([</span><span class="dl">'</span><span class="s1">production</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">staging</span><span class="dl">'</span><span class="p">].</span><span class="nf">includes</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span><span class="p">))</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="npm-package-manager">2. NPM package manager</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>npm</strong> consists of three distinct components: <a href="#about-npm">[3]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the <a href="https://npmjs.com/">website</a> to discover packages, set up profiles, and manage other aspects of your npm experience.</p>
+</li>
+<li>
+<p>The <a href="https://docs.npmjs.com/cli/npm">CLI</a> runs from a terminal, and is how most developers interact with npm.</p>
+</li>
+<li>
+<p>The <a href="https://docs.npmjs.com/misc/registry">registry</a> is a large public database of JavaScript software and the meta-information surrounding it.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="about-packages-and-modules">2.1. About packages and modules</h3>
+<div class="paragraph">
+<p>A <strong>package</strong> is a file or directory that is described by a <code>package.json</code> file. A package must contain a <code>package.json</code> file in order to be published to the npm registry. <a href="#abt-pkg-mod">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>Packages can be <strong>unscoped</strong> or <strong>scoped</strong> to a user or organization, and scoped packages can be private or public.</p>
+</div>
+<div class="paragraph">
+<p>A scope allows you to create a package with the same name as a package created by another user or organization without conflict.</p>
+</div>
+<div class="paragraph">
+<p>When listed as a dependent in a <code>package.json</code> file, scoped packages are preceded by their scope name.</p>
+</div>
+<div class="paragraph">
+<p>The scope name is everything between the <code>@</code> and the <code>/</code>:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>"npm" scope:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">@npm/package-name</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>"npmcorp" scope:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">@npmcorp/package-name</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A <strong>module</strong> is any file or directory in the <code>node_modules</code> directory that can be loaded by the Node.js <code>require()</code> function.</p>
+</div>
+<div class="paragraph">
+<p>To be loaded by the Node.js <code>require()</code> function, a module must be one of the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A folder with a <code>package.json</code> file containing a "main" field.</p>
+</li>
+<li>
+<p>A JavaScript file.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Note: Since modules are not required to have a <code>package.json</code> file, not all modules are packages. Only modules that have a <code>package.json</code> file are also packages.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="introduction-to-npm-cli">2.2. Introduction to npm CLI</h3>
+<div class="paragraph">
+<p>npm is the standard package manager for Node.js. <a href="#intro-npm">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>In September 2022 over 2.1 million packages were reported being listed in the npm registry, making it the biggest single language code repository on Earth, and you can be sure there is a package for (almost!) everything.</p>
+</div>
+<div class="paragraph">
+<p>It started as a way to download and manage dependencies of Node.js packages, but it has since become a tool used also in frontend JavaScript.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://yarnpkg.com/en/">Yarn</a> and <a href="https://pnpm.io/">pnpm</a> are alternatives to npm cli. You can check them out as well.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="packages">2.3. Packages</h3>
+<div class="paragraph">
+<p>npm manages downloads of dependencies of your project.</p>
+</div>
+<div class="sect3">
+<h4 id="installing-all-dependencies">2.3.1. Installing all dependencies</h4>
+<div class="paragraph">
+<p>If a project has a <code>package.json</code> file, by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm <span class="nb">install</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>it will install everything the project needs, in the <code>node_modules</code> folder, creating it if it&#8217;s not existing already.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="installing-a-single-package">2.3.2. Installing a single package</h4>
+<div class="paragraph">
+<p>You can also install a specific package by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm <span class="nb">install</span> &lt;package-name&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Furthermore, since npm 5, this command adds <code>&lt;package-name&gt;</code> to the <code>package.json</code> file dependencies. Before version 5, you needed to add the flag <code>--save</code>.</p>
+</div>
+<div class="paragraph">
+<p>Often you&#8217;ll see more flags added to this command:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>--save-dev</code> installs and adds the entry to the package.json file devDependencies</p>
+</li>
+<li>
+<p><code>--no-save</code> installs but does not add the entry to the package.json file dependencies</p>
+</li>
+<li>
+<p><code>--save-optional</code> installs and adds the entry to the package.json file optionalDependencies</p>
+</li>
+<li>
+<p><code>--no-optional</code> will prevent optional dependencies from being installed</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Shorthands of the flags can also be used:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>-S</code>: <code>--save</code></p>
+</li>
+<li>
+<p><code>-D</code>: <code>--save-dev</code></p>
+</li>
+<li>
+<p><code>-O</code>: <code>--save-optional</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The difference between <code>devDependencies</code> and <code>dependencies</code> is that the former contains development tools, like a testing library, while the latter is bundled with the app in production.</p>
+</div>
+<div class="paragraph">
+<p>As for the <code>optionalDependencies</code> the difference is that build failure of the dependency will not cause installation to fail. But it is your program&#8217;s responsibility to handle the lack of the dependency.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="updating-packages">2.3.3. Updating packages</h4>
+<div class="paragraph">
+<p>Updating is also made easy, by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>npm will check all packages for a newer version that satisfies your versioning constraints.</p>
+</div>
+<div class="paragraph">
+<p>You can specify a single package to update as well:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm update &lt;package-name&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="versioning">2.3.4. Versioning</h4>
+<div class="paragraph">
+<p>In addition to plain downloads, <code>npm</code> also manages <strong>versioning</strong>, so you can specify any specific version of a package, or require a version higher or lower than what you need.</p>
+</div>
+<div class="paragraph">
+<p>Many times you&#8217;ll find that a library is only compatible with a major release of another library.</p>
+</div>
+<div class="paragraph">
+<p>Or a bug in the latest release of a lib, still unfixed, is causing an issue.</p>
+</div>
+<div class="paragraph">
+<p>Specifying an explicit version of a library also helps to keep everyone on the same exact version of a package, so that the whole team runs the same version until the <code>package.json</code> file is updated.</p>
+</div>
+<div class="paragraph">
+<p>In all those cases, versioning helps a lot, and <code>npm</code> follows the semantic versioning (semver) standard.</p>
+</div>
+<div class="paragraph">
+<p>You can install a specific version of a package, by running</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm <span class="nb">install</span> &lt;package-name&gt;@&lt;version&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="running-tasks">2.4. Running Tasks</h3>
+<div class="paragraph">
+<p>The <code>package.json</code> file supports a format for specifying command line tasks that can be run by using</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">npm run &lt;task-name&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"start-dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node lib/server-development"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node lib/server-production"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s very common to use this feature to run Webpack:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webpack --watch --progress --colors --config webpack.conf.js"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webpack --progress --colors --config webpack.conf.js"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"prod"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NODE_ENV=production webpack -p --config webpack.conf.js"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So instead of typing those long commands, which are easy to forget or mistype, you can run</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>npm run watch
+<span class="gp">$</span><span class="w"> </span>npm run dev
+<span class="gp">$</span><span class="w"> </span>npm run prod</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="what-is-the-difference-between-npm-and-npx">2.5. What is the difference between npm and NPX?</h3>
+<div class="paragraph">
+<p>The Npm stands for Node Package Manager. Npm is a package installation tool. Npx is a tool for executing packages. NPX is a npm package runner whose job it is to execute a package from the registry without ever installing it. <a href="#npm-npx-diffs">[5]</a></p>
+</div>
+<div class="sect3">
+<h4 id="which-is-better-npx-vs-npm">2.5.1. Which is better npx vs npm?</h4>
+<div class="paragraph">
+<p>If the package in issue is only to be used once or twice, rather than every time the project runs, it is preferable to utilize NPX, which will execute the package without installing it. NPM is used to install packages, which we should do if our project requires dependencies or packages.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="is-npx-installed-with-npm">2.5.2. Is NPX installed with npm?</h4>
+<div class="paragraph">
+<p>That depends on the version of the NPM. For NPM version 5.2.0, NPX will be installed automatically. For lower versions, you will need to install it separately.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="why-we-use-npx-instead-of-npm">2.5.3. Why we use NPX instead of npm?</h4>
+<div class="paragraph">
+<p>NPX stand for  Node Package Execute. With the aid of NPX, we may run packages in a clear and simple manner while avoiding versioning, dependency problems, and installing extra packages that we just need to test.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="node-version-manager">3. Node Version Manager</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>nvm</code> is a version manager for node.js, designed to be installed per-user, and invoked per-shell. nvm works on any POSIX-compliant shell (sh, dash, ksh, zsh, bash), in particular on these platforms: unix, macOS, and windows WSL. <a href="#nvm">[6]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>nvm use 16
+<span class="go">Now using node v16.9.1 (npm v7.21.1)
+</span><span class="gp">$</span><span class="w"> </span>node <span class="nt">-v</span>
+<span class="go">v16.9.1
+</span><span class="gp">$</span><span class="w"> </span>nvm use 14
+<span class="go">Now using node v14.18.0 (npm v6.14.15)
+</span><span class="gp">$</span><span class="w"> </span>node <span class="nt">-v</span>
+<span class="go">v14.18.0
+</span><span class="gp">$</span><span class="w"> </span>nvm <span class="nb">install </span>12
+<span class="go">Now using node v12.22.6 (npm v6.14.5)
+</span><span class="gp">$</span><span class="w"> </span>node <span class="nt">-v</span>
+<span class="go">v12.22.6</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="intro-nodejs"></a>[1] <a href="https://nodejs.dev/en/learn/introduction-to-nodejs/" class="bare">https://nodejs.dev/en/learn/introduction-to-nodejs/</a></p>
+</li>
+<li>
+<p><a id="abt-pkg-mod"></a>[2] <a href="https://docs.npmjs.com/about-packages-and-modules" class="bare">https://docs.npmjs.com/about-packages-and-modules</a></p>
+</li>
+<li>
+<p><a id="about-npm"></a>[3] <a href="https://docs.npmjs.com/about-npm" class="bare">https://docs.npmjs.com/about-npm</a></p>
+</li>
+<li>
+<p><a id="intro-npm"></a>[4] <a href="https://nodejs.dev/en/learn/an-introduction-to-the-npm-package-manager/" class="bare">https://nodejs.dev/en/learn/an-introduction-to-the-npm-package-manager/</a></p>
+</li>
+<li>
+<p><a id="npm-npx-diffs"></a>[5] <a href="https://www.codingninjas.com/studio/library/difference-between-npm-and-npx" class="bare">https://www.codingninjas.com/studio/library/difference-between-npm-and-npx</a></p>
+</li>
+<li>
+<p><a id="nvm"></a>[6] <a href="https://github.com/nvm-sh/nvm" class="bare">https://github.com/nvm-sh/nvm</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

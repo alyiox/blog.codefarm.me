@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Unions in C Language | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Unions in C Language" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Defining Unions 2. Declaring Union Variables 2.1. Declaring Union Variables at Definition 2.2. Declaring Union Variables After Definition 2.3. Initializing Union Members 3. Accessing Union Members 4. Size of Unions 5. References A union is a custom data type used for storing several variables in the same memory space. Although you can access any of those variables at any time, you should only read from one of them at a time—assigning a value to one of them overwrites the values in the others. 1. Defining Unions You define a union using the union keyword followed by the declarations of…" />
+<meta name="twitter:description" property="og:description" content="1. Defining Unions 2. Declaring Union Variables 2.1. Declaring Union Variables at Definition 2.2. Declaring Union Variables After Definition 2.3. Initializing Union Members 3. Accessing Union Members 4. Size of Unions 5. References A union is a custom data type used for storing several variables in the same memory space. Although you can access any of those variables at any time, you should only read from one of them at a time—assigning a value to one of them overwrites the values in the others. 1. Defining Unions You define a union using the union keyword followed by the declarations of…" />
+<link rel="canonical" href="https://blog.codefarm.me/unions-in-c-language/" />
+<meta property="og:url" content="https://blog.codefarm.me/unions-in-c-language/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-03-01T10:19:28+08:00" />
+<meta property="article:modified_time" content="2017-03-01T10:19:28+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Unions in C Language" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-03-01T10:19:28+08:00","datePublished":"2017-03-01T10:19:28+08:00","description":"1. Defining Unions 2. Declaring Union Variables 2.1. Declaring Union Variables at Definition 2.2. Declaring Union Variables After Definition 2.3. Initializing Union Members 3. Accessing Union Members 4. Size of Unions 5. References A union is a custom data type used for storing several variables in the same memory space. Although you can access any of those variables at any time, you should only read from one of them at a time—assigning a value to one of them overwrites the values in the others. 1. Defining Unions You define a union using the union keyword followed by the declarations of…","headline":"Unions in C Language","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/unions-in-c-language/"},"url":"https://blog.codefarm.me/unions-in-c-language/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Unions in C Language</h1><p class="c-post-meta">01 Mar 2017</p>
+  </header>
+
+  <div class="c-post-content">
+    <ul id="markdown-toc">
+  <li><a href="#1-defining-unions" id="markdown-toc-1-defining-unions">1. Defining Unions</a></li>
+  <li><a href="#2-declaring-union-variables" id="markdown-toc-2-declaring-union-variables">2. Declaring Union Variables</a>    <ul>
+      <li><a href="#21-declaring-union-variables-at-definition" id="markdown-toc-21-declaring-union-variables-at-definition">2.1. Declaring Union Variables at Definition</a></li>
+      <li><a href="#22-declaring-union-variables-after-definition" id="markdown-toc-22-declaring-union-variables-after-definition">2.2. Declaring Union Variables After Definition</a></li>
+      <li><a href="#23-initializing-union-members" id="markdown-toc-23-initializing-union-members">2.3. Initializing Union Members</a></li>
+    </ul>
+  </li>
+  <li><a href="#3-accessing-union-members" id="markdown-toc-3-accessing-union-members">3. Accessing Union Members</a></li>
+  <li><a href="#4-size-of-unions" id="markdown-toc-4-size-of-unions">4. Size of Unions</a></li>
+  <li><a href="#5-references" id="markdown-toc-5-references">5. References</a></li>
+</ul>
+
+<hr />
+
+<p>A union is a custom data type used for storing several variables in the same memory space. Although you can access any of those variables at any time, you should only read from one of them at a time—assigning a value to one of them overwrites the values in the others.</p>
+
+<h3 id="1-defining-unions">1. Defining Unions</h3>
+
+<p>You define a union using the <code class="language-plaintext highlighter-rouge">union</code> keyword followed by the declarations of the union’s memebers, enclosed in braces. You declare each member of a union just as you would normally declare a variable—using the data type followed by one or more variable names separated by commas, and ending with a semicolon. Then end the union definition with a semicolon after the closing brace.</p>
+
+<p>You should also include a name for the union between the <code class="language-plaintext highlighter-rouge">union</code> keyword and the opening brace. This is syntactically optional, but if you leave it out, you can’t refer that union data type later on (without a <code class="language-plaintext highlighter-rouge">typedef</code>).</p>
+
+<p>Here is an example of defining a simple union for holding an integer value and a floting point value:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>That defines a union named <code class="language-plaintext highlighter-rouge">numbers</code>, which contains two members, <code class="language-plaintext highlighter-rouge">i</code> and <code class="language-plaintext highlighter-rouge">f</code>, which are of type <code class="language-plaintext highlighter-rouge">int</code> and <code class="language-plaintext highlighter-rouge">float</code>, respectively.</p>
+
+<h3 id="2-declaring-union-variables">2. Declaring Union Variables</h3>
+
+<p>You can declare variables of a union type when both you initially define the union and after the definition, provided you gave the union type a name.</p>
+
+<h4 id="21-declaring-union-variables-at-definition">2.1. Declaring Union Variables at Definition</h4>
+
+<p>You can declare variables of a union type when you define the union type by putting the variable names after the closing brace of the union definition, but before the final semicolon. You can declare more than one such variable by separating the names with commas.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">first_number</span><span class="p">,</span> <span class="n">second_number</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>That example declares two variables of type <code class="language-plaintext highlighter-rouge">union numbers</code>, <code class="language-plaintext highlighter-rouge">first_number</code> and <code class="language-plaintext highlighter-rouge">second_number</code>.</p>
+
+<h4 id="22-declaring-union-variables-after-definition">2.2. Declaring Union Variables After Definition</h4>
+
+<p>You can declare variables of a union type after you define the union by using the <code class="language-plaintext highlighter-rouge">union</code> keyword and the name you gave the union type, followed by one or more variable names separated by commas.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">union</span> <span class="n">numbers</span> <span class="n">first_number</span><span class="p">,</span> <span class="n">second_number</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>That example declares two variables of type <code class="language-plaintext highlighter-rouge">union numbers</code>, <code class="language-plaintext highlighter-rouge">first_number</code> and <code class="language-plaintext highlighter-rouge">second_number</code>.</p>
+
+<h4 id="23-initializing-union-members">2.3. Initializing Union Members</h4>
+
+<p>You can initialize the first member of a union variable when you declare it:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">union</span> <span class="n">numbers</span> <span class="n">first_number</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>In that example, the <code class="language-plaintext highlighter-rouge">i</code> member of <code class="language-plaintext highlighter-rouge">first_number</code> gets the value <code class="language-plaintext highlighter-rouge">5</code>. The <code class="language-plaintext highlighter-rouge">f</code> member is left alone.</p>
+
+<p>Another way to initialize a union member is to specify the name of the member to initialize. This way, you can intialize whichever member you want to, not just the first one. There are two methods that you can use—either follow the member name with a colon, and the its value, like this:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="n">first_number</span> <span class="o">=</span> <span class="p">{</span> <span class="n">f</span><span class="o">:</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>or precede the member name with a period and assign a value with the assignment operator, like this:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="n">first_number</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">f</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can also intialize a union member when you declare the union variable during the definition:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">first_number</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">5</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<h3 id="3-accessing-union-members">3. Accessing Union Members</h3>
+
+<p>You can access the members of a union variable using the member access operator. You put the name of the union variable on the left side of the operator, and the name of the member on the right side:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="k">union</span> <span class="n">numbers</span> <span class="n">first_number</span><span class="p">;</span>
+<span class="n">first_number</span><span class="p">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="n">first_number</span><span class="p">.</span><span class="n">f</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Notice in that example, that giving a value to the <code class="language-plaintext highlighter-rouge">f</code> member overrides the value stored in the <code class="language-plaintext highlighter-rouge">i</code> member.</p>
+
+<h3 id="4-size-of-unions">4. Size of Unions</h3>
+
+<p>The size of a union is equal to the size of its largest member. Consider the first union example from this section:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">union</span> <span class="n">numbers</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The size of the union data type is the same of <code class="language-plaintext highlighter-rouge">sizeof (float)</code>, because the <code class="language-plaintext highlighter-rouge">float</code> type is larger than the <code class="language-plaintext highlighter-rouge">int</code> type. Since all of the members of a union occupy the same memory space, the union data type size doesn’t need to be large enough to hold the sum of all their sizes; it just need to be large enough to hold the largest members;</p>
+
+<hr />
+
+<h3 id="5-references">5. References</h3>
+
+<ol>
+  <li><a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Enumerations">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

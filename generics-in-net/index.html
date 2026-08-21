@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Generics in .NET | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Generics in .NET" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Generics in .NET tailor methods, classes, structures, or interfaces to the precise data type it acts upon to increase code reusability and type safety. [1] For example, List&lt;T&gt; provides type safety and avoids boxing and unboxing overhead compared to using the non-generic ArrayList collection, and Dictionary&lt;TKey, TValue&gt; provides type safety and avoids casting compared to the non-generic Hashtable. 1. Define and use generics 2. Terminology 3. Advantages 4. Covariance and contravariance 5. Generics in the runtime 6. Reflection and Generic Types Appendix A: FAQs A.1. Why the value type need NOT to be boxed in a generic collection in .NET?…" />
+<meta name="twitter:description" property="og:description" content="Generics in .NET tailor methods, classes, structures, or interfaces to the precise data type it acts upon to increase code reusability and type safety. [1] For example, List&lt;T&gt; provides type safety and avoids boxing and unboxing overhead compared to using the non-generic ArrayList collection, and Dictionary&lt;TKey, TValue&gt; provides type safety and avoids casting compared to the non-generic Hashtable. 1. Define and use generics 2. Terminology 3. Advantages 4. Covariance and contravariance 5. Generics in the runtime 6. Reflection and Generic Types Appendix A: FAQs A.1. Why the value type need NOT to be boxed in a generic collection in .NET?…" />
+<link rel="canonical" href="https://blog.codefarm.me/generics-in-net/" />
+<meta property="og:url" content="https://blog.codefarm.me/generics-in-net/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-12-26T14:28:58+08:00" />
+<meta property="article:modified_time" content="2023-12-26T14:28:58+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Generics in .NET" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-12-26T14:28:58+08:00","datePublished":"2023-12-26T14:28:58+08:00","description":"Generics in .NET tailor methods, classes, structures, or interfaces to the precise data type it acts upon to increase code reusability and type safety. [1] For example, List&lt;T&gt; provides type safety and avoids boxing and unboxing overhead compared to using the non-generic ArrayList collection, and Dictionary&lt;TKey, TValue&gt; provides type safety and avoids casting compared to the non-generic Hashtable. 1. Define and use generics 2. Terminology 3. Advantages 4. Covariance and contravariance 5. Generics in the runtime 6. Reflection and Generic Types Appendix A: FAQs A.1. Why the value type need NOT to be boxed in a generic collection in .NET?…","headline":"Generics in .NET","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/generics-in-net/"},"url":"https://blog.codefarm.me/generics-in-net/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Generics in .NET</h1><p class="c-post-meta">26 Dec 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Generics in .NET tailor methods, classes, structures, or interfaces to the precise data type it acts upon to increase <em>code reusability</em> and <em>type safety</em>. <a href="#dotnet-standard-generics">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>For example, <code>List&lt;T&gt;</code> provides type safety and avoids boxing and unboxing overhead compared to using the non-generic <code>ArrayList</code> collection, and <code>Dictionary&lt;TKey, TValue&gt;</code> provides type safety and avoids casting compared to the non-generic <code>Hashtable</code>.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#define-and-use-generics">1. Define and use generics</a></li>
+<li><a href="#terminology">2. Terminology</a></li>
+<li><a href="#advantages">3. Advantages</a></li>
+<li><a href="#covariance-and-contravariance">4. Covariance and contravariance</a></li>
+<li><a href="#generics-in-the-runtime">5. Generics in the runtime</a></li>
+<li><a href="#reflection-and-generic-types">6. Reflection and Generic Types</a></li>
+<li><a href="#faqs">Appendix A: FAQs</a>
+<ul class="sectlevel2">
+<li><a href="#why-the-value-type-need-not-to-be-boxed-in-a-generic-collection-in-net">A.1. Why the value type need NOT to be boxed in a generic collection in .NET?</a></li>
+<li><a href="#with-reified-generics-the-mememory-would-be-still-allocated-on-mananged-heap">A.2. With reified generics, the mememory would be still allocated on mananged heap?</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="define-and-use-generics">1. Define and use generics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Generics are classes, structures, interfaces, and methods that have placeholders (<em>type parameters</em>) for one or more of the types that they store or use. <a href="#dotnet-standard-generics">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A generic collection class might use a type parameter as a placeholder for the type of objects that it stores, which appears as the types of its fields and the parameter types of its methods.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">class</span> <span class="nc">SimpleGenericClass</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">T</span> <span class="n">Field</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A generic method might use its type parameter as the type of its return value or as the type of one of its formal parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">T</span> <span class="n">MyGenericMethod</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">arg</span><span class="p">;</span>
+    <span class="c1">//...</span>
+    <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To create an instance of a generic class, specify the actual types to substitute for the type parameters, which establishes a new generic class, referred to as a <em>constructed generic</em> class, with the chosen types substituted everywhere that the type parameters appear.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">SimpleGenericClass</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">g</span> <span class="p">=</span> <span class="k">new</span> <span class="n">SimpleGenericClass</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">g</span><span class="p">.</span><span class="n">Field</span> <span class="p">=</span> <span class="s">"A string"</span><span class="p">;</span>
+
+<span class="c1">// SimpleGenericClass.Field           = "A string"</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SimpleGenericClass.Field           = \"{0}\""</span><span class="p">,</span> <span class="n">g</span><span class="p">.</span><span class="n">Field</span><span class="p">);</span>
+<span class="c1">// SimpleGenericClass.Field.GetType() = System.String</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SimpleGenericClass.Field.GetType() = {0}"</span><span class="p">,</span> <span class="n">g</span><span class="p">.</span><span class="n">Field</span><span class="p">.</span><span class="nf">GetType</span><span class="p">().</span><span class="n">FullName</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="terminology">2. Terminology</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A <strong>generic type definition</strong> is a class, structure, or interface declaration that functions as a <em>template</em>, with placeholders for the types that it can contain or use.</p>
+<div class="paragraph">
+<p>For example, the <code>System.Collections.Generic.Dictionary&lt;TKey,TValue&gt;</code> class can contain two types: keys and values.</p>
+</div>
+</li>
+<li>
+<p>Generic type parameters, or <strong>type parameters</strong>, are the <em>placeholders</em> in a generic type or method definition.</p>
+<div class="paragraph">
+<p>The <code>System.Collections.Generic.Dictionary&lt;TKey,TValue&gt;</code> generic type has two type parameters, <code>TKey</code> and <code>TValue</code>, that represent the types of its keys and values.</p>
+</div>
+</li>
+<li>
+<p>A constructed generic type, or <strong>constructed type</strong>, is the result of specifying types for the generic type parameters of a generic type definition.</p>
+</li>
+<li>
+<p>A generic <strong>type argument</strong> is any type that is substituted for a <em>generic type parameter</em>.</p>
+</li>
+<li>
+<p>The general term <strong>generic type</strong> includes both <em>constructed types</em> and <em>generic type definitions</em>.</p>
+</li>
+<li>
+<p><strong>Covariance</strong> and <strong>contravariance</strong> (collectively referred to as <strong>variance</strong>) of generic type parameters enable using constructed generic types whose type arguments are more derived (covariance) or less derived (contravariance) than a target constructed type.</p>
+</li>
+<li>
+<p>Generic type <strong>constraints</strong> limit the types that can be used as type arguments.</p>
+</li>
+<li>
+<p>A <strong>generic method definition</strong> is a method with two parameter lists: a list of generic type parameters and a list of formal parameters.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Type parameters can appear as the return type or as the types of the formal parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">T</span> <span class="n">MyGenericMethod</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">arg</span><span class="p">;</span>
+    <span class="c1">//...</span>
+    <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Generic methods can appear on generic or nongeneric types.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A method is generic only if it has its own list of type parameters.</p>
+</li>
+<li>
+<p>A method within a generic class isn&#8217;t automatically generic, even if it uses the class&#8217;s generic type parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="n">G</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">T</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">arg</span><span class="p">;</span>
+        <span class="c1">//...</span>
+        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">MyGenericClass</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="nf">M</span><span class="p">(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">T</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">arg</span><span class="p">;</span>
+        <span class="c1">//...</span>
+        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="advantages">3. Advantages</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Type safety: generics shift the burden of type safety to the compiler.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>There is no need to write code to test for the correct data type because it is enforced at compile time.</p>
+</li>
+<li>
+<p>The need for type casting and the possibility of run-time errors are reduced.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Code reusability: no need to inherit from a base type and override members.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// LinkedList&lt;T&gt; is ready for immediate use.</span>
+<span class="n">LinkedList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">llist</span> <span class="p">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Better performance: generic collection types generally perform better for storing and manipulating value types because there is no need to box the value types.</p>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing">Boxing and Unboxing (C# Programming Guide)</a></p>
+</div>
+<div class="paragraph">
+<p>Boxing is the process of converting a value type to the type <code>object</code> or to any <code>interface</code> type implemented by the value type.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the common language runtime (CLR) boxes a value type, it wraps the value inside a <code>System.Object</code> instance and stores it on the <em>managed heap</em>.</p>
+</li>
+<li>
+<p>Unboxing extracts the value type from the object.</p>
+</li>
+<li>
+<p>Boxing is implicit; unboxing is explicit.</p>
+</li>
+<li>
+<p>The concept of boxing and unboxing underlies the C# unified view of the type system in which a value of any type can be treated as an object.</p>
+</li>
+</ul>
+</div>
+</blockquote>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Boxing is a specific operation that involves converting a value type to an object reference type. Storing a value type on the heap can happen in various ways, but it&#8217;s not always considered boxing.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Generic delegates enable type-safe callbacks without the need to create multiple delegate classes.</p>
+<div class="paragraph">
+<p>For example, the <code>Predicate&lt;T&gt;</code> generic delegate allows creating a method that implements a specific search criteria for a particular type and to use the method with methods of the <code>Array</code> type such as <code>Find</code>, <code>FindLast</code>, and <code>FindAll</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="covariance-and-contravariance">4. Covariance and contravariance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Covariance</em> and <em>contravariance</em> are terms that refer to the ability to use a more derived type (more specific) or a less derived type (less specific) than originally specified. <a href="#dotnet-standard-generics-covariance-and-contravariance">[2]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A covariant type parameter is marked with the <code>out</code> keyword (<code>Out</code> keyword in Visual Basic).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">interface</span> <span class="nc">ICovariant</span><span class="p">&lt;</span><span class="k">out</span> <span class="n">R</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">void</span> <span class="nf">DoSomething</span><span class="p">(</span><span class="n">Action</span><span class="p">&lt;</span><span class="n">R</span><span class="p">&gt;</span> <span class="n">callback</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">interface</span> <span class="nc">ICovariant</span><span class="p">&lt;</span><span class="k">out</span> <span class="n">R</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="c1">// only contravariant or invariant types can be used in generic constraints.</span>
+    <span class="k">void</span> <span class="n">DoSomething</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">R</span><span class="p">;</span> <span class="c1">// compiler error!</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A contravariant type parameter is marked with the <code>in</code> keyword (<code>In</code> keyword in Visual Basic).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">interface</span> <span class="nc">IContravariant</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">A</span><span class="p">&gt;</span>
+<span class="p">{</span>
+    <span class="k">void</span> <span class="nf">SetSomething</span><span class="p">(</span><span class="n">A</span> <span class="n">sampleArg</span><span class="p">);</span>
+    <span class="c1">// a contravariant type parameter can be used as a type constraint for an interface method.</span>
+    <span class="k">void</span> <span class="n">DoSomething</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="k">where</span> <span class="n">T</span> <span class="p">:</span> <span class="n">A</span><span class="p">;</span>
+    <span class="n">A</span> <span class="nf">GetSomething</span><span class="p">();</span> <span class="c1">// compiler error!</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>An interface or delegate type can have both covariant and contravariant type parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">delegate</span> <span class="n">TResult</span> <span class="n">Func</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">,</span> <span class="k">out</span> <span class="n">TResult</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Only interface types and delegate types can have variant type parameters.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// NOT allowed!</span>
+<span class="c1">// public class MyClass&lt;out T&gt; { ... }  // Error: Variance is invalid for classes</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>In general, a covariant type parameter can be used as the return type of a delegate or method, and contravariant type parameters can be used as parameter types.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Covariance (out): Return type can be more specific (Dog?)</span>
+<span class="c1">// Contravariance (in): Parameter type can be less specific (Animal)</span>
+<span class="n">Func</span><span class="p">&lt;</span><span class="n">Animal</span><span class="p">,</span> <span class="n">Dog</span><span class="p">?&gt;</span> <span class="n">animalToDog</span> <span class="p">=</span> <span class="p">(</span><span class="n">Animal</span> <span class="n">animal</span><span class="p">)</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">animal</span> <span class="k">is</span> <span class="n">Dog</span> <span class="n">dog</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dog</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">public</span> <span class="k">delegate</span> <span class="n">TResult</span> <span class="n">Func</span><span class="p">&lt;</span><span class="k">in</span> <span class="n">T</span><span class="p">,</span> <span class="k">out</span> <span class="n">TResult</span><span class="p">&gt;(</span><span class="n">T</span> <span class="n">arg</span><span class="p">)</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Animal</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Dog</span> <span class="p">:</span> <span class="n">Animal</span> <span class="p">{</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Liskov&#8217;s notion of a behavioural subtype defines a notion of substitutability for objects; that is, if S is a subtype of T, then objects of type T in a program may be replaced with objects of type S without altering any of the desirable properties of that program (e.g. correctness). <a href="#liskov_substitution_principle">[3]</a></p>
+</div>
+<div class="paragraph">
+<p><em>Liskov substitution principle</em> imposes some standard requirements on signatures that have been adopted in newer object-oriented programming languages (usually at the level of classes rather than types):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">Contravariance</a> of method parameter types in the subtype.</p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">Covariance</a> of method return types in the subtype.</p>
+</li>
+<li>
+<p>New exceptions cannot be thrown by the methods in the subtype, except if they are subtypes of exceptions thrown by the methods of the supertype.</p>
+</li>
+</ul>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>When referring to a type system, <em>covariance</em>, <em>contravariance</em>, and <em>invariance</em> have the following definitions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Covariance enables using a more derived type than originally specified.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An instance of <code>IEnumerable&lt;Derived&gt;</code> can be assigned to a variable of type <code>IEnumerable&lt;Base&gt;</code>.</p>
+</li>
+<li>
+<p>Covariant type parameters enable making assignments that look much like ordinary <em>Polymorphism</em>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Derived</span><span class="p">&gt;</span> <span class="n">d</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Derived</span><span class="p">&gt;();</span>
+<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Base</span><span class="p">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="n">d</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Contravariance enables using a more generic (less derived) type than originally specified.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An instance of <code>Action&lt;Base&gt;</code> can be assigned to a variable of type <code>Action&lt;Derived&gt;</code>.</p>
+</li>
+<li>
+<p>Contravariance, compared to covariance, seems counterintuitive.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">Action</span><span class="p">&lt;</span><span class="n">Base</span><span class="p">&gt;</span> <span class="n">b</span> <span class="p">=</span> <span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">target</span><span class="p">.</span><span class="nf">GetType</span><span class="p">().</span><span class="n">Name</span><span class="p">);</span> <span class="p">};</span>
+<span class="n">Action</span><span class="p">&lt;</span><span class="n">Derived</span><span class="p">&gt;</span> <span class="n">d</span> <span class="p">=</span> <span class="n">b</span><span class="p">;</span>
+<span class="nf">d</span><span class="p">(</span><span class="k">new</span> <span class="nf">Derived</span><span class="p">());</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Invariance, neither covariant nor contravariant, can use only the type originally specified.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An instance of <code>List&lt;Base&gt;</code> cannot be assigned to a variable of type <code>List&lt;Derived&gt;</code> or vice versa.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">//  public class List&lt;T&gt; : ...</span>
+<span class="n">List</span><span class="p">&lt;</span><span class="n">Base</span><span class="p">&gt;</span> <span class="n">bases</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Derived</span><span class="p">&gt;();</span> <span class="c1">// compiler error</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Covariance and contravariance are collectively referred to as <em>variance</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A generic type parameter that is not marked covariant or contravariant is referred to as <em>invariant</em>.</p>
+</li>
+<li>
+<p>A brief summary of facts about variance in the common language runtime:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Variant type parameters are restricted to generic interface and generic delegate types.</p>
+</li>
+<li>
+<p>A generic interface or generic delegate type can have both covariant and contravariant type parameters.</p>
+</li>
+<li>
+<p>Variance applies only to reference types; if you specify a value type for a variant type parameter, that type parameter is invariant for the resulting constructed type.</p>
+</li>
+<li>
+<p>Variance does not apply to delegate combination.</p>
+<div class="paragraph">
+<p>Variance allows the <code>Action&lt;Base&gt;</code> delegate to be assigned to a variable of type <code>Action&lt;Derived&gt;</code>, but delegates can combine only if their types match exactly.</p>
+</div>
+</li>
+<li>
+<p>An overriding method can declare a more derived return type the method it overrides, and an overriding, read-only property can declare a more derived type.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">abstract</span> <span class="k">class</span> <span class="nc">Animal</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">abstract</span> <span class="n">Food</span> <span class="nf">GetFood</span><span class="p">();</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Tiger</span> <span class="p">:</span> <span class="n">Animal</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">override</span> <span class="n">Meat</span> <span class="nf">GetFood</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="p">...;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="generics-in-the-runtime">5. Generics in the runtime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When compiled to MSIL, generic types and methods include metadata indicating their type parameters.  MSIL usage then varies depending on whether the provided type argument is a value or reference type. <a href="#csharp-generics-in-the-run-time">[4]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When a generic type is first constructed with a value type as a parameter, the runtime creates a specialized generic type with the supplied parameter or parameters substituted in the appropriate locations in the MSIL.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Specialized generic types are created one time for each unique value type that is used as a parameter.</p>
+</li>
+<li>
+<p>Suppose a different value type as its parameter is created at another point, the runtime generates another version of the generic type and substitutes the type arguments in the appropriate locations in MSIL.</p>
+</li>
+<li>
+<p>Conversions are no longer necessary because each specialized generic class natively contains the value type.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The first time a generic type is constructed with any reference type, the runtime creates a specialized generic type with object references substituted for the parameters in the MSIL.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Then, every time that a constructed type is instantiated with a reference type as its parameter, regardless of what type it is, the runtime reuses the previously created specialized version of the generic type, because all references are the same size.</p>
+</li>
+<li>
+<p>Because the number of reference types can vary wildly from program to program, the C# implementation of generics greatly reduces the amount of code by reducing to one the number of specialized classes created by the compiler for generic classes of reference types.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Moreover, when a generic C# class is instantiated by using a value type or reference type parameter, reflection can query it at run time and both its actual type and its type parameter can be ascertained.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The runtime creates specific versions of the generic type based on the actual types used to instantiate the generic type. For example, if you have a List&lt;T&gt; and you create a <code>List&lt;int&gt;</code> and a <code>List&lt;double&gt;</code>, the CLR will create two separate versions of the List class, one for each of those value types.</p>
+</div>
+<div class="paragraph">
+<p>When you instantiate the generic type with a reference type, like <code>List&lt;string&gt;</code> or <code>List&lt;object&gt;</code>, the CLR reuses the same version of the List class that it has already created for reference types.</p>
+</div>
+<div class="paragraph">
+<p>However, the .NET CLR maintains type safety by treating these as separate types at the type system level, even though the underlying implementation is the same.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reflection-and-generic-types">6. Reflection and Generic Types</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From the point of view of reflection, the difference between a generic type and an ordinary type is that a generic type has associated with it a set of type parameters (if it is a generic type definition) or type arguments (if it is a constructed type). A generic method differs from an ordinary method in the same way. <a href="#dotnet-codedom-reflection-and-generic-types">[5]</a></p>
+</div>
+<div class="paragraph">
+<p>There are two keys to understanding how reflection handles generic types and methods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The type parameters of generic type definitions and generic method definitions are represented by instances of the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.type">Type</a> class.</p>
+</li>
+<li>
+<p>If an instance of <a href="https://learn.microsoft.com/en-us/dotnet/api/system.type">Type</a> represents a generic type, then it includes an array of types that represent the type parameters (for generic type definitions) or the type arguments (for constructed types). The same is true of an instance of the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodinfo">MethodInfo</a> class that represents a generic method.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A generic type or method is <em>closed</em> if instantiable types have been substituted for all its type parameters, including all the type parameters of all enclosing types. You can only create an instance of a generic type if it is closed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="nf">WriteLine</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">Dictionary</span><span class="p">&lt;,&gt;));</span>
+<span class="nf">WriteLine</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MySet</span><span class="p">&lt;&gt;));</span>
+<span class="nf">WriteLine</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MySet</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;));</span>
+<span class="n">MySet</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">mySet</span> <span class="p">=</span> <span class="p">(</span><span class="n">MySet</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;)</span><span class="k">typeof</span><span class="p">(</span><span class="n">MySet</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;).</span><span class="nf">GetConstructor</span><span class="p">([])!.</span><span class="nf">Invoke</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+<span class="n">mySet</span><span class="p">.</span><span class="nf">AddRange</span><span class="p">([</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">]);</span>
+<span class="n">mySet</span><span class="p">.</span><span class="n">Keys</span><span class="p">.</span><span class="nf">ToList</span><span class="p">().</span><span class="nf">ForEach</span><span class="p">(</span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="k">void</span> <span class="nf">WriteLine</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">string</span> <span class="n">message</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="s">"{0} {1,-31} {2}"</span><span class="p">,</span>
+        <span class="s">$"IsGenericType: </span><span class="p">{</span><span class="n">type</span><span class="p">.</span><span class="n">IsGenericType</span><span class="p">}</span><span class="s">."</span><span class="p">,</span>
+        <span class="s">$"IsGenericTypeDefinition: </span><span class="p">{</span><span class="n">type</span><span class="p">.</span><span class="n">IsGenericTypeDefinition</span><span class="p">}</span><span class="s">."</span><span class="p">,</span>
+        <span class="s">$"Open or Closed: </span><span class="p">{(</span><span class="n">type</span><span class="p">.</span><span class="n">ContainsGenericParameters</span> <span class="p">?</span> <span class="s">"Open"</span> <span class="p">:</span> <span class="s">"Closed"</span><span class="p">)}</span><span class="s">."</span><span class="p">);</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">MySet</span><span class="p">&lt;</span><span class="n">E</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="n">E</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;</span> <span class="k">where</span> <span class="n">E</span> <span class="p">:</span> <span class="k">notnull</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">AddRange</span><span class="p">(</span><span class="k">params</span> <span class="n">E</span><span class="p">[]</span> <span class="n">items</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Array</span><span class="p">.</span><span class="nf">ForEach</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">Add</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="n">E</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="nf">ContainsKey</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span> <span class="nf">Add</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// $ dotnet run</span>
+<span class="c1">// IsGenericType: True.IsGenericTypeDefinition: True.Open or Closed: Open.</span>
+<span class="c1">// IsGenericType: True.IsGenericTypeDefinition: True.Open or Closed: Open.</span>
+<span class="c1">// IsGenericType: True.IsGenericTypeDefinition: False.Open or Closed: Closed.</span>
+<span class="c1">// 1</span>
+<span class="c1">// 2</span>
+<span class="c1">// 3</span>
+<span class="c1">// 4</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="faqs">Appendix A: FAQs</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="why-the-value-type-need-not-to-be-boxed-in-a-generic-collection-in-net">A.1. Why the value type need NOT to be boxed in a generic collection in .NET?</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>> Why the value type need NOT to be boxed in a generic collection in .NET?</p>
+</div>
+<div class="paragraph">
+<p>* In .NET, boxing is the process of converting a value type to a reference type, this involves creating a new object on the heap and copying the value into the new object. Unboxing is the reverse process, which can be costly in terms of performance.</p>
+</div>
+<div class="paragraph">
+<p>When using a generic collection, like <code>List&lt;T&gt;</code>, there&#8217;s no need to box the value types because generics are type-safe and can hold any type of data without converting them to an object.</p>
+</div>
+<div class="paragraph">
+<p>Generics in .NET use a mechanism called 'reified generics', which means that the system knows the actual types a generic class was instantiated with, even at runtime. It uses this information to directly allocate and deallocate memory for the values in the collection, avoiding the need to box and unbox value types.</p>
+</div>
+<div class="paragraph">
+<p>That&#8217;s one of the key benefits of utilizing generics in .NET: they allow you to enforce type safety without incurring the performance cost of boxing and unboxing for value types.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="with-reified-generics-the-mememory-would-be-still-allocated-on-mananged-heap">A.2. With reified generics, the mememory would be still allocated on mananged heap?</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>> With reified generics, the mememory would be still allocated on mananged heap?</p>
+</div>
+<div class="paragraph">
+<p>* Yes, the memory for any object, including those constructed using generic types, is still allocated on the managed heap in .NET. However, the point of difference lies in how these objects are managed.</p>
+</div>
+<div class="paragraph">
+<p>With reference types, an object is created on the heap and a reference to this object is used to access it. Value types, on the other hand, hold their value directly. When value types are used in a generic collection, a consecutive block of memory is allocated on the heap for the collection to store the actual values directly rather than references to the values. This optimization contributes to both the performance speed and reduction of pressure on the garbage collector.</p>
+</div>
+<div class="paragraph">
+<p>The mechanism 'reified generics' helps to keep the information about the specific type that a generic type was instantiated with, and this helps in efficient memory allocation and type safety at runtime.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="dotnet-standard-generics"></a>[1] <a href="https://learn.microsoft.com/en-us/dotnet/standard/generics/" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/generics/</a></p>
+</li>
+<li>
+<p><a id="dotnet-standard-generics-covariance-and-contravariance"></a>[2] <a href="https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance</a></p>
+</li>
+<li>
+<p><a id="liskov_substitution_principle"></a>[3] <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle" class="bare">https://en.wikipedia.org/wiki/Liskov_substitution_principle</a></p>
+</li>
+<li>
+<p><a id="csharp-generics-in-the-run-time"></a>[4] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/generics-in-the-run-time" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/generics-in-the-run-time</a></p>
+</li>
+<li>
+<p><a id="dotnet-codedom-reflection-and-generic-types"></a>[5] <a href="https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection-and-generic-types" class="bare">https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection-and-generic-types</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

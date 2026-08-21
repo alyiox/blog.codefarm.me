@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Algorithms | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Algorithms" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="An algorithm is any well-defined computational procedure for solving a well-specified computational problem that takes some value, or set of values, as input and produces some value, or set of values, as output. For example, given the input sequence [31 41 59 26 41 58], a sorting algorithm returns as output [26 31 41 41 58 59]. Such an input sequence is called an instance of the sorting problem. In general, an instance of a problem consists of the input (satisfying whatever constraints are imposed in the problem statement) needed to compute a solution to the problem. An algorithm is…" />
+<meta name="twitter:description" property="og:description" content="An algorithm is any well-defined computational procedure for solving a well-specified computational problem that takes some value, or set of values, as input and produces some value, or set of values, as output. For example, given the input sequence [31 41 59 26 41 58], a sorting algorithm returns as output [26 31 41 41 58 59]. Such an input sequence is called an instance of the sorting problem. In general, an instance of a problem consists of the input (satisfying whatever constraints are imposed in the problem statement) needed to compute a solution to the problem. An algorithm is…" />
+<link rel="canonical" href="https://blog.codefarm.me/algorithms/" />
+<meta property="og:url" content="https://blog.codefarm.me/algorithms/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-18T10:18:05+08:00" />
+<meta property="article:modified_time" content="2020-08-18T10:18:05+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Algorithms" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-08-18T10:18:05+08:00","datePublished":"2020-08-18T10:18:05+08:00","description":"An algorithm is any well-defined computational procedure for solving a well-specified computational problem that takes some value, or set of values, as input and produces some value, or set of values, as output. For example, given the input sequence [31 41 59 26 41 58], a sorting algorithm returns as output [26 31 41 41 58 59]. Such an input sequence is called an instance of the sorting problem. In general, an instance of a problem consists of the input (satisfying whatever constraints are imposed in the problem statement) needed to compute a solution to the problem. An algorithm is…","headline":"Algorithms","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/algorithms/"},"url":"https://blog.codefarm.me/algorithms/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Algorithms</h1><p class="c-post-meta">18 Aug 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>An <strong>algorithm</strong> is any well-defined computational procedure for solving a well-specified <strong>computational problem</strong> that takes some value, or set of values, as <strong>input</strong> and produces some value, or set of values, as <strong>output</strong>.</p>
+</div>
+<div class="paragraph">
+<p>For example, given the input sequence <code>[31 41 59 26 41 58]</code>, a sorting algorithm returns as output <code>[26 31 41 41 58 59]</code>. Such an input sequence is called an <strong>instance</strong> of the sorting problem.</p>
+</div>
+<div class="paragraph">
+<p>In general, an <strong>instance of a problem</strong> consists of the input (satisfying whatever constraints are imposed in the problem statement) needed to compute a solution to the problem.</p>
+</div>
+<div class="paragraph">
+<p>An algorithm is said to be <strong>correct</strong> if, for every input instance, it halts with the correct output. An incorrect algorithm might not halt at all on some input instances, or it might halt with an incorrect answer. Contrary to what you might expect, incorrect algorithms can sometimes be useful, if we can control their error rate. Ordinarily, however, we shall be concerned only with correct algorithms.</p>
+</div>
+<div class="paragraph">
+<p>A <strong>data structure</strong> is a way to store and organize data in order to facilitate access and modifications. No single data structure works well for all purposes, and so it is important to know the strengths and limitations of several of them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">INSERTION-SORT(A)
+1    for j = 2 to A.length
+2       key = A[j]
+3       // Insert A[j]  into the sorted sequence A[1:j-1].
+4       i = j - 1
+5       while i &gt; 0 and A[i] &gt; key
+6           A[i+1] = A[i]
+7           i = i - 1
+8       A[i+1] = key</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At the start of each iteration of the for loop of lines 1–8, the subarray <code>A[1:j-1]</code> consists of the elements originally in <code>A[1:j-1]</code>, but in sorted order, formally called as a <strong>loop invariant</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Initialization: It is true prior to the first iteration of the loop.</p>
+</li>
+<li>
+<p>Maintenance: If it is true before an iteration of the loop, it remains true before the next iteration.</p>
+</li>
+<li>
+<p>Termination: When the loop terminates, the invariant gives us a useful property that helps show that the algorithm is correct.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note the similarity to mathematical induction, where to prove that a property holds, you prove a base case and an inductive step until the loop terminates instead of infinitely.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#analyzing-algorithms">1. Analyzing algorithms</a>
+<ul class="sectlevel2">
+<li><a href="#divide-and-conquer-algorithms">1.1. Divide-and-conquer algorithms</a></li>
+</ul>
+</li>
+<li><a href="#pseudocode-conventions">Appendix A: Pseudocode conventions</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="analyzing-algorithms">1. Analyzing algorithms</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Analyzing an algorithm has come to mean predicting the resources that the algorithm requires, such as memory, communication bandwidth, or computer hardware are of primary concern, but most often it is computational time to be measured.</p>
+</div>
+<div class="paragraph">
+<p>The time taken by the INSERTION-SORT procedure depends on the size of the input, and how nearly already sorted about two input sequences of the same size: sorting a thousand numbers takes longer than sorting three numbers.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/algorithms/insert-sort-run-time.jpg" alt="insert sort run time" width="50%" height="50%">
+</div>
+</div>
+<div class="paragraph">
+<p>For each <code>j = 2,3, &#8230;&#8203; ,n</code>, where <code>n = A.length</code>, we let <code>t<sub>j</sub></code> denote the number of times the <strong>while</strong> loop test in line 5 is executed for that value of <code>j</code>. When a <strong>for</strong> or <strong>while</strong> loop exits in the usual way (i.e., due to the test in the loop header), the test is executed one time more than the loop body. The running time of INSERTION-SORT <code>T(n)</code> on an input of n values is the sum of the products of the <em>cost</em> and <em>times</em> columns.</p>
+</div>
+<div class="paragraph">
+<p>Even for inputs of a given size, an algorithm’s running time may depend on which input of that size is given.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the array is already sorted, for each <code>j = 2,3, &#8230;&#8203; ,n</code> and <code>A[i] &gt; key</code> in line 5, <code>t<sub>j</sub> = 1</code> and the best-case running time can be expressed as <code>an + b</code> for constants <code>a</code> and <code>b</code> that depend on the statement costs <code>c<sub>i</sub></code>; it is thus a <strong>linear function</strong> of <code>n</code>.</p>
+</li>
+<li>
+<p>If the array is in reverse sorted order—that is, in decreasing order—the worst case results. Each element <code>A[j]</code> must be compared with each element in the entire sorted subarray <code>A[1:j-1]</code>, and so <code>t<sub>j</sub> = j</code> for <code>j = 2,3, &#8230;&#8203; ,n</code>.</p>
+<div class="paragraph">
+<p>The worst-case running time can be expressed as <code>an<sup>2</sup> + bn + c</code> for constants <code>a</code>, <code>b</code>, and <code>c</code> that again depend on the statement costs <code>c<sub>i</sub></code> ; it is thus a <strong>quadratic function</strong> of <code>n</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The worst-case running time of an algorithm gives us an upper bound on the running time for any input. Knowing it provides a guarantee that the algorithm will never take any longer.</p>
+</div>
+<div class="paragraph">
+<p>It need not to be made some educated guess about the running time and hope that it never gets much worse.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>One algorithm is usually considered to be more efficient than another if its worst case running time has a lower order of growth.</p>
+</div>
+<div class="paragraph">
+<p>Due to constant factors and lowerorder terms, an algorithm whose running time has a higher order of growth might take less time for small inputs than an algorithm whose running time has a lower order of growth.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="divide-and-conquer-algorithms">1.1. Divide-and-conquer algorithms</h3>
+<div class="paragraph">
+<p>For insertion sort, it&#8217;s used an <strong>incremental approach</strong>: having sorted the subarray <code>A[1 &#8230;&#8203; j-1]</code>, the single element <code>A[j]</code> is inserted into its proper place, yielding the sorted subarray <code>A[1 &#8230;&#8203; j]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Many useful algorithms are <strong>recursive</strong> in structure: to solve a given problem, they call themselves recursively one or more times to deal with closely related subproblems. These algorithms typically follow a <strong>divide-and-conquer approach</strong>: they break the problem into several subproblems that are similar to the original problem but smaller in size, solve the subproblems recursively, and then combine these solutions to create a solution to the original problem.</p>
+</div>
+<div class="paragraph">
+<p>The divide-and-conquer paradigm involves three steps at each level of the recursion:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Divide</strong> the problem into a number of subproblems that are smaller instances of the same problem.</p>
+</li>
+<li>
+<p><strong>Conquer</strong> the subproblems by solving them recursively. If the subproblem sizes are small enough, however, just solve the subproblems in a straightforward manner.</p>
+</li>
+<li>
+<p><strong>Combine</strong> the solutions to the subproblems into the solution for the original problem.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <strong>merge sort</strong> algorithm closely follows the divide-and-conquer paradigm. Intuitively, it operates as follows.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Divide</strong>: Divide the <em>n</em>-element sequence to be sorted into two subsequences of n/2 elements each.</p>
+</li>
+<li>
+<p><strong>Conquer</strong>: Sort the two subsequences recursively using merge sort.</p>
+</li>
+<li>
+<p><strong>Combine</strong>: Merge the two sorted subsequences to produce the sorted answer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The recursion “bottoms out” when the sequence to be sorted has length 1, in which case there is no work to be done, since every sequence of length 1 is already in
+sorted order.</p>
+</div>
+<div class="paragraph">
+<p>The key operation of the merge sort algorithm is the merging of two sorted sequences in the “combine” step.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s merged by calling an auxiliary procedure <code>MERGE(A, p, q, r)</code>, where <code>A</code> is an array and <code>p</code>, <code>q</code>, and <code>r</code> are indices into the array such that <code>p <=  q &lt; r</code>.</p>
+</li>
+<li>
+<p>The procedure assumes that the subarrays <code>A[p &#8230;&#8203; q]</code> and <code>A[q + 1 &#8230;&#8203; r]</code> are in sorted order. It <strong>merges</strong> them to form a single sorted subarray that replaces the current subarray <code>A[p &#8230;&#8203; r]</code>.</p>
+<div class="listingblock text-left">
+<div class="content">
+<pre>MERGE(A, p, q, r) // merge the subarrays A[p:q] and A[q+1:r]
+1   n<sub>1</sub> = q - p + 1 // calculate the length of subarray
+2   n<sub>2</sub> = r - q
+3   let L[1 : n<sub>1</sub> + 1] and R[1 : n<sub>2</sub> + 1] be new arrays
+4   for i = 1 to n<sub>1</sub> // copy the subarray A[p:q] to L[1:n<sub>1</sub>]
+5     L[i] = A[p + i - 1]
+6   for j = 1 to n<sub>2</sub> // copy the subarray A[q + 1: r] to R[1:n<sub>2</sub>]
+7     R[j] = A[q + j]
+8   L[n<sub>1</sub> + 1] = ∞ // use ∞ as the sentinel value to check whether the subarray is empty
+9   R[n<sub>2</sub> + 1 = ∞
+10  i = 1 // i is the index of L
+11  j = 1 // j is the index of R
+12  for k = p to r // k is the index of the loop invariant A[p:r]
+13    if L[i] &lt;=  R[j]
+14       A[k] = L[i]
+15       i = i + 1
+16    else A[k] = R[j]
+17       j = j + 1</pre>
+</div>
+</div>
+</li>
+<li>
+<p>The procedure <code>MERGE-SORT(A, p, r)</code> sorts the elements in the subarray <code>A[p:r]</code>. If <code>p &gt;= r</code>, the subarray has at most one element and is therefore already sorted. Otherwise, the divide step simply computes an index <code>q</code> that partitions <code>A[p:r]</code> into two subarrays: <code>A[p:q]</code> and <code>A[q + 1 : r]</code>.</p>
+<div class="listingblock text-left">
+<div class="content">
+<pre>MERGE-SORT(A, p, r)
+1   if p &lt; r
+2     q = math.floor[(p + r) / 2]
+3     MERGE-SORT(A, p, q)
+4     MERGE-SORT(A, q + 1, r)
+5     MERGE(A, p, q, r)</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title"><em>Here is the <strong>recursion tree</strong> that describes the operation of merge sort on the array <code>A = [5, 2, 4, 7, 1, 3, 2, 6]</code>. The lengths of the sorted sequences being merged increase as the algorithm progresses from bottom to top.</em></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">                        (1, 2, 2, 3, 4, 5, 6, 7)
+                       /                        \
+        (2, 4, 5, 7)                        (1, 2, 3, 6)
+         /        \                         /        \
+    (2, 5)      (4, 7)                 (1, 3)      (2, 6)
+    /   \        /   \                 /   \        /   \
+  (5)   (2)    (4)   (7)             (1)   (3)    (2)   (6)</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When an algorithm contains a recursive call to itself, it can be often described its running time by a <strong>recurrence equation</strong> or <strong>recurrence</strong>, which describes the overall running time on a problem of size <code>n</code> in terms of the running time on smaller inputs. It can be then used mathematical tools (i.e. <strong>master theorem</strong>) to solve the recurrence and provide bounds on the performance of the algorithm.</p>
+</div>
+<div class="paragraph">
+<p>A recurrence for the running time of a divide-and-conquer algorithm falls out from the three steps of the basic paradigm.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>As before, we let <code>T(n)</code> be the running time on a problem of size <code>n</code>. If the problem size is small enough, say <code>n &#8656; c</code> for some constant <code>c</code>, the straightforward solution takes constant time, wrote as <code>Θ(1)</code>.</p>
+</li>
+<li>
+<p>Suppose that our division of the problem yields <code>a</code> subproblems, each of which is <code>1/b</code> the size of the original.</p>
+<div class="paragraph">
+<p>For merge sort, both <code>a</code> and <code>b</code> are 2, but we shall see many divide-and-conquer algorithms in which a != b.</p>
+</div>
+<div class="paragraph">
+<p>It takes time <code>T(n/b)</code> to solve one subproblem of size <code>n/b</code>, and so it takes time <code>aT(n/b)</code> to solve <code>a</code> of them.</p>
+</div>
+</li>
+<li>
+<p>If it&#8217;s token <code>D(n)</code> time to divide the problem into subproblems and <code>C(n)</code> time to combine the solutions to the subproblems into the solution to the original problem, the recurrence will be <code>Θ(1)</code> if <code>n <= c</code>, otherwise, <code>aT(n/b) + D(n) + C(n)</code>, that is <code>Θ(<sub>n</sub>lg<sub>n</sub>)</code>.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title"><em>Merge sort implemented with Go</em></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="go"><span class="c">// the initial call should be made with mergeSort(a, 0, len(a)), and r is the length of a.</span>
+<span class="k">func</span> <span class="n">mergeSort</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">r</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">q</span> <span class="kt">int</span>
+	<span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">r</span><span class="o">-</span><span class="m">1</span> <span class="p">{</span> <span class="c">// for any subarray that has at least two elements</span>
+		<span class="n">q</span> <span class="o">=</span> <span class="kt">int</span><span class="p">((</span><span class="n">p</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="m">2</span><span class="p">)</span>
+		<span class="n">mergeSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="c">// sort the subarray a[p:q]</span>
+		<span class="n">mergeSort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="c">// sort the subarray a[q:r]</span>
+		<span class="n">merge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">merge</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">r</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">n1</span> <span class="o">:=</span> <span class="n">q</span> <span class="o">-</span> <span class="n">p</span>
+	<span class="n">n2</span> <span class="o">:=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">q</span>
+	<span class="n">L</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="n">n1</span><span class="o">+</span><span class="m">1</span><span class="p">)</span>
+	<span class="n">R</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="n">n2</span><span class="o">+</span><span class="m">1</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">p</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">q</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>
+	<span class="p">}</span>
+	<span class="n">L</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">MaxInt</span> <span class="c">// sentinel</span>
+	<span class="n">R</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">MaxInt</span>
+
+	<span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">:=</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span>
+	<span class="k">for</span> <span class="n">k</span> <span class="o">:=</span> <span class="n">p</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">{</span>
+			<span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+			<span class="n">i</span><span class="o">++</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+			<span class="n">j</span><span class="o">++</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Bubblesort is a popular, but inefficient, sorting algorithm. It works by repeatedly swapping adjacent elements that are out of order.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">BUBBLESORT(A)
+1  for i = 1 to A.length - 1
+2    for j = A.length downto i + 1
+3      if A[j]  &lt; A[j - 1]
+4        exchange A[j]  with A[j - 1]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">A bubble sort implemented with Go</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="go"><span class="k">func</span> <span class="n">bubbleSort</span><span class="p">[</span><span class="n">T</span> <span class="n">cmp</span><span class="o">.</span><span class="n">Ordered</span><span class="p">](</span><span class="n">a</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="m">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="m">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">;</span> <span class="n">j</span><span class="o">--</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="p">{</span>
+				<span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="m">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pseudocode-conventions">Appendix A: Pseudocode conventions</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Indentation indicates block structure.</p>
+<div class="paragraph">
+<p>Using indentation instead of conventional indicators of block structure, such as <code>begin</code> and <code>end</code> statements, greatly reduces clutter while preserving, or even enhancing, clarity.</p>
+</div>
+</li>
+<li>
+<p>The looping constructs <code>while</code>, <code>for</code>, and <code>repeat-until</code> and the <code>if-else</code> conditional construct have interpretations similar to those in C, C++, Java, Python, and Pascal.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>After a for loop immediately, the loop counter’s value is the value that first exceeded the for loop bound.</p>
+</li>
+<li>
+<p>We use the keyword <strong>to</strong> when a for loop increments its loop counter in each iteration, and we use the keyword <strong>downto</strong> when a for loop decrements its loop counter.</p>
+</li>
+<li>
+<p>When the loop counter changes by an amount greater than 1, the amount of change follows the optional keyword <strong>by</strong>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The symbol <code>//</code> indicates that the remainder of the line is a comment.</p>
+</li>
+<li>
+<p>A multiple assignment of the form <code>i = j = e</code> assigns to both variables <code>i</code> and <code>j</code> the value of expression <code>e</code>; it should be treated as equivalent to the assignment <code>j = e</code> followed by the assignment <code>i = j</code>.</p>
+</li>
+<li>
+<p>Variables (such as <code>i</code> , <code>j</code>, and <code>key</code>) are local to the given procedure. We shall not use global variables without explicit indication.</p>
+</li>
+<li>
+<p>Array elements are accessed by specifying the array name followed by the index (based one instead of zero) in square brackets.</p>
+<div class="paragraph">
+<p>The notation <code>:</code> is used to indicate a range of values within an array, thus, <code>A[1:j]</code> indicates the subarray of <code>A</code> consisting of the <code>j</code> elements <code>A[1]</code>,<code>A[2]</code>,&#8230;&#8203;,<code>A[j]</code>.</p>
+</div>
+</li>
+<li>
+<p>Compound data typically is organized into <strong>objects</strong>, which are composed of <strong>attributes</strong>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A particular attribute is accessed using the syntax found in many object-oriented programming languages: the object name, followed by a dot, followed by the attribute name.</p>
+</li>
+<li>
+<p>A variable representing an array or object is treated as a pointer to the data representing the array or object.</p>
+</li>
+<li>
+<p>Sometimes, a pointer gived it the special value <code>NIL</code> will refer to no object at all.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Parameters are passed to a procedure <strong>by value</strong>: the called procedure receives its own copy of the parameters, and if it assigns a value to a parameter, the change is not seen by the calling procedure.</p>
+<div class="paragraph">
+<p>When objects are passed, the pointer to the data representing the object is copied, but the object’s attributes are not.</p>
+</div>
+</li>
+<li>
+<p>A <strong>return</strong> statement immediately transfers control back to the point of call in the calling procedure.</p>
+<div class="paragraph">
+<p>Most return statements also take a value to pass back to the caller, and multiple values are allowed to be returned in a single return statement.</p>
+</div>
+</li>
+<li>
+<p>The boolean operators “and” and “or” are <strong>short circuiting</strong>.</p>
+</li>
+<li>
+<p>The keyword <strong>error</strong> indicates that an error occurred because conditions were wrong for the procedure to have been called.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Install Kubernetes using kubeadm | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Install Kubernetes using kubeadm" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Using kubeadm,a minimum viable Kubernetes cluster can be created that conforms to best practices. In fact, kubeadm can be used to set up a cluster that will pass the Kubernetes Conformance tests. kubeadm also supports other cluster lifecycle functions, such as bootstrap tokens and cluster upgrades. [1] Figure 1. Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. 1. Installing kubeadm and container runtime 1.1. Installing a container runtime 1.1.1. Forwarding IPv4 and letting iptables see bridged traffic 1.1.2. Cgroup drivers 1.1.3. Containerd 1.2. Installing kubeadm, kubelet and…" />
+<meta name="twitter:description" property="og:description" content="Using kubeadm,a minimum viable Kubernetes cluster can be created that conforms to best practices. In fact, kubeadm can be used to set up a cluster that will pass the Kubernetes Conformance tests. kubeadm also supports other cluster lifecycle functions, such as bootstrap tokens and cluster upgrades. [1] Figure 1. Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. 1. Installing kubeadm and container runtime 1.1. Installing a container runtime 1.1.1. Forwarding IPv4 and letting iptables see bridged traffic 1.1.2. Cgroup drivers 1.1.3. Containerd 1.2. Installing kubeadm, kubelet and…" />
+<link rel="canonical" href="https://blog.codefarm.me/bootstrapping-kubernetes-clusters-with-kubeadm/" />
+<meta property="og:url" content="https://blog.codefarm.me/bootstrapping-kubernetes-clusters-with-kubeadm/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-01-28T11:11:46+08:00" />
+<meta property="article:modified_time" content="2019-01-28T11:11:46+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Install Kubernetes using kubeadm" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-01-28T11:11:46+08:00","datePublished":"2019-01-28T11:11:46+08:00","description":"Using kubeadm,a minimum viable Kubernetes cluster can be created that conforms to best practices. In fact, kubeadm can be used to set up a cluster that will pass the Kubernetes Conformance tests. kubeadm also supports other cluster lifecycle functions, such as bootstrap tokens and cluster upgrades. [1] Figure 1. Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. 1. Installing kubeadm and container runtime 1.1. Installing a container runtime 1.1.1. Forwarding IPv4 and letting iptables see bridged traffic 1.1.2. Cgroup drivers 1.1.3. Containerd 1.2. Installing kubeadm, kubelet and…","headline":"Install Kubernetes using kubeadm","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/bootstrapping-kubernetes-clusters-with-kubeadm/"},"url":"https://blog.codefarm.me/bootstrapping-kubernetes-clusters-with-kubeadm/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Install Kubernetes using kubeadm</h1><p class="c-post-meta">27 Feb 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using <strong>kubeadm</strong>,a minimum viable Kubernetes cluster can be created that conforms to best practices. In fact, kubeadm can be used to set up a cluster that will pass the <a href="https://kubernetes.io/blog/2017/10/software-conformance-certification/">Kubernetes Conformance tests</a>. kubeadm also supports other cluster lifecycle functions, such as <a href="https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/">bootstrap tokens</a> and <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">cluster upgrades</a>. <a href="#create-cluster-kubeadm">[1]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/components-of-kubernetes.svg" alt="Components of Kubernetes" width="55%" height="55%">
+</div>
+<div class="title">Figure 1. Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation.</div>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#installing-kubeadm-and-container-runtime">1. Installing kubeadm and container runtime</a>
+<ul class="sectlevel2">
+<li><a href="#installing-a-container-runtime">1.1. Installing a container runtime</a>
+<ul class="sectlevel3">
+<li><a href="#forwarding-ipv4-and-letting-iptables-see-bridged-traffic">1.1.1. Forwarding IPv4 and letting iptables see bridged traffic</a></li>
+<li><a href="#cgroup-drivers">1.1.2. Cgroup drivers</a></li>
+<li><a href="#containerd">1.1.3. Containerd</a></li>
+</ul>
+</li>
+<li><a href="#installing-kubeadm-kubelet-and-kubectl">1.2. Installing kubeadm, kubelet and kubectl</a></li>
+</ul>
+</li>
+<li><a href="#creating-a-cluster-with-kubeadm">2. Creating a cluster with kubeadm</a>
+<ul class="sectlevel2">
+<li><a href="#customizing-components-with-the-kubeadm-api">2.1. Customizing components with the kubeadm API</a>
+<ul class="sectlevel3">
+<li><a href="#customizing-the-control-plane-with-flags-in-clusterconfiguration">2.1.1. Customizing the control plane with flags in ClusterConfiguration</a></li>
+<li><a href="#customizing-with-patches">2.1.2. Customizing with patches</a></li>
+<li><a href="#customizing-the-kubelet">2.1.3. Customizing the kubelet</a>
+<ul class="sectlevel4">
+<li><a href="#kubelet-configuration-patterns">2.1.3.1. Kubelet configuration patterns</a></li>
+<li><a href="#configure-kubelets-using-kubeadm">2.1.3.2. Configure kubelets using kubeadm</a></li>
+<li><a href="#the-kubelet-drop-in-file-for-systemd">2.1.3.3. The kubelet drop-in file for systemd</a></li>
+<li><a href="#configurations-for-local-ephemeral-storage">2.1.3.4. Configurations for local ephemeral storage</a></li>
+</ul>
+</li>
+<li><a href="#use-a-local-hostnamemdns">2.1.4. Use a Local Hostname/mDNS</a></li>
+</ul>
+</li>
+<li><a href="#initializing-control-plane-node">2.2. Initializing control-plane node</a>
+<ul class="sectlevel3">
+<li><a href="#installing-a-pod-network-add-on">2.2.1. Installing a Pod network add-on</a></li>
+<li><a href="#control-plane-node-isolation">2.2.2. Control plane node isolation</a></li>
+</ul>
+</li>
+<li><a href="#joining-the-work-nodes">2.3. Joining the work nodes</a></li>
+<li><a href="#joing-the-stacked-control-plane-and-etcd-nodes">2.4. Joing the stacked control plane and etcd nodes</a></li>
+<li><a href="#removing-the-nodes">2.5. Removing the nodes</a></li>
+<li><a href="#installing-addons">2.6. Installing Addons</a>
+<ul class="sectlevel3">
+<li><a href="#ingress-controllers">2.6.1. Ingress controllers</a></li>
+<li><a href="#metrics-server">2.6.2. Metrics server</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#upgrading-kubeadm-clusters">3. Upgrading kubeadm clusters</a>
+<ul class="sectlevel2">
+<li><a href="#upgrading-control-plane-nodes">3.1. Upgrading control plane nodes</a>
+<ul class="sectlevel3">
+<li><a href="#upgrade-kubeadm">3.1.1. Upgrade kubeadm</a></li>
+<li><a href="#upgrade-kubelet-and-kubectl">3.1.2. Upgrade kubelet and kubectl</a></li>
+</ul>
+</li>
+<li><a href="#upgrade-worker-nodes">3.2. Upgrade worker nodes</a>
+<ul class="sectlevel3">
+<li><a href="#upgrade-kubeadm-2">3.2.1. Upgrade kubeadm</a></li>
+<li><a href="#upgrade-kubelet-and-kubectl-2">3.2.2. Upgrade kubelet and kubectl</a></li>
+</ul>
+</li>
+<li><a href="#verify-the-status-of-the-cluster">3.3. Verify the status of the cluster</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installing-kubeadm-and-container-runtime">1. Installing kubeadm and container runtime</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A compatible Linux host.</p>
+<div class="paragraph">
+<p>The Kubernetes project provides generic instructions for Linux distributions based on Debian and Red Hat, and those distributions without a package manager. <a href="#install-kubeadm">[2]</a></p>
+</div>
+</li>
+<li>
+<p>2 GB or more of RAM per machine (any less will leave little room for other apps), 2 CPUs or more.</p>
+<div class="paragraph">
+<p>The <code>--ignore-preflight-errors=NumCPU,Mem</code> flag can also be used to ignore the preflight error on <code>kubeadm init</code> or <code>kubeadm join</code>.</p>
+</div>
+</li>
+<li>
+<p>Full network connectivity between all machines in the cluster (public or private network is fine).</p>
+<div class="paragraph">
+<p>kubeadm similarly to other Kubernetes components tries to find a usable IP on the network interfaces associated with a default gateway on a host. Such an IP is then used for the advertising and/or listening performed by a component. <a href="#create-cluster-kubeadm">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>To find out what this IP is on a Linux host:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ip route show <span class="c"># Look for a line starting with "default via"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Unique hostname, MAC address, and product_uuid for every node.</p>
+<div class="paragraph">
+<p>The MAC address of the network interfaces can be got using the command <code>ip link</code> or <code>ifconfig -a</code></p>
+</div>
+<div class="paragraph">
+<p>The product_uuid can be checked by using the command <code>sudo cat /sys/class/dmi/id/product_uuid</code></p>
+</div>
+</li>
+<li>
+<p>Certain ports are open on the machines.</p>
+<div class="openblock">
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Control plane</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Direction</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Port Range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Purpose</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used By</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6443</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kubernetes API server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2379-2380</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">etcd server client API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kube-apiserver, etcd</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10250</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kubelet API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self, Control plane</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10259</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kube-scheduler</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10257</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kube-controller-manager</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Worker node(s)</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Direction</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Port Range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Purpose</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used By</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10250</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kubelet API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self, Control plane</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TCP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inbound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30000-32767</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NodePort Services</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>These <a href="https://kubernetes.io/docs/reference/networking/ports-and-protocols/">required ports</a> need to be open in order for Kubernetes components to communicate with each other. The pod network plugin used may also require certain ports to be open.</p>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Swap disabled.</p>
+<div class="paragraph">
+<p>The default behavior of a kubelet (/ˈkuːblɛt/) is to fail to start if swap memory is detected on a node.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>To tolerate swap, add <code>failSwapOn: false</code> to kubelet configuration or as a command line argument.</p>
+</li>
+<li>
+<p>Note: even if <code>failSwapOn: false</code> is provided, workloads wouldn&#8217;t have swap access by default.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To check swap status, use: <a href="#archlinux-swap">[3]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">swapon <span class="nt">--show</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or to show physical memory as well as swap usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">free <span class="nt">-h</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="installing-a-container-runtime">1.1. Installing a container runtime</h3>
+<div class="paragraph">
+<p>To run containers in Pods, Kubernetes uses a <a href="https://kubernetes.io/docs/setup/production-environment/container-runtimes">container runtime</a>.</p>
+</div>
+<div class="paragraph">
+<p>By default, Kubernetes uses the <a href="https://kubernetes.io/docs/concepts/overview/components/#container-runtime">Container Runtime Interface</a> (CRI) to interface with a chosen container runtime.</p>
+</div>
+<div class="paragraph">
+<p>If a runtime isn&#8217;t specified, kubeadm automatically tries to detect an installed container runtime by scanning through a list of known endpoints. <a href="#install-kubeadm">[2]</a></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Known endpoints for Linux supported operating systems</caption>
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 57.1429%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path to Unix domain socket</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">containerd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unix:///var/run/containerd/containerd.sock</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CRI-O</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unix:///var/run/crio/crio.sock</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Docker Engine (using cri-dockerd)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unix:///var/run/cri-dockerd.sock</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If multiple or no container runtimes are detected kubeadm will throw an error and will request to specify which one to use.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Docker Engine does not implement the <a href="https://kubernetes.io/docs/concepts/architecture/cri/">CRI</a> which is a requirement for a container runtime to work with Kubernetes. For that reason, an additional service <a href="https://github.com/Mirantis/cri-dockerd">cri-dockerd</a> has to be installed. cri-dockerd is a project based on the legacy built-in Docker Engine support that was removed from the kubelet in version 1.24.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Kubernetes 1.26 defaults to using v1 of the CRI API. If a container runtime does not support the v1 API, the kubelet falls back to using the (deprecated) v1alpha2 API instead. <a href="#container-runtimes">[4]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">// Show the details of the `cri` plugin on an existed containerd using `ctr`
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ctr plugins <span class="nb">ls</span> <span class="nt">-d</span> <span class="nb">id</span><span class="o">==</span>cri
+<span class="go">Type:          io.containerd.grpc.v1
+ID:            cri
+Requires:
+               io.containerd.event.v1
+               io.containerd.service.v1
+               io.containerd.warning.v1
+Platforms:     linux/amd64
+Exports:
+               CRIVersion           v1
+               CRIVersionAlpha      v1alpha2</span></code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="forwarding-ipv4-and-letting-iptables-see-bridged-traffic">1.1.1. Forwarding IPv4 and letting iptables see bridged traffic</h4>
+<div class="paragraph">
+<p>Verify that the <code>br_netfilter</code> module is loaded by running <code>lsmod | grep br_netfilter</code>.</p>
+</div>
+<div class="paragraph">
+<p>To load it explicitly, run <code>sudo modprobe br_netfilter</code>.</p>
+</div>
+<div class="paragraph">
+<p>In order for a Linux node&#8217;s iptables to correctly view bridged traffic, verify that <code>net.bridge.bridge-nf-call-iptables</code> is set to <code>1</code> in the <code>sysctl</code> config. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+</span><span class="no">EOF
+
+</span><span class="nb">sudo </span>modprobe overlay
+<span class="nb">sudo </span>modprobe br_netfilter
+
+<span class="c"># sysctl params required by setup, params persist across reboots</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+</span><span class="no">EOF
+
+</span><span class="c"># Apply sysctl params without reboot</span>
+<span class="nb">sudo </span>sysctl <span class="nt">--system</span>
+
+<span class="c"># Verify that the `br_netfilter`, `overlay` modules are loaded</span>
+lsmod | <span class="nb">grep </span>br_netfilter
+lsmod | <span class="nb">grep </span>overlay
+
+<span class="c"># Verify that the</span>
+<span class="c">#   `net.bridge.bridge-nf-call-iptables`, `net.bridge.bridge-nf-call-ip6tables`, and `net.ipv4.ip_forward`</span>
+<span class="c">#   system variables are set to `1`</span>
+<span class="nb">sudo </span>sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="cgroup-drivers">1.1.2. Cgroup drivers</h4>
+<div class="paragraph">
+<p>Both kubelet and the underlying container runtime need to interface with control groups to enforce <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">resource management for pods and containers</a> and set resources such as cpu/memory requests and limits.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s critical that the kubelet and the container runtime uses the same cgroup driver and are configured the same. <a href="#container-runtimes">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>The cgroupfs driver is NOT recommended when <a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a> is the init system because systemd expects a single cgroup manager on the system.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Starting with v1.22 and later, when creating a cluster with kubeadm, if the user does not set the cgroupDriver field under <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/">KubeletConfiguration</a>, kubeadm defaults it to systemd.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Check the Cgroup driver of the kubelet in the cluster-level of an existed cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get <span class="nt">-n</span> kube-system cm kubelet-config <span class="nt">-oyaml</span> | <span class="nb">grep </span>cgroupDriver
+<span class="go">    cgroupDriver: systemd</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check the systemd driver status of the containerd runtime using <code>crictl</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl info | jq <span class="s1">'.config.containerd.runtimes.runc.options'</span>
+<span class="go">{
+  . . .
+  "SystemdCgroup": true
+}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="containerd">1.1.3. Containerd</h4>
+<div class="paragraph">
+<p>Follow the instructions for <a href="https://github.com/containerd/containerd/blob/main/docs/getting-started.md">getting started with containerd</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><em>For more information about Cgroups, see <a href="/2021/11/23/linux-cgroups-containers/">Linux CGroups and Containers</a>.</em></p>
+</div>
+<div class="paragraph">
+<p><em>For more information about containerd, see <a href="/2021/11/25/oci-runc-containerd-cri-dockershim/">RUNC CONTAINERD CRI DOCKERSHIM</a>.</em></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the containerd config <code>/etc/containerd/config.toml</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To use the systemd cgroup driver:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="toml"><span class="k">[</span><span class="n">plugins</span><span class="k">.</span><span class="s">"io.containerd.grpc.v1.cri"</span><span class="k">.</span><span class="n">containerd</span><span class="k">.</span><span class="n">runtimes</span><span class="k">.</span><span class="n">runc</span><span class="k">.</span><span class="n">options</span><span class="k">]</span>
+  <span class="n">SystemdCgroup</span> <span class="o">=</span><span class="w"> </span><span class="kc">true</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To overwrite the sandbox (pause) image:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="toml"><span class="k">[</span><span class="n">plugins</span><span class="k">.</span><span class="s">"io.containerd.grpc.v1.cri"</span><span class="k">]</span>
+  <span class="n">sandbox_image</span> <span class="o">=</span><span class="w"> </span><span class="s">"registry.k8s.io/pause:3.2"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Please note, that it is a best practice for kubelet to declare the matching <code>pod-infra-container-image</code>. If not configured, kubelet may attempt to garbage collect the pause image.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Find or overwrite the settings for persistent and runtime storage locations as well as grpc, debug, and metrics addresses for the various APIs.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="toml"><span class="c">#root = "/var/lib/containerd"</span>
+<span class="c">#state = "/run/containerd"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check the CRI integration plugin status.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ctr plugin <span class="nb">ls id</span><span class="o">==</span>cri
+<span class="go">TYPE                     ID     PLATFORMS      STATUS
+io.containerd.grpc.v1    cri    linux/amd64    ok</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check the systemd driver status using <code>crictl</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>crictl info <span class="nt">-o</span> go-template <span class="nt">--template</span> <span class="s1">'{{.config.containerd.runtimes.runc.options.SystemdCgroup}}'</span>
+<span class="go">true</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="installing-kubeadm-kubelet-and-kubectl">1.2. Installing kubeadm, kubelet and kubectl</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Note: The legacy package repositories (<code>apt.kubernetes.io</code> and <code>yum.kubernetes.io</code>) have been <a href="https://kubernetes.io/blog/2023/08/31/legacy-package-repository-deprecation/">deprecated and frozen starting from September 13, 2023</a>. <strong>Using the <a href="https://kubernetes.io/blog/2023/08/15/pkgs-k8s-io-introduction/">new package repositories hosted at <code>pkgs.k8s.io</code></a> is strongly recommended and required in order to install Kubernetes versions released after September 13, 2023.</strong> The deprecated legacy repositories, and their contents, might be removed at any time in the future and without a further notice period. The new package repositories provide downloads for Kubernetes versions starting with v1.24.0. <a href="#install-kubeadm">[2]</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Debian-based distributions</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https ca-certificates curl
+curl <span class="nt">-fsSL</span> https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key <span class="se">\</span>
+    | <span class="nb">sudo </span>gpg <span class="nt">--dearmor</span> <span class="nt">-o</span> /etc/apt/keyrings/kubernetes-apt-keyring.gpg <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="nb">echo</span> <span class="s1">'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.26/deb/ /'</span> <span class="se">\</span>
+    | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/kubernetes.list <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> kubelet kubeadm kubectl <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="nb">sudo </span>apt-mark hold kubelet kubeadm kubectl</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so the version in the URL can be disregarded.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Please NOTE that this repository have packages only for Kubernetes 1.26; for other Kubernetes minor versions, change the Kubernetes minor version in the URL to match the desired minor version. Such as:
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.27/deb/ /
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.26/deb/ /</span></code></pre>
+</div>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The installing package version can also be specified:
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>apt-cache madison kubeadm | <span class="nb">head</span> <span class="nt">-n</span> 5
+<span class="go">   kubeadm | 1.26.4-1.1 | https://pkgs.k8s.io/core:/stable:/v1.26/deb  Packages
+   kubeadm | 1.26.3-1.1 | https://pkgs.k8s.io/core:/stable:/v1.26/deb  Packages
+   kubeadm | 1.26.2-1.1 | https://pkgs.k8s.io/core:/stable:/v1.26/deb  Packages
+   kubeadm | 1.26.1-1.1 | https://pkgs.k8s.io/core:/stable:/v1.26/deb  Packages
+   kubeadm | 1.26.0-2.1 | https://pkgs.k8s.io/core:/stable:/v1.26/deb  Packages
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubelet</span><span class="o">=</span>1.26.0-2.1 <span class="nv">kubeadm</span><span class="o">=</span>1.26.0-2.1 <span class="nv">kubectl</span><span class="o">=</span>1.26.0-2.1</code></pre>
+</div>
+</div></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Output shell completion code for the specified shell (bash or zsh).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Install the bash-completion framework</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> bash-completion
+
+<span class="c"># Output bash completion</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'kubeadm completion bash &gt; /etc/bash_completion.d/kubeadm'</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'kubectl completion bash &gt; /etc/bash_completion.d/kubectl'</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'crictl completion &gt; /etc/bash_completion.d/crictl'</span>
+
+<span class="c"># Load the completion code for bash into the current shell</span>
+<span class="nb">source</span> /etc/bash_completion</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Red Hat-based distributions</p>
+<div class="openblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># This overwrites any existing configuration in /etc/yum.repos.d/kubernetes.repo</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.26/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni <i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="no">EOF
+
+</span><span class="c"># Set SELinux in permissive mode (effectively disabling it) </span><i class="conum" data-value="2"></i><b>(2)</b>
+<span class="nb">sudo </span>setenforce 0
+<span class="nb">sudo sed</span> <span class="nt">-i</span> <span class="s1">'s/^SELINUX=enforcing$/SELINUX=permissive/'</span> /etc/selinux/config
+
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> kubelet kubeadm kubectl <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes <i class="conum" data-value="3"></i><b>(3)</b>
+
+<span class="nb">sudo </span>systemctl <span class="nb">enable</span> <span class="nt">--now</span> kubelet</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>exclude</code> parameter in the repository definition ensures that the packages related to Kubernetes are not upgraded upon running <code>yum update</code> as there&#8217;s a special procedure that must be followed for upgrading Kubernetes.
+<div class="paragraph">
+<p>Please NOTE that this repository have packages only for Kubernetes 1.26; for other Kubernetes minor versions, change the Kubernetes minor version in the URL to match the desired minor version.</p>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Setting SELinux in permissive mode by running <code>setenforce 0</code> and <code>sed</code> effectively disables it. This is required to allow containers to access the host filesystem, which is needed by pod networks for example. It&#8217;s required to do this until SELinux support is improved in the kubelet.
+<div class="paragraph">
+<p>The SELinux can be left enabled if knowing how to configure it but it may require settings that are not supported by kubeadm.</p>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The installing package version can also be specified:
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>yum <span class="nt">--showduplicates</span> <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes list kubeadm | <span class="nb">tail</span> <span class="nt">-n</span> 5
+<span class="go">kubeadm.x86_64                   1.26.0-150500.2.1                    kubernetes
+kubeadm.x86_64                   1.26.1-150500.1.1                    kubernetes
+kubeadm.x86_64                   1.26.2-150500.1.1                    kubernetes
+kubeadm.x86_64                   1.26.3-150500.1.1                    kubernetes
+kubeadm.x86_64                   1.26.4-150500.1.1                    kubernetes
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>yum <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes <span class="nb">install </span>kubelet-1.26.0-150500.2.1 kubeadm-1.26.0-150500.2.1 kubectl-1.26.0-150500.2.1</code></pre>
+</div>
+</div></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Output shell completion code for the specified shell (bash or zsh).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Install the bash-completion framework</span>
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> bash-completion
+
+<span class="c"># Output bash completion</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'kubeadm completion bash &gt; /etc/bash_completion.d/kubeadm'</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'kubectl completion bash &gt; /etc/bash_completion.d/kubectl'</span>
+<span class="nb">sudo </span>sh <span class="nt">-c</span> <span class="s1">'crictl completion &gt; /etc/bash_completion.d/crictl'</span>
+
+<span class="c"># Load the completion code for bash into the current shell</span>
+<span class="nb">source</span> /usr/share/bash-completion/bash_completion</code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+It may be needed to set the runtime endpoint of the <a href="https://github.com/kubernetes-sigs/cri-tools/blob/v1.29.0/docs/crictl.md">crictl</a> explicity, such as <code>sudo crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Consider enabling the <a href="https://docs.docker.com/storage/containerd/">containerd snapshotters feature</a> on Docker Engine.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"features"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"containerd-snapshotter"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The cgroup driver can also be explicitly specified to systemd on Docker.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"exec-opts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"native.cgroupdriver=systemd"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"features"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"containerd-snapshotter"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="creating-a-cluster-with-kubeadm">2. Creating a cluster with kubeadm</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubeadm has commands that can pre-pull the required images when <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#without-internet-connection">creating a cluster without an internet connection</a> on its nodes.</p>
+</div>
+<div class="paragraph">
+<p>The images can be listed and pulled using the kubeadm config images sub-command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm config images list <span class="c"># [--kubernetes-version=v1.26.0] [--image-repository=registry.k8s.io]</span>
+kubeadm config images pull <span class="c"># [--kubernetes-version=v1.26.0] [--image-repository=registry.k8s.io]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Kubeadm allows using a <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init#custom-images">custom image repository</a> for the required images. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">kubernetes_version</span><span class="o">=</span>v1.26.0
+<span class="nb">sudo </span>kubeadm config images pull <span class="se">\</span>
+  <span class="nt">--kubernetes-version</span><span class="o">=</span><span class="nv">$kubernetes_version</span> <span class="se">\</span>
+  <span class="nt">--image-repository</span><span class="o">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>ctr</code> to retag the images in the <code>k8s.io</code> namespace back to the default repository <code>registry.k8s.io</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c">#!/bin/sh</span>
+<span class="nv">kubernetes_version</span><span class="o">=</span>v1.26.0
+<span class="nv">image_repository</span><span class="o">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers
+<span class="nv">images</span><span class="o">=</span><span class="si">$(</span>kubeadm config images list <span class="se">\</span>
+    <span class="nt">--kubernetes-version</span> <span class="nv">$kubernetes_version</span> <span class="se">\</span>
+    <span class="nt">--image-repository</span> <span class="nv">$image_repository</span><span class="si">)</span>
+
+<span class="k">for </span>i <span class="k">in</span> <span class="nv">$images</span><span class="p">;</span> <span class="k">do
+    case</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span> <span class="k">in</span>
+        <span class="k">*</span>coredns<span class="k">*</span><span class="p">)</span>
+            <span class="nv">new_repo</span><span class="o">=</span><span class="s2">"registry.k8s.io/coredns"</span>
+            <span class="p">;;</span>
+        <span class="k">*</span><span class="p">)</span>
+            <span class="nv">new_repo</span><span class="o">=</span><span class="s2">"registry.k8s.io"</span>
+            <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nv">newtag</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span> | <span class="nb">sed</span> <span class="s2">"s@</span><span class="nv">$image_repository</span><span class="s2">@</span><span class="nv">$new_repo</span><span class="s2">@"</span><span class="si">)</span>
+    <span class="nb">sudo </span>ctr <span class="nt">-n</span> k8s.io images tag <span class="nv">$i</span> <span class="nv">$newtag</span>
+<span class="k">done</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or, remove these images by using <code>crictl</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>crictl images | <span class="se">\</span>
+    <span class="nb">grep </span>registry.cn-hangzhou.aliyuncs.com/google_containers | <span class="se">\</span>
+    <span class="nb">awk</span> <span class="s1">'{print $1":"$2}'</span> | <span class="se">\</span>
+    xargs <span class="nb">sudo </span>ctr <span class="nt">-n</span> k8s.io i <span class="nb">rm</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The image repository behavior of the <code>kubeadm init</code> can also be overrided by using <a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/#config-file">kubeadm with a configuration file</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="c1"># Run `kubeadm config print init-defaults` to see the default Init configuration.</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterConfiguration</span>
+<span class="na">imageRepository</span><span class="pi">:</span> <span class="s">registry.k8s.io</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customizing-components-with-the-kubeadm-api">2.1. Customizing components with the kubeadm API</h3>
+<div class="paragraph">
+<p>The preferred way to configure kubeadm is to pass an YAML <a href="https://kubernetes.io/docs/reference/config-api/">configuration file</a> with the <code>--config</code> option. A <a href="https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta4/">kubeadm config file</a> could contain multiple configuration types separated using three dashes (<code>---</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta4</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">InitConfiguration</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta4</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterConfiguration</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubelet.config.k8s.io/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">KubeletConfiguration</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeproxy.config.k8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">KubeProxyConfiguration</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta4</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">JoinConfiguration</span></code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="customizing-the-control-plane-with-flags-in-clusterconfiguration">2.1.1. Customizing the control plane with flags in ClusterConfiguration</h4>
+<div class="paragraph">
+<p>The kubeadm <code>ClusterConfiguration</code> object exposes a way for users to override the default flags passed to control plane components such as the APIServer, ControllerManager, Scheduler and Etcd. <a href="#control-plane-flags">[6]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterConfiguration</span>
+<span class="na">apiServer</span><span class="pi">:</span>
+  <span class="na">timeoutForControlPlane</span><span class="pi">:</span> <span class="s">4m0s</span>
+<span class="na">controllerManager</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">scheduler</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">etcd</span><span class="pi">:</span>
+  <span class="na">local</span><span class="pi">:</span>
+    <span class="na">dataDir</span><span class="pi">:</span> <span class="s">/var/lib/etcd</span>
+<span class="na">networking</span><span class="pi">:</span>
+  <span class="na">dnsDomain</span><span class="pi">:</span> <span class="s">cluster.local</span>
+  <span class="na">serviceSubnet</span><span class="pi">:</span> <span class="s">10.96.0.0/12</span>
+<span class="na">dns</span><span class="pi">:</span> <span class="pi">{}</span>
+<span class="na">imageRepository</span><span class="pi">:</span> <span class="s">registry.k8s.io</span>
+<span class="na">kubernetesVersion</span><span class="pi">:</span> <span class="s">1.26.0</span>
+<span class="na">certificatesDir</span><span class="pi">:</span> <span class="s">/etc/kubernetes/pki</span>
+<span class="na">clusterName</span><span class="pi">:</span> <span class="s">kubernetes</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="customizing-with-patches">2.1.2. Customizing with patches</h4>
+<div class="paragraph">
+<p>Kubeadm allows passing a directory with patch files to <code>InitConfiguration</code> and <code>JoinConfiguration</code> on individual nodes. These <code>patches</code> can be used as the last customization step before component configuration is written to disk.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">InitConfiguration</span>
+<span class="na">patches</span><span class="pi">:</span>
+  <span class="na">directory</span><span class="pi">:</span> <span class="s">/home/user/somedir</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">JoinConfiguration</span>
+<span class="na">patches</span><span class="pi">:</span>
+  <span class="na">directory</span><span class="pi">:</span> <span class="s">/home/user/somedir</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="customizing-the-kubelet">2.1.3. Customizing the kubelet</h4>
+<div class="paragraph">
+<p>Some kubelet configuration details need to be the same across all kubelets involved in the cluster, while other configuration aspects need to be set on a per-kubelet basis to accommodate the different characteristics of a given machine (such as OS, storage, and networking). <a href="#kubelet-integration">[7]</a></p>
+</div>
+<div class="sect4">
+<h5 id="kubelet-configuration-patterns">2.1.3.1. Kubelet configuration patterns</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Propagating cluster-level configuration to each kubelet</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The kubelet with default values to be used can be provided by <code>kubeadm init</code> and <code>kubeadm join</code> commands. Interesting examples include using a different container runtime or setting the default subnet used by services.</p>
+</div>
+<div class="paragraph">
+<p>To make the services to use the subnet <code>10.96.0.0/12</code> as the default for services, pass the <code>--service-cidr</code> parameter to kubeadm:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm init <span class="nt">--service-cidr</span> 10.96.0.0/12</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The kubelet provides a versioned, structured API object that can configure most parameters in the kubelet and push out this configuration to each running kubelet in the cluster, called <code>KubeletConfiguration</code>, and can be passed to <code>kubeadm init</code> and kubeadm will apply the same base <code>KubeletConfiguration</code> to all nodes in the cluster.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterConfiguration</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubelet.config.k8s.io/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">KubeletConfiguration</span>
+<span class="na">clusterDNS</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">10.96.0.10</span>
+<span class="na">cgroupDriver</span><span class="pi">:</span> <span class="s">systemd</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Providing instance-specific configuration details</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Some hosts require specific kubelet configurations due to differences in hardware, operating system, networking, or other host-specific parameters. The following list provides a few examples.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The path to the DNS resolution file, as specified by the <code>--resolv-conf</code> kubelet configuration flag, may differ among operating systems, or depending on whether you are using systemd-resolved. If this path is wrong, DNS resolution will fail on the Node whose kubelet is configured incorrectly.</p>
+</li>
+<li>
+<p>The Node API object <code>.metadata.name</code> is set to the machine&#8217;s hostname by default, unless you are using a cloud provider. You can use the <code>--hostname-override</code> flag to override the default behavior if you need to specify a Node name different from the machine&#8217;s hostname.</p>
+</li>
+<li>
+<p>Currently, the kubelet cannot automatically detect the cgroup driver used by the container runtime, but the value of <code>--cgroup-driver</code> must match the cgroup driver used by the container runtime to ensure the health of the kubelet.</p>
+</li>
+<li>
+<p>To specify the container runtime you must set its endpoint with the <code>--container-runtime-endpoint=&lt;path&gt;</code> flag.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The recommended way of applying such instance-specific configuration is by using <a href="#customizing-with-patches">KubeletConfiguration patches</a>.</p>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="configure-kubelets-using-kubeadm">2.1.3.2. Configure kubelets using kubeadm</h5>
+<div class="paragraph">
+<p>When you call <code>kubeadm init</code>, the kubelet configuration is marshalled to disk at <code>/var/lib/kubelet/config.yaml</code>, and also uploaded to a <code>kubelet-config</code> ConfigMap in the <code>kube-system</code> namespace of the cluster.</p>
+</div>
+<div class="paragraph">
+<p>To address the second pattern of providing instance-specific configuration details, kubeadm writes an environment file to <code>/var/lib/kubelet/kubeadm-flags.env</code>, which contains a list of flags to pass to the kubelet when it starts. The flags are presented in the file like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">KUBELET_KUBEADM_ARGS</span><span class="o">=</span><span class="s2">"--flag1=value1 --flag2=value2 ..."</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to the flags used when starting the kubelet, the file also contains dynamic parameters such as the cgroup driver and whether to use a different container runtime socket (<code>--cri-socket</code>).</p>
+</div>
+<div class="paragraph">
+<p>When you run <code>kubeadm join</code>, kubeadm uses the Bootstrap Token credential to perform a TLS bootstrap, which fetches the credential needed to download the <code>kubelet-config</code> ConfigMap and writes it to <code>/var/lib/kubelet/config.yaml</code>. The dynamic environment file is generated in exactly the same way as <code>kubeadm init</code>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="the-kubelet-drop-in-file-for-systemd">2.1.3.3. The kubelet drop-in file for systemd</h5>
+<div class="paragraph">
+<p>kubeadm ships with configuration for how systemd should run the kubelet <a href="#kubelet-integration">[7]</a>,  written to <code>/etc/systemd/system/kubelet.service.d/10-kubeadm.conf</code> and is used by systemd. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[Service]</span><span class="w">
+</span><span class="py">Environment</span><span class="p">=</span><span class="s">"KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"</span>
+<span class="py">Environment</span><span class="p">=</span><span class="s">"KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"</span>
+<span class="c"># This is a file that "kubeadm init" and "kubeadm join" generate at runtime, populating
+# the KUBELET_KUBEADM_ARGS variable dynamically
+</span><span class="py">EnvironmentFile</span><span class="p">=</span><span class="s">-/var/lib/kubelet/kubeadm-flags.env</span>
+<span class="c"># This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably,
+# the user should use the .NodeRegistration.KubeletExtraArgs object in the configuration files instead.
+# KUBELET_EXTRA_ARGS should be sourced from this file.
+</span><span class="py">EnvironmentFile</span><span class="p">=</span><span class="s">-/etc/default/kubelet</span>
+<span class="py">ExecStart</span><span class="p">=</span>
+<span class="py">ExecStart</span><span class="p">=</span><span class="s">/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This file specifies the default locations for all of the files managed by kubeadm for the kubelet.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The KubeConfig file to use for the TLS Bootstrap is <code>/etc/kubernetes/bootstrap-kubelet.conf</code>, but it is only used if <code>/etc/kubernetes/kubelet.conf</code> does not exist.</p>
+</li>
+<li>
+<p>The KubeConfig file with the unique kubelet identity is <code>/etc/kubernetes/kubelet.conf</code>.</p>
+</li>
+<li>
+<p>The file containing the kubelet&#8217;s ComponentConfig is <code>/var/lib/kubelet/config.yaml</code>.</p>
+</li>
+<li>
+<p>The dynamic environment file that contains <code>KUBELET_KUBEADM_ARGS</code> is sourced from <code>/var/lib/kubelet/kubeadm-flags.env</code>.</p>
+</li>
+<li>
+<p>The file that can contain user-specified flag overrides with <code>KUBELET_EXTRA_ARGS</code> is sourced from <code>/etc/default/kubelet</code> (for DEBs), or <code>/etc/sysconfig/kubelet</code> (for RPMs). <code>KUBELET_EXTRA_ARGS</code> is last in the flag chain and has the highest priority in the event of conflicting settings.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="configurations-for-local-ephemeral-storage">2.1.3.4. Configurations for local ephemeral storage</h5>
+<div class="paragraph">
+<p>Nodes have local ephemeral storage, backed by locally-attached writeable devices or, sometimes, by RAM. <a href="#manage-resources-containers">[8]</a> <a href="#so-ephemeral-storage">[9]</a></p>
+</div>
+<div class="paragraph">
+<p>Pods use ephemeral local storage for scratch space, caching, and for logs. The kubelet can provide scratch space to Pods using local ephemeral storage to mount <a href="https://kubernetes.io/docs/concepts/storage/volumes/#emptydir">emptyDir</a> volumes into containers.</p>
+</div>
+<div class="paragraph">
+<p>The kubelet also uses this kind of storage to hold <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#logging-at-the-node-level">node-level container logs</a>, container images, and the writable layers of running containers.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Note: The kubelet tracks <code>tmpfs</code> emptyDir volumes as container memory use, rather than as local ephemeral storage.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Note: The kubelet will only track the root filesystem for ephemeral storage. OS layouts that mount a separate disk to <code>/var/lib/kubelet</code> or <code>/var/lib/containers</code> will not report ephemeral storage correctly.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The kubelet writes logs to files inside its configured log directory (<code>/var/log</code> by default); and has a base directory for other locally stored data (<code>/var/lib/kubelet</code> by default).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The kubelet recognizes two specific filesystem identifiers: <a href="#node-pressure-eviction">[10]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>nodefs</code>: The node&#8217;s main filesystem, used for local disk volumes, emptyDir volumes not backed by memory, log storage, and more. For example, <code>nodefs</code> contains <code>/var/lib/kubelet/</code>.</p>
+</li>
+<li>
+<p><code>imagefs</code>: An optional filesystem that container runtimes use to store container images and container writable layers. <a href="#kubernetes-separate-image-filesystem">[11]</a></p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The containerd runtime uses a TOML configuration file to control where persistent (default "/var/lib/containerd") and ephemeral data (default "/run/containerd") is stored.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Kubelet auto-discovers these filesystems and ignores other node local filesystems. Kubelet does not support other configurations.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="use-a-local-hostnamemdns">2.1.4. Use a Local Hostname/mDNS</h4>
+<div class="paragraph">
+<p>Using a local hostname with mDNS (Multicast DNS) allows a node to be addressed by a name (e.g., <code>homelab.local</code>) rather than an IP address.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Install Avahi on the node for Linux distributions (e.g., Ubuntu, Debian).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>apt update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt <span class="nb">install </span>avahi-daemon <span class="nt">-y</span>
+<span class="nb">sudo </span>systemctl <span class="nb">enable</span> <span class="nt">--now</span> avahi-daemon</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Set the hostname.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>hostnamectl set-hostname homelab</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify the name resolution.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ping homelab.local</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the <code>init-config.yaml</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubeadm.k8s.io/v1beta3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterConfiguration</span>
+<span class="c1"># The shared endpoint for the control plane API server, using mDNS.</span>
+<span class="na">controlPlaneEndpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">homelab.local:6443"</span>
+<span class="na">apiServer</span><span class="pi">:</span>
+  <span class="c1"># Additional Subject Alternative Names for the API server's TLS certificate.</span>
+  <span class="na">certSANs</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">homelab.local"</span>
+<span class="na">networking</span><span class="pi">:</span>
+  <span class="c1"># IP range for Kubernetes services.</span>
+  <span class="na">serviceSubnet</span><span class="pi">:</span> <span class="s">10.96.0.0/12</span>
+  <span class="c1"># IP range for Pods, must not overlap with host networks and used by the CNI.</span>
+  <span class="na">podSubnet</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10.244.0.0/16"</span>
+  <span class="c1"># The DNS domain for the cluster.</span>
+  <span class="na">dnsDomain</span><span class="pi">:</span> <span class="s">cluster.local</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">kubelet.config.k8s.io/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">KubeletConfiguration</span>
+<span class="c1"># Ensure kubelet uses the same cgroup driver as the container runtime.</span>
+<span class="na">cgroupDriver</span><span class="pi">:</span> <span class="s">systemd</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the initialization.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm init <span class="nt">--config</span> init-config.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To prevent a temporary <code>NotReady</code> status if a node&#8217;s IP address changes, avoid hard-coding the IP.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Ensure the <code>--node-ip</code> flag is not used in the kubelet&#8217;s systemd configuration (e.g., <code>/etc/systemd/system/kubelet.service.d/10-kubeadm.conf</code>).</p>
+</li>
+<li>
+<p>Removing the flag allows the kubelet to auto-detect and register its new IP with the API server upon restart.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="initializing-control-plane-node">2.2. Initializing control-plane node</h3>
+<div class="paragraph">
+<p>The control-plane node is the machine where the control plane components run, including <a href="https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/">etcd</a> (the cluster database) and the <a href="https://kubernetes.io/docs/concepts/overview/components/#kube-apiserver">API Server</a> (which the <a href="https://kubernetes.io/docs/user-guide/kubectl-overview/">kubectl</a> command line tool communicates with). <a href="#create-cluster-kubeadm">[1]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">kubernetes_version</span><span class="o">=</span>v1.26.0
+<span class="nb">sudo </span>kubeadm init <span class="se">\</span>
+    <span class="nt">--kubernetes-version</span><span class="o">=</span><span class="nv">$kubernetes_version</span> <span class="se">\</span>
+    <span class="nt">--control-plane-endpoint</span><span class="o">=</span>cluster-endpoint <span class="se">\</span>
+    <span class="nt">--apiserver-advertise-address</span><span class="o">=</span>192.168.0.100 <span class="se">\</span>
+    <span class="nt">--pod-network-cidr</span><span class="o">=</span>10.244.0.0/16 <span class="se">\</span>
+    <span class="nt">--service-cidr</span><span class="o">=</span>10.96.0.0/12 <span class="se">\</span>
+    <span class="nt">--image-repository</span><span class="o">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers <span class="se">\</span>
+    <span class="nt">--ignore-preflight-errors</span><span class="o">=</span>NumCPU,Mem <span class="se">\</span>
+    <span class="nt">--dry-run</span></code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>(Recommended) If you have plans to upgrade this single control-plane kubeadm cluster to high availability you should specify the <code>--control-plane-endpoint</code> to set the shared endpoint for all control-plane nodes. Such an endpoint can be either a DNS name or an IP address of a load-balancer.</p>
+</li>
+<li>
+<p>Choose a <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network">Pod network</a> add-on, and verify whether it requires any arguments to be passed to <code>kubeadm init</code>. Depending on which third-party provider you choose, you might need to set the <code>--pod-network-cidr</code> to a provider-specific value.</p>
+</li>
+<li>
+<p>(Optional) kubeadm tries to detect the container runtime by using a list of well known endpoints. To use different container runtime or if there are more than one installed on the provisioned node, specify the <code>--cri-socket</code> argument to kubeadm.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Considerations about apiserver-advertise-address and ControlPlaneEndpoint</strong></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In single-node home labs with dynamic IPs, the loopback interface offers a stable endpoint but restricts API server access to the local node, preventing multi-node use.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm init <span class="nt">--apiserver-advertise-address</span><span class="o">=</span>127.0.0.1 <span class="nt">--pod-network-cidr</span><span class="o">=</span>10.244.0.0/16</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Unless otherwise specified, kubeadm uses the network interface associated with the default gateway to set the advertise address for this particular control-plane node&#8217;s API server. To use a different network interface, specify the <code>--apiserver-advertise-address=&lt;ip-address&gt;</code> argument to <code>kubeadm init</code>.</p>
+</li>
+<li>
+<p>While <code>--apiserver-advertise-address</code> can be used to set the advertise address for this particular control-plane node&#8217;s API server, <code>--control-plane-endpoint</code> can be used to set the shared endpoint for all control-plane nodes.</p>
+</li>
+<li>
+<p><code>--control-plane-endpoint</code> allows both IP addresses and DNS names that can map to IP addresses. Such as:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">192.168.56.130	cluster-endpoint</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where <code>192.168.56.130</code> is the IP address of this node and <code>cluster-endpoint</code> is a custom DNS name that maps to this IP. Later you can modify <code>cluster-endpoint</code> to point to the address of your load-balancer in an high availability scenario.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Run the following command to init a control panel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">kubernetes_version</span><span class="o">=</span>v1.26.0
+<span class="nb">sudo </span>kubeadm init <span class="se">\</span>
+    <span class="nt">--kubernetes-version</span><span class="o">=</span><span class="nv">$kubernetes_version</span> <span class="se">\</span>
+    <span class="nt">--control-plane-endpoint</span><span class="o">=</span>cluster-endpoint <span class="se">\</span>
+    <span class="nt">--pod-network-cidr</span><span class="o">=</span>10.244.0.0/16</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of control-plane nodes by copying certificate authorities
+and service account keys on each node and then running the following as root:
+
+  kubeadm join cluster-endpoint:6443 --token ed790l.ylclzoyoa7l9v0e9 \
+	--discovery-token-ca-cert-hash sha256:cb046f4d8183a66f930155654cc34354612eeab839d7ed97971154fa8f35072f \
+	--control-plane
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join cluster-endpoint:6443 --token ed790l.ylclzoyoa7l9v0e9 \
+	--discovery-token-ca-cert-hash sha256:cb046f4d8183a66f930155654cc34354612eeab839d7ed97971154fa8f35072f</span></code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="installing-a-pod-network-add-on">2.2.1. Installing a Pod network add-on</h4>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You must deploy a <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/">Container Network Interface</a> (CNI) based Pod network add-on so that your Pods can communicate with each other. Cluster DNS (CoreDNS) will not start up before a network is installed.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Take care that your Pod network must not overlap with any of the host networks: you are likely to see problems if there is any overlap. (If you find a collision between your network plugin&#8217;s preferred Pod network and some of your host networks, you should think of a suitable CIDR block to use instead, then use that during kubeadm init with <code>--pod-network-cidr</code> and as a replacement in your network plugin&#8217;s YAML).</p>
+</li>
+<li>
+<p>By default, kubeadm sets up your cluster to use and enforce use of <a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">RBAC</a> (role based access control). Make sure that your Pod network plugin supports RBAC, and so do any manifests that you use to deploy it.</p>
+</li>
+<li>
+<p>If you want to use IPv6&#8212;&#8203;either dual-stack, or single-stack IPv6 only networking&#8212;&#8203;for your cluster, make sure that your Pod network plugin supports IPv6. IPv6 support was added to CNI in v0.6.0.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/flannel-io/flannel">Flannel</a> is a simple and easy way to configure a layer 3 network fabric designed for Kubernetes. For Kubernetes v1.17+, deploying Flannel with kubectl:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Deploying Flannel with kubectl</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl apply <span class="nt">-f</span> https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you use custom podCIDR (not <code>10.244.0.0/16</code>) you first need to download the above manifest and modify the network to match your one.</p>
+</div>
+</li>
+<li>
+<p>Deploying Flannel with helm</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Needs manual creation of namespace to avoid helm error</span>
+kubectl create ns kube-flannel
+kubectl label <span class="nt">--overwrite</span> ns kube-flannel pod-security.kubernetes.io/enforce<span class="o">=</span>privileged
+
+helm repo add flannel https://flannel-io.github.io/flannel/
+helm <span class="nb">install </span>flannel <span class="nt">--set</span> <span class="nv">podCidr</span><span class="o">=</span><span class="s2">"10.244.0.0/16"</span> <span class="nt">--namespace</span> kube-flannel flannel/flannel
+
+<span class="c"># helm install flannel oci://registry-1.docker.io/qqbuby/flannel --namespace kube-flannel --version v0.24.4</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Flannel may be paired with several different backends. Once set, the backend should not be changed at runtime.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>VXLAN is the recommended choice.</p>
+</li>
+<li>
+<p>host-gw is recommended for more experienced users who want the performance improvement and whose infrastructure support it (typically it can&#8217;t be used in cloud environments).</p>
+</li>
+<li>
+<p>UDP is suggested for debugging only or for very old kernels that don&#8217;t support VXLAN.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Several external projects provide Kubernetes Pod networks using CNI, some of which also support <a href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Network Policy</a>. See a list of <a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/#networking-and-network-policy">add-ons</a> that implement the <a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-implement-the-kubernetes-networking-model">Kubernetes networking model</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="control-plane-node-isolation">2.2.2. Control plane node isolation</h4>
+<div class="paragraph">
+<p>By default,  Pods will not be scheduled on the control plane nodes for security reasons. To be able to schedule Pods on the control plane nodes, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">kubectl taint nodes --all node-role.kubernetes.io/control-plane-</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="joining-the-work-nodes">2.3. Joining the work nodes</h3>
+<div class="paragraph">
+<p>To add new nodes to your cluster do the following for each machine:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>SSH to the machine</p>
+</li>
+<li>
+<p>Become root (e.g. <code>sudo su -</code>)</p>
+</li>
+<li>
+<p>Install a runtime if needed</p>
+</li>
+<li>
+<p>Run the command that was output by <code>kubeadm init</code>. For example:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join cluster-endpoint:6443 --token ed790l.ylclzoyoa7l9v0e9 \
+	--discovery-token-ca-cert-hash sha256:cb046f4d8183a66f930155654cc34354612eeab839d7ed97971154fa8f35072f</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If you do not have the token, you can get it by running the following command on the control-plane node:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm token list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, tokens expire after 24 hours. If you are joining a node to the cluster after the current token has expired, you can create a new token by running the following command on the control-plane node:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm token create</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you don&#8217;t have the value of <code>--discovery-token-ca-cert-hash</code>, you can get it by running the following command chain on the control-plane node:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">openssl x509 <span class="nt">-pubkey</span> <span class="nt">-in</span> /etc/kubernetes/pki/ca.crt | openssl rsa <span class="nt">-pubin</span> <span class="nt">-outform</span> der 2&gt;/dev/null | <span class="se">\</span>
+   openssl dgst <span class="nt">-sha256</span> <span class="nt">-hex</span> | <span class="nb">sed</span> <span class="s1">'s/^.* //'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also run the following command to create and print join command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">kubeadm token create --print-join-command</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="joing-the-stacked-control-plane-and-etcd-nodes">2.4. Joing the stacked control plane and etcd nodes</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Upload the certificates that should be shared across all the control-plane instances to the cluster, and note the certificate key.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm init phase upload-certs <span class="nt">--upload-certs</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">[upload-certs] Storing the certificates in Secret "kubeadm-certs" in the "kube-system" Namespace
+[upload-certs] Using certificate key:
+a455917454410f7d8bcdfa5795ed54526c7484e4e6316ef57a3aa16c3454ada2</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the command that was output by <code>kubeadm init</code> with the additional <code>--certificate-key &lt;certificate key&gt;</code> generated above.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">You can now join any number of control-plane nodes by copying certificate authorities
+and service account keys on each node and then running the following as root:
+
+  kubeadm join cluster-endpoint:6443 --token ed790l.ylclzoyoa7l9v0e9 \
+	--discovery-token-ca-cert-hash sha256:cb046f4d8183a66f930155654cc34354612eeab839d7ed97971154fa8f35072f \
+	--control-plane</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If the following error occurs, check etcd endpoint connectivity and time synchronization between nodes. Time skew can invalidate certificates and disrupt etcd&#8217;s consensus mechanisms, hindering cluster operations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">[check-etcd] Checking that the etcd cluster is healthy
+I0226 10:44:22.265859    4919 local.go:71] [etcd] Checking etcd cluster health
+I0226 10:44:22.266518    4919 local.go:74] creating etcd client that connects to etcd pods
+I0226 10:44:22.266642    4919 etcd.go:215] retrieving etcd endpoints from "kubeadm.kubernetes.io/etcd.advertise-client-urls" annotation in etcd Pods
+I0226 10:44:22.267022    4919 envvar.go:172] "Feature gate default state" feature="InformerResourceVersion" enabled=false
+I0226 10:44:22.267134    4919 envvar.go:172] "Feature gate default state" feature="WatchListClient" enabled=false
+I0226 10:44:22.295054    4919 etcd.go:149] etcd endpoints read from pods: https://192.168.56.130:2379
+context deadline exceeded
+error syncing endpoints with etcd</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm <span class="nb">join </span>cluster-endpoint:6443 <span class="nt">--token</span> ed790l.ylclzoyoa7l9v0e9 <span class="se">\</span>
+  <span class="nt">--discovery-token-ca-cert-hash</span> sha256:cb046f4d8183a66f930155654cc34354612eeab839d7ed97971154fa8f35072f <span class="se">\</span>
+  <span class="nt">--control-plane</span> <span class="se">\</span>
+<span class="hll">  <span class="nt">--certificate-key</span> a455917454410f7d8bcdfa5795ed54526c7484e4e6316ef57a3aa16c3454ada2
+</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">This node has joined the cluster and a new control plane instance was created:
+
+* Certificate signing request was sent to apiserver and approval was received.
+* The Kubelet was informed of the new secure connection details.
+* Control plane label and taint were applied to the new node.
+* The Kubernetes control plane instances scaled up.
+* A new etcd member was added to the local/stacked etcd cluster.
+
+To start administering your cluster from this node, you need to run the following as a regular user:
+
+</span><span class="gp">	mkdir -p $</span>HOME/.kube
+<span class="gp">	sudo cp -i /etc/kubernetes/admin.conf $</span>HOME/.kube/config
+<span class="gp">	sudo chown $</span><span class="o">(</span><span class="nb">id</span> <span class="nt">-u</span><span class="o">)</span>:<span class="si">$(</span><span class="nb">id</span> <span class="nt">-g</span><span class="si">)</span> <span class="nv">$HOME</span>/.kube/config
+<span class="go">
+Run 'kubectl get nodes' to see this node join the cluster.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get nodes
+<span class="go">NAME                 STATUS   ROLES           AGE   VERSION
+node-0               Ready    control-plane   92m   v1.26.0
+node-2               Ready    control-plane   27s   v1.26.13</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="removing-the-nodes">2.5. Removing the nodes</h3>
+<div class="paragraph">
+<p>Talking to the control-plane node with the appropriate credentials, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl drain &lt;node name&gt; <span class="nt">--delete-emptydir-data</span> <span class="nt">--force</span> <span class="nt">--ignore-daemonsets</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Before removing the node, reset the state installed by kubeadm:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm reset</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now remove the node:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl delete node &lt;node name&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="installing-addons">2.6. Installing Addons</h3>
+<div class="paragraph">
+<p>Add-ons extend the functionality of Kubernetes.</p>
+</div>
+<div class="sect3">
+<h4 id="ingress-controllers">2.6.1. Ingress controllers</h4>
+<div class="paragraph">
+<p>In order for the Ingress resource to work, the cluster must have an ingress controller running. Unlike other types of controllers which run as part of the <code>kube-controller-manager</code> binary, Ingress controllers are not started automatically with a cluster. Kubernetes as a project supports and maintains <a href="https://github.com/kubernetes-sigs/aws-load-balancer-controller#readme">AWS</a>, <a href="https://git.k8s.io/ingress-gce/README.md#readme">GCE</a>, and <a href="https://git.k8s.io/ingress-nginx/README.md#readme">nginx</a> ingress controllers. <a href="#kube-ingress-controllers">[14]</a></p>
+</div>
+<div class="paragraph">
+<p>There are multiple ways to install the Ingress-Nginx Controller: <a href="#ingress-nginx-deploy">[15]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>with <a href="https://helm.sh/">Helm</a>, using the project repository chart;</p>
+</li>
+<li>
+<p>with <code>kubectl apply</code>, using YAML manifests;</p>
+</li>
+<li>
+<p>with specific addons (e.g. for minikube or MicroK8s).</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can also expose the Ingress Nginx over a NodePort service. <a href="#ingress-nginx-deploy-baremetal">[16]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">prometheus.io/scrape</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+    <span class="na">prometheus.io/port</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10254"</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">ingress-nginx-controller</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">ingress-nginx</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">nodePort</span><span class="pi">:</span> <span class="m">30080</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">http</span>
+      <span class="na">appProtocol</span><span class="pi">:</span> <span class="s">http</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">https</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">443</span>
+      <span class="na">nodePort</span><span class="pi">:</span> <span class="m">30443</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">https</span>
+      <span class="na">appProtocol</span><span class="pi">:</span> <span class="s">https</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">prometheus</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">10254</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">prometheus</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Aliyun (a Chinese corporation) provides a mirror repository (<code>registry.aliyuncs.com/google_containers</code>) for the images, to which Chinese users have access. <a href="#minikube-cn">[17]</a> You can consider updating the ingress-nginx images as the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">images</span><span class="pi">:</span>
+  <span class="c1"># registry.k8s.io/ingress-nginx/controller:v1.9.6@sha256:1405cc613bd95b2c6edd8b2a152510ae91c7e62aea4698500d23b2145960ab9c</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">registry.k8s.io/ingress-nginx/controller</span>
+    <span class="na">newName</span><span class="pi">:</span> <span class="s">registry.aliyuncs.com/google_containers/nginx-ingress-controller</span>
+    <span class="c1"># remove the digest to ignore the integrity checking.</span>
+    <span class="na">newTag</span><span class="pi">:</span> <span class="s">v1.9.6</span>
+  <span class="c1"># registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20231226-1a7112e06@sha256:25d6a5f11211cc5c3f9f2bf552b585374af287b4debf693cacbe2da47daa5084</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">registry.k8s.io/ingress-nginx/kube-webhook-certgen</span>
+    <span class="na">newName</span><span class="pi">:</span> <span class="s">registry.aliyuncs.com/google_containers/kube-webhook-certgen</span>
+    <span class="c1"># remove the digest to ignore the integrity checking.</span>
+    <span class="na">newTag</span><span class="pi">:</span> <span class="s">v20231226-1a7112e06</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Checking ingress controller version</strong></p>
+</div>
+<div class="paragraph">
+<p>Run <code>/nginx-ingress-controller --version</code> within the pod, for instance with <code>kubectl exec</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">POD_NAMESPACE</span><span class="o">=</span>ingress-nginx
+<span class="nv">POD_NAME</span><span class="o">=</span><span class="si">$(</span>kubectl get pods <span class="nt">-n</span> <span class="nv">$POD_NAMESPACE</span> <span class="nt">-l</span> app.kubernetes.io/name<span class="o">=</span>ingress-nginx <span class="nt">--field-selector</span><span class="o">=</span>status.phase<span class="o">=</span>Running <span class="nt">-o</span> name<span class="si">)</span>
+kubectl <span class="nb">exec</span> <span class="nv">$POD_NAME</span> <span class="nt">-n</span> <span class="nv">$POD_NAMESPACE</span> <span class="nt">--</span> /nginx-ingress-controller <span class="nt">--version</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">-------------------------------------------------------------------------------
+NGINX Ingress controller
+  Release:       v1.9.6
+  Build:         6a73aa3b05040a97ef8213675a16142a9c95952a
+  Repository:    https://github.com/kubernetes/ingress-nginx
+  nginx version: nginx/1.21.6
+
+-------------------------------------------------------------------------------</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="metrics-server">2.6.2. Metrics server</h4>
+<div class="paragraph">
+<p><a href="https://github.com/kubernetes-sigs/metrics-server">Metrics Server</a> is a scalable, efficient source of container resource metrics for Kubernetes built-in autoscaling pipelines. <a href="#kube-metrics-server">[18]</a></p>
+</div>
+<div class="paragraph">
+<p>Metrics Server can be installed either directly from YAML manifest or via the official <a href="https://artifacthub.io/packages/helm/metrics-server/metrics-server">Helm chart</a>. To install the latest Metrics Server release from the <code>components.yaml</code> manifest, run the following command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="s">kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can also consider updating the yaml as the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="c1"># metrics-server-deployment.yaml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">metrics-server</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">metrics-server</span>
+          <span class="na">args</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">--cert-dir=/tmp</span>
+            <span class="pi">-</span> <span class="s">--secure-port=10250</span>
+            <span class="pi">-</span> <span class="s">--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname</span>
+            <span class="pi">-</span> <span class="s">--kubelet-use-node-status-port</span>
+            <span class="pi">-</span> <span class="s">--metric-resolution=15s</span>
+            <span class="c1"># Do not verify the CA of serving certificates presented by Kubelets. For testing purposes only.</span>
+            <span class="pi">-</span> <span class="s">--kubelet-insecure-tls</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="c1"># kustomization.yaml</span>
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">../manifests</span>
+<span class="na">patchesStrategicMerge</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">metrics-server-deployment.yaml</span>
+<span class="na">images</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">registry.k8s.io/metrics-server/metrics-server</span>
+    <span class="na">newName</span><span class="pi">:</span> <span class="s">registry.aliyuncs.com/google_containers/metrics-server</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="upgrading-kubeadm-clusters">3. Upgrading kubeadm clusters</h2>
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you are performing a <em>minor</em> version upgrade for any kubelet, you <em>must</em> first <a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/">drain the node (or nodes)</a> that you are upgrading. In the case of control plane nodes, they could be running CoreDNS Pods or other critical workloads. <a href="#kube-kubeadm-upgrade">[19]</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The Kubernetes project recommends that you match your kubelet and kubeadm versions. You can instead use a version of kubelet that is older than kubeadm, provided it is within the range of <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#kubeadm-s-skew-against-the-kubelet">supported versions</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re using the community-owned package repositories (<code>pkgs.k8s.io</code>), you need to enable the <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/change-package-repository/">package repository</a> for the desired Kubernetes minor release.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># /etc/apt/sources.list.d/kubernetes.list
+</span><span class="n">deb</span> [<span class="n">signed</span>-<span class="n">by</span>=/<span class="n">etc</span>/<span class="n">apt</span>/<span class="n">keyrings</span>/<span class="n">kubernetes</span>-<span class="n">apt</span>-<span class="n">keyring</span>.<span class="n">gpg</span>] <span class="n">https</span>://<span class="n">pkgs</span>.<span class="n">k8s</span>.<span class="n">io</span>/<span class="n">core</span>:/<span class="n">stable</span>:/<span class="n">v1</span>.<span class="m">29</span>/<span class="n">deb</span>/ /</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="c"># /etc/yum.repos.d/kubernetes.repo
+</span><span class="nn">[kubernetes]</span><span class="w">
+</span><span class="py">name</span><span class="p">=</span><span class="s">Kubernetes</span>
+<span class="py">baseurl</span><span class="p">=</span><span class="s">https://pkgs.k8s.io/core:/stable:/v1.29/rpm/</span>
+<span class="py">enabled</span><span class="p">=</span><span class="s">1</span>
+<span class="py">gpgcheck</span><span class="p">=</span><span class="s">1</span>
+<span class="py">gpgkey</span><span class="p">=</span><span class="s">https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key</span>
+<span class="py">exclude</span><span class="p">=</span><span class="s">kubelet kubeadm kubectl cri-tools kubernetes-cni</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Find the latest 1.29 version in the list.</span>
+<span class="c"># It should look like 1.29.x-*, where x is the latest patch.</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt-cache madison kubeadm <span class="c"># OR apt-cache policy kubeadm</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># Find the latest 1.29 version in the list.</span>
+<span class="c"># It should look like 1.29.x-*, where x is the latest patch.</span>
+<span class="nb">sudo </span>yum clean all <span class="nt">--disablerepo</span><span class="o">=</span><span class="s2">"*"</span> <span class="nt">--enablerepo</span><span class="o">=</span>kubernetes <span class="c"># Make sure the YUM cache of the kubernetes repo is cleaned.</span>
+<span class="nb">sudo </span>yum list <span class="nt">--showduplicates</span> kubeadm <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(Optional) Pre-pulled images:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c">#!/bin/sh</span>
+
+<span class="c"># replace x in 1.29.x with the latest patch version</span>
+<span class="nv">kubernetes_version</span><span class="o">=</span>v1.29.x
+<span class="nv">image_repository</span><span class="o">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers
+
+<span class="nb">sudo </span>kubeadm config images pull <span class="se">\</span>
+    <span class="nt">--kubernetes-version</span><span class="o">=</span><span class="nv">$kubernetes_version</span> <span class="se">\</span>
+    <span class="nt">--image-repository</span><span class="o">=</span><span class="nv">$image_repository</span>
+
+<span class="nv">images</span><span class="o">=</span><span class="si">$(</span>kubeadm config images list <span class="se">\</span>
+    <span class="nt">--kubernetes-version</span> <span class="nv">$kubernetes_version</span> <span class="se">\</span>
+    <span class="nt">--image-repository</span> <span class="nv">$image_repository</span><span class="si">)</span>
+
+<span class="k">for </span>i <span class="k">in</span> <span class="nv">$images</span><span class="p">;</span> <span class="k">do
+    case</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span> <span class="k">in</span>
+        <span class="k">*</span>coredns<span class="k">*</span><span class="p">)</span>
+            <span class="nv">new_repo</span><span class="o">=</span><span class="s2">"registry.k8s.io/coredns"</span>
+            <span class="p">;;</span>
+        <span class="k">*</span><span class="p">)</span>
+            <span class="nv">new_repo</span><span class="o">=</span><span class="s2">"registry.k8s.io"</span>
+            <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nv">newtag</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span> | <span class="nb">sed</span> <span class="s2">"s@</span><span class="nv">$image_repository</span><span class="s2">@</span><span class="nv">$new_repo</span><span class="s2">@"</span><span class="si">)</span>
+    <span class="nb">sudo </span>ctr <span class="nt">-n</span> k8s.io images tag <span class="nv">$i</span> <span class="nv">$newtag</span>
+<span class="k">done</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="upgrading-control-plane-nodes">3.1. Upgrading control plane nodes</h3>
+<div class="paragraph">
+<p>The upgrade procedure on control plane nodes should be executed one node at a time.</p>
+</div>
+<div class="sect3">
+<h4 id="upgrade-kubeadm">3.1.1. Upgrade kubeadm</h4>
+<div class="paragraph">
+<p><strong>For the first control plane node</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Upgrade kubeadm:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>apt-mark unhold kubeadm <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubeadm</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-mark hold kubeadm</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> kubeadm-<span class="s1">'1.29.x-*'</span> <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify that the download works and has the expected version:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubeadm version</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify the upgrade plan:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm upgrade plan</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Choose a version to upgrade to, and run the appropriate command. For example:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x with the patch version you picked for this upgrade</span>
+<span class="nb">sudo </span>kubeadm upgrade apply v1.29.x</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>For the other control plane nodes</strong></p>
+</div>
+<div class="paragraph">
+<p>Same as the first control plane node but use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm upgrade node</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>instead of:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>kubeadm upgrade apply</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="upgrade-kubelet-and-kubectl">3.1.2. Upgrade kubelet and kubectl</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Drain the node, prepare the node for maintenance by marking it unschedulable and evicting the workloads:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace &lt;node-to-drain&gt; with the name of your node you are draining</span>
+kubectl drain &lt;node-to-drain&gt; <span class="nt">--ignore-daemonsets</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Upgrade the kubelet and kubectl:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>apt-mark unhold kubelet kubectl <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubelet</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="nv">kubectl</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-mark hold kubelet kubectl</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> kubelet-<span class="s1">'1.29.x-*'</span> kubectl-<span class="s1">'1.29.x-*'</span> <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Restart the kubelet:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl daemon-reload
+<span class="nb">sudo </span>systemctl restart kubelet</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Uncordon the node, bring the node back online by marking it schedulable:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace &lt;node-to-uncordon&gt; with the name of your node</span>
+kubectl uncordon &lt;node-to-uncordon&gt;</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="upgrade-worker-nodes">3.2. Upgrade worker nodes</h3>
+<div class="paragraph">
+<p>The upgrade procedure on worker nodes should be executed one node at a time or few nodes at a time, without compromising the minimum required capacity for running your workloads. <a href="#kubeadm-upgrading-linux-nodes">[20]</a></p>
+</div>
+<div class="sect3">
+<h4 id="upgrade-kubeadm-2">3.2.1. Upgrade kubeadm</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>apt-mark unhold kubeadm <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubeadm</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-mark hold kubeadm</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> kubeadm-<span class="s1">'1.29.x-*'</span> <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># For worker nodes this upgrades the local kubelet configuration:</span>
+<span class="nb">sudo </span>kubeadm upgrade node</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="upgrade-kubelet-and-kubectl-2">3.2.2. Upgrade kubelet and kubectl</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Drain the node, prepare the node for maintenance by marking it unschedulable and evicting the workloads:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># execute this command on a control plane node</span>
+<span class="c"># replace &lt;node-to-drain&gt; with the name of your node you are draining</span>
+kubectl drain &lt;node-to-drain&gt; <span class="nt">--ignore-daemonsets</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Upgrade the kubelet and kubectl:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>apt-mark unhold kubelet kubectl <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="nv">kubelet</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="nv">kubectl</span><span class="o">=</span><span class="s1">'1.29.x-*'</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="nb">sudo </span>apt-mark hold kubelet kubectl</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># replace x in 1.29.x-* with the latest patch version</span>
+<span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> kubelet-<span class="s1">'1.29.x-*'</span> kubectl-<span class="s1">'1.29.x-*'</span> <span class="nt">--disableexcludes</span><span class="o">=</span>kubernetes</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Restart the kubelet:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl daemon-reload
+<span class="nb">sudo </span>systemctl restart kubelet</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Uncordon the node, bring the node back online by marking it schedulable:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="c"># execute this command on a control plane node</span>
+<span class="c"># replace &lt;node-to-uncordon&gt; with the name of your node</span>
+kubectl uncordon &lt;node-to-uncordon&gt;</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="verify-the-status-of-the-cluster">3.3. Verify the status of the cluster</h3>
+<div class="paragraph">
+<p>After the kubelet is upgraded on all nodes verify that all nodes are available again by running the following command from anywhere kubectl can access the cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl get nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>STATUS</code> column should show <code>Ready</code> for all your nodes, and the version number should be updated.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="create-cluster-kubeadm"></a>[1] <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/" class="bare">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/</a></p>
+</li>
+<li>
+<p><a id="install-kubeadm"></a>[2] <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/" class="bare">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/</a></p>
+</li>
+<li>
+<p><a id="archlinux-swap"></a>[3] <a href="https://wiki.archlinux.org/title/swap" class="bare">https://wiki.archlinux.org/title/swap</a></p>
+</li>
+<li>
+<p><a id="container-runtimes"></a>[4] <a href="https://kubernetes.io/docs/setup/production-environment/container-runtimes/" class="bare">https://kubernetes.io/docs/setup/production-environment/container-runtimes/</a></p>
+</li>
+<li>
+<p><a id="configure-cgroup-driver"></a>[5] <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/" class="bare">https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/</a></p>
+</li>
+<li>
+<p><a id="control-plane-flags"></a>[6] <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/" class="bare">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/control-plane-flags/</a></p>
+</li>
+<li>
+<p><a id="kubelet-integration"></a>[7] <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/" class="bare">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/</a></p>
+</li>
+<li>
+<p><a id="manage-resources-containers"></a>[8] <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#local-ephemeral-storage" class="bare">https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#local-ephemeral-storage</a></p>
+</li>
+<li>
+<p><a id="so-ephemeral-storage"></a>[9] <a href="https://stackoverflow.com/questions/70931881/what-does-kubelet-use-to-determine-the-ephemeral-storage-capacity-of-the-node" class="bare">https://stackoverflow.com/questions/70931881/what-does-kubelet-use-to-determine-the-ephemeral-storage-capacity-of-the-node</a></p>
+</li>
+<li>
+<p><a id="node-pressure-eviction"></a>[10] <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/" class="bare">https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/</a></p>
+</li>
+<li>
+<p><a id="kubernetes-separate-image-filesystem"></a>[11] <a href="https://kubernetes.io/blog/2024/01/23/kubernetes-separate-image-filesystem/" class="bare">https://kubernetes.io/blog/2024/01/23/kubernetes-separate-image-filesystem/</a></p>
+</li>
+<li>
+<p><a id="flannel"></a>[12] <a href="https://github.com/flannel-io/flannel" class="bare">https://github.com/flannel-io/flannel</a></p>
+</li>
+<li>
+<p><a id="stacked-control-plane-and-etcd-nodes"></a>[13] <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#stacked-control-plane-and-etcd-nodes" class="bare">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#stacked-control-plane-and-etcd-nodes</a></p>
+</li>
+<li>
+<p><a id="kube-ingress-controllers"></a>[14] <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/" class="bare">https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/</a></p>
+</li>
+<li>
+<p><a id="ingress-nginx-deploy"></a>[15] <a href="https://kubernetes.github.io/ingress-nginx/deploy/" class="bare">https://kubernetes.github.io/ingress-nginx/deploy/</a></p>
+</li>
+<li>
+<p><a id="ingress-nginx-deploy-baremetal"></a>[16] <a href="https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#over-a-nodeport-service" class="bare">https://kubernetes.github.io/ingress-nginx/deploy/baremetal/#over-a-nodeport-service</a></p>
+</li>
+<li>
+<p><a id="minikube-cn"></a>[17] <a href="https://minikube.sigs.k8s.io/docs/faq/#i-am-in-china-and-i-encounter-errors-when-trying-to-start-minikube-what-should-i-do" class="bare">https://minikube.sigs.k8s.io/docs/faq/#i-am-in-china-and-i-encounter-errors-when-trying-to-start-minikube-what-should-i-do</a></p>
+</li>
+<li>
+<p><a id="kube-metrics-server"></a>[18] <a href="https://github.com/kubernetes-sigs/metrics-server" class="bare">https://github.com/kubernetes-sigs/metrics-server</a></p>
+</li>
+<li>
+<p><a id="kube-kubeadm-upgrade"></a>[19] <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/" class="bare">https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/</a></p>
+</li>
+<li>
+<p><a id="kubeadm-upgrading-linux-nodes"></a>[20] <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/upgrading-linux-nodes/" class="bare">https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/upgrading-linux-nodes/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

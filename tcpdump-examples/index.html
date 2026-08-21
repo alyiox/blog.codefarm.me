@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Tcpdump Examples | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Tcpdump Examples" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Basics 1.1. BASIC COMMUNICATION 1.2. PRINT THE LIST OF THE NETWORK INTERFACES 1.3. SPECIFIC INTERFACE 1.4. RAW OUTPUT VIEW 1.5. FIND TRAFFIC BY IP 1.6. SEEING MORE OF THE PACKET WITH HEX OUTPUT 1.7. FILTERING BY SOURCE AND DESTINATION 1.8. FINDING PACKETS BY NETWORK 1.9. SHOW TRAFFIC RELATED TO A SPECIFIC PORT 1.10. SHOW TRAFFIC OF ONE PROTOCOL 1.11. SHOW ONLY IP6 TRAFFIC 1.12. FIND TRAFFIC USING PORT RANGES 1.13. FIND TRAFFIC BASED ON PACKET SIZE 1.14. READING / WRITING CAPTURES TO A FILE 2. Advanced 2.1. FROM SPECIFIC IP AND DESTINED FOR A SPECIFIC PORT 2.2. FIND ONE…" />
+<meta name="twitter:description" property="og:description" content="1. Basics 1.1. BASIC COMMUNICATION 1.2. PRINT THE LIST OF THE NETWORK INTERFACES 1.3. SPECIFIC INTERFACE 1.4. RAW OUTPUT VIEW 1.5. FIND TRAFFIC BY IP 1.6. SEEING MORE OF THE PACKET WITH HEX OUTPUT 1.7. FILTERING BY SOURCE AND DESTINATION 1.8. FINDING PACKETS BY NETWORK 1.9. SHOW TRAFFIC RELATED TO A SPECIFIC PORT 1.10. SHOW TRAFFIC OF ONE PROTOCOL 1.11. SHOW ONLY IP6 TRAFFIC 1.12. FIND TRAFFIC USING PORT RANGES 1.13. FIND TRAFFIC BASED ON PACKET SIZE 1.14. READING / WRITING CAPTURES TO A FILE 2. Advanced 2.1. FROM SPECIFIC IP AND DESTINED FOR A SPECIFIC PORT 2.2. FIND ONE…" />
+<link rel="canonical" href="https://blog.codefarm.me/tcpdump-examples/" />
+<meta property="og:url" content="https://blog.codefarm.me/tcpdump-examples/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-12-29T10:22:30+08:00" />
+<meta property="article:modified_time" content="2018-12-29T10:22:30+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Tcpdump Examples" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-12-29T10:22:30+08:00","datePublished":"2018-12-29T10:22:30+08:00","description":"1. Basics 1.1. BASIC COMMUNICATION 1.2. PRINT THE LIST OF THE NETWORK INTERFACES 1.3. SPECIFIC INTERFACE 1.4. RAW OUTPUT VIEW 1.5. FIND TRAFFIC BY IP 1.6. SEEING MORE OF THE PACKET WITH HEX OUTPUT 1.7. FILTERING BY SOURCE AND DESTINATION 1.8. FINDING PACKETS BY NETWORK 1.9. SHOW TRAFFIC RELATED TO A SPECIFIC PORT 1.10. SHOW TRAFFIC OF ONE PROTOCOL 1.11. SHOW ONLY IP6 TRAFFIC 1.12. FIND TRAFFIC USING PORT RANGES 1.13. FIND TRAFFIC BASED ON PACKET SIZE 1.14. READING / WRITING CAPTURES TO A FILE 2. Advanced 2.1. FROM SPECIFIC IP AND DESTINED FOR A SPECIFIC PORT 2.2. FIND ONE…","headline":"Tcpdump Examples","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/tcpdump-examples/"},"url":"https://blog.codefarm.me/tcpdump-examples/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Tcpdump Examples</h1><p class="c-post-meta">05 Dec 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#basics">1. Basics</a>
+<ul class="sectlevel2">
+<li><a href="#basic-communication">1.1. BASIC COMMUNICATION</a></li>
+<li><a href="#print-the-list-of-the-network-interfaces">1.2. PRINT THE LIST OF THE NETWORK INTERFACES</a></li>
+<li><a href="#specific-interface">1.3. SPECIFIC INTERFACE</a></li>
+<li><a href="#raw-output-view">1.4. RAW OUTPUT VIEW</a></li>
+<li><a href="#find-traffic-by-ip">1.5. FIND TRAFFIC BY IP</a></li>
+<li><a href="#seeing-more-of-the-packet-with-hex-output">1.6. SEEING MORE OF THE PACKET WITH HEX OUTPUT</a></li>
+<li><a href="#filtering-by-source-and-destination">1.7. FILTERING BY SOURCE AND DESTINATION</a></li>
+<li><a href="#finding-packets-by-network">1.8. FINDING PACKETS BY NETWORK</a></li>
+<li><a href="#show-traffic-related-to-a-specific-port">1.9. SHOW TRAFFIC RELATED TO A SPECIFIC PORT</a></li>
+<li><a href="#show-traffic-of-one-protocol">1.10. SHOW TRAFFIC OF ONE PROTOCOL</a></li>
+<li><a href="#show-only-ip6-traffic">1.11. SHOW ONLY IP6 TRAFFIC</a></li>
+<li><a href="#find-traffic-using-port-ranges">1.12. FIND TRAFFIC USING PORT RANGES</a></li>
+<li><a href="#find-traffic-based-on-packet-size">1.13. FIND TRAFFIC BASED ON PACKET SIZE</a></li>
+<li><a href="#reading-writing-captures-to-a-file">1.14. READING / WRITING CAPTURES TO A FILE</a></li>
+</ul>
+</li>
+<li><a href="#advanced">2. Advanced</a>
+<ul class="sectlevel2">
+<li><a href="#from-specific-ip-and-destined-for-a-specific-port">2.1. FROM SPECIFIC IP AND DESTINED FOR A SPECIFIC PORT</a></li>
+<li><a href="#find-one-network-to-another">2.2. FIND ONE NETWORK TO ANOTHER</a></li>
+<li><a href="#non-icmp-traffic-going-to-a-specific-ip">2.3. NON ICMP TRAFFIC GOING TO A SPECIFIC IP</a></li>
+<li><a href="#traffic-from-a-host-that-isnt-on-a-specific-port">2.4. TRAFFIC FROM A HOST THAT ISN&#8217;T ON A SPECIFIC PORT</a></li>
+<li><a href="#isolate-tcp-flags">2.5. ISOLATE TCP FLAGS</a></li>
+<li><a href="#find-http-user-agents">2.6. FIND HTTP USER AGENTS</a></li>
+<li><a href="#cleartext-get-requests">2.7. CLEARTEXT GET REQUESTS</a></li>
+<li><a href="#find-http-host-headers">2.8. FIND HTTP HOST HEADERS</a></li>
+<li><a href="#find-http-cookies">2.9. FIND HTTP COOKIES</a></li>
+<li><a href="#find-dns-traffic">2.10. FIND DNS TRAFFIC</a>
+<ul class="sectlevel3">
+<li><a href="#find-ftp-traffic">2.10.1. FIND FTP TRAFFIC</a></li>
+</ul>
+</li>
+<li><a href="#find-ntp-traffic">2.11. FIND NTP TRAFFIC</a></li>
+<li><a href="#find-cleartext-passwords">2.12. FIND CLEARTEXT PASSWORDS</a></li>
+</ul>
+</li>
+<li><a href="#3-troubleshooting">3. 3. Troubleshooting</a>
+<ul class="sectlevel2">
+<li><a href="#bad-udp-cksum-issue-with-hardware-offloading-offloading-tx-checksumming">3.1. bad udp cksum: issue with hardware offloading (offloading <code>tx-checksumming</code>)</a></li>
+</ul>
+</li>
+<li><a href="#4-references">4. 4. References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="basics">1. Basics</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="basic-communication">1.1. BASIC COMMUNICATION</h3>
+<div class="paragraph">
+<p>Just see what&#8217;s going on, by looking at all interfaces.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-i</span> any</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="print-the-list-of-the-network-interfaces">1.2. PRINT THE LIST OF THE NETWORK INTERFACES</h3>
+<div class="paragraph">
+<p>Print the list of the network interfaces available on the system and  on  which <code>tcpdump</code> can capture packets.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">--list-interfaces</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="specific-interface">1.3. SPECIFIC INTERFACE</h3>
+<div class="paragraph">
+<p>Basic view of what&#8217;s happening on a particular interface.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-i</span> eth0</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="raw-output-view">1.4. RAW OUTPUT VIEW</h3>
+<div class="paragraph">
+<p>Verbose output (<code>-v</code>), with no resolution of hostnames or port numbers (<code>-n</code>), absolute sequence numbers (<code>-S</code>), and human-readable timestamps (<code>-tttt</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-ttttnvvS</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-traffic-by-ip">1.5. FIND TRAFFIC BY IP</h3>
+<div class="paragraph">
+<p>One of the most common queries, this will show you traffic from <code>1.2.3.4</code>, whether it&#8217;s the source or the destination.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump host 1.2.3.4</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="seeing-more-of-the-packet-with-hex-output">1.6. SEEING MORE OF THE PACKET WITH HEX OUTPUT</h3>
+<div class="paragraph">
+<p>Hex output (<code>-X</code>) is useful when you want to see the content of the packets in question, and it&#8217;s often best used when you&#8217;re isolating a few candiates for closer scrutiny.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-nvXSs0</span> icmp</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="filtering-by-source-and-destination">1.7. FILTERING BY SOURCE AND DESTINATION</h3>
+<div class="paragraph">
+<p>It&#8217;s quite easy to isolate traffic based on either source or destination using <code>src</code> and <code>dst</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump src 2.3.4.5
+tcpdump dst 3.4.5.6</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="finding-packets-by-network">1.8. FINDING PACKETS BY NETWORK</h3>
+<div class="paragraph">
+<p>To find packets going to or from a particular network, use the <code>net</code> option. You can combine this with the <code>src</code> or <code>dst</code> options as well.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump net 1.2.3.0/24</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="show-traffic-related-to-a-specific-port">1.9. SHOW TRAFFIC RELATED TO A SPECIFIC PORT</h3>
+<div class="paragraph">
+<p>You can find specific port traffic by using the <code>port</code> option followed by the port number.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump port 3389
+tcpdump src port 3389</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="show-traffic-of-one-protocol">1.10. SHOW TRAFFIC OF ONE PROTOCOL</h3>
+<div class="paragraph">
+<p>If you&#8217;re looking one particular kind of traffic, you can use <code>tcp</code> (or <code>proto 6</code>), <code>udp</code> (or <code>proto 17</code>) and many others as well.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump tcp <span class="c"># same as tcpdump proto 6</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="show-only-ip6-traffic">1.11. SHOW ONLY IP6 TRAFFIC</h3>
+<div class="paragraph">
+<p>You can also find all IPv6 traffic using the protocol option.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump ip6</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-traffic-using-port-ranges">1.12. FIND TRAFFIC USING PORT RANGES</h3>
+<div class="paragraph">
+<p>You can also use a range of ports to find traffic.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump portrange 21-23</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-traffic-based-on-packet-size">1.13. FIND TRAFFIC BASED ON PACKET SIZE</h3>
+<div class="paragraph">
+<p>If you&#8217;re looking for packets of a particular size you can use these options. You can use less, greater, or their associated symbols that you would expect from mathmatics.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump less 32
+tcpdump greater 64
+tcpdump &lt;<span class="o">=</span>128</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="reading-writing-captures-to-a-file">1.14. READING / WRITING CAPTURES TO A FILE</h3>
+<div class="paragraph">
+<p>It&#8217;s often useful to save packet captures into a file for analysis in the future. These files are known as PACAP (PEE-cap) files, and they can be processed by hundreds of different applications (e.g. Wireshark), including network analyzers, intrusion detection systems, and of course by <code>tcpdump</code> itself.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump port 80 <span class="nt">-w</span> capture_file.pcap</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can read PACAP files by using the <code>-r</code> switch. Note that you can use all the regular commands within tcpdump while reading in a file; you&#8217;re only limited by the fact that you can&#8217;t capture and process what doesn&#8217;t exist in the file already.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-r</span> capture_file.pcap</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="advanced">2. Advanced</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="from-specific-ip-and-destined-for-a-specific-port">2.1. FROM SPECIFIC IP AND DESTINED FOR A SPECIFIC PORT</h3>
+<div class="paragraph">
+<p>Let&#8217;s find all traffic from <code>10.5.2.3</code> going to any host on port <code>3389</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-nvvS</span> src 10.5.2.3 and dst port 3389</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-one-network-to-another">2.2. FIND ONE NETWORK TO ANOTHER</h3>
+<div class="paragraph">
+<p>Let&#8217;s look for all traffic comming from <code>192.168.x.x</code> and goning to the <code>10.x</code> or <code>172.16.x.x</code> networks, and we&#8217;re showing hex output with no hostname resolution and one level of extra verbosity.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-nvX</span> src net 192.168.0.0/16 and dst net 10.0.0.0/8 or 172.16.0.0/16</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="non-icmp-traffic-going-to-a-specific-ip">2.3. NON ICMP TRAFFIC GOING TO A SPECIFIC IP</h3>
+<div class="paragraph">
+<p>This will show us all traffic goning to <code>192.168.0.2</code> that is NOT ICMP.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump dst 192.168.0.2 and not icmp</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="traffic-from-a-host-that-isnt-on-a-specific-port">2.4. TRAFFIC FROM A HOST THAT ISN&#8217;T ON A SPECIFIC PORT</h3>
+<div class="paragraph">
+<p>This will show us all traffic from a host and isn&#8217;t SSH traffic (assuming default port usage).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vv</span> src mars and not dst port 22</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keep in mind that when you&#8217;re building complex queries you might have to group your options using single quotes. Single quotes are used in order to tell <code>tcpdump</code> to ignore certain special characters&#8212;&#8203;in this case below the "()" brackets. The same technique can be used to group using other expressions such as <code>host</code>, <code>port</code>, <code>net</code>, etc.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'src 10.0.2.4 and (dst port 3389 or 22)'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="isolate-tcp-flags">2.5. ISOLATE TCP FLAGS</h3>
+<div class="paragraph">
+<p>You can also use filters to isolate packets with specific TCP flags set.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Isolate TCP RST flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 4 != 0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-rst'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate TCP SYNC flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 2 != 0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-syn'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate packets that have both SYN and ACK flags set.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] = 18'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate TCP URG flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 32 != 0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-urg'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate TCP ACK flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 16!=0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-ack'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate TCP PSH flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 8!=0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-psh'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate TCP FIN flags.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] &amp; 1!=0'</span>
+tcpdump <span class="s1">'tcp[tcpflags] == tcp-fin'</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Isolate packets that have both SYN and RST flags set.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="s1">'tcp[13] = 6'</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-http-user-agents">2.6. FIND HTTP USER AGENTS</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAls0</span> | <span class="nb">grep</span> <span class="s1">'User-Agent:'</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>-A</code>: Print  each  packet  (minus  its  link  level header) in ASCII.</p>
+</li>
+<li>
+<p><code>-l</code>: Make stdout line buffered.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cleartext-get-requests">2.7. CLEARTEXT GET REQUESTS</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAls0</span> | <span class="nb">grep</span> <span class="s1">'GET'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-http-host-headers">2.8. FIND HTTP HOST HEADERS</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAls0</span> | <span class="nb">grep</span> <span class="s1">'Host:'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-http-cookies">2.9. FIND HTTP COOKIES</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAls0</span> | egrep <span class="s1">'Set-Cookie:|Cookie:'</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-dns-traffic">2.10. FIND DNS TRAFFIC</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAs0</span> port 53</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="find-ftp-traffic">2.10.1. FIND FTP TRAFFIC</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAs0</span> port ftp or ftp-data</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-ntp-traffic">2.11. FIND NTP TRAFFIC</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump <span class="nt">-vvAs0</span> port 123</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="find-cleartext-passwords">2.12. FIND CLEARTEXT PASSWORDS</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">tcpdump port http or port ftp or port smtp or port imap or port pop3 or port telnet <span class="nt">-lA</span> | egrep <span class="nt">-i</span> <span class="nt">-B5</span> <span class="s1">'pass=|pwd=|log=|login=|user=|username=|pw=|passw=|passwd=|password=|pass:|user:|username:|password:|login:|pass |user '</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="3-troubleshooting">3. 3. Troubleshooting</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="bad-udp-cksum-issue-with-hardware-offloading-offloading-tx-checksumming">3.1. bad udp cksum: issue with hardware offloading (offloading <code>tx-checksumming</code>)</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>tcpdump <span class="nt">-s</span> 1500 <span class="nt">-i</span> ens32 <span class="nt">-nvv</span> icmp or port tftp
+<span class="go">tcpdump: listening on ens32, link-type EN10MB (Ethernet), snapshot length 1500 bytes
+09:51:31.613595 IP (tos 0x0, ttl 64, id 16236, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.49586 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>bad udp <span class="nb">cksum </span>0x93e9 -&gt; 0x7770!] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii
+<span class="go">09:51:36.614757 IP (tos 0x0, ttl 64, id 16561, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.49586 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>bad udp <span class="nb">cksum </span>0x93e9 -&gt; 0x7770!] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii
+<span class="go">09:51:41.615174 IP (tos 0x0, ttl 64, id 17473, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.49586 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>bad udp <span class="nb">cksum </span>0x93e9 -&gt; 0x7770!] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii
+<span class="go">09:51:46.616206 IP (tos 0x0, ttl 64, id 17689, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.49586 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>bad udp <span class="nb">cksum </span>0x93e9 -&gt; 0x7770!] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii
+<span class="go">09:51:51.617006 IP (tos 0x0, ttl 64, id 18773, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.49586 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>bad udp <span class="nb">cksum </span>0x93e9 -&gt; 0x7770!] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After checking active NIC hardware offloading options you can see the obvious</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ethtool <span class="nt">-k</span> eth0 | <span class="nb">grep </span>on
+<span class="go">rx-checksumming: on
+tx-checksumming: on
+scatter-gather: on
+generic-segmentation-offload: on
+generic-receive-offload: on
+rx-vlan-offload: on
+tx-vlan-offload: on</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After disabling TCO (tcp offloading) for TX/RX on the NIC the problem is gone</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>ethtool <span class="nt">-K</span> eth0 tx off rx off</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>tcpdump <span class="nt">-s</span> 1500 <span class="nt">-i</span> ens32 <span class="nt">-nvv</span> icmp or port tftp
+<span class="go">tcpdump: listening on ens32, link-type EN10MB (Ethernet), snapshot length 1500 bytes
+10:44:26.668116 IP (tos 0x0, ttl 64, id 10862, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.34984 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>udp <span class="nb">sum </span>ok] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii
+<span class="go">10:44:31.668327 IP (tos 0x0, ttl 64, id 11126, offset 0, flags [DF], proto UDP (17), length 44)
+</span><span class="gp">    192.168.91.128.34984 &gt;</span><span class="w"> </span>10.170.108.237.69: <span class="o">[</span>udp <span class="nb">sum </span>ok] TFTP, length 16, RRQ <span class="s2">"/foo"</span> netascii</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="4-references">4. 4. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://hackertarget.com/tcpdump-examples/" class="bare">https://hackertarget.com/tcpdump-examples/</a></p>
+</li>
+<li>
+<p><a href="https://danielmiessler.com/study/tcpdump/" class="bare">https://danielmiessler.com/study/tcpdump/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

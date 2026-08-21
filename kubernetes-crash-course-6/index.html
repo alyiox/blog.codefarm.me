@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>6 - Kubernetes Monitoring | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="6 - Kubernetes Monitoring" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Prometheus Architecture Data Model (TSDB) Metric Names and Labels Notation: Time Series Querying Prometheus: PromQL Configuration prometheus.yml Exporters and Integrations Kubernetes Monitoring Architecture Visualization The USE and RED Methods References Prometheus Architecture Data Model (TSDB) A time series is a series of data points indexed (or listed or graphed) in time order. Most commonly, a time series is a sequence taken at successive equally spaced points in time. Thus it is a sequence of discrete-time data. Prometheus fundamentally stores all data as time series: streams of timestamped values belonging to the same metric and the same set of labeled dimensions.…" />
+<meta name="twitter:description" property="og:description" content="Prometheus Architecture Data Model (TSDB) Metric Names and Labels Notation: Time Series Querying Prometheus: PromQL Configuration prometheus.yml Exporters and Integrations Kubernetes Monitoring Architecture Visualization The USE and RED Methods References Prometheus Architecture Data Model (TSDB) A time series is a series of data points indexed (or listed or graphed) in time order. Most commonly, a time series is a sequence taken at successive equally spaced points in time. Thus it is a sequence of discrete-time data. Prometheus fundamentally stores all data as time series: streams of timestamped values belonging to the same metric and the same set of labeled dimensions.…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-crash-course-6/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-crash-course-6/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-10T11:11:26+08:00" />
+<meta property="article:modified_time" content="2020-02-10T11:11:26+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="6 - Kubernetes Monitoring" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-02-10T11:11:26+08:00","datePublished":"2020-02-10T11:11:26+08:00","description":"Prometheus Architecture Data Model (TSDB) Metric Names and Labels Notation: Time Series Querying Prometheus: PromQL Configuration prometheus.yml Exporters and Integrations Kubernetes Monitoring Architecture Visualization The USE and RED Methods References Prometheus Architecture Data Model (TSDB) A time series is a series of data points indexed (or listed or graphed) in time order. Most commonly, a time series is a sequence taken at successive equally spaced points in time. Thus it is a sequence of discrete-time data. Prometheus fundamentally stores all data as time series: streams of timestamped values belonging to the same metric and the same set of labeled dimensions.…","headline":"6 - Kubernetes Monitoring","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-crash-course-6/"},"url":"https://blog.codefarm.me/kubernetes-crash-course-6/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">6 - Kubernetes Monitoring</h1><p class="c-post-meta">10 Feb 2020</p>
+  </header>
+
+  <div class="c-post-content">
+    <ul id="markdown-toc">
+  <li><a href="#prometheus-architecture" id="markdown-toc-prometheus-architecture">Prometheus Architecture</a></li>
+  <li><a href="#data-model-tsdb" id="markdown-toc-data-model-tsdb">Data Model (TSDB)</a></li>
+  <li><a href="#metric-names-and-labels" id="markdown-toc-metric-names-and-labels">Metric Names and Labels</a></li>
+  <li><a href="#notation-time-series" id="markdown-toc-notation-time-series">Notation: Time Series</a></li>
+  <li><a href="#querying-prometheus-promql" id="markdown-toc-querying-prometheus-promql">Querying Prometheus: PromQL</a></li>
+  <li><a href="#configuration" id="markdown-toc-configuration">Configuration</a></li>
+  <li><a href="#prometheusyml" id="markdown-toc-prometheusyml">prometheus.yml</a></li>
+  <li><a href="#exporters-and-integrations" id="markdown-toc-exporters-and-integrations">Exporters and Integrations</a></li>
+  <li><a href="#kubernetes-monitoring-architecture" id="markdown-toc-kubernetes-monitoring-architecture">Kubernetes Monitoring Architecture</a></li>
+  <li><a href="#visualization" id="markdown-toc-visualization">Visualization</a></li>
+  <li><a href="#the-use-and-red-methods" id="markdown-toc-the-use-and-red-methods">The USE and RED Methods</a></li>
+  <li><a href="#references" id="markdown-toc-references">References</a></li>
+</ul>
+
+<hr />
+
+<h3 id="prometheus-architecture">Prometheus Architecture</h3>
+
+<p><img src="https://prometheus.io/assets/architecture.png" alt="Prometheus Architecture" /></p>
+
+<h3 id="data-model-tsdb">Data Model (TSDB)</h3>
+
+<ul>
+  <li>A time series is a series of data points indexed (or listed or graphed) in time order. Most commonly, a time series is a sequence taken at successive equally spaced points in time. Thus it is a sequence of discrete-time data.</li>
+  <li>Prometheus fundamentally stores all data as time series: streams of timestamped values belonging to the same metric and the same set of labeled dimensions.</li>
+  <li>Every time series is uniquely identified by its <strong>metric</strong> name and optional key-value pairs called <strong>labels</strong>.</li>
+</ul>
+
+<h3 id="metric-names-and-labels">Metric Names and Labels</h3>
+
+<ul>
+  <li>The metric name specifies the general feature of a system that is measured (e.g. http_requests_total - the total number of HTTP requests received).</li>
+  <li>Labels enable Prometheus’s dimensional data model: any given combination of labels for the same metric name identifies a particular dimensional instantiation of that metric (for example: all HTTP requests that used the method POST to the /api/tracks handler).</li>
+  <li>The query language allows filtering and aggregation based on these dimensions.</li>
+  <li>Changing any label value, including adding or removing a label, will create a new time series.</li>
+</ul>
+
+<h3 id="notation-time-series">Notation: Time Series</h3>
+
+<ul>
+  <li>
+    <p>Given a metric name and a set of labels, time series are frequently identified using this notation:</p>
+
+    <p><code class="language-plaintext highlighter-rouge">&lt;metric name&gt;{&lt;label name&gt;=&lt;label value&gt;, ...}</code></p>
+  </li>
+  <li>
+    <p>For example, a time series with the metric name api_http_requests_total and the labels method=”POST” and handler=”/messages” could be written like this:</p>
+
+    <p><code class="language-plaintext highlighter-rouge">api_http_requests_total{method="POST", handler="/messages"}</code></p>
+  </li>
+</ul>
+
+<h3 id="querying-prometheus-promql">Querying Prometheus: PromQL</h3>
+
+<ul>
+  <li>Prometheus provides a functional query language called <strong>PromQL</strong> (Prometheus Query Language) that lets the user select and aggregate time series data in real time.</li>
+  <li>The result of an expression can either be shown as a graph, viewed as tabular data in Prometheus’s expression browser, or consumed by external systems via the HTTP API.</li>
+</ul>
+
+<h3 id="configuration">Configuration</h3>
+
+<ul>
+  <li>Prometheus is configured via command-line flags and a configuration file. While the command-line flags configure immutable system parameters (such as storage locations, amount of data to keep on disk and in memory, etc.),</li>
+  <li>the configuration file defines everything related to scraping jobs and their instances, as well as which rule files to load.</li>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">https://prometheus.io/docs/prometheus/latest/configuration/configuration/</a></li>
+</ul>
+
+<h3 id="prometheusyml">prometheus.yml</h3>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">global</span><span class="pi">:</span>
+  <span class="na">scrape_interval</span><span class="pi">:</span>     <span class="s">15s</span> <span class="c1"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span>
+
+<span class="na">scrape_configs</span><span class="pi">:</span>
+  <span class="c1"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span>
+  <span class="pi">-</span> <span class="na">job_name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">prometheus'</span>
+    <span class="c1"># metrics_path defaults to '/metrics'</span>
+    <span class="c1"># scheme defaults to 'http'.</span>
+    <span class="na">static_configs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">targets</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">localhost:9090'</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<h3 id="exporters-and-integrations">Exporters and Integrations</h3>
+
+<ul>
+  <li>There are a number of libraries and servers which help in exporting existing metrics from third-party systems as Prometheus metrics.</li>
+  <li>
+    <p>This is useful for cases where it is not feasible to instrument a given system with Prometheus metrics directly (for example, HAProxy or Linux system stats).</p>
+  </li>
+  <li><a href="https://prometheus.io/docs/instrumenting/exporters/">https://prometheus.io/docs/instrumenting/exporters/</a></li>
+  <li>
+    <p><a href="https://github.com/prometheus/node_exporter">https://github.com/prometheus/node_exporter</a></p>
+  </li>
+  <li><a href="https://github.com/prometheus-net/prometheus-net">https://github.com/prometheus-net/prometheus-net</a></li>
+</ul>
+
+<h3 id="kubernetes-monitoring-architecture">Kubernetes Monitoring Architecture</h3>
+
+<ul>
+  <li>
+    <p>System metrics (core metrics &amp; non-metrics)</p>
+
+    <p>System metrics are generic metrics that are generally available from every entity that is monitored (e.g. usage of CPU and memory by container and node).</p>
+  </li>
+  <li>
+    <p>Service metrics</p>
+
+    <p>Service metrics are explicitly defined in application code and exported (e.g. number of 500s served by the API server).</p>
+  </li>
+  <li>
+    <p>Core (system) metrics</p>
+
+    <p>which are metrics that Kubernetes understands and uses for operation of its internal components and core utilities – for example, metrics used for scheduling (including the inputs to the algorithms for resource estimation, initial resources/vertical autoscaling, cluster autoscaling, and horizontal pod autoscaling excluding custom metrics), the kube dashboard, and “kubectl top.”</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/monitoring_architecture.md">https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/monitoring_architecture.md</a></p>
+  </li>
+</ul>
+
+<h3 id="visualization">Visualization</h3>
+
+<ul>
+  <li>Expression browser</li>
+  <li><strong>Grafana</strong></li>
+</ul>
+
+<h3 id="the-use-and-red-methods">The USE and RED Methods</h3>
+
+<ul>
+  <li>
+    <p><strong>USE</strong>: Utilization, saturation, and errors</p>
+  </li>
+  <li>
+    <p><strong>RED</strong>: Requests, Errors, and Duration</p>
+  </li>
+  <li>
+    <p>https://blog.freshtracks.io/a-deep-dive-into-kubernetes-metrics-b190cc97f0f6</p>
+  </li>
+  <li>
+    <p>http://www.brendangregg.com/usemethod.html</p>
+  </li>
+</ul>
+
+<h3 id="references">References</h3>
+
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Time_series">https://en.wikipedia.org/wiki/Time_series</a></li>
+  <li><a href="https://prometheus.io/docs/concepts/data_model/">https://prometheus.io/docs/concepts/data_model/</a></li>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/querying/basics/">https://prometheus.io/docs/prometheus/latest/querying/basics/</a></li>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/querying/operators/">https://prometheus.io/docs/prometheus/latest/querying/operators/</a></li>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/querying/functions/">https://prometheus.io/docs/prometheus/latest/querying/functions/</a></li>
+  <li><a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">https://prometheus.io/docs/prometheus/latest/configuration/configuration/</a></li>
+  <li><a href="https://prometheus.io/docs/instrumenting/exporters/">https://prometheus.io/docs/instrumenting/exporters/</a></li>
+  <li><a href="https://github.com/prometheus/node_exporter">https://github.com/prometheus/node_exporter</a></li>
+  <li><a href="https://github.com/prometheus-net/prometheus-net">https://github.com/prometheus-net/prometheus-net</a></li>
+  <li><a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/monitoring_architecture.md">https://github.com/kubernetes/community/blob/master/contributors/design-proposals/instrumentation/</a></li>
+  <li><a href="https://github.com/kubernetes/kube-state-metrics">https://github.com/kubernetes/kube-state-metrics</a></li>
+  <li><a href="https://github.com/kubernetes-sigs/metrics-server/">https://github.com/kubernetes-sigs/metrics-server/</a></li>
+  <li><a href="https://grafana.com/docs/grafana/latest/">https://grafana.com/docs/grafana/latest/</a></li>
+  <li><a href="https://grafana.com/docs/grafana/latest/guides/glossary/">https://grafana.com/docs/grafana/latest/guides/glossary/</a></li>
+  <li><a href="https://blog.freshtracks.io/a-deep-dive-into-kubernetes-metrics-b190cc97f0f6">https://blog.freshtracks.io/a-deep-dive-into-kubernetes-metrics-b190cc97f0f6</a></li>
+  <li><a href="http://www.brendangregg.com/usemethod.html">http://www.brendangregg.com/usemethod.html</a></li>
+</ul>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

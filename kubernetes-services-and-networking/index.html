@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Kubernetes Networking | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Kubernetes Networking" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. The Kubernetes network model 2. Network Utilities for Debugging Containers &amp; Kubernetes 3. Services in Kubernetes 3.1. Services without selectors 3.2. Headless Services 3.3. Virtual IPs and Service Proxies 3.3.1. iptables proxy mode 3.4. Traffic policies 4. DNS for Services and Pods References 1. The Kubernetes network model Networking is a central part of Kubernetes, but it can be challenging to understand exactly how it is expected to work. There are 4 distinct networking problems to address: [1] Highly-coupled container-to-container communications Pod-to-Pod communications Pod-to-Service communications External-to-Service communications Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, Services and…" />
+<meta name="twitter:description" property="og:description" content="1. The Kubernetes network model 2. Network Utilities for Debugging Containers &amp; Kubernetes 3. Services in Kubernetes 3.1. Services without selectors 3.2. Headless Services 3.3. Virtual IPs and Service Proxies 3.3.1. iptables proxy mode 3.4. Traffic policies 4. DNS for Services and Pods References 1. The Kubernetes network model Networking is a central part of Kubernetes, but it can be challenging to understand exactly how it is expected to work. There are 4 distinct networking problems to address: [1] Highly-coupled container-to-container communications Pod-to-Pod communications Pod-to-Service communications External-to-Service communications Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, Services and…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-services-and-networking/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-services-and-networking/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-11T20:27:10+08:00" />
+<meta property="article:modified_time" content="2021-12-11T20:27:10+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Kubernetes Networking" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-12-11T20:27:10+08:00","datePublished":"2021-12-11T20:27:10+08:00","description":"1. The Kubernetes network model 2. Network Utilities for Debugging Containers &amp; Kubernetes 3. Services in Kubernetes 3.1. Services without selectors 3.2. Headless Services 3.3. Virtual IPs and Service Proxies 3.3.1. iptables proxy mode 3.4. Traffic policies 4. DNS for Services and Pods References 1. The Kubernetes network model Networking is a central part of Kubernetes, but it can be challenging to understand exactly how it is expected to work. There are 4 distinct networking problems to address: [1] Highly-coupled container-to-container communications Pod-to-Pod communications Pod-to-Service communications External-to-Service communications Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, Services and…","headline":"Kubernetes Networking","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-services-and-networking/"},"url":"https://blog.codefarm.me/kubernetes-services-and-networking/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Kubernetes Networking</h1><p class="c-post-meta">26 Feb 2025</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#the-kubernetes-network-model">1. The Kubernetes network model</a></li>
+<li><a href="#network-utilities-for-debugging-containers-kubernetes">2. Network Utilities for Debugging Containers &amp; Kubernetes</a></li>
+<li><a href="#services-in-kubernetes">3. Services in Kubernetes</a>
+<ul class="sectlevel2">
+<li><a href="#services-without-selectors">3.1. Services without selectors</a></li>
+<li><a href="#headless-services">3.2. Headless Services</a></li>
+<li><a href="#virtual-ips-and-service-proxies">3.3. Virtual IPs and Service Proxies</a>
+<ul class="sectlevel3">
+<li><a href="#iptables-proxy-mode">3.3.1. iptables proxy mode</a></li>
+</ul>
+</li>
+<li><a href="#traffic-policies">3.4. Traffic policies</a></li>
+</ul>
+</li>
+<li><a href="#dns-for-services-and-pods">4. DNS for Services and Pods</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="the-kubernetes-network-model">1. The Kubernetes network model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Networking is a central part of Kubernetes, but it can be challenging to understand exactly how it is expected to work. There are 4 distinct networking problems to address: <a href="#kube-networking">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Highly-coupled container-to-container communications</p>
+</li>
+<li>
+<p>Pod-to-Pod communications</p>
+</li>
+<li>
+<p>Pod-to-Service communications</p>
+</li>
+<li>
+<p>External-to-Service communications</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, Services and Nodes, from a range of available addresses configured in the following components: <a href="#kube-networking">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The network plugin is configured to assign IP addresses to Pods.</p>
+</li>
+<li>
+<p>The kube-apiserver is configured to assign IP addresses to Services.</p>
+</li>
+<li>
+<p>The kubelet or the cloud-controller-manager is configured to assign IP addresses to Nodes.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/docs/images/kubernetes-cluster-network.svg" alt="A figure illustrating the different network ranges in a kubernetes cluster" width="55%" height="55%">
+</div>
+</div>
+<div class="paragraph">
+<p>The Kubernetes network model is built out of several pieces:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each pod in a cluster gets its own unique cluster-wide IP address.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A pod has its own private network namespace which is shared by all of the containers within the pod.</p>
+</li>
+<li>
+<p>Processes running in different containers in the same pod can communicate with each other over <code>localhost</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <em>pod network</em> (also called a <em>cluster network</em>) handles communication between pods. It ensures that (barring intentional network segmentation):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>All pods can communicate with all other pods, whether they are on the same node or on different nodes.</p>
+</li>
+<li>
+<p>Pods can communicate with each other directly, without the use of proxies or address translation (NAT).</p>
+<div class="paragraph">
+<p>On Windows, this rule does not apply to host-network pods.</p>
+</div>
+</li>
+<li>
+<p>Agents on a node (such as system daemons, or kubelet) can communicate with all pods on that node.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <em>Service</em> API provide a stable (long lived) IP address or hostname for a service implemented by one or more backend pods, where the individual pods making up the service can change over time.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Kubernetes automatically manages <code>EndpointSlice</code> objects to provide information about the pods currently backing a Service.</p>
+</li>
+<li>
+<p>A service proxy implementation monitors the set of <code>Service</code> and <code>EndpointSlice</code> objects, and programs the data plane to route service traffic to its backends, by using operating system or cloud provider APIs to intercept or rewrite packets.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The <em>Gateway</em> API (or its predecessor, <code>Ingress</code>) allows making Services accessible to clients that are outside the cluster.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A simpler, but less-configurable, mechanism for cluster ingress is available via the Service API&#8217;s <code>type: LoadBalancer</code>, when using a supported Cloud Provider.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>NetworkPolicy</code> is a built-in Kubernetes API that allows controlling traffic between pods, or between pods and the outside world.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The network model is implemented by the container runtime on each node. The most common container runtimes use <a href="https://github.com/containernetworking/cni">Container Network Interface (CNI)</a> plugins to manage their network and security capabilities. <a href="#kube-networking">[1]</a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/flannel-io/flannel">Flannel</a> is a simple and easy way to configure a layer 3 network fabric designed for Kubernetes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Flannel runs a small, single binary agent called <code>flanneld</code> on each host, and is responsible for allocating a subnet lease to each host out of a larger, preconfigured address space.</p>
+</li>
+<li>
+<p>Packets are forwarded using one of several backend mechanisms including <a href="https://en.wikipedia.org/wiki/Virtual_Extensible_LAN">VXLAN</a> and various cloud integrations.</p>
+<div class="quoteblock">
+<div class="title">Virtual Extensible LAN | From Wikipedia, the free encyclopedia</div>
+<blockquote>
+<div class="paragraph">
+<p>Virtual eXtensible LAN (VXLAN) is a network virtualization technology that uses a VLAN-like encapsulation technique to encapsulate OSI layer 2 Ethernet frames within layer 4 UDP datagrams, using 4789 as the default IANA-assigned destination UDP port number, although many implementations that predate the IANA assignment use port 8472.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get cm <span class="nt">-n</span> kube-flannel kube-flannel-cfg <span class="nt">-ojsonpath</span><span class="o">=</span><span class="s1">'{.data.net-conf\.json}'</span>
+<span class="go">{
+  "Network": "10.244.0.0/16", <i class="conum" data-value="1"></i><b>(1)</b>
+  "EnableNFTables": false,
+  "Backend": {
+    "Type": "vxlan" <i class="conum" data-value="2"></i><b>(2)</b>
+  }
+}
+</span><span class="gp">$</span><span class="w"> </span>kubectl get cm <span class="nt">-n</span> kube-flannel kube-flannel-cfg <span class="nt">-ojsonpath</span><span class="o">=</span><span class="s1">'{.data.cni-conf\.json}'</span>
+<span class="go">{
+  "name": "cbr0", <i class="conum" data-value="3"></i><b>(3)</b>
+  "cniVersion": "0.3.1",
+  "plugins": [
+    {
+      "type": "flannel",
+      "delegate": {
+        "hairpinMode": true,
+        "isDefaultGateway": true
+      }
+    },
+    {
+      "type": "portmap",
+      "capabilities": {
+        "portMappings": true
+      }
+    }
+  ]
+}
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> /run/flannel/subnet.env
+<span class="go">FLANNEL_NETWORK=10.244.0.0/16
+FLANNEL_SUBNET=10.244.0.1/24 <i class="conum" data-value="4"></i><b>(4)</b>
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+</span><span class="gp">$</span><span class="w"> </span>ip a s cni0 <i class="conum" data-value="5"></i><b>(5)</b>
+<span class="gp">103: cni0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1450 qdisc noqueue state UP group default qlen 1000
+<span class="go">    link/ether 9e:cd:7d:2d:fc:58 brd ff:ff:ff:ff:ff:ff
+    inet 10.244.0.1/24 brd 10.244.0.255 scope global cni0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::9ccd:7dff:fe2d:fc58/64 scope link
+       valid_lft forever preferred_lft forever</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The network CIDR for Flannel.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Specifies that the VXLAN backend is used for Flannel.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>cbr0</code> interface is typically created by CNI plugins that use a bridge network, such as the bridge plugin or older versions of Flannel when used in bridge mode.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The subnet assigned to the node.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <code>cni0</code> is a bridge interface that is often created by CNI (Container Network Interface) plugins to connect pods to the host network.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get nodes <span class="nt">-owide</span>
+<span class="go">NAME     STATUS   ROLES           AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION   CONTAINER-RUNTIME
+</span><span class="gp">node-0   Ready    control-plane   76d   v1.31.3   192.168.71.40   &lt;none&gt;</span><span class="w">        </span>Debian GNU/Linux 12 <span class="o">(</span>bookworm<span class="o">)</span>   6.1.0-28-amd64   containerd://1.7.25
+<span class="gp">node-2   Ready    control-plane   55m   v1.31.6   192.168.71.42   &lt;none&gt;</span><span class="w">        </span>Debian GNU/Linux 12 <span class="o">(</span>bookworm<span class="o">)</span>   6.1.0-27-amd64   containerd://1.7.25
+<span class="gp">$</span><span class="w"> </span>ip r <span class="c"># node-0</span>
+<span class="go">default via 192.168.71.1 dev enp0s3
+10.244.0.0/24 dev cni0 proto kernel scope link src 10.244.0.1 <i class="conum" data-value="1"></i><b>(1)</b>
+10.244.1.0/24 via 10.244.1.0 dev flannel.1 onlink  <i class="conum" data-value="2"></i><b>(2)</b>
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1
+</span><span class="gp">$</span><span class="w"> </span>ip a show  cni0
+<span class="gp">103: cni0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1450 qdisc noqueue state UP group default qlen 1000
+<span class="go">    link/ether 9e:cd:7d:2d:fc:58 brd ff:ff:ff:ff:ff:ff
+    inet 10.244.0.1/24 brd 10.244.0.255 scope global cni0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::9ccd:7dff:fe2d:fc58/64 scope link
+       valid_lft forever preferred_lft forever
+</span><span class="gp">$</span><span class="w"> </span>ip a show flannel.1
+<span class="gp">102: flannel.1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span><span class="w"> </span>mtu 1450 qdisc noqueue state UNKNOWN group default
+<span class="go">    link/ether e2:ae:60:46:68:e9 brd ff:ff:ff:ff:ff:ff
+    inet 10.244.0.0/32 scope global flannel.1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::e0ae:60ff:fe46:68e9/64 scope link
+       valid_lft forever preferred_lft forever
+</span><span class="gp">$</span><span class="w"> </span>ip r <span class="c"># node-2</span>
+<span class="go">default via 192.168.71.1 dev enp0s3 onlink
+10.244.1.0/24 dev cni0 proto kernel scope link src 10.244.1.1  <i class="conum" data-value="1"></i><b>(1)</b>
+10.244.0.0/24 via 10.244.0.0 dev flannel.1 onlink  <i class="conum" data-value="2"></i><b>(2)</b>
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+192.168.71.0/24 dev enp0s3 proto kernel scope link src 192.168.71.42</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>proto kernel</code>: Indicates that this route was added by the kernel.
+<div class="paragraph">
+<p><code>src 10.244.0.1</code>: Specifies the source IP address for traffic on this route.</p>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>dev flannel.1</code>: Specifies that the <code>flannel.1</code> interface (a VXLAN interface used by Flannel) should be used.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p>Flannel does not control how containers are networked to the host, only how the traffic is transported between hosts.</p>
+</li>
+<li>
+<p>Flannel does provide a CNI plugin for Kubernetes.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="network-utilities-for-debugging-containers-kubernetes">2. Network Utilities for Debugging Containers &amp; Kubernetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A Simple and Stupid <a href="https://github.com/ousiax/net-tools-container">Network Utilities</a> for Debugging Containers &amp; Kubernetes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create <span class="nt">-n</span> default deployment net-tools <span class="se">\</span>
+  <span class="nt">--image</span> docker.io/qqbuby/net-tools:2.3 <span class="se">\</span>
+  <span class="nt">--</span> <span class="nb">tail</span> <span class="nt">-f</span> /dev/null</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get po <span class="nt">-l</span> <span class="nv">app</span><span class="o">=</span>net-tools <span class="nt">-w</span>
+<span class="go">NAME                         READY   STATUS        RESTARTS   AGE
+net-tools-8569ddf9fd-dn6wf   1/1     Running       0          8m37s</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>net-tools-8569ddf9fd-dn6wf <span class="nt">--</span> ip r
+<span class="go">default via 10.244.1.1 dev eth0
+10.244.0.0/16 via 10.244.1.1 dev eth0
+10.244.1.0/24 dev eth0 proto kernel scope link src 10.244.1.4
+</span><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>net-tools-8569ddf9fd-dn6wf <span class="nt">--</span> dig +search kubernetes
+<span class="go">
+</span><span class="gp">;</span><span class="w"> </span>&lt;&lt;<span class="o">&gt;&gt;</span> DiG 9.18.24-1-Debian &lt;&lt;<span class="o">&gt;&gt;</span> +search kubernetes
+<span class="gp">;</span><span class="p">;</span> global options: +cmd
+<span class="gp">;</span><span class="p">;</span> Got answer:
+<span class="gp">;</span><span class="p">;</span> WARNING: .local is reserved <span class="k">for </span>Multicast DNS
+<span class="gp">;</span><span class="p">;</span> You are currently testing what happens when an mDNS query is leaked to DNS
+<span class="gp">;</span><span class="p">;</span> -&gt;&gt;HEADER<span class="o">&lt;&lt;-</span> <span class="no">opcode</span><span class="sh">: QUERY, status: NOERROR, id: 53501
+</span><span class="gp">;</span><span class="sh">; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+</span><span class="gp">;</span><span class="sh">; WARNING: recursion requested but not available
+</span><span class="go">
+</span><span class="gp">;</span><span class="p">;</span> OPT PSEUDOSECTION:
+<span class="gp">;</span><span class="w"> </span>EDNS: version: 0, flags:<span class="p">;</span> udp: 1232
+<span class="gp">;</span><span class="w"> </span>COOKIE: ca5d92ec874c299a <span class="o">(</span>echoed<span class="o">)</span>
+<span class="gp">;</span><span class="p">;</span> QUESTION SECTION:
+<span class="gp">;</span>kubernetes.default.svc.cluster.local. IN A
+<span class="go">
+</span><span class="gp">;</span><span class="p">;</span> ANSWER SECTION:
+<span class="go">kubernetes.default.svc.cluster.local. 30 IN A	10.96.0.1
+
+</span><span class="gp">;</span><span class="p">;</span> Query <span class="nb">time</span>: 1 msec
+<span class="gp">;</span><span class="p">;</span> SERVER: 10.96.0.10#53<span class="o">(</span>10.96.0.10<span class="o">)</span> <span class="o">(</span>UDP<span class="o">)</span>
+<span class="gp">;</span><span class="p">;</span> WHEN: Thu Feb 29 05:18:31 UTC 2024
+<span class="gp">;</span><span class="p">;</span> MSG SIZE  rcvd: 129</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="services-in-kubernetes">3. Services in Kubernetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Kubernetes, a Service is a method for exposing a network application that is running as one or more Pods in your cluster. <a href="#kube-service">[3]</a></p>
+</div>
+<div class="paragraph">
+<p>Kubernetes Service types allow you to specify what kind of Service you want.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ClusterIP</p>
+<div class="paragraph">
+<p>Exposes the Service on a cluster-internal IP. Choosing this value makes the Service only reachable from within the cluster. This is the default that is used if you don&#8217;t explicitly specify a <code>type</code> for a Service. You can expose the Service to the public internet using an Ingress or a Gateway.</p>
+</div>
+</li>
+<li>
+<p>NodePort</p>
+<div class="paragraph">
+<p>Exposes the Service on each Node&#8217;s IP at a static port (the <code>NodePort</code>). To make the node port available, Kubernetes sets up a cluster IP address, the same as if you had requested a Service of <code>type: ClusterIP</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> | kubectl apply -f -
+</span><span class="gp">&gt;</span><span class="w">
+</span><span class="go">apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 9376
+  type: NodePort
+</span><span class="gp">&gt;</span><span class="w"> </span>EOF
+<span class="go">service/my-service configured
+</span><span class="gp">$</span><span class="w"> </span>kubectl get svc my-service
+<span class="go">NAME         TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+</span><span class="gp">my-service   NodePort   10.98.44.45   &lt;none&gt;</span><span class="w">        </span>80:31868/TCP   7s</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>LoadBalancer</p>
+<div class="paragraph">
+<p>Exposes the Service externally using an external load balancer. Kubernetes does not directly offer a load balancing component; you must provide one, or you can integrate your Kubernetes cluster with a cloud provider.</p>
+</div>
+</li>
+<li>
+<p>ExternalName</p>
+<div class="paragraph">
+<p>Maps the Service to the contents of the <code>externalName</code> field (for example, to the hostname <code>api.foo.bar.example</code>). The mapping configures your cluster&#8217;s DNS server to return a <code>CNAME</code> record with that external hostname value. No proxying of any kind is set up.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | kubectl apply -f -
+</span><span class="go">apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin-org
+spec:
+  type: ExternalName
+  externalName: httpbin.org
+EOF
+service/httpbin-org created
+</span><span class="gp">$</span><span class="w"> </span>kubectl get svc httpbin-org
+<span class="go">NAME          TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+</span><span class="gp">httpbin-org   ExternalName   &lt;none&gt;</span><span class="w">       </span>httpbin.org   &lt;none&gt;    12s
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>net-tools-8569ddf9fd-dn6wf <span class="nt">--</span> dig +search +short httpbin-org CNAME
+<span class="go">httpbin.org.</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If your workload speaks HTTP, you might choose to use an <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Ingress</a> to control how web traffic reaches that workload. Ingress is not a Service type, but it acts as the entry point for your cluster. The <a href="https://gateway-api.sigs.k8s.io/#what-is-the-gateway-api">Gateway</a> API for Kubernetes provides extra capabilities beyond Ingress and Service.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="services-without-selectors">3.1. Services without selectors</h3>
+<div class="paragraph">
+<p>Services most commonly abstract access to Kubernetes Pods thanks to the selector, but when used with a corresponding set of EndpointSlices objects and without a selector, the Service can abstract other kinds of backends, including ones that run outside the cluster.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-service</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="c1"># Because this Service has no selector, the corresponding EndpointSlice (and</span>
+  <span class="c1"># legacy Endpoints) objects are not created automatically.</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="m">9376</span>
+<span class="nn">---</span>
+<span class="c1"># You can map the Service to the network address and port where it's</span>
+<span class="c1"># running, by adding an EndpointSlice object manually.</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">discovery.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">EndpointSlice</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-service-1</span> <span class="c1"># by convention, use the name of the Service</span>
+                     <span class="c1"># as a prefix for the name of the EndpointSlice</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="c1"># You should set the "kubernetes.io/service-name" label.</span>
+    <span class="c1"># Set its value to match the name of the Service</span>
+    <span class="na">kubernetes.io/service-name</span><span class="pi">:</span> <span class="s">my-service</span>
+<span class="na">addressType</span><span class="pi">:</span> <span class="s">IPv4</span>
+<span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span> <span class="c1"># empty because port 9376 is not assigned as a well-known</span>
+             <span class="c1"># port (by IANA)</span>
+    <span class="na">appProtocol</span><span class="pi">:</span> <span class="s">http</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">9376</span>
+<span class="na">endpoints</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">addresses</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">10.4.5.6"</span>
+  <span class="pi">-</span> <span class="na">addresses</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">10.1.2.3"</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="headless-services">3.2. Headless Services</h3>
+<div class="paragraph">
+<p>For headless Services, a cluster IP is not allocated, by explicitly specifying "None" for the cluster IP address (<code>.spec.clusterIP</code>), kube-proxy does not handle these Services, and there is no load balancing or proxying done by the platform for them. How DNS is automatically configured depends on whether the Service has selectors defined:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>With selectors</p>
+<div class="paragraph">
+<p>For headless Services that define selectors, the endpoints controller creates EndpointSlices in the Kubernetes API, and modifies the DNS configuration to return A or AAAA records (IPv4 or IPv6 addresses) that point directly to the Pods backing the Service.</p>
+</div>
+</li>
+<li>
+<p>Without selectors</p>
+<div class="paragraph">
+<p>For headless Services that do not define selectors, the control plane does not create EndpointSlice objects. However, the DNS system looks for and configures either:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>DNS CNAME records for <code>type: ExternalName</code> Services.</p>
+</li>
+<li>
+<p>DNS A / AAAA records for all IP addresses of the Service&#8217;s ready endpoints, for all Service types other than <code>ExternalName</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For IPv4 endpoints, the DNS system creates A records.</p>
+</li>
+<li>
+<p>For IPv6 endpoints, the DNS system creates AAAA records.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>When you define a headless Service without a selector, the <code>port</code> must match the <code>targetPort</code>.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="virtual-ips-and-service-proxies">3.3. Virtual IPs and Service Proxies</h3>
+<div class="paragraph">
+<p>Every node in a Kubernetes cluster runs a <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/">kube-proxy</a> (unless you have deployed your own alternative component in place of <code>kube-proxy</code>). <a href="#kube-virtual-ips">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>The <code>kube-proxy</code> component is responsible for implementing a <code>virtual IP</code> mechanism for Services of <code>type</code> other than <code>ExternalName</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each instance of kube-proxy watches the Kubernetes control plane for the addition and removal of Service and EndpointSlice objects.</p>
+</li>
+<li>
+<p>For each Service, kube-proxy calls appropriate APIs (depending on the kube-proxy mode) to configure the node to capture traffic to the Service&#8217;s <code>clusterIP</code> and <code>port</code>, and redirect that traffic to one of the Service&#8217;s endpoints (usually a Pod, but possibly an arbitrary user-provided IP address).</p>
+</li>
+<li>
+<p>A control loop ensures that the rules on each node are reliably synchronized with the Service and EndpointSlice state as indicated by the API server.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://kubernetes.io/images/docs/services-iptables-overview.svg" alt="Virtual IPs and Service Proxies" width="35%" height="35%">
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The kube-proxy starts up in different modes, which are determined by its configuration.</p>
+</div>
+<div class="paragraph">
+<p>On Linux nodes, the available modes for kube-proxy are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>iptables</p>
+<div class="paragraph">
+<p>A mode where the kube-proxy configures packet forwarding rules using iptables.</p>
+</div>
+</li>
+<li>
+<p>ipvs</p>
+<div class="paragraph">
+<p>a mode where the kube-proxy configures packet forwarding rules using ipvs.</p>
+</div>
+</li>
+<li>
+<p>nftables</p>
+<div class="paragraph">
+<p>a mode where the kube-proxy configures packet forwarding rules using nftables.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There is only one mode available for kube-proxy on Windows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>kernelspace</p>
+<div class="paragraph">
+<p>a mode where the kube-proxy configures packet forwarding rules in the Windows kernel</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="iptables-proxy-mode">3.3.1. iptables proxy mode</h4>
+<div class="paragraph">
+<p>In <code>iptables</code> mode, kube-proxy configures packet forwarding rules using the iptables API of the kernel netfilter subsystem.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When kube-proxy on a node sees a new Service, it installs a series of iptables rules which redirect from the virtual IP address to more iptables rules, defined per Service.</p>
+</li>
+<li>
+<p>The per-Service rules link to further rules for each backend endpoint, and the per-endpoint rules redirect traffic (using destination NAT) to the backends.</p>
+</li>
+<li>
+<p>When a client connects to the Service&#8217;s virtual IP address the iptables rule kicks in.</p>
+<div class="paragraph">
+<p>A backend is chosen (either based on session affinity or randomly) and packets are redirected to the backend without rewriting the client IP address.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Check the kube-proxy model with the <code>/proxyMode</code> endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl localhost:10249/proxyMode
+<span class="go">iptables</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-n</span> <span class="nt">-L</span>  KUBE-SERVICES
+<span class="go">Chain KUBE-SERVICES (2 references)
+target     prot opt source               destination
+KUBE-SVC-ERIFXISQEP7F7OF4  6    --  0.0.0.0/0            10.96.0.10           /* kube-system/kube-dns:dns-tcp cluster IP */ tcp dpt:53
+KUBE-SVC-JD5MR3NA4I4DYORP  6    --  0.0.0.0/0            10.96.0.10           /* kube-system/kube-dns:metrics cluster IP */ tcp dpt:9153
+KUBE-SVC-Z4ANX4WAEWEBLCTM  6    --  0.0.0.0/0            10.109.25.21         /* kube-system/metrics-server:https cluster IP */ tcp dpt:443
+KUBE-SVC-CG5I4G2RS3ZVWGLK  6    --  0.0.0.0/0            10.107.96.185        /* ingress-nginx/ingress-nginx-controller:http cluster IP */ tcp dpt:80
+KUBE-SVC-EDNDUDH2C75GIR6O  6    --  0.0.0.0/0            10.107.96.185        /* ingress-nginx/ingress-nginx-controller:https cluster IP */ tcp dpt:443
+KUBE-SVC-NPX46M4PTMTKRN6Y  6    --  0.0.0.0/0            10.96.0.1            /* default/kubernetes:https cluster IP */ tcp dpt:443
+KUBE-SVC-EZYNCFY2F7N6OQA2  6    --  0.0.0.0/0            10.103.76.154        /* ingress-nginx/ingress-nginx-controller-admission:https-webhook cluster IP */ tcp dpt:443
+KUBE-SVC-LWGIUP67CTAM2576  6    --  0.0.0.0/0            10.107.96.185        /* ingress-nginx/ingress-nginx-controller:prometheus cluster IP */ tcp dpt:10254
+KUBE-SVC-TCOU7JCQXEZGVUNU  17   --  0.0.0.0/0            10.96.0.10           /* kube-system/kube-dns:dns cluster IP */ udp dpt:53
+</span><span class="gp">KUBE-NODEPORTS  0    --  0.0.0.0/0            0.0.0.0/0            /* kubernetes service nodeports;</span><span class="w"> </span>NOTE: this must be the last rule <span class="k">in </span>this chain <span class="k">*</span>/ ADDRTYPE match dst-type LOCAL
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-n</span> <span class="nt">-L</span>  KUBE-SVC-ERIFXISQEP7F7OF4
+<span class="go">Chain KUBE-SVC-ERIFXISQEP7F7OF4 (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  6    -- !10.244.0.0/16        10.96.0.10           /* kube-system/kube-dns:dns-tcp cluster IP */ tcp dpt:53
+</span><span class="gp">KUBE-SEP-YXU7ECKUN6RQCSDC  0    --  0.0.0.0/0            0.0.0.0/0            /* kube-system/kube-dns:dns-tcp -&gt;</span><span class="w"> </span>10.244.1.99:53 <span class="k">*</span>/ statistic mode random probability 0.50000000000
+<span class="gp">KUBE-SEP-C4WJXZ3GDNSPOCVX  0    --  0.0.0.0/0            0.0.0.0/0            /* kube-system/kube-dns:dns-tcp -&gt;</span><span class="w"> </span>10.244.2.142:53 <span class="k">*</span>/</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="traffic-policies">3.4. Traffic policies</h3>
+<div class="paragraph">
+<p>You can set the <code>.spec.internalTrafficPolicy</code> and <code>.spec.externalTrafficPolicy</code> fields to control how Kubernetes routes traffic to healthy (“ready”) backends.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Internal traffic policy</p>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.26 [stable]</p>
+</div>
+<div class="paragraph">
+<p>You can set the <code>.spec.internalTrafficPolicy</code> field to control how traffic from internal sources is routed. Valid values are <code>Cluster</code> and <code>Local</code>.</p>
+</div>
+<div class="paragraph">
+<p>Set the field to <code>Cluster</code> to route internal traffic to all ready endpoints and <code>Local</code> to only route to ready node-local endpoints.</p>
+</div>
+<div class="paragraph">
+<p>If the traffic policy is <code>Local</code> and there are no node-local endpoints, traffic is dropped by kube-proxy.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Service Internal Traffic Policy enables internal traffic restrictions to only route internal traffic to endpoints within the node the traffic originated from.</p>
+</div>
+<div class="paragraph">
+<p>The "internal" traffic here refers to traffic originated from Pods in the current cluster. <a href="#kube-service-traffic-policy">[5]</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>External traffic policy</p>
+<div class="paragraph">
+<p>You can set the <code>.spec.externalTrafficPolicy</code> field to control how traffic from external sources is routed. Valid values are <code>Cluster</code> and <code>Local</code>.</p>
+</div>
+<div class="paragraph">
+<p>Set the field to <code>Cluster</code> to route external traffic to all ready endpoints and <code>Local</code> to only route to ready node-local endpoints.</p>
+</div>
+<div class="paragraph">
+<p>If the traffic policy is Local and there are are no node-local endpoints, the kube-proxy does not forward any traffic for the relevant Service.</p>
+</div>
+</li>
+<li>
+<p>Traffic to terminating endpoints</p>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.28 [stable]</p>
+</div>
+<div class="paragraph">
+<p>If the <code>ProxyTerminatingEndpoints</code> feature gate is enabled in kube-proxy and the traffic policy is <code>Local</code>, that node&#8217;s kube-proxy uses a more complicated algorithm to select endpoints for a Service.</p>
+</div>
+<div class="paragraph">
+<p>With the feature enabled, kube-proxy checks if the node has local endpoints and whether or not <strong>all</strong> the local endpoints are marked as terminating. If there are local endpoints and all of them are terminating, then kube-proxy will forward traffic to those terminating endpoints. Otherwise, kube-proxy will always prefer forwarding traffic to endpoints that are not terminating.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dns-for-services-and-pods">4. DNS for Services and Pods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes creates DNS records for Services and Pods. You can contact Services with consistent DNS names instead of IP addresses. <a href="#kube-dns-pod-service">[6]</a></p>
+</div>
+<div class="paragraph">
+<p>Kubernetes publishes information about Pods and Services which is used to program DNS. Kubelet configures Pods' DNS so that running containers can lookup Services by name rather than IP.</p>
+</div>
+<div class="paragraph">
+<p>Services defined in the cluster are assigned DNS names. By default, a client Pod&#8217;s DNS search list includes the Pod&#8217;s own namespace and the cluster&#8217;s default domain.</p>
+</div>
+<div class="paragraph">
+<p>A DNS query may return different results based on the namespace of the Pod making it. DNS queries that don&#8217;t specify a namespace are limited to the Pod&#8217;s namespace. Access Services in other namespaces by specifying it in the DNS query.</p>
+</div>
+<div class="paragraph">
+<p>DNS queries may be expanded using the Pod&#8217;s <code>/etc/resolv.conf</code>. Kubelet configures this file for each Pod.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="n">nameserver</span> <span class="m">10</span>.<span class="m">32</span>.<span class="m">0</span>.<span class="m">10</span>
+<span class="n">search</span> &lt;<span class="n">namespace</span>&gt;.<span class="n">svc</span>.<span class="n">cluster</span>.<span class="n">local</span> <span class="n">svc</span>.<span class="n">cluster</span>.<span class="n">local</span> <span class="n">cluster</span>.<span class="n">local</span>
+<span class="n">options</span> <span class="n">ndots</span>:<span class="m">5</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Services</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A/AAAA records</p>
+<div class="paragraph">
+<p>"Normal" (not headless) Services are assigned DNS A and/or AAAA records, depending on the IP family or families of the Service, with a name of the form <code>my-svc.my-namespace.svc.cluster-domain.example</code>.</p>
+</div>
+<div class="paragraph">
+<p>Headless Services (without a cluster IP) Services are also assigned DNS A and/or AAAA records, with a name of the form <code>my-svc.my-namespace.svc.cluster-domain.example</code>. Unlike normal Services, this resolves to the set of IPs of all of the Pods selected by the Service.</p>
+</div>
+</li>
+<li>
+<p>SRV records</p>
+<div class="paragraph">
+<p>SRV Records are created for named ports that are part of normal or headless services. For each named port, the SRV record has the form <code>_port-name._port-protocol.my-svc.my-namespace.svc.cluster-domain.example</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>net-tools-8569ddf9fd-dn6wf <span class="nt">--</span> nslookup  _https._tcp.kubernetes
+<span class="go">Server:		10.96.0.10
+</span><span class="gp">Address:	10.96.0.10#</span>53
+<span class="go">
+Name:	_https._tcp.kubernetes.default.svc.cluster.local
+Address: 10.96.0.1</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Pods</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A/AAAA records</p>
+<div class="paragraph">
+<p>Kube-DNS versions, prior to the implementation of the DNS specification, had the following DNS resolution: <code>pod-ipv4-address.my-namespace.pod.cluster-domain.example</code>.</p>
+</div>
+<div class="paragraph">
+<p>Any Pods exposed by a Service have the following DNS resolution available: <code>pod-ipv4-address.service-name.my-namespace.svc.cluster-domain.example</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl get pod <span class="nt">-l</span> <span class="nv">app</span><span class="o">=</span>net-tools <span class="nt">-owide</span>
+<span class="go">NAME                         READY   STATUS    RESTARTS   AGE   IP             NODE     NOMINATED NODE   READINESS GATES
+</span><span class="gp">net-tools-8569ddf9fd-dn6wf   1/1     Running   0          20m   10.244.1.101   node-2   &lt;none&gt;</span><span class="w">           </span>&lt;none&gt;
+<span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>net-tools-8569ddf9fd-dn6wf <span class="nt">--</span> nslookup 10-244-1-101.default.pod
+<span class="go">Server:		10.96.0.10
+</span><span class="gp">Address:	10.96.0.10#</span>53
+<span class="go">
+Name:	10-244-1-101.default.pod.cluster.local
+Address: 10.244.1.101</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="kube-networking"></a>[1] <a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/" class="bare">https://kubernetes.io/docs/concepts/cluster-administration/networking/</a></p>
+</li>
+<li>
+<p><a id="kube-services-networking"></a>[2] <a href="https://kubernetes.io/docs/concepts/services-networking/" class="bare">https://kubernetes.io/docs/concepts/services-networking/</a></p>
+</li>
+<li>
+<p><a id="kube-service"></a>[3] <a href="https://kubernetes.io/docs/concepts/services-networking/service/" class="bare">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+</li>
+<li>
+<p><a id="kube-virtual-ips"></a>[4] <a href="https://kubernetes.io/docs/reference/networking/virtual-ips/" class="bare">https://kubernetes.io/docs/reference/networking/virtual-ips/</a></p>
+</li>
+<li>
+<p><a id="kube-service-traffic-policy"></a>[5] <a href="https://kubernetes.io/docs/concepts/services-networking/service-traffic-policy/" class="bare">https://kubernetes.io/docs/concepts/services-networking/service-traffic-policy/</a></p>
+</li>
+<li>
+<p><a id="kube-dns-pod-service"></a>[6] <a href="https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/" class="bare">https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/IP_address_management" class="bare">https://en.wikipedia.org/wiki/IP_address_management</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/TUN/TAP" class="bare">https://en.wikipedia.org/wiki/TUN/TAP</a></p>
+</li>
+<li>
+<p><a href="https://www.kernel.org/doc/html/v5.12/networking/tuntap.html" class="bare">https://www.kernel.org/doc/html/v5.12/networking/tuntap.html</a></p>
+</li>
+<li>
+<p><a href="https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking" class="bare">https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking</a></p>
+</li>
+<li>
+<p><a href="https://developers.redhat.com/blog/2019/05/17/an-introduction-to-linux-virtual-interfaces-tunnels" class="bare">https://developers.redhat.com/blog/2019/05/17/an-introduction-to-linux-virtual-interfaces-tunnels</a></p>
+</li>
+<li>
+<p><a href="https://blog.neuvector.com/article/kubernetes-networking" class="bare">https://blog.neuvector.com/article/kubernetes-networking</a></p>
+</li>
+<li>
+<p><a href="https://www.stackrox.io/blog/kubernetes-networking-demystified/" class="bare">https://www.stackrox.io/blog/kubernetes-networking-demystified/</a></p>
+</li>
+<li>
+<p><a href="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/" class="bare">https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/</a></p>
+</li>
+<li>
+<p><a href="https://www.vmware.com/topics/glossary/content/kubernetes-networking" class="bare">https://www.vmware.com/topics/glossary/content/kubernetes-networking</a></p>
+</li>
+<li>
+<p><a href="https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-networking-guide-beginners.html" class="bare">https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-networking-guide-beginners.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

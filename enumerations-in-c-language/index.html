@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Enumerations in C Language | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Enumerations in C Language" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Defining Enumerations 2. Declaring Enumerations 3. References An enumeration is a custom data type used for storing constant integer values and referring to them by names. By default, these values are of type signed int; however, you can use the -fshort-enums GCC compiler option to cause the samllest possible integer type to be used instead. Both of these behaviors conform to the C89 standard, but mixing the use of these options within the same program can produce incompatibilities. 1. Defining Enumerations You define an enumeration using the enum keyword, followed by the name of the enumeraiton (this is optional),…" />
+<meta name="twitter:description" property="og:description" content="1. Defining Enumerations 2. Declaring Enumerations 3. References An enumeration is a custom data type used for storing constant integer values and referring to them by names. By default, these values are of type signed int; however, you can use the -fshort-enums GCC compiler option to cause the samllest possible integer type to be used instead. Both of these behaviors conform to the C89 standard, but mixing the use of these options within the same program can produce incompatibilities. 1. Defining Enumerations You define an enumeration using the enum keyword, followed by the name of the enumeraiton (this is optional),…" />
+<link rel="canonical" href="https://blog.codefarm.me/enumerations-in-c-language/" />
+<meta property="og:url" content="https://blog.codefarm.me/enumerations-in-c-language/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-02-28T18:52:27+08:00" />
+<meta property="article:modified_time" content="2017-02-28T18:52:27+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Enumerations in C Language" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-02-28T18:52:27+08:00","datePublished":"2017-02-28T18:52:27+08:00","description":"1. Defining Enumerations 2. Declaring Enumerations 3. References An enumeration is a custom data type used for storing constant integer values and referring to them by names. By default, these values are of type signed int; however, you can use the -fshort-enums GCC compiler option to cause the samllest possible integer type to be used instead. Both of these behaviors conform to the C89 standard, but mixing the use of these options within the same program can produce incompatibilities. 1. Defining Enumerations You define an enumeration using the enum keyword, followed by the name of the enumeraiton (this is optional),…","headline":"Enumerations in C Language","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/enumerations-in-c-language/"},"url":"https://blog.codefarm.me/enumerations-in-c-language/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Enumerations in C Language</h1><p class="c-post-meta">28 Feb 2017</p>
+  </header>
+
+  <div class="c-post-content">
+    <ul id="markdown-toc">
+  <li><a href="#1-defining-enumerations" id="markdown-toc-1-defining-enumerations">1. Defining Enumerations</a></li>
+  <li><a href="#2-declaring-enumerations" id="markdown-toc-2-declaring-enumerations">2. Declaring Enumerations</a></li>
+  <li><a href="#3-references" id="markdown-toc-3-references">3. References</a></li>
+</ul>
+
+<hr />
+
+<p>An enumeration is a custom data type used for storing constant integer values and referring to them by names. By default, these values are of type <code class="language-plaintext highlighter-rouge">signed int</code>; however, you can use the <code class="language-plaintext highlighter-rouge">-fshort-enums</code> GCC compiler option to cause the samllest possible integer type to be used instead.</p>
+
+<p>Both of these behaviors conform to the C89 standard, but mixing the use of these options within the same program can produce incompatibilities.</p>
+
+<h3 id="1-defining-enumerations">1. Defining Enumerations</h3>
+
+<p>You define an enumeration using the <code class="language-plaintext highlighter-rouge">enum</code> keyword, followed by the name of the enumeraiton (this is optional), followed by a list of constant names (separated by commas and enclosed in braces), and ending with a semicolon.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">fruit</span> <span class="p">{</span><span class="n">grape</span><span class="p">,</span> <span class="n">cherry</span><span class="p">,</span> <span class="n">lemon</span><span class="p">,</span> <span class="n">kiwi</span><span class="p">};</span>
+</code></pre></div></div>
+
+<p>That example defines an enumeration, <code class="language-plaintext highlighter-rouge">fruit</code>, which contains four constant integer values, <code class="language-plaintext highlighter-rouge">grape</code>, <code class="language-plaintext highlighter-rouge">cherry</code>, <code class="language-plaintext highlighter-rouge">lemon</code> and <code class="language-plaintext highlighter-rouge">kiwi</code>, whose values are, by default, 0, 1, 2, and 3, respectively. You can also specify one or more of the values explicitly:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">more_fruit</span> <span class="p">{</span><span class="n">banana</span> <span class="o">=</span> <span class="o">-</span><span class="mi">17</span><span class="p">,</span> <span class="n">apple</span><span class="p">,</span> <span class="n">bluberry</span><span class="p">,</span> <span class="n">mango</span><span class="p">};</span>
+</code></pre></div></div>
+
+<p>That example defines <code class="language-plaintext highlighter-rouge">banana</code> to be -17, and the remaining values are incremented by 1: <code class="language-plaintext highlighter-rouge">apple</code> is -16, <code class="language-plaintext highlighter-rouge">blueberry</code> is -15, and <code class="language-plaintext highlighter-rouge">mango</code> is -14. Unless specified otherwise, an enumeration value is equal to one more than the previous value (and the first value defult to 0).</p>
+
+<p>You can also refer to an enumeration value defined earlier in the same enumeration:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">yet_more_fruit</span> <span class="p">{</span><span class="n">kumquat</span><span class="p">,</span> <span class="n">raspberry</span><span class="p">,</span> <span class="n">peach</span><span class="p">,</span>
+                     <span class="n">plum</span> <span class="o">=</span> <span class="n">peach</span> <span class="o">+</span> <span class="mi">2</span><span class="p">};</span>
+</code></pre></div></div>
+
+<p>In that example, <code class="language-plaintext highlighter-rouge">kumquat</code> is 0, <code class="language-plaintext highlighter-rouge">raspberry</code> is 1, <code class="language-plaintext highlighter-rouge">peach</code> is 2, and <code class="language-plaintext highlighter-rouge">plum</code> is 4.</p>
+
+<p>You cann’t use the same name for an <code class="language-plaintext highlighter-rouge">enum</code> as a <code class="language-plaintext highlighter-rouge">struct</code> or <code class="language-plaintext highlighter-rouge">union</code> in the same scope.</p>
+
+<h3 id="2-declaring-enumerations">2. Declaring Enumerations</h3>
+
+<p>You can declare variables of an enumeration type both when the enumeration is defined and afterward. This example declares one variable, named <code class="language-plaintext highlighter-rouge">my_fruit</code> of type <code class="language-plaintext highlighter-rouge">enum fruit</code>, all in a single statement:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">fruit</span> <span class="p">{</span><span class="n">banana</span><span class="p">,</span> <span class="n">apple</span><span class="p">,</span> <span class="n">blueberry</span><span class="p">,</span> <span class="n">mango</span><span class="p">}</span> <span class="n">my_fruit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>while this example declares the type and variable separately:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">fruit</span> <span class="p">{</span><span class="n">banana</span><span class="p">,</span> <span class="n">apple</span><span class="p">,</span> <span class="n">blueberry</span><span class="p">,</span> <span class="n">mango</span><span class="p">};</span>
+<span class="k">enum</span> <span class="n">fruit</span> <span class="n">my_fruit</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>(Of course, you couldn’t declare it that way if you don’t named the enumeration.)</p>
+
+<p>Although such variables are considered to be of an enumeration type, you can assign them any value that you could assign to an <code class="language-plaintext highlighter-rouge">int</code> variable, including values from other enumerations. Furthmore, any variable that can be assigned an <code class="language-plaintext highlighter-rouge">int</code> value can be assigned a value from an enumeration.</p>
+
+<p>However, you cannot change the values in an enumeration once it has been defined; they are constant values. For example, this won’t work:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="n">fruit</span> <span class="p">{</span><span class="n">banana</span><span class="p">,</span> <span class="n">apple</span><span class="p">,</span> <span class="n">blueberry</span><span class="p">,</span> <span class="n">mango</span><span class="p">};</span>
+<span class="n">banana</span> <span class="o">=</span> <span class="mi">15</span><span class="p">;</span>    <span class="cm">/* You cann't do this! */</span>
+</code></pre></div></div>
+
+<p>Enumerations are useful in conjunction with the <code class="language-plaintext highlighter-rouge">switch</code> statement, because the compiler can warn you if you have failed to handle one of the enumeration values. Using the example above, if your code handes <code class="language-plaintext highlighter-rouge">banana</code>, <code class="language-plaintext highlighter-rouge">apple</code> and <code class="language-plaintext highlighter-rouge">mango</code> only but not <code class="language-plaintext highlighter-rouge">blueberry</code>, GCC can generate a warning.</p>
+
+<hr />
+
+<h3 id="3-references">3. References</h3>
+
+<ol>
+  <li><a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Enumerations">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

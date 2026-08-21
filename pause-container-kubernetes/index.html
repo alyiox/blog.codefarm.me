@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>What is pause container in Kubernetes | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="What is pause container in Kubernetes" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Eric Paris to google-c...@googlegroups.com Sep 25, 2014, 8:35:48 PM The pause container is a container which holds the network namespace for the pod. It does nothing &#39;useful&#39;. (It&#39;s actually just a little bit of assembly that goes to sleep and never wakes up) This means that your &#39;apache&#39; container can die, and come back to life, and all of the network setup will still be there. Normally if the last process in a network namespace dies the namespace would be destroyed and creating a new apache container would require creating all new network setup. With pause, you&#39;ll always have that…" />
+<meta name="twitter:description" property="og:description" content="Eric Paris to google-c...@googlegroups.com Sep 25, 2014, 8:35:48 PM The pause container is a container which holds the network namespace for the pod. It does nothing &#39;useful&#39;. (It&#39;s actually just a little bit of assembly that goes to sleep and never wakes up) This means that your &#39;apache&#39; container can die, and come back to life, and all of the network setup will still be there. Normally if the last process in a network namespace dies the namespace would be destroyed and creating a new apache container would require creating all new network setup. With pause, you&#39;ll always have that…" />
+<link rel="canonical" href="https://blog.codefarm.me/pause-container-kubernetes/" />
+<meta property="og:url" content="https://blog.codefarm.me/pause-container-kubernetes/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-12-09T13:06:06+08:00" />
+<meta property="article:modified_time" content="2021-12-09T13:06:06+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="What is pause container in Kubernetes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-12-09T13:06:06+08:00","datePublished":"2021-12-09T13:06:06+08:00","description":"Eric Paris to google-c...@googlegroups.com Sep 25, 2014, 8:35:48 PM The pause container is a container which holds the network namespace for the pod. It does nothing &#39;useful&#39;. (It&#39;s actually just a little bit of assembly that goes to sleep and never wakes up) This means that your &#39;apache&#39; container can die, and come back to life, and all of the network setup will still be there. Normally if the last process in a network namespace dies the namespace would be destroyed and creating a new apache container would require creating all new network setup. With pause, you&#39;ll always have that…","headline":"What is pause container in Kubernetes","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/pause-container-kubernetes/"},"url":"https://blog.codefarm.me/pause-container-kubernetes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">What is pause container in Kubernetes</h1><p class="c-post-meta">09 Dec 2021</p>
+  </header>
+
+  <div class="c-post-content">
+    <div class="listingblock">
+<div class="content">
+<pre>Eric Paris to google-c...@googlegroups.com
+Sep 25, 2014, 8:35:48 PM
+
+The pause container is a container which holds the network namespace
+for the pod. It does nothing 'useful'. (It's actually just a little
+bit of assembly that goes to sleep and never wakes up)
+
+This means that your 'apache' container can die, and come back to
+life, and all of the network setup will still be there. Normally if
+the last process in a network namespace dies the namespace would be
+destroyed and creating a new apache container would require creating
+all new network setup. With pause, you'll always have that one last
+thing in the namespace.
+
+I'd suggest thinking of it as an implementation detail you just ignore.
+
+ref: https://groups.google.com/g/kubernetes-users/c/jVjv0QK4b_o</pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>A <strong>Pod</strong> (as in a pod of whales or pea pod) is <strong><em>a group of one or more containers, with shared storage and network resources</em></strong>, and a specification for how to run the containers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each Pod is assigned a unique IP address for each address family.</p>
+</li>
+<li>
+<p>Every container in a Pod shares the network namespace, including the IP address and network ports.</p>
+</li>
+<li>
+<p>Inside a Pod (and <strong>only</strong> then), the containers that belong to the Pod can communicate with one another using <code>localhost</code>.</p>
+</li>
+<li>
+<p>Within a Pod, containers share an IP address and port space, and can find each other via <code>localhost</code>.</p>
+</li>
+<li>
+<p>The containers in a Pod can also communicate with each other using standard inter-process communications like SystemV semaphores or POSIX shared memory.</p>
+</li>
+<li>
+<p>Containers within the Pod see the system hostname as being the same as the configured <code>name</code> for the Pod.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p><strong><em>Talk is cheap</em></strong>, let&#8217;s demo it.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>pod.yaml</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="s">pod.yaml</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">demo</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">demo</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">busybox</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">busybox</span>
+      <span class="na">command</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">sleep</span>
+        <span class="pi">-</span> <span class="s">3650d</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">nginx</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.21</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>kubectl apply -n default -f pod.yaml</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl apply <span class="nt">-n</span> default <span class="nt">-f</span> pod.yaml
+<span class="go">pod/demo created
+
+</span><span class="gp">$</span><span class="w"> </span>kubectl get po demo
+<span class="go">NAME   READY   STATUS    RESTARTS   AGE
+demo   2/2     Running   0          40s</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Use <code>docker ps</code> to show the containers</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>docker ps | <span class="nb">grep </span>demo
+<span class="go">f93bf3b7e0be   f8f4ffc8092c           "/docker-entrypoint.…"   About a minute ago   Up About a minute             k8s_nginx_demo_default_8cfc283b-354c-47b6-8100-9bc288f836c6_0
+3277526fb144   busybox                "sleep 3650d"            About a minute ago   Up About a minute             k8s_busybox_demo_default_8cfc283b-354c-47b6-8100-9bc288f836c6_0
+e7ecd72b58e2   k8s.gcr.io/pause:3.5   "/pause"                 About a minute ago   Up About a minute             k8s_POD_demo_default_8cfc283b-354c-47b6-8100-9bc288f836c6_0
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>docker ps | <span class="nb">grep </span>demo | <span class="nb">cut</span> <span class="nt">-d</span> <span class="s1">' '</span> <span class="nt">-f</span> 1 | xargs <span class="nb">sudo </span>docker inspect <span class="nt">-f</span> <span class="s1">'{{.State.Pid}}'</span>
+<span class="go">570765
+570710
+570593</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Use <code>lsns</code> to list <code>tasks</code> (i.e. processes) namespaces</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>lsns <span class="nt">-p</span> 570765
+<span class="go">        NS TYPE   NPROCS    PID USER  COMMAND</span>
+<span class="go">4026531834 time      236      1 root  /sbin/init</span>
+<span class="go">4026531837 user      236      1 root  /sbin/init</span>
+<span class="hll"><span class="go">4026533140 ipc         7 570593 65535 /pause</span>
+</span><span class="hll"><span class="go">4026533143 net         7 570593 65535 /pause</span>
+</span><span class="gp">4026533389 mnt         5 570765 root  nginx: master process nginx -g daemon off;</span>
+<span class="gp">4026533390 uts         5 570765 root  nginx: master process nginx -g daemon off;</span>
+<span class="gp">4026533391 pid         5 570765 root  nginx: master process nginx -g daemon off;</span>
+<span class="gp">4026533395 cgroup      5 570765 root  nginx: master process nginx -g daemon off;</span>
+
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>lsns <span class="nt">-p</span> 570710
+<span class="go">        NS TYPE   NPROCS    PID USER  COMMAND</span>
+<span class="go">4026531834 time      236      1 root  /sbin/init</span>
+<span class="go">4026531837 user      236      1 root  /sbin/init</span>
+<span class="hll"><span class="go">4026533140 ipc         7 570593 65535 /pause</span>
+</span><span class="hll"><span class="go">4026533143 net         7 570593 65535 /pause</span>
+</span><span class="go">4026533383 mnt         1 570710 root  sleep 3650d</span>
+<span class="go">4026533384 uts         1 570710 root  sleep 3650d</span>
+<span class="go">4026533385 pid         1 570710 root  sleep 3650d</span>
+<span class="go">4026533386 cgroup      1 570710 root  sleep 3650d</span>
+
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>lsns <span class="nt">-p</span> 570593
+<span class="go">        NS TYPE   NPROCS    PID USER  COMMAND</span>
+<span class="go">4026531834 time      236      1 root  /sbin/init</span>
+<span class="go">4026531837 user      236      1 root  /sbin/init</span>
+<span class="go">4026533138 mnt         1 570593 65535 /pause</span>
+<span class="go">4026533139 uts         1 570593 65535 /pause</span>
+<span class="hll"><span class="go">4026533140 ipc         7 570593 65535 /pause</span>
+</span><span class="go">4026533141 pid         1 570593 65535 /pause</span>
+<span class="hll"><span class="go">4026533143 net         7 570593 65535 /pause</span>
+</span><span class="go">4026533210 cgroup      1 570593 65535 /pause</span>
+
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nsenter <span class="nt">-m</span> <span class="nt">-t</span> 570765 <span class="nb">cat</span> /etc/hostname
+<span class="go">demo</span>
+
+<span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nsenter <span class="nt">-m</span> <span class="nt">-t</span> 570710 <span class="nb">cat</span> /etc/hostname
+<span class="go">demo</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Use <code>wget</code> to access nginx at <code>busybox</code> within the pod</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>nsenter <span class="nt">-n</span> <span class="nt">-t</span> 570710 wget <span class="nt">-q</span> <span class="nt">-S</span> <span class="nt">-O</span> /dev/null localhost
+<span class="go">  HTTP/1.1 200 OK
+  Server: nginx/1.21.3
+  Date: Thu, 09 Dec 2021 06:04:24 GMT
+  Content-Type: text/html
+  Content-Length: 615
+  Last-Modified: Tue, 07 Sep 2021 15:21:03 GMT
+  Connection: keep-alive
+  ETag: "6137835f-267"
+  Accept-Ranges: bytes
+
+</span><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec</span> <span class="nt">-n</span> default <span class="nt">-it</span> demo <span class="nt">-c</span> busybox <span class="nt">--</span> wget <span class="nt">-q</span> <span class="nt">-S</span> <span class="nt">-O</span> /dev/null localhost
+<span class="go">  HTTP/1.1 200 OK
+  Server: nginx/1.21.3
+  Date: Thu, 09 Dec 2021 06:06:54 GMT
+  Content-Type: text/html
+  Content-Length: 615
+  Last-Modified: Tue, 07 Sep 2021 15:21:03 GMT
+  Connection: close
+  ETag: "6137835f-267"
+  Accept-Ranges: bytes</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Clean up with <code>kubectl delete -n default -f pod.yaml</code></strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl delete <span class="nt">-n</span> default <span class="nt">-f</span> pod.yaml
+<span class="go">pod "demo" deleted</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>References</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://groups.google.com/g/kubernetes-users/c/jVjv0QK4b_o" class="bare">https://groups.google.com/g/kubernetes-users/c/jVjv0QK4b_o</a></p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/workloads/pods/" class="bare">https://kubernetes.io/docs/concepts/workloads/pods/</a></p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/" class="bare">https://kubernetes.io/docs/concepts/cluster-administration/networking/</a></p>
+</li>
+</ul>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

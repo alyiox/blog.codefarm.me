@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Reflection in Go Language | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Reflection in Go Language" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Go provides a mechnism to update variables and inspect their values at run time, to call their mehtods, and to apply the operations intrinsic to their representation, all without their types at compile time. This mechnism is called reflection. reflect.Type and reflect.Value Reflection is provided by the reflect package. It defines two important types, Type and Value. A Type represents a Go type. It is an interface with many methods for discriminating among types and inspecting their components, like the fields of a struct or the parameters of a function. The sole implementation of reflect.Type is the type decriptor, the…" />
+<meta name="twitter:description" property="og:description" content="Go provides a mechnism to update variables and inspect their values at run time, to call their mehtods, and to apply the operations intrinsic to their representation, all without their types at compile time. This mechnism is called reflection. reflect.Type and reflect.Value Reflection is provided by the reflect package. It defines two important types, Type and Value. A Type represents a Go type. It is an interface with many methods for discriminating among types and inspecting their components, like the fields of a struct or the parameters of a function. The sole implementation of reflect.Type is the type decriptor, the…" />
+<link rel="canonical" href="https://blog.codefarm.me/reflection-in-go-language/" />
+<meta property="og:url" content="https://blog.codefarm.me/reflection-in-go-language/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-07-10T18:11:09+08:00" />
+<meta property="article:modified_time" content="2017-07-10T18:11:09+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Reflection in Go Language" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-07-10T18:11:09+08:00","datePublished":"2017-07-10T18:11:09+08:00","description":"Go provides a mechnism to update variables and inspect their values at run time, to call their mehtods, and to apply the operations intrinsic to their representation, all without their types at compile time. This mechnism is called reflection. reflect.Type and reflect.Value Reflection is provided by the reflect package. It defines two important types, Type and Value. A Type represents a Go type. It is an interface with many methods for discriminating among types and inspecting their components, like the fields of a struct or the parameters of a function. The sole implementation of reflect.Type is the type decriptor, the…","headline":"Reflection in Go Language","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/reflection-in-go-language/"},"url":"https://blog.codefarm.me/reflection-in-go-language/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Reflection in Go Language</h1><p class="c-post-meta">10 Jul 2017</p>
+  </header>
+
+  <div class="c-post-content">
+    <p>Go provides a mechnism to update variables and inspect their values at run time, to call their mehtods, and to apply the operations intrinsic to their representation, all without their types at compile time. This mechnism is called <em>reflection</em>.</p>
+
+<h3 id="reflecttype-and-reflectvalue">reflect.Type and reflect.Value</h3>
+
+<p>Reflection is provided by the <strong>reflect</strong> package. It defines two important types, <strong>Type</strong> and <strong>Value</strong>. A <strong>Type</strong> represents a Go type. It is an interface with many methods for discriminating among types and inspecting their components, like the fields of a struct or the parameters of a function. The sole implementation of <strong>reflect.Type</strong> is the type decriptor, the same entity that identifies the dynamic type of an interface value.</p>
+
+<p>The <strong>reflect.TypeOf</strong> function accepts any <strong>interface{}</strong> and returns its dynamic type as <strong>reflect.Type</strong>. Becaulse <strong>reflect.TypeOf</strong> returns an interface value’s dynamic type, it always returns a concrete type.</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="k">var</span> <span class="n">w</span> <span class="n">io</span><span class="o">.</span><span class="n">Writer</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Stdout</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">reflect</span><span class="o">.</span><span class="n">TypeOf</span><span class="p">(</span><span class="n">w</span><span class="p">))</span> <span class="c">// *os.File</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>          <span class="c">// *os.File</span>
+</code></pre></div></div>
+
+<p>A <strong>reflect.Value</strong> can hold a value of any type. The <strong>reflect.ValueOf</strong> function accepts any <strong>interface{}</strong> and returns a <strong>reflect.Value</strong> containing the interface’s dynamic value.</p>
+
+<p>The inverse operation to <strong>reflect.ValueOf</strong> is the <strong>reflect.Value.Interface</strong> method. It returns an <strong>interface{}</strong> holding the same concrete value as the <strong>reflect.Value</strong>.</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">v</span> <span class="o">:=</span> <span class="n">reflect</span><span class="o">.</span><span class="n">ValueOf</span><span class="p">(</span><span class="m">3</span><span class="p">)</span> <span class="c">// a reflect value</span>
+	<span class="n">x</span> <span class="o">:=</span> <span class="n">v</span><span class="o">.</span><span class="n">Interface</span><span class="p">()</span>      <span class="c">// an interface{}</span>
+	<span class="n">w</span> <span class="o">:=</span> <span class="n">x</span><span class="o">.</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>        <span class="c">// 3</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="c">// 3</span>
+</code></pre></div></div>
+
+<p>A <strong>reflect.Value</strong> and an <strong>interface{}</strong> can both hold arbitrary values. The difference is that a <strong>Value</strong> has many methods for inspecting its contents, regardless its type.</p>
+
+<p>Although there are infinitely many types, there are only a finite number of <strong><em>kinds</em></strong> of type: the basic types <strong>Bool</strong>, <strong>String</strong>, and all the numbers; the aggregate types <strong>Array</strong> and <strong>Struct</strong>; the reference types <strong>Chan</strong>, <strong>Func</strong>, <strong>Ptr</strong>, <strong>Slice</strong>, and <strong>Map</strong>; <strong>Interface</strong> types; and finally <strong>Invalid</strong>, meaning no value at all. (The zero value of a <strong>refelect.Value</strong> has kind <strong>Invalid</strong>.)</p>
+
+<p>A variable is an <strong>addressable</strong> storage location that contains a value, and its value may be updated through that address.</p>
+
+<p>A simimar distinction applies to <strong>reflect.Value</strong>s. Some are addressable; others are not.</p>
+
+<p>To recover the variable from an addressable <strong>reflect.Value</strong> requires three steps. First, we call <strong>Addr()</strong>, which returns a <strong>Value</strong> holding a pointer to the variable. Next, we call <strong>Interface()</strong> on this <strong>Value</strong>, which returns an <strong>interface{}</strong> value containing the pointer. Finally, if we know the type of the variable, we can use a type assertion to retrieve the contents of the interface as an oridinary pointer.</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">x</span> <span class="o">:=</span> <span class="m">2</span>
+	<span class="n">d</span> <span class="o">:=</span> <span class="n">reflect</span><span class="o">.</span><span class="n">ValueOf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">Elem</span><span class="p">()</span>   <span class="c">// d refers to the variable x</span>
+	<span class="n">px</span> <span class="o">:=</span> <span class="n">d</span><span class="o">.</span><span class="n">Addr</span><span class="p">()</span><span class="o">.</span><span class="n">Interface</span><span class="p">()</span><span class="o">.</span><span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)</span> <span class="c">// px := &amp;x</span>
+	<span class="o">*</span><span class="n">px</span> <span class="o">=</span> <span class="m">3</span>                           <span class="c">// x = 3</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                    <span class="c">// "3"</span>
+</code></pre></div></div>
+
+<p>We can update the variable referred to by an addressable <strong>reflect.Value</strong> directly, without using a pointer, by calling the <strong>reflect.Value.Set</strong> method:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="n">d</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">reflect</span><span class="o">.</span><span class="n">ValueOf</span><span class="p">(</span><span class="m">4</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c">// "4"</span>
+	<span class="n">d</span><span class="o">.</span><span class="n">SetInt</span><span class="p">(</span><span class="m">5</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c">// "5"</span>
+</code></pre></div></div>
+
+<p>The same checks for assignablility that are oridinarily performed by the compiler are done at runtime by the <strong>Set</strong> methods.</p>
+
+<hr />
+
+<h3 id="references">References</h3>
+
+<ol>
+  <li>Alan A. A. Donovan, Brian W. Kernighan. The Go Programming Language, 2015.11.</li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

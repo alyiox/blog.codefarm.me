@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Host .NET in Windows Service | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Host .NET in Windows Service" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. .NET Generic Host 1.1. Set up a host 1.2. Kestrel server 1.3. Use HTTP/3 with the ASP.NET Core Kestrel web server 2. Create Windows Service using BackgroundService 2.1. Update project file 2.2. Rewrite the Program class 2.3. Publish the app 2.4. Create the Windows Service 3. Host ASP.NET Core in a Windows Service 3.1. Current directory and content root 3.2. Configure endpoints 3.3. Update project file 3.4. Rewrite the Program class 3.5. Publish the app 3.6. Create the Windows Service 3.7. Static files in ASP.NET Core 3.7.1. Create the wwwroot directory, and sample files 3.7.2. Rewrite the Program class…" />
+<meta name="twitter:description" property="og:description" content="1. .NET Generic Host 1.1. Set up a host 1.2. Kestrel server 1.3. Use HTTP/3 with the ASP.NET Core Kestrel web server 2. Create Windows Service using BackgroundService 2.1. Update project file 2.2. Rewrite the Program class 2.3. Publish the app 2.4. Create the Windows Service 3. Host ASP.NET Core in a Windows Service 3.1. Current directory and content root 3.2. Configure endpoints 3.3. Update project file 3.4. Rewrite the Program class 3.5. Publish the app 3.6. Create the Windows Service 3.7. Static files in ASP.NET Core 3.7.1. Create the wwwroot directory, and sample files 3.7.2. Rewrite the Program class…" />
+<link rel="canonical" href="https://blog.codefarm.me/host-dotnet-in-windows-service/" />
+<meta property="og:url" content="https://blog.codefarm.me/host-dotnet-in-windows-service/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-04-02T10:40:51+08:00" />
+<meta property="article:modified_time" content="2024-04-02T10:40:51+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Host .NET in Windows Service" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-04-02T10:40:51+08:00","datePublished":"2024-04-02T10:40:51+08:00","description":"1. .NET Generic Host 1.1. Set up a host 1.2. Kestrel server 1.3. Use HTTP/3 with the ASP.NET Core Kestrel web server 2. Create Windows Service using BackgroundService 2.1. Update project file 2.2. Rewrite the Program class 2.3. Publish the app 2.4. Create the Windows Service 3. Host ASP.NET Core in a Windows Service 3.1. Current directory and content root 3.2. Configure endpoints 3.3. Update project file 3.4. Rewrite the Program class 3.5. Publish the app 3.6. Create the Windows Service 3.7. Static files in ASP.NET Core 3.7.1. Create the wwwroot directory, and sample files 3.7.2. Rewrite the Program class…","headline":"Host .NET in Windows Service","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/host-dotnet-in-windows-service/"},"url":"https://blog.codefarm.me/host-dotnet-in-windows-service/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Host .NET in Windows Service</h1><p class="c-post-meta">02 Apr 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#net-generic-host">1. .NET Generic Host</a>
+<ul class="sectlevel2">
+<li><a href="#set-up-a-host">1.1. Set up a host</a></li>
+<li><a href="#kestrel-server">1.2. Kestrel server</a></li>
+<li><a href="#use-http3-with-the-asp-net-core-kestrel-web-server">1.3. Use HTTP/3 with the ASP.NET Core Kestrel web server</a></li>
+</ul>
+</li>
+<li><a href="#create-windows-service-using-backgroundservice">2. Create Windows Service using BackgroundService</a>
+<ul class="sectlevel2">
+<li><a href="#update-project-file">2.1. Update project file</a></li>
+<li><a href="#rewrite-the-program-class">2.2. Rewrite the <code>Program</code> class</a></li>
+<li><a href="#publish-the-app">2.3. Publish the app</a></li>
+<li><a href="#create-the-windows-service">2.4. Create the Windows Service</a></li>
+</ul>
+</li>
+<li><a href="#host-asp-net-core-in-a-windows-service">3. Host ASP.NET Core in a Windows Service</a>
+<ul class="sectlevel2">
+<li><a href="#current-directory-and-content-root">3.1. Current directory and content root</a></li>
+<li><a href="#configure-endpoints">3.2. Configure endpoints</a></li>
+<li><a href="#update-project-file-2">3.3. Update project file</a></li>
+<li><a href="#rewrite-the-program-class-2">3.4. Rewrite the <code>Program</code> class</a></li>
+<li><a href="#publish-the-app-2">3.5. Publish the app</a></li>
+<li><a href="#create-the-windows-service-2">3.6. Create the Windows Service</a></li>
+<li><a href="#static-files-in-asp-net-core">3.7. Static files in ASP.NET Core</a>
+<ul class="sectlevel3">
+<li><a href="#create-the-wwwroot-directory-and-sample-files">3.7.1. Create the <code>wwwroot</code> directory, and sample files</a></li>
+<li><a href="#rewrite-the-program-class-3">3.7.2. Rewrite the <code>Program</code> class</a></li>
+<li><a href="#publish-the-app-3">3.7.3. Publish the app</a></li>
+<li><a href="#update-the-windows-service">3.7.4. Update the Windows Service</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#create-a-windows-service-installer">4. Create a Windows Service installer</a>
+<ul class="sectlevel2">
+<li><a href="#wix-command-line-net-tool">4.1. WiX Command-line .NET tool</a></li>
+<li><a href="#wix-msbuild-on-the-command-line-and-cicd-build-systems">4.2. WiX MSBuild on the command line and CI/CD build systems</a></li>
+<li><a href="#signing-windows-installer-msi-packages">4.3. Signing Windows Installer MSI packages</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="net-generic-host">1. .NET Generic Host</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The .NET Generic Host, available in the <a href="https://www.nuget.org/packages/Microsoft.Extensions.Hosting">Microsoft.Extensions.Hosting</a> NuGet package, is responsible for app startup and lifetime management. A host is an object that encapsulates an app&#8217;s resources and lifetime functionality, such as: <a href="#dotnet-generic-host">[1]</a> <a href="#aspnet-generic-host">[2]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection">Dependency injection (DI)</a></p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging">Logging</a></p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration">Configuration</a></p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/generic-host#host-shutdown">App shutdown</a></p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a> implementations</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When a host starts, it calls <code>IHostedService.StartAsync</code> on each implementation of <code>IHostedService</code> registered in the service container&#8217;s collection of hosted services. In a worker service app, all <code>IHostedService</code> implementations that contain <code>BackgroundService</code> instances have their <code>BackgroundService.ExecuteAsync</code> methods called.</p>
+</div>
+<div class="paragraph">
+<p>The main reason for including all of the app&#8217;s interdependent resources in one object is lifetime management: control over app startup and graceful shutdown.</p>
+</div>
+<div class="sect2">
+<h3 id="set-up-a-host">1.1. Set up a host</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="c">&lt;!-- Example.WorkerService.csproj --&gt;</span>
+
+<span class="c">&lt;!-- &lt;Project Sdk="Microsoft.NET.Sdk.Worker"&gt; --&gt;</span>
+<span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"Microsoft.NET.Sdk"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;PropertyGroup&gt;</span>
+    <span class="nt">&lt;OutputType&gt;</span>Exe<span class="nt">&lt;/OutputType&gt;</span>
+    <span class="nt">&lt;TargetFramework&gt;</span>net8.0<span class="nt">&lt;/TargetFramework&gt;</span>
+    <span class="nt">&lt;ImplicitUsings&gt;</span>enable<span class="nt">&lt;/ImplicitUsings&gt;</span>
+    <span class="nt">&lt;Nullable&gt;</span>enable<span class="nt">&lt;/Nullable&gt;</span>
+  <span class="nt">&lt;/PropertyGroup&gt;</span>
+
+  <span class="nt">&lt;ItemGroup&gt;</span>
+    <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting"</span> <span class="na">Version=</span><span class="s">"8.0.0"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ItemGroup&gt;</span>
+
+  <span class="nt">&lt;ItemGroup&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.DependencyInjection"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Logging"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ItemGroup&gt;</span>
+
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Program.cs</span>
+
+<span class="n">HostApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">Host</span><span class="p">.</span><span class="nf">CreateApplicationBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddHostedService</span><span class="p">&lt;</span><span class="n">Worker</span><span class="p">&gt;();</span>
+<span class="k">using</span> <span class="nn">IHost</span> <span class="n">host</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+<span class="n">host</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span>
+
+<span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">Worker</span><span class="p">&gt;</span> <span class="n">logger</span><span class="p">)</span> <span class="p">:</span> <span class="n">BackgroundService</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="k">override</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">ExecuteAsync</span><span class="p">(</span><span class="n">CancellationToken</span> <span class="n">stoppingToken</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">while</span> <span class="p">(!</span><span class="n">stoppingToken</span><span class="p">.</span><span class="n">IsCancellationRequested</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="nf">Delay</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="nf">FromSeconds</span><span class="p">(</span><span class="m">5</span><span class="p">),</span> <span class="n">stoppingToken</span><span class="p">);</span>
+            <span class="n">logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span><span class="s">"{}: I'm busy at work."</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">.</span><span class="n">TimeOfDay</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet run
+<span class="go">info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+. . .
+info: Worker[0]
+      11:17:39.1114826: I'm busy at work.
+info: Worker[0]
+      11:17:44.1725394: I'm busy at work.
+info: Worker[0]
+      11:17:49.1739304: I'm busy at work.
+^Cinfo: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>For an HTTP workload:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="c">&lt;!-- Example.WebApp.csproj --&gt;</span>
+
+<span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"Microsoft.NET.Sdk.Web"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;PropertyGroup&gt;</span>
+    <span class="nt">&lt;TargetFramework&gt;</span>net8.0<span class="nt">&lt;/TargetFramework&gt;</span>
+    <span class="nt">&lt;Nullable&gt;</span>enable<span class="nt">&lt;/Nullable&gt;</span>
+    <span class="nt">&lt;ImplicitUsings&gt;</span>enable<span class="nt">&lt;/ImplicitUsings&gt;</span>
+  <span class="nt">&lt;/PropertyGroup&gt;</span>
+
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Program.cs</span>
+
+<span class="n">WebApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">WebApplication</span><span class="p">.</span><span class="nf">CreateBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="n">WebApplication</span> <span class="n">app</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="nf">MapGet</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">ASPNETCORE_URLS</span><span class="o">=</span>http://+:5000 dotnet run <span class="nt">--no-launch-profile</span>
+<span class="go">info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://[::]:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+. . .
+^Cinfo: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-i</span> localhost:5000
+<span class="go">HTTP/1.1 200 OK
+</span><span class="gp">Content-Type: text/plain;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+<span class="go">Date: Tue, 02 Apr 2024 03:44:23 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+Hello World!</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="kestrel-server">1.2. Kestrel server</h3>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel">Kestrel server</a> is the default, cross-platform HTTP server implementation. Kestrel provides the best performance and memory utilization, but it doesn&#8217;t have some of the advanced features in <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/#korh">HTTP.sys</a>. <a href="#aspnet-servers">[3]</a></p>
+</div>
+<div class="paragraph">
+<p>Use Kestrel:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By itself as an edge server processing requests directly from a network, including the Internet.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/_static/kestrel-to-internet2.png" alt="Kestrel communicates directly with the Internet without a reverse proxy server" width="35%" height="35%">
+</div>
+</div>
+</li>
+<li>
+<p>With a reverse proxy server, such as Internet Information Services (IIS), Nginx, or Apache. A reverse proxy server receives HTTP requests from the Internet and forwards them to Kestrel.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/_static/kestrel-to-internet.png?view=aspnetcore-8.0" alt="Kestrel communicates indirectly with the Internet through a reverse proxy server" width="such as IIS" height="Nginx">
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Either hosting configuration—with or without a reverse proxy server—is supported.</p>
+</div>
+<div class="paragraph">
+<p>For Kestrel configuration guidance and information on when to use Kestrel in a reverse proxy configuration, see <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-8.0">Kestrel web server in ASP.NET Core.</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="use-http3-with-the-asp-net-core-kestrel-web-server">1.3. Use HTTP/3 with the ASP.NET Core Kestrel web server</h3>
+<div class="paragraph">
+<p><a href="https://datatracker.ietf.org/doc/rfc9114/">HTTP/3</a> is an approved standard and the third major version of HTTP. <a href="#kestrel-http3">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>HTTP/3 has different requirements depending on the operating system. If the platform that Kestrel is running on doesn&#8217;t have all the requirements for HTTP/3, then it&#8217;s disabled, and Kestrel will fall back to other HTTP protocols.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Windows</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Windows 11 Build 22000 or later OR Windows Server 2022.</p>
+</li>
+<li>
+<p>TLS 1.3 or later connection.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Linux</p>
+</li>
+<li>
+<p><code>libmsquic</code> package installed.</p>
+<div class="paragraph">
+<p><code>libmsquic</code> is published via Microsoft&#8217;s official Linux package repository at <code>packages.microsoft.com</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+.NET 6 is only compatible with the 1.9.x versions of libmsquic. Libmsquic 2.x is not compatible due to breaking changes. Libmsquic receives updates to 1.9.x when needed to incorporate security fixes.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>macOS</p>
+<div class="paragraph">
+<p>HTTP/3 isn&#8217;t currently supported on macOS and may be available in a future release.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>apt-cache madison libmsquic
+<span class="go"> libmsquic |      2.3.5 | https://packages.microsoft.com/debian/12/prod bookworm/main amd64 Packages
+ libmsquic |      2.3.4 | https://packages.microsoft.com/debian/12/prod bookworm/main amd64 Packages
+. . .
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>libmsquic <span class="nt">-y</span>
+<span class="go">Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libnuma1
+The following NEW packages will be installed:
+  libmsquic libnuma1
+0 upgraded, 2 newly installed, 0 to remove and 3 not upgraded.
+. . .
+</span><span class="gp">$</span><span class="w"> </span>dpkg <span class="nt">-S</span> libmsquic
+<span class="go">libmsquic: /usr/share/doc/libmsquic
+libmsquic: /usr/lib/x86_64-linux-gnu/libmsquic.so.2.3.5
+libmsquic: /usr/lib/x86_64-linux-gnu/libmsquic.lttng.so.2.3.5
+libmsquic: /usr/lib/x86_64-linux-gnu/libmsquic.so.2
+libmsquic: /usr/share/doc/libmsquic/changelog.gz</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span><span class="nv">ASPNETCORE_URLS</span><span class="o">=</span>https://+:5001 dotnet run <span class="se">\</span>
+<span class="go">    --no-launch-profile \
+    --Kestrel:EndpointDefaults:Protocols=Http1AndHttp2AndHttp3
+warn: Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer[8]
+      The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core devel
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://[::]:5001
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--network</span> host ymuski/curl-http3 curl <span class="nt">-ik</span> <span class="nt">--http3</span> https://localhost:5001
+<span class="go">HTTP/3 200
+</span><span class="gp">content-type: text/plain;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+<span class="go">date: Tue, 02 Apr 2024 06:19:53 GMT
+server: Kestrel
+</span><span class="gp">alt-svc: h3=":5001";</span><span class="w"> </span><span class="nv">ma</span><span class="o">=</span>86400
+<span class="go">
+Hello World!</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-windows-service-using-backgroundservice">2. Create Windows Service using BackgroundService</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To interop with native Windows Services from .NET <code>IHostedService</code> implementations, it&#8217;s needed to install the <a href="https://nuget.org/packages/Microsoft.Extensions.Hosting.WindowsServices">Microsoft.Extensions.Hosting.WindowsServices</a> NuGet package. <a href="#dotnet-windows-service">[5]</a></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging-providers#windows-eventlog"><code>EventLog</code></a> provider sends log output to the Windows Event Log. Unlike the other providers, the <code>EventLog</code> provider does NOT inherit the default non-provider settings. If <code>EventLog</code> log settings aren&#8217;t specified, they default to <code>LogLevel.Warning</code>.</p>
+</div>
+<div class="paragraph">
+<p>To log events lower than <code>LogLevel.Warning</code>, explicitly set the log level. The following example sets the Event Log default log level to <code>LogLevel.Information</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="nl">"Logging"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"EventLog"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"LogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"Default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Information"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>AddEventLog</code> overloads can pass in <code>EventLogSettings</code>. If <code>null</code> or not specified, the following default settings are used:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>LogName</code>: "Application"</p>
+</li>
+<li>
+<p><code>SourceName</code>: ".NET Runtime"</p>
+</li>
+<li>
+<p><code>MachineName</code>: The local machine name is used.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following code changes the <code>SourceName</code> from the default value of <code>".NET Runtime"</code> to <code>CustomLogs</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">HostApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">Host</span><span class="p">.</span><span class="nf">CreateApplicationBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Logging</span><span class="p">.</span><span class="nf">AddEventLog</span><span class="p">(</span>
+    <span class="n">config</span> <span class="p">=&gt;</span> <span class="n">config</span><span class="p">.</span><span class="n">SourceName</span> <span class="p">=</span> <span class="s">"CustomLogs"</span><span class="p">);</span>
+
+<span class="k">using</span> <span class="nn">IHost</span> <span class="n">host</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="n">host</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="update-project-file">2.1. Update project file</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="c">&lt;!-- Example.WorkerService.csproj --&gt;</span>
+
+<span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"Microsoft.NET.Sdk"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;PropertyGroup&gt;</span>
+    <span class="nt">&lt;OutputType&gt;</span>Exe<span class="nt">&lt;/OutputType&gt;</span>
+    <span class="nt">&lt;ImplicitUsings&gt;</span>enable<span class="nt">&lt;/ImplicitUsings&gt;</span>
+    <span class="nt">&lt;Nullable&gt;</span>enable<span class="nt">&lt;/Nullable&gt;</span>
+<span class="hll">    <span class="nt">&lt;TargetFramework&gt;</span>net8.0-windows<span class="nt">&lt;/TargetFramework&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;RuntimeIdentifier&gt;</span>win-x64<span class="nt">&lt;/RuntimeIdentifier&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PlatformTarget&gt;</span>x64<span class="nt">&lt;/PlatformTarget&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PublishSingleFile</span> <span class="na">Condition=</span><span class="s">"'$(Configuration)' == 'Release'"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/PublishSingleFile&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;DebugType&gt;</span>embedded<span class="nt">&lt;/DebugType&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;IncludeNativeLibrariesForSelfExtract&gt;</span>true<span class="nt">&lt;/IncludeNativeLibrariesForSelfExtract&gt;</span>
+</span>  <span class="nt">&lt;/PropertyGroup&gt;</span>
+
+  <span class="nt">&lt;ItemGroup&gt;</span>
+    <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting"</span> <span class="na">Version=</span><span class="s">"8.0.0"</span> <span class="nt">/&gt;</span>
+<span class="hll">    <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting.WindowsServices"</span> <span class="na">Version=</span><span class="s">"8.0.0"</span> <span class="nt">/&gt;</span>
+</span>  <span class="nt">&lt;/ItemGroup&gt;</span>
+
+  <span class="nt">&lt;ItemGroup&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.DependencyInjection"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Logging"</span> <span class="nt">/&gt;</span>
+<span class="hll">    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Logging.Configuration"</span> <span class="nt">/&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;Using</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Logging.EventLog"</span> <span class="nt">/&gt;</span>
+</span>  <span class="nt">&lt;/ItemGroup&gt;</span>
+
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rewrite-the-program-class">2.2. Rewrite the <code>Program</code> class</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Program.cs</span>
+
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.Configuration</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.EventLog</span><span class="p">;</span>
+
+<span class="n">HostApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">Host</span><span class="p">.</span><span class="nf">CreateApplicationBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="hll"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddWindowsService</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+</span><span class="hll"><span class="p">{</span>
+</span><span class="hll">    <span class="n">options</span><span class="p">.</span><span class="n">ServiceName</span> <span class="p">=</span> <span class="s">".NET Example WorkerService"</span><span class="p">;</span>
+</span><span class="hll"><span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll"><span class="n">builder</span><span class="p">.</span><span class="n">Logging</span><span class="p">.</span><span class="nf">AddEventLog</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+</span><span class="hll"><span class="p">{</span>
+</span><span class="hll">    <span class="n">options</span><span class="p">.</span><span class="n">SourceName</span> <span class="p">=</span> <span class="s">".NET Example WorkerService"</span><span class="p">;</span>
+</span><span class="hll"><span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll"><span class="n">LoggerProviderOptions</span><span class="p">.</span><span class="n">RegisterProviderOptions</span><span class="p">&lt;</span><span class="n">EventLogSettings</span><span class="p">,</span> <span class="n">EventLogLoggerProvider</span><span class="p">&gt;(</span><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">);</span>
+</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddHostedService</span><span class="p">&lt;</span><span class="n">Worker</span><span class="p">&gt;();</span>
+<span class="k">using</span> <span class="nn">IHost</span> <span class="n">host</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+<span class="n">host</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span>
+
+<span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">Worker</span><span class="p">&gt;</span> <span class="n">logger</span><span class="p">)</span> <span class="p">:</span> <span class="n">BackgroundService</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="k">override</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">ExecuteAsync</span><span class="p">(</span><span class="n">CancellationToken</span> <span class="n">stoppingToken</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">try</span>
+        <span class="p">{</span>
+            <span class="k">while</span> <span class="p">(!</span><span class="n">stoppingToken</span><span class="p">.</span><span class="n">IsCancellationRequested</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="nf">Delay</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="nf">FromSeconds</span><span class="p">(</span><span class="m">5</span><span class="p">),</span> <span class="n">stoppingToken</span><span class="p">);</span>
+                <span class="n">logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span><span class="s">"{}: I'm busy at work."</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">.</span><span class="n">TimeOfDay</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">catch</span> <span class="p">(</span><span class="n">OperationCanceledException</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// When the stopping token is canceled, for example, a call made from services.msc,</span>
+            <span class="c1">// we shouldn't exit with a non-zero exit code. In other words, this is expected...</span>
+        <span class="p">}</span>
+        <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">logger</span><span class="p">.</span><span class="nf">LogError</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="s">"{Message}"</span><span class="p">,</span> <span class="n">ex</span><span class="p">.</span><span class="n">Message</span><span class="p">);</span>
+
+            <span class="c1">// Terminates this process and returns an exit code to the operating system.</span>
+            <span class="c1">// This is required to avoid the 'BackgroundServiceExceptionBehavior', which</span>
+            <span class="c1">// performs one of two scenarios:</span>
+            <span class="c1">// 1. When set to "Ignore": will do nothing at all, errors cause zombie services.</span>
+            <span class="c1">// 2. When set to "StopHost": will cleanly stop the host, and log errors.</span>
+            <span class="c1">//</span>
+            <span class="c1">// In order for the Windows Service Management system to leverage configured</span>
+            <span class="c1">// recovery options, we need to terminate the process with a non-zero exit code.</span>
+            <span class="n">Environment</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="publish-the-app">2.3. Publish the app</h3>
+<div class="paragraph">
+<p>To create the .NET Worker Service app as a Windows Service, it&#8217;s recommended that you publish the app as a <a href="https://learn.microsoft.com/en-us/dotnet/core/deploying/single-file/overview">single file</a> executable. It&#8217;s less error-prone to have a <a href="https://learn.microsoft.com/en-us/dotnet/core/deploying/deploy-with-cli#self-contained-deployment">self-contained</a> executable, as there aren&#8217;t any dependent files lying around the file system. But you may choose a different publishing modality, which is perfectly acceptable, so long as you create an <code>*.exe</code> file that can be targeted by the Windows Service Control Manager.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"Microsoft.NET.Sdk"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;PropertyGroup&gt;</span>
+    <span class="nt">&lt;OutputType&gt;</span>Exe<span class="nt">&lt;/OutputType&gt;</span>
+    <span class="nt">&lt;ImplicitUsings&gt;</span>enable<span class="nt">&lt;/ImplicitUsings&gt;</span>
+    <span class="nt">&lt;Nullable&gt;</span>enable<span class="nt">&lt;/Nullable&gt;</span>
+<span class="hll">    <span class="nt">&lt;TargetFramework&gt;</span>net8.0-windows<span class="nt">&lt;/TargetFramework&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;RuntimeIdentifier&gt;</span>win-x64<span class="nt">&lt;/RuntimeIdentifier&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PlatformTarget&gt;</span>x64<span class="nt">&lt;/PlatformTarget&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PublishSingleFile</span> <span class="na">Condition=</span><span class="s">"'$(Configuration)' == 'Release'"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/PublishSingleFile&gt;</span>
+</span>    <span class="nt">&lt;DebugType&gt;</span>embedded<span class="nt">&lt;/DebugType&gt;</span>
+    <span class="nt">&lt;IncludeNativeLibrariesForSelfExtract&gt;</span>true<span class="nt">&lt;/IncludeNativeLibrariesForSelfExtract&gt;</span>
+  <span class="nt">&lt;/PropertyGroup&gt;</span>
+. . .</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet publish <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.3s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WorkerService succeeded (2.1s) → bin\Release\net8.0-windows\win-x64\publish\
+
+Build succeeded in 2.6s
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">ls </span>bin/Release/net8.0-windows/win-x64/publish/
+<span class="go">Example.WorkerService.exe</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish">dotnet publish command</a> now uses the <code>Release</code> configuration instead of the <code>Debug</code> configuration by default if the target framework is .NET 8 or a later version.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can also publish .NET apps using the .NET CLI with the following switches.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet publish <span class="se">\</span>
+    <span class="nt">-f</span> net8.0-windows <span class="se">\</span>
+    <span class="nt">-r</span> win-x64 <span class="se">\</span>
+    <span class="nt">--sc</span> <span class="se">\</span>
+    <span class="nt">-p</span>:PublishSingleFile<span class="o">=</span><span class="nb">true</span> <span class="se">\</span>
+    <span class="nt">-p</span>:IncludeNativeLibrariesForSelfExtract<span class="o">=</span><span class="nb">true</span> <span class="se">\</span>
+    <span class="nt">-p</span>:DebugType<span class="o">=</span>embedded</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="create-the-windows-service">2.4. Create the Windows Service</h3>
+<div class="paragraph">
+<p>To create a Windows Service, run PowerShell as an Administrator.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">New-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">"TestService"</span><span class="w"> </span><span class="nt">-BinaryPathName</span><span class="w"> </span><span class="s1">'C:\Path\To\App.WindowsService.exe'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create a directory, and copy the executable file to it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="nx">D:\Example.WorkerService\</span><span class="w">
+</span><span class="err">&gt;</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="o">.</span><span class="nx">\bin\Release\net8.0-windows\win-x64\publish\Example.WorkerService.exe</span><span class="w"> </span><span class="nx">D:\Example.WorkerService\</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">New-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span><span class="w"> </span><span class="nt">-BinaryPathName</span><span class="w"> </span><span class="nx">D:\Example.WorkerService\Example.WorkerService.exe</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Start-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get the status of the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-List</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get events from the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-EventLog</span><span class="w"> </span><span class="nt">-LogName</span><span class="w"> </span><span class="nx">Application</span><span class="w"> </span><span class="nt">-Source</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-List</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Index              : 3884
+EntryType          : Warning
+InstanceId         : 0
+Message            : Category: Worker
+                     EventId: 0
+
+                     16:15:27.1390426: I'm busy at work.
+
+Category           : (0)
+CategoryNumber     : 0
+ReplacementStrings : {Category: Worker
+                     EventId: 0
+
+                     16:15:27.1390426: I'm busy at work.
+                     }
+Source             : .NET Example WorkerService
+TimeGenerated      : 04/02/2024 16:15:27
+TimeWritten        : 04/02/2024 16:15:27
+UserName           :
+
+Index              : 3883
+EntryType          : Information
+InstanceId         : 0
+Message            : Service started successfully.
+Category           : (0)
+CategoryNumber     : 0
+ReplacementStrings : {Service started successfully.}
+Source             : .NET Example WorkerService
+TimeGenerated      : 04/02/2024 16:15:22
+TimeWritten        : 04/02/2024 16:15:22
+UserName           :</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Stop the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Stop-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Remove the <code>.NET Example WorkerService</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Remove-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>Remove-Service</code> cmdlet was introduced in PowerShell 6.0.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Use the native Windows Service Control Manager&#8217;s (<code>sc.exe</code>) delete command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">sc.exe</span><span class="w"> </span><span class="nx">delete</span><span class="w"> </span><span class="s2">".NET Example WorkerService"</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="host-asp-net-core-in-a-windows-service">3. Host ASP.NET Core in a Windows Service</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An ASP.NET Core app can be hosted on Windows as a <a href="https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications">Windows Service</a> without using IIS. When hosted as a Windows Service, the app automatically starts after server reboots. <a href="#aspnet-windows-service">[6]</a></p>
+</div>
+<div class="sect2">
+<h3 id="current-directory-and-content-root">3.1. Current directory and content root</h3>
+<div class="paragraph">
+<p>The current working directory returned by calling <code>GetCurrentDirectory</code> for a Windows Service is the <code>C:\WINDOWS\system32</code> folder. The <code>system32</code> folder isn&#8217;t a suitable location to store a service&#8217;s files (for example, settings files). Use one of the following approaches to maintain and access a service&#8217;s assets and settings files.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>IHostEnvironment.ContentRootPath</code> or <code>ContentRootFileProvider</code> to locate an app&#8217;s resources.</p>
+</li>
+<li>
+<p>When the app runs as a service, sets the <code>ContentRootPath</code> to <code>AppContext.BaseDirectory</code>.</p>
+</li>
+<li>
+<p>Don&#8217;t attempt to use <code>GetCurrentDirectory</code> to obtain a resource path because a Windows Service app returns the <code>C:\WINDOWS\system32</code> folder as its current directory.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configure-endpoints">3.2. Configure endpoints</h3>
+<div class="paragraph">
+<p>New ASP.NET Core projects are configured to bind to a random HTTP port between 5000-5300 and a random HTTPS port between 7000-7300. The selected ports are stored in the generated <code>Properties/launchSettings.json</code> file and can be modified by the developer. The <code>launchSetting.json</code> file is only used in local development.</p>
+</div>
+<div class="paragraph">
+<p>If there&#8217;s no endpoint configuration, then Kestrel binds to <code><a href="http://localhost:5000" class="bare">http://localhost:5000</a></code>.</p>
+</div>
+<div class="paragraph">
+<p>For additional URL and port configuration approaches, see <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-8.0">Configure endpoints for the ASP.NET Core Kestrel web server</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="update-project-file-2">3.3. Update project file</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="c">&lt;!-- Example.WebApp.csproj --&gt;</span>
+
+<span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"Microsoft.NET.Sdk.Web"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;PropertyGroup&gt;</span>
+    <span class="nt">&lt;Nullable&gt;</span>enable<span class="nt">&lt;/Nullable&gt;</span>
+<span class="hll">    <span class="nt">&lt;ImplicitUsings&gt;</span>enable<span class="nt">&lt;/ImplicitUsings&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;TargetFramework&gt;</span>net8.0-windows<span class="nt">&lt;/TargetFramework&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;RuntimeIdentifier&gt;</span>win-x64<span class="nt">&lt;/RuntimeIdentifier&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PlatformTarget&gt;</span>x64<span class="nt">&lt;/PlatformTarget&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;PublishSingleFile</span> <span class="na">Condition=</span><span class="s">"'$(Configuration)' == 'Release'"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/PublishSingleFile&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;DebugType&gt;</span>embedded<span class="nt">&lt;/DebugType&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;IncludeNativeLibrariesForSelfExtract&gt;</span>true<span class="nt">&lt;/IncludeNativeLibrariesForSelfExtract&gt;</span>
+</span><span class="hll">    <span class="nt">&lt;IsTransformWebConfigDisabled&gt;</span>true<span class="nt">&lt;/IsTransformWebConfigDisabled&gt;</span>
+</span>  <span class="nt">&lt;/PropertyGroup&gt;</span>
+
+  <span class="nt">&lt;ItemGroup&gt;</span>
+<span class="hll">    <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"Microsoft.Extensions.Hosting.WindowsServices"</span> <span class="na">Version=</span><span class="s">"8.0.0"</span> <span class="nt">/&gt;</span>
+</span>  <span class="nt">&lt;/ItemGroup&gt;</span>
+
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rewrite-the-program-class-2">3.4. Rewrite the <code>Program</code> class</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Program.cs</span>
+
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Hosting.WindowsServices</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.Configuration</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.EventLog</span><span class="p">;</span>
+
+<span class="hll"><span class="c1">// See https://github.com/dotnet/AspNetCore.Docs/issues/23387#issuecomment-927317675</span>
+</span><span class="hll"><span class="n">WebApplicationOptions</span> <span class="n">options</span> <span class="p">=</span> <span class="k">new</span><span class="p">()</span>
+</span><span class="hll"><span class="p">{</span>
+</span><span class="hll">    <span class="n">Args</span> <span class="p">=</span> <span class="n">args</span><span class="p">,</span>
+</span><span class="hll">    <span class="c1">// Sets the content root to AppContext.BaseDirectory.</span>
+</span><span class="hll">    <span class="n">ContentRootPath</span> <span class="p">=</span> <span class="n">WindowsServiceHelpers</span><span class="p">.</span><span class="nf">IsWindowsService</span><span class="p">()</span> <span class="p">?</span> <span class="n">AppContext</span><span class="p">.</span><span class="n">BaseDirectory</span> <span class="p">:</span> <span class="k">default</span>
+</span><span class="hll"><span class="p">};</span>
+</span><span class="hll">
+</span><span class="hll"><span class="n">WebApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">WebApplication</span><span class="p">.</span><span class="nf">CreateBuilder</span><span class="p">(</span><span class="n">options</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll"><span class="c1">// Sets the host lifetime to WindowsServiceLifetime.</span>
+</span><span class="hll"><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddWindowsService</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+</span><span class="hll"><span class="p">{</span>
+</span><span class="hll">    <span class="n">options</span><span class="p">.</span><span class="n">ServiceName</span> <span class="p">=</span> <span class="s">".NET Example WebApp"</span><span class="p">;</span>
+</span><span class="hll"><span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll"><span class="n">builder</span><span class="p">.</span><span class="n">Logging</span><span class="p">.</span><span class="nf">AddEventLog</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+</span><span class="hll"><span class="p">{</span>
+</span><span class="hll">    <span class="n">options</span><span class="p">.</span><span class="n">SourceName</span> <span class="p">=</span> <span class="s">".NET Example WebApp"</span><span class="p">;</span>
+</span><span class="hll"><span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll"><span class="n">LoggerProviderOptions</span><span class="p">.</span><span class="n">RegisterProviderOptions</span><span class="p">&lt;</span><span class="n">EventLogSettings</span><span class="p">,</span> <span class="n">EventLogLoggerProvider</span><span class="p">&gt;(</span><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">);</span>
+</span>
+<span class="n">WebApplication</span> <span class="n">app</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="n">app</span><span class="p">.</span><span class="nf">MapGet</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+
+<span class="n">app</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="publish-the-app-2">3.5. Publish the app</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet.exe publish
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.4s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WebApp succeeded (0.4s) → bin\Release\net8.0-windows\win-x64\publish\
+
+Build succeeded in 0.8s
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">ls </span>bin/Release/net8.0-windows/win-x64/publish/
+<span class="go">Example.WebApp.exe  appsettings.Development.json  appsettings.json</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="create-the-windows-service-2">3.6. Create the Windows Service</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Create work directory and copy files</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="nx">D:\Example.WebApp\</span><span class="w">
+</span><span class="err">&gt;</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="o">.</span><span class="nx">\bin\Release\net8.0-windows\win-x64\publish\Example.WebApp.exe</span><span class="w"> </span><span class="nx">D:\Example.WebApp\</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">New-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span><span class="w"> </span><span class="nt">-BinaryPathName</span><span class="w"> </span><span class="nx">D:\Example.WebApp\Example.WebApp.exe</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Status   Name               DisplayName
+------   ----               -----------
+Stopped  .NET Example We... .NET Example WebApp</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Start-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get the status of the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-List</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Name                : .NET Example WebApp
+DisplayName         : .NET Example WebApp
+Status              : Running
+DependentServices   : {}
+ServicesDependedOn  : {}
+CanPauseAndContinue : False
+CanShutdown         : True
+CanStop             : True
+ServiceType         : Win32OwnProcess</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get the events of the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-EventLog</span><span class="w"> </span><span class="nt">-LogName</span><span class="w"> </span><span class="nx">Application</span><span class="w"> </span><span class="nt">-Source</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">   Index Time          EntryType   Source                 InstanceID Message
+   ----- ----          ---------   ------                 ---------- -------
+    4677 Apr 02 17:39  Information .NET Example WebApp             0 Service started successfully.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test the endpoint of the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Invoke-WebRequest</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="nx">http://localhost:5000</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">StatusCode        : 200
+StatusDescription : OK
+Content           : Hello World!
+RawContent        : HTTP/1.1 200 OK
+                    Transfer-Encoding: chunked
+</span><span class="gp">                    Content-Type: text/plain;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+<span class="go">                    Date: Tue, 02 Apr 2024 09:33:34 GMT
+                    Server: Kestrel
+
+                    Hello World!
+. . .</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Stop and delete the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Stop-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">sc.exe</span><span class="w"> </span><span class="nx">delete</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="static-files-in-asp-net-core">3.7. Static files in ASP.NET Core</h3>
+<div class="paragraph">
+<p>Static files, such as HTML, CSS, images, and JavaScript, are assets an ASP.NET Core app serves directly to clients by default, which are stored within the project&#8217;s <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/?view=aspnetcore-8.0#web-root">web root</a> directory. For more information, see <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-8.0">Static files in ASP.NET Core</a>. <a href="#aspnet-static-files">[7]</a></p>
+</div>
+<div class="sect3">
+<h4 id="create-the-wwwroot-directory-and-sample-files">3.7.1. Create the <code>wwwroot</code> directory, and sample files</h4>
+<div class="listingblock">
+<div class="title"><em>powershell</em></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">mkdir</span><span class="w"> </span><span class="nx">wwwroot</span><span class="w">
+</span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"Hello Default Files!"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Out-File</span><span class="w"> </span><span class="nt">-Encoding</span><span class="w"> </span><span class="nx">ascii</span><span class="w"> </span><span class="o">.</span><span class="nx">\wwwroot\index.html</span><span class="w">
+</span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"Hello Windows Service!"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Out-File</span><span class="w"> </span><span class="nt">-Encoding</span><span class="w"> </span><span class="nx">ascii</span><span class="w"> </span><span class="o">.</span><span class="nx">\wwwroot\service.html</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="rewrite-the-program-class-3">3.7.2. Rewrite the <code>Program</code> class</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Program.cs</span>
+
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Hosting.WindowsServices</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.Configuration</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Logging.EventLog</span><span class="p">;</span>
+
+<span class="c1">// See https://github.com/dotnet/AspNetCore.Docs/issues/23387#issuecomment-927317675</span>
+<span class="n">WebApplicationOptions</span> <span class="n">options</span> <span class="p">=</span> <span class="k">new</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Args</span> <span class="p">=</span> <span class="n">args</span><span class="p">,</span>
+    <span class="c1">// Sets the content root to AppContext.BaseDirectory.</span>
+    <span class="n">ContentRootPath</span> <span class="p">=</span> <span class="n">WindowsServiceHelpers</span><span class="p">.</span><span class="nf">IsWindowsService</span><span class="p">()</span> <span class="p">?</span> <span class="n">AppContext</span><span class="p">.</span><span class="n">BaseDirectory</span> <span class="p">:</span> <span class="k">default</span>
+<span class="p">};</span>
+
+<span class="n">WebApplicationBuilder</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">WebApplication</span><span class="p">.</span><span class="nf">CreateBuilder</span><span class="p">(</span><span class="n">options</span><span class="p">);</span>
+
+<span class="c1">// Sets the host lifetime to WindowsServiceLifetime.</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddWindowsService</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="n">options</span><span class="p">.</span><span class="n">ServiceName</span> <span class="p">=</span> <span class="s">".NET Example WebApp"</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="n">builder</span><span class="p">.</span><span class="n">Logging</span><span class="p">.</span><span class="nf">AddEventLog</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="n">options</span><span class="p">.</span><span class="n">SourceName</span> <span class="p">=</span> <span class="s">".NET Example WebApp"</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="n">LoggerProviderOptions</span><span class="p">.</span><span class="n">RegisterProviderOptions</span><span class="p">&lt;</span><span class="n">EventLogSettings</span><span class="p">,</span> <span class="n">EventLogLoggerProvider</span><span class="p">&gt;(</span><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">);</span>
+
+<span class="n">WebApplication</span> <span class="n">app</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="hll"><span class="n">app</span><span class="p">.</span><span class="nf">UseFileServer</span><span class="p">();</span>
+</span>
+<span class="c1">// Set the path to `/hello`, instead of the root `/`.</span>
+<span class="hll"><span class="n">app</span><span class="p">.</span><span class="nf">MapGet</span><span class="p">(</span><span class="s">"/hello"</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+</span>
+<span class="n">app</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="publish-the-app-3">3.7.3. Publish the app</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet publish
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.7s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WebApp succeeded (4.7s) → bin\Release\net8.0-windows\win-x64\publish\
+
+Build succeeded in 5.5s
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">ls </span>bin/Release/net8.0-windows/win-x64/publish/
+<span class="go">Example.WebApp.exe  appsettings.Development.json  appsettings.json  wwwroot</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="update-the-windows-service">3.7.4. Update the Windows Service</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Stop the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Stop-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy files</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Copy-Item</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Path</span><span class="w"> </span><span class="o">.</span><span class="nx">\bin\Release\net8.0-windows\win-x64\publish\</span><span class="o">*</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Destination</span><span class="w"> </span><span class="nx">D:\Example.WebApp\</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Recurse</span><span class="w"> </span><span class="se">`
+</span><span class="w">    </span><span class="nt">-Force</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the <code>.NET Example WebApp</code> service</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Start-Service</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">".NET Example WebApp"</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test the endpoint of the <code>.NET Example WebApp service</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>Invoke-WebRequest <span class="nt">-Uri</span> http://localhost:5000 <span class="sb">`</span>
+<span class="go">    | Select-Object -Property StatusCode,StatusDescription,Content `
+    | Format-List
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello Default Files!
+
+</span><span class="gp">&gt;</span><span class="w"> </span>Invoke-WebRequest <span class="nt">-Uri</span> http://localhost:5000/index.html <span class="sb">`</span>
+<span class="go">    | Select-Object -Property StatusCode,StatusDescription,Content `
+    | Format-List
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello Default Files!
+
+</span><span class="gp">&gt;</span><span class="w"> </span>Invoke-WebRequest <span class="nt">-Uri</span> http://localhost:5000/service.html <span class="sb">`</span>
+<span class="go">    | Select-Object -Property StatusCode,StatusDescription,Content `
+    | Format-List
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello Windows Service!
+
+</span><span class="gp">&gt;</span><span class="w"> </span>Invoke-WebRequest <span class="nt">-Uri</span> http://localhost:5000/hello <span class="sb">`</span>
+<span class="go">    | Select-Object -Property StatusCode,StatusDescription,Content `
+    | Format-List
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello World!</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-a-windows-service-installer">4. Create a Windows Service installer</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An <a href="https://learn.microsoft.com/en-us/windows/win32/msi/windows-installer-portal">Windows Installer</a>, an installation and configuration service provided with Windows, bundles the app&#8217;s executables and exposes a customizable installation user experience. <a href="#dotnet-windows-service-with-installer">[8]</a></p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://wixtoolset.org/">Wix Toolset</a> is a set of tools that build Windows installation packages from XML source code.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The WiX Toolset only supports Windows.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following steps will use the <code>Example.WebApp</code> project as an example to package a Windows Installer.</p>
+</div>
+<div class="sect2">
+<h3 id="wix-command-line-net-tool">4.1. WiX Command-line .NET tool</h3>
+<div class="paragraph">
+<p>WiX, available as a <a href="https://wixtoolset.org/docs/tools/wixexe/">.NET tool</a>, supports commands to perform particular operations. For example, the <code>build</code> command can be used to build MSI packages, bundles, and other package types.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Install the Wix Toolset</p>
+</li>
+<li>
+<p>Create the local tool manifest file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>dotnet new tool-manifest
+<span class="go">The template "Dotnet local tool manifest file" was created successfully.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Install the Wix Toolset</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>dotnet tool <span class="nb">install </span>wix <span class="nt">--version</span> 5.0.0
+<span class="go">You can invoke the tool from this directory using the following commands: 'dotnet tool run wix' or 'dotnet wix'.
+Tool 'wix' (version '5.0.0') was successfully installed. . . .</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the WiX package source file <code>Package.wxs</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+
+<span class="cp">&lt;?define Name = ".NET Example WebApp" ?&gt;</span>
+<span class="cp">&lt;?define Manufacturer = ".NET Example Corporation" ?&gt;</span>
+<span class="cp">&lt;?define Version = "1.0.0.0" ?&gt;</span>
+<span class="cp">&lt;?define UpgradeCode = "288C8793-D5D7-427F-A82F-B647ECDBDCC1" ?&gt;</span>
+<span class="cp">&lt;?define ServiceName = ".NET Example WebApp" ?&gt;</span>
+
+<span class="nt">&lt;Wix</span> <span class="na">xmlns=</span><span class="s">"http://wixtoolset.org/schemas/v4/wxs"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;Package</span> <span class="na">Name=</span><span class="s">"$(Name)"</span>
+           <span class="na">Manufacturer=</span><span class="s">"$(Manufacturer)"</span>
+           <span class="na">Version=</span><span class="s">"$(Version)"</span> <i class="conum" data-value="1"></i><b>(1)</b>
+           <span class="na">UpgradeCode=</span><span class="s">"$(var.UpgradeCode)"</span>
+           <span class="na">Compressed=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;MajorUpgrade</span> <span class="na">DowngradeErrorMessage=</span><span class="s">"A newer version of [ProductName] is already installed."</span> <span class="nt">/&gt;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="nt">&lt;MediaTemplate</span> <span class="na">EmbedCab=</span><span class="s">"yes"</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;StandardDirectory</span> <span class="na">Id=</span><span class="s">"ProgramFiles64Folder"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Directory</span> <span class="na">Id=</span><span class="s">"ROOTDIRECTORY"</span> <span class="na">Name=</span><span class="s">"!(bind.Property.Manufacturer)"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;Directory</span> <span class="na">Id=</span><span class="s">"INSTALLFOLDER"</span> <span class="na">Name=</span><span class="s">"!(bind.Property.ProductName)"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;Directory</span> <span class="na">Id=</span><span class="s">"WEBROOTDIRECTORY"</span> <span class="na">Name=</span><span class="s">"wwwroot"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/Directory&gt;</span>
+      <span class="nt">&lt;/Directory&gt;</span>
+    <span class="nt">&lt;/StandardDirectory&gt;</span>
+
+    <span class="nt">&lt;ComponentGroup</span> <span class="na">Id=</span><span class="s">"WebAppServiceComponents"</span> <span class="na">Directory=</span><span class="s">"INSTALLFOLDER"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Component</span> <span class="na">Id=</span><span class="s">"ServiceExecutable"</span> <span class="na">Bitness=</span><span class="s">"always64"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;File</span> <span class="na">Source=</span><span class="s">"$(var.Example.WebApp.TargetDir)publish\Example.WebApp.exe"</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;ServiceInstall</span> <span class="na">Id=</span><span class="s">"ServiceInstaller"</span>
+                        <span class="na">Type=</span><span class="s">"ownProcess"</span>
+                        <span class="na">Name=</span><span class="s">"$(ServiceName)"</span>
+                        <span class="na">DisplayName=</span><span class="s">"$(ServiceName)"</span>
+                        <span class="na">Description=</span><span class="s">"A joke service that periodically logs nerdy humor."</span>
+                        <span class="na">Start=</span><span class="s">"auto"</span>
+                        <span class="na">ErrorControl=</span><span class="s">"normal"</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;ServiceControl</span> <span class="na">Id=</span><span class="s">"StartService"</span>
+                        <span class="na">Start=</span><span class="s">"install"</span>
+                        <span class="na">Stop=</span><span class="s">"both"</span>
+                        <span class="na">Remove=</span><span class="s">"uninstall"</span>
+                        <span class="na">Name=</span><span class="s">"$(ServiceName)"</span>
+                        <span class="na">Wait=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/Component&gt;</span>
+    <span class="nt">&lt;/ComponentGroup&gt;</span>
+
+    <span class="nt">&lt;ComponentGroup</span> <span class="na">Id=</span><span class="s">"AppSettingsComponents"</span> <span class="na">Directory=</span><span class="s">"INSTALLFOLDER"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;File</span> <span class="na">Source=</span><span class="s">"$(var.Example.WebApp.TargetDir)publish\appsettings.json"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;Files</span> <span class="na">Include=</span><span class="s">"$(var.Example.WebApp.TargetDir)publish\appsettings.*.json"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/ComponentGroup&gt;</span>
+
+    <span class="nt">&lt;ComponentGroup</span> <span class="na">Id=</span><span class="s">"WebRootComponents"</span> <span class="na">Directory=</span><span class="s">"INSTALLFOLDER"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Files</span> <span class="na">Directory=</span><span class="s">"WEBROOTDIRECTORY"</span> <span class="na">Include=</span><span class="s">"$(var.Example.WebApp.TargetDir)publish\wwwroot\**"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/ComponentGroup&gt;</span>
+
+    <span class="nt">&lt;Feature</span> <span class="na">Id=</span><span class="s">"WebApp"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;ComponentGroupRef</span> <span class="na">Id=</span><span class="s">"WebAppServiceComponents"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;ComponentGroupRef</span> <span class="na">Id=</span><span class="s">"AppSettingsComponents"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;ComponentGroupRef</span> <span class="na">Id=</span><span class="s">"WebRootComponents"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Feature&gt;</span>
+  <span class="nt">&lt;/Package&gt;</span>
+<span class="nt">&lt;/Wix&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Windows Installer uses only the first three fields of the product version. See <a href="https://learn.microsoft.com/en-us/windows/win32/msi/productversion">ProductVersion</a> Property for descriptions of these fields. If you include a fourth field in your product version, the installer ignores the fourth field.
+<div class="paragraph">
+<p>To create an upgrade installer package, you can update the <code>version</code> and repackage it.</p>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>During a major upgrade using Windows Installer, the installer searches the user&#8217;s computer for applications that are related to the pending upgrade, and when it detects one, it retrieves the version of the installed application from the system registry. The installer then uses information in the upgrade database to determine whether to upgrade the installed application.
+<div class="paragraph">
+<p>See also <a href="https://learn.microsoft.com/en-us/windows/win32/msi/major-upgrades" class="bare">https://learn.microsoft.com/en-us/windows/win32/msi/major-upgrades</a>.</p>
+</div></td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Publish the <code>Example.WebApp</code> project.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>dotnet publish
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.2s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WebApp succeeded (1.2s) → bin\Release\net8.0-windows\win-x64\publish\
+
+Build succeeded in 1.6s</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Build the MSI installer</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span><span class="nv">$outdir</span> <span class="o">=</span> dotnet msbuild <span class="nt">-getProperty</span>:OutDir <span class="nt">-p</span>:Configuration<span class="o">=</span>Release
+<span class="gp">&gt;</span><span class="w"> </span>dotnet wix build <span class="nt">-arch</span> x64 Package.wxs <span class="nt">-d</span> var.Example.WebApp.TargetDir<span class="o">=</span><span class="nv">$outdir</span> <span class="nt">-out</span> Example.WebApp.msi</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>dotnet msbuild <span class="nt">-getProperty</span>:OutDir <span class="nt">-p</span>:Configuration<span class="o">=</span>Release
+<span class="go">bin\Release\net8.0-windows\win-x64\</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Test in Windows Sandbox</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title"><strong><em>Enabling Windows Sandbox</em></strong></div>
+<div class="paragraph">
+<p>Windows Sandbox comes with Windows but isn&#8217;t installed by default. The <a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-overview">documentation</a> tells you to search from the taskbar for <code>Turn Windows Features on or off</code> to bring up the feature list. Another way to get to that list is to visit our old friend ARP (Programs and Features) and click on the Turn Windows Features on or off link on the left.</p>
+</div>
+<div class="paragraph">
+<p>That brings up a list of features. Scroll to almost the bottom of the list and you&#8217;ll see <code>Windows Sandbox</code>. If you do NOT see it, that means your machine isn&#8217;t modern enough to satisfy Windows&#8217;s cravings for the newest CPUs. If it&#8217;s there and checked, you&#8217;re all done. If it&#8217;s there and unchecked, check it and click OK. You&#8217;ll have to go through a reboot and spinner churn as Sandbox is installed.</p>
+</div>
+<div class="paragraph">
+<p>Once it&#8217;s installed, search for <code>sandbox</code> and choose the <code>Windows Sandbox</code> shortcut. The first time you run it, it might take a little while to come up (newbie jitters) but soon enough, you&#8217;ll have a window with a familiar-looking Windows desktop.</p>
+</div>
+<div class="paragraph">
+<p>See also <a href="https://www.firegiant.com/docs/wix/tutorial/sprint3/enabling-windows-sandbox/" class="bare">https://www.firegiant.com/docs/wix/tutorial/sprint3/enabling-windows-sandbox/</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Select <code>Example.WebApp.msi</code> and press <code>Ctrl+C</code> (or choose <code>Copy</code> from the context menu). Go to your running Windows Sandbox and press <code>Ctrl+V</code> (or <code>Paste</code>) on the desktop.</p>
+</li>
+<li>
+<p>Double click the <code>Example.WebApp.msi</code> to install the <code>.NET Example WebApp</code> service. You need to run the installation as an administrator.</p>
+<div class="paragraph">
+<p>Once the service is installed, you can open <code>Services</code> to see the service running. To uninstall the service, use the <code>Windows Add or Remove Programs</code> feature to call the installer.</p>
+</div>
+</li>
+<li>
+<p>Run the following command on PowerShell to test the service.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>Invoke-WebRequest <span class="nt">-Uri</span> http://localhost:5000 <span class="sb">`</span>
+<span class="go">     | Select-Object -Property StatusCode,StatusDescription,Content `
+     | Format-List
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : Hello Default Files!</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="wix-msbuild-on-the-command-line-and-cicd-build-systems">4.2. WiX MSBuild on the command line and CI/CD build systems</h3>
+<div class="paragraph">
+<p>WiX, available as an <a href="https://wixtoolset.org/docs/tools/msbuild/">MSBuild SDK</a> for building from the command line using <code>dotnet build</code> from the .NET SDK or the .NET Framework-based <code>MSBuild</code> from Visual Studio, have smart defaults that make for simple <code>.wixproj</code> project authoring. For example, here&#8217;s a minimal <code>.wixproj</code> that builds an MSI from the <code>.wxs</code> source files in the project directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"WixToolset.Sdk/5.0.0"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="https://www.firegiant.com/">FireGiant</a> has released <a href="https://www.firegiant.com/wix/heatwave/">HeatWave Community Edition</a>, available free of charge, to support WiX SDK-style MSBuild projects in Visual Studio.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create the WiX SDK-style project directory</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">.</span><span class="nx">\src\Example.WebApp.Installer</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create the WiX SDK-style project file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">ni</span><span class="w"> </span><span class="o">.</span><span class="nx">\src\Example.WebApp.Installer\Example.WebApp.Installer.wixproj</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="c">&lt;!-- Example.WebApp.Installer.wixproj --&gt;</span>
+
+<span class="nt">&lt;Project</span> <span class="na">Sdk=</span><span class="s">"WixToolset.Sdk/5.0.0"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ItemGroup&gt;</span>
+    <span class="nt">&lt;ProjectReference</span> <span class="na">Include=</span><span class="s">"..\Example.WebApp\Example.WebApp.csproj"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ItemGroup&gt;</span>
+<span class="nt">&lt;/Project&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the WiX SDK-style project to the solution</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">dotnet</span><span class="w"> </span><span class="nx">sln</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="o">.</span><span class="nx">\src\Example.WebApp.Installer\</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy the <code>Package.wxs</code> from the project <code>Example.WebApp</code> to <code>Example.WebApp.Installer</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="err">&gt;</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="o">.</span><span class="nx">\src\Example.WebApp\Package.wxs</span><span class="w"> </span><span class="o">.</span><span class="nx">\src\Example.WebApp.Installer\</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Publish the <code>Example.WebApp</code> and build the MSI package</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>dotnet publish .<span class="se">\s</span>rc<span class="se">\E</span>xample.WebApp<span class="se">\</span>
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.6s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WebApp succeeded (7.5s) → src\Example.WebApp\bin\Release\net8.0-windows\win-x64\publish\
+
+Build succeeded in 8.3s
+</span><span class="gp">&gt;</span><span class="w"> </span>dotnet build <span class="nt">-r</span> win-x64 <span class="nt">-c</span> Release <span class="nt">-p</span>:InstallerPlatform<span class="o">=</span>x64 .<span class="se">\s</span>rc<span class="se">\E</span>xample.WebApp.Installer<span class="se">\</span>
+<span class="go">MSBuild version 17.10.0-preview-24101-01+07fd5d51f for .NET
+Restore complete (0.4s)
+You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
+  Example.WebApp succeeded (0.3s) → src\Example.WebApp\bin\Release\net8.0-windows\win-x64\Example.WebApp.dll
+  Example.WebApp.Installer succeeded (0.0s) → src\Example.WebApp.Installer\bin\Release\Example.WebApp.Installer.msi
+
+Build succeeded in 0.9s</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="signing-windows-installer-msi-packages">4.3. Signing Windows Installer MSI packages</h3>
+<div class="paragraph">
+<p>Windows Installer packages can be signed directly by signing tools like <a href="https://learn.microsoft.com/en-us/dotnet/framework/tools/signtool-exe">Signtool.exe</a>. <a href="#wixtoolset-signing">[9]</a></p>
+</div>
+<div class="paragraph">
+<p>SignTool is available as part of the Windows SDK, which you can download from <a href="https://developer.microsoft.com/windows/downloads/windows-sdk">Windows SDK</a>. The tool is installed in the <code>\bin</code> folder of the SDK installation path, for example: <code>C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe</code>. <a href="#sdk-signtool">[10]</a> <a href="#digitally-sign-msi-installers-with-code-signing">[11]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>New-SelfSignedCertificate</code> to create a self-signed certificate for testing</p>
+<div class="paragraph">
+<p>See <a href="https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing" class="bare">https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">New-SelfSignedCertificate</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Type</span><span class="w"> </span><span class="nx">Custom</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Subject</span><span class="w"> </span><span class="s2">"CN=Contoso Software, O=Contoso Corporation, C=US"</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-KeyUsage</span><span class="w"> </span><span class="nx">DigitalSignature</span><span class="w"> </span><span class="se">` </span><span class="w"><i class="conum" data-value="1"></i><b>(1)</b>
+  </span><span class="nt">-FriendlyName</span><span class="w"> </span><span class="s2">"Your friendly name goes here"</span><span class="w"> </span><span class="se">`</span><span class="w">
+  </span><span class="nt">-TextExtension</span><span class="w"> </span><span class="p">@(</span><span class="s2">"2.5.29.37={text}1.3.6.1.5.5.7.3.3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"2.5.29.19={text}"</span><span class="p">)</span><span class="w"> </span><span class="err">`</span><span class="w"> <i class="conum" data-value="2"></i><b>(2)</b>
+  </span><span class="nt">-CertStoreLocation</span><span class="w"> </span><span class="s2">"Cert:\CurrentUser\My"</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>KeyUsage</code>: This parameter defines what the certificate may be used for. For a self-signing certificate, this parameter should be set to <code>DigitalSignature</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>TextExtension</code>: This parameter includes settings for the following extensions:
+<div class="paragraph">
+<p><code>Extended Key Usage (EKU)</code>: This extension indicates additional purposes for which the certified public key may be used. For a self-signing certificate, this parameter should include the extension string "2.5.29.37={text}1.3.6.1.5.5.7.3.3", which indicates that the certificate is to be used for code signing.</p>
+</div>
+<div class="paragraph">
+<p><code>Basic Constraints</code>: This extension indicates whether or not the certificate is a Certificate Authority (CA). For a self-signing certificate, this parameter should include the extension string "2.5.29.19={text}", which indicates that the certificate is an end entity (not a CA).</p>
+</div></td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>You can view your certificate in a PowerShell window by using the following commands:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nx">Cert:\CurrentUser\My</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Format-Table</span><span class="w"> </span><span class="nx">Subject</span><span class="p">,</span><span class="w"> </span><span class="nx">FriendlyName</span><span class="p">,</span><span class="w"> </span><span class="nx">Thumbprint</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Export a certificate</p>
+<div class="paragraph">
+<p>To export the certificate in the local store to a Personal Information Exchange (PFX) file, use the <code>Export-PfxCertificate</code> cmdlet.</p>
+</div>
+<div class="paragraph">
+<p>When using <code>Export-PfxCertificate</code>, you must either create and use a password or use the "-ProtectTo" parameter to specify which users or groups can access the file without a password. Note that an error will be displayed if you don&#8217;t use either the "-Password" or "-ProtectTo" parameter.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Password usage</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="nv">$password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConvertTo-SecureString</span><span class="w"> </span><span class="nt">-String</span><span class="w"> </span><span class="err">&lt;</span><span class="nx">Your</span><span class="w"> </span><span class="nx">Password</span><span class="err">&gt;</span><span class="w"> </span><span class="nt">-Force</span><span class="w"> </span><span class="nt">-AsPlainText</span><span class="w">
+</span><span class="n">Export-PfxCertificate</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-cert</span><span class="w"> </span><span class="s2">"Cert:\CurrentUser\My\&lt;Certificate Thumbprint&gt;"</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-FilePath</span><span class="w"> </span><span class="err">&lt;</span><span class="nx">FilePath</span><span class="err">&gt;</span><span class="o">.</span><span class="nf">pfx</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-Password</span><span class="w"> </span><span class="nv">$password</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>ProtectTo usage</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="powershell"><span class="n">Export-PfxCertificate</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-cert</span><span class="w"> </span><span class="nx">Cert:\CurrentUser\My\</span><span class="err">&lt;</span><span class="nx">Certificate</span><span class="w"> </span><span class="nx">Thumbprint</span><span class="err">&gt;</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-FilePath</span><span class="w"> </span><span class="err">&lt;</span><span class="nx">FilePath</span><span class="err">&gt;</span><span class="o">.</span><span class="nf">pfx</span><span class="w"> </span><span class="se">`
+</span><span class="w">  </span><span class="nt">-ProtectTo</span><span class="w"> </span><span class="err">&lt;</span><span class="nx">Username</span><span class="w"> </span><span class="nx">or</span><span class="w"> </span><span class="nx">group</span><span class="w"> </span><span class="nx">name</span><span class="err">&gt;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>Get-ChildItem Cert:<span class="se">\C</span>urrentUser<span class="se">\M</span>y | Format-Table Subject, FriendlyName, Thumbprint
+<span class="go">
+Subject                                          FriendlyName                               Thumbprint
+-------                                          ------------                               ----------
+CN=localhost                                     ASP.NET Core HTTPS development certificate 621654A0E5B9683E1129FE5D0871FAB5995F30E6
+CN=Contoso Software, O=Contoso Corporation, C=US Your friendly name goes here               532554756AC84D83A274B094A76A8C38FE821227
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nv">$password</span> <span class="o">=</span> ConvertTo-SecureString <span class="nt">-String</span> <span class="s2">"&lt;Your Password&gt;"</span> <span class="nt">-Force</span> <span class="nt">-AsPlainText</span>
+<span class="gp">&gt;</span><span class="w"> </span>Export-PfxCertificate <span class="nt">-Cert</span> Cert:<span class="se">\C</span>urrentUser<span class="se">\M</span>y<span class="se">\5</span>32554756AC84D83A274B094A76A8C38FE821227 <span class="nt">-FilePath</span> cert.pfx <span class="nt">-Password</span> <span class="nv">$password</span>
+<span class="go">
+. . .
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        04/08/2024     17:01           2782 cert.pfx</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Sign MSI package using SignTool</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">&gt;</span><span class="w"> </span>signtool sign /v /fd SHA256 /f cert.pfx /p <span class="s2">"&lt;Your Password&gt;"</span> Example.WebApp.Installer.msi
+<span class="go">The following certificate was selected:
+    Issued to: Contoso Software
+    Issued by: Contoso Software
+    Expires:   Tue Apr 08 16:54:26 2025
+    SHA1 hash: 532554756AC84D83A274B094A76A8C38FE821227
+
+Done Adding Additional Store
+Successfully signed: .\Example.WebApp.Installer.msi
+
+Number of files successfully Signed: 1
+Number of warnings: 0
+Number of errors: 0</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="dotnet-generic-host"></a>[1] <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/generic-host" class="bare">https://learn.microsoft.com/en-us/dotnet/core/extensions/generic-host</a></p>
+</li>
+<li>
+<p><a id="aspnet-generic-host"></a>[2] <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host" class="bare">https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host</a></p>
+</li>
+<li>
+<p><a id="aspnet-servers"></a>[3] <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/" class="bare">https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/</a></p>
+</li>
+<li>
+<p><a id="kestrel-http3"></a>[4] <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3" class="bare">https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/http3</a></p>
+</li>
+<li>
+<p><a id="dotnet-windows-service"></a>[5] <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/windows-service" class="bare">https://learn.microsoft.com/en-us/dotnet/core/extensions/windows-service</a></p>
+</li>
+<li>
+<p><a id="aspnet-windows-service"></a>[6] <a href="https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/windows-service" class="bare">https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/windows-service</a></p>
+</li>
+<li>
+<p><a id="aspnet-static-files"></a>[7] <a href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files" class="bare">https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files</a></p>
+</li>
+<li>
+<p><a id="dotnet-windows-service-with-installer"></a>[8] <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/windows-service-with-installer" class="bare">https://learn.microsoft.com/en-us/dotnet/core/extensions/windows-service-with-installer</a></p>
+</li>
+<li>
+<p><a id="wixtoolset-signing"></a>[9] <a href="https://wixtoolset.org/docs/tools/signing/" class="bare">https://wixtoolset.org/docs/tools/signing/</a></p>
+</li>
+<li>
+<p><a id="sdk-signtool"></a>[10] <a href="https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool" class="bare">https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool</a></p>
+</li>
+<li>
+<p><a id="digitally-sign-msi-installers-with-code-signing"></a>[11] <a href="https://codesigningstore.com/digitally-sign-msi-installers-with-code-signing" class="bare">https://codesigningstore.com/digitally-sign-msi-installers-with-code-signing</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

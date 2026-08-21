@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>What is OpenTelemetry | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="What is OpenTelemetry" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="As modern application environments are polyglot, distributed, and increasingly complex, observing your application to identify and react to failures has become challenging. In early 2019, two popular instrumentation projects, OpenTracing and OpenCensus, merged to create OpenTelemetry, a new standard for observability telemetry. [1] OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces) to help you analyze your software’s performance and behavior. [2] OpenTelemetry is generally available across several languages and is suitable for use. OpenTelemetry, also known as OTel for short, is a vendor-neutral open-source Observability…" />
+<meta name="twitter:description" property="og:description" content="As modern application environments are polyglot, distributed, and increasingly complex, observing your application to identify and react to failures has become challenging. In early 2019, two popular instrumentation projects, OpenTracing and OpenCensus, merged to create OpenTelemetry, a new standard for observability telemetry. [1] OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces) to help you analyze your software’s performance and behavior. [2] OpenTelemetry is generally available across several languages and is suitable for use. OpenTelemetry, also known as OTel for short, is a vendor-neutral open-source Observability…" />
+<link rel="canonical" href="https://blog.codefarm.me/what-is-opentelemetry/" />
+<meta property="og:url" content="https://blog.codefarm.me/what-is-opentelemetry/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-07-11T15:12:56+08:00" />
+<meta property="article:modified_time" content="2023-07-11T15:12:56+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="What is OpenTelemetry" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-07-11T15:12:56+08:00","datePublished":"2023-07-11T15:12:56+08:00","description":"As modern application environments are polyglot, distributed, and increasingly complex, observing your application to identify and react to failures has become challenging. In early 2019, two popular instrumentation projects, OpenTracing and OpenCensus, merged to create OpenTelemetry, a new standard for observability telemetry. [1] OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces) to help you analyze your software’s performance and behavior. [2] OpenTelemetry is generally available across several languages and is suitable for use. OpenTelemetry, also known as OTel for short, is a vendor-neutral open-source Observability…","headline":"What is OpenTelemetry","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/what-is-opentelemetry/"},"url":"https://blog.codefarm.me/what-is-opentelemetry/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">What is OpenTelemetry</h1><p class="c-post-meta">11 Jul 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>As modern application environments are polyglot, distributed, and increasingly complex, observing your application to identify and react to failures has become challenging. In early 2019, two popular instrumentation projects, <a href="https://opentracing.io/">OpenTracing</a> and OpenCensus, merged to create <a href="https://opentelemetry.io/">OpenTelemetry</a>, a new standard for observability telemetry. <a href="#opentelemetry-net-reaches-v1-0">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces) to help you analyze your software’s performance and behavior. <a href="#otel">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>OpenTelemetry is generally available across <a href="https://opentelemetry.io/docs/instrumentation/">several languages</a> and is suitable for use.</p>
+</div>
+<div class="paragraph">
+<p>OpenTelemetry, also known as OTel for short, is a vendor-neutral open-source <a href="https://opentelemetry.io/docs/concepts/observability-primer/#what-is-observability">Observability</a> framework for instrumenting, generating, collecting, and exporting telemetry data such as <a href="https://opentelemetry.io/docs/concepts/signals/traces/">traces</a>, <a href="https://opentelemetry.io/docs/concepts/signals/metrics/">metrics</a>, <a href="https://opentelemetry.io/docs/concepts/signals/logs/">logs</a>. As an industry-standard, it is <a href="https://opentelemetry.io/ecosystem/vendors/">natively supported by a number of vendors</a>. <a href="#otel-docs">[3]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://opentelemetry.io/img/otel-diagram.svg" alt="otel diagram" width="55%" height="55%">
+</div>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#what-is-observability">1. What is Observability?</a>
+<ul class="sectlevel2">
+<li><a href="#reliability-metrics">1.1. Reliability &amp; Metrics</a></li>
+<li><a href="#understanding-distributed-tracing">1.2. Understanding Distributed Tracing</a>
+<ul class="sectlevel3">
+<li><a href="#logs">1.2.1. Logs</a></li>
+<li><a href="#spans">1.2.2. Spans</a></li>
+<li><a href="#distributed-traces">1.2.3. Distributed Traces</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#net-observability-with-opentelemetry">2. .NET observability with OpenTelemetry</a>
+<ul class="sectlevel2">
+<li><a href="#what-is-observability-2">2.1. What is observability</a></li>
+<li><a href="#observability-approaches-in-net">2.2. Observability approaches in .NET</a></li>
+<li><a href="#what-is-opentelemetry">2.3. What is OpenTelemetry</a></li>
+<li><a href="#net-implementation-of-opentelemetry">2.4. .NET implementation of OpenTelemetry</a></li>
+<li><a href="#opentelemetry-packages">2.5. OpenTelemetry packages</a></li>
+<li><a href="#example-use-opentelemetry-with-prometheus-grafana-and-jaeger">2.6. Example: Use OpenTelemetry with Prometheus, Grafana, and Jaeger</a>
+<ul class="sectlevel3">
+<li><a href="#create-the-project">2.6.1. Create the project</a></li>
+<li><a href="#view-metrics-with-dotnet-counters">2.6.2. View metrics with dotnet-counters</a></li>
+<li><a href="#add-metrics-and-activity-definitions">2.6.3. Add metrics and activity definitions</a></li>
+<li><a href="#create-or-update-an-api-endpoint">2.6.4. Create or update an API endpoint</a></li>
+<li><a href="#reference-the-opentelemetry-packages">2.6.5. Reference the OpenTelemetry packages</a></li>
+<li><a href="#configure-opentelemetry-with-the-correct-providers">2.6.6. Configure OpenTelemetry with the correct providers</a></li>
+<li><a href="#run-the-project">2.6.7. Run the project</a>
+<ul class="sectlevel4">
+<li><a href="#log-output">2.6.7.1. Log output</a></li>
+<li><a href="#access-the-metrics">2.6.7.2. Access the metrics</a></li>
+<li><a href="#access-the-tracing">2.6.7.3. Access the tracing</a></li>
+</ul>
+</li>
+<li><a href="#collect-metrics-with-prometheus">2.6.8. Collect metrics with Prometheus</a></li>
+<li><a href="#use-grafana-to-create-a-metrics-dashboard">2.6.9. Use Grafana to create a metrics dashboard</a></li>
+<li><a href="#distributed-tracing-with-jaeger">2.6.10. Distributed tracing with Jaeger</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-observability">1. What is Observability?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Observability lets us understand a system from the outside, by letting us ask questions about that system without knowing its inner workings. Furthermore, it allows us to easily troubleshoot and handle novel problems (i.e. “unknown unknowns”), and helps us answer the question, “Why is this happening?” <a href="#otel-observability-primer">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>In order to be able to ask those questions of a system, the application must be properly instrumented. That is, the application code must emit signals such as <a href="https://opentelemetry.io/docs/concepts/signals/traces/">traces</a>, <a href="https://opentelemetry.io/docs/concepts/signals/metrics/">metrics</a>, <a href="https://opentelemetry.io/docs/concepts/signals/logs/">logs</a>. An application is properly instrumented when developers don’t need to add more instrumentation to troubleshoot an issue, because they have all of the information they need.</p>
+</div>
+<div class="paragraph">
+<p>OpenTelemetry is the mechanism by which application code is instrumented, to help make a system observable.</p>
+</div>
+<div class="sect2">
+<h3 id="reliability-metrics">1.1. Reliability &amp; Metrics</h3>
+<div class="paragraph">
+<p><strong>Telemetry</strong> refers to data emitted from a system, about its behavior. The data can come in the form of <a href="https://opentelemetry.io/docs/concepts/signals/traces/">traces</a>, <a href="https://opentelemetry.io/docs/concepts/signals/metrics/">metrics</a>, <a href="https://opentelemetry.io/docs/concepts/signals/logs/">logs</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Reliability</strong> answers the question: “Is the service doing what users expect it to be doing?” A system could be up 100% of the time, but if, when a user clicks “Add to Cart” to add a black pair of pants to their shopping cart, and instead, the system doesn’t always add black pants, then the system would be said to be <strong>un</strong>reliable.</p>
+</div>
+<div class="paragraph">
+<p><strong>Metrics</strong> are aggregations over a period of time of numeric data about your infrastructure or application. Unlike request <a href="https://opentelemetry.io/docs/concepts/signals/traces/">tracing</a>, which is intended to capture request lifecycles and provide context to the individual pieces of a request, metrics are intended to provide statistical information in aggregate. Examples include: system error rate, CPU utilization, request rate for a given service. For more on metrics and how they pertain to OTel, see <a href="https://opentelemetry.io/docs/concepts/signals/metrics/">Metrics</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>SLI</strong>, or Service Level Indicator, represents a measurement of a service’s behavior. A good SLI measures your service from the perspective of your users. An example SLI can be the speed at which a web page loads.</p>
+</div>
+<div class="paragraph">
+<p><strong>SLO</strong>, or Service Level Objective, is the means by which reliability is communicated to an organization/other teams. This is accomplished by attaching one or more SLIs to business value.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="understanding-distributed-tracing">1.2. Understanding Distributed Tracing</h3>
+<div class="paragraph">
+<p>To understand Distributed Tracing, let’s start with some basics.</p>
+</div>
+<div class="sect3">
+<h4 id="logs">1.2.1. Logs</h4>
+<div class="paragraph">
+<p>A <strong>log</strong> is a timestamped message emitted by services or other components. Unlike <a href="#distributed-traces">traces</a>, however, they are not necessarily associated with any particular user request or transaction. They are found almost everywhere in software, and have been heavily relied on in the past by both developers and operators alike to help them understand system behavior.</p>
+</div>
+<div class="paragraph">
+<p>Sample log:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">I, [2021-02-23T13:26:23.505892 #22473]  INFO -- : [6459ffe1-ea53-4044-aaa3-bf902868f730] Started GET "/" for ::1 at 2021-02-23 13:26:23 -0800</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unfortunately, logs aren’t extremely useful for tracking code execution, as they typically lack contextual information, such as where they were called from.</p>
+</div>
+<div class="paragraph">
+<p>They become far more useful when they are included as part of a <a href="#spans">span</a>, or when they are correlated with a trace and a span.</p>
+</div>
+<div class="paragraph">
+<p>For more on logs and how they pertain to OTel, see <a href="https://opentelemetry.io/docs/concepts/signals/logs/">Logs</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="spans">1.2.2. Spans</h4>
+<div class="paragraph">
+<p>A <strong>span</strong> represents a unit of work or operation. It tracks specific operations that a request makes, painting a picture of what happened during the time in which that operation was executed. Spans are the building blocks of <a href="https://opentelemetry.io/docs/concepts/signals/traces/">Traces</a>.</p>
+</div>
+<div class="paragraph">
+<p>A span contains name, time-related data, <a href="https://opentelemetry.io/docs/concepts/signals/traces//#span-events">structured log messages</a>, and <a href="https://opentelemetry.io/docs/concepts/signals/traces/#attributes">other metadata (that is, Attributes)</a> to provide information about the operation it tracks.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span>
+<span class="w">  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hello-greetings"</span><span class="p">,</span>
+<span class="hll"><span class="w">  </span><span class="nl">"context"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><i class="conum" data-value="1"></i><b>(1)</b>
+</span><span class="w">    </span><span class="nl">"trace_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5b8aa5a2d2c872e8321cf37308d69df2"</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">"span_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5fb397be34d26b51"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nl">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"051581bf3cb55c13"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"start_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-04-29T18:52:58.114304Z"</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">"end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-04-29T22:52:58.114561Z"</span><span class="p">,</span>
+<span class="hll"><span class="w">  </span><span class="nl">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><i class="conum" data-value="2"></i><b>(2)</b>
+</span><span class="w">    </span><span class="nl">"http.route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"some_route2"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="hll"><span class="w">  </span><span class="nl">"events"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><i class="conum" data-value="3"></i><b>(3)</b>
+</span><span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hey there!"</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-04-29T18:52:58.114561Z"</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nl">"event_attributes"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bye now!"</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2022-04-29T18:52:58.114585Z"</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nl">"event_attributes"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Span <em>context</em> is an immutable object on every span that contains the Trace ID representing the trace that the span is a part of, the span’s Span ID, Trace Flags that is a binary encoding containing information about the trace, and Trace State that is a list of key-value pairs that can carry vendor-specific trace information.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><em>Attributes</em> are key-value pairs that contain metadata that you can use to annotate a Span to carry information about the operation it is tracking.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A Span <em>Event</em> can be thought of as a structured log message (or annotation) on a Span, typically used to denote a meaningful, singular point in time during the Span’s duration.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following table contains examples of span attributes:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 87.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>net.transport</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IP.TCP</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>net.peer.ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.244.0.1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>net.peer.port</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10243</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>net.host.name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.method</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GET</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.target</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cart</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.server_name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>frontend</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.route</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/cart</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.scheme</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.host</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.flavor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1.1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.status_code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>http.user_agent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For more on spans and how they pertain to OTel, see <a href="https://opentelemetry.io/docs/concepts/signals/traces/#spans">Spans</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="distributed-traces">1.2.3. Distributed Traces</h4>
+<div class="paragraph">
+<p>A <strong>distributed trace</strong>, more commonly known as a <strong>trace</strong>, records the paths taken by requests (made by an application or end-user) as they propagate through multi-service architectures, like microservice and serverless applications.</p>
+</div>
+<div class="paragraph">
+<p>Without tracing, it is challenging to pinpoint the cause of performance problems in a distributed system.</p>
+</div>
+<div class="paragraph">
+<p>It improves the visibility of our application or system’s health and lets us debug behavior that is difficult to reproduce locally. Tracing is essential for distributed systems, which commonly have nondeterministic problems or are too complicated to reproduce locally.</p>
+</div>
+<div class="paragraph">
+<p>Tracing makes debugging and understanding distributed systems less daunting by breaking down what happens within a request as it flows through a distributed system.</p>
+</div>
+<div class="paragraph">
+<p>A trace is made of one or more spans. The first span represents the root span. Each root span represents a request from start to finish. The spans underneath the parent provide a more in-depth context of what occurs during a request (or what steps make up a request).</p>
+</div>
+<div class="paragraph">
+<p>Many Observability back-ends visualize traces as waterfall diagrams that may look something like this:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://opentelemetry.io/img/waterfall-trace.svg" alt="Waterfall" width="55%" height="55%">
+</div>
+</div>
+<div class="paragraph">
+<p>Waterfall diagrams show the parent-child relationship between a root span and its child spans. When a span encapsulates another span, this also represents a nested relationship.</p>
+</div>
+<div class="paragraph">
+<p>For more on traces and how they pertain to OTel, see <a href="https://opentelemetry.io/docs/concepts/signals/traces/">Traces</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="net-observability-with-opentelemetry">2. .NET observability with OpenTelemetry</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When you run an application, you want to know how well the app is performing and to detect potential problems before they become larger. Commonly developers accomplish this by making the app emit telemetry data such as logs or metrics, then monitor and analyze that data. <a href="#otel-dotnet">[5]</a></p>
+</div>
+<div class="sect2">
+<h3 id="what-is-observability-2">2.1. What is observability</h3>
+<div class="paragraph">
+<p>Observability in the context of a distributed system is the ability to monitor and analyze telemetry about the state of each component, to be able to observe changes in performance, and to diagnose why those changes occur. Unlike debugging, which is invasive and can affect the operation of the application, observability is intended to be transparent to the primary operation and have a small enough performance impact that it can be used continuously.</p>
+</div>
+<div class="paragraph">
+<p>Observability is commonly done using a combination of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging">Logs</a>, which record individual operations, such as an incoming request, a failure in a specific component, or an order being placed.</p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics">Metrics</a>, which are measuring counters and gauges such as number of completed requests, active requests, widgets that have been sold; or a histogram of the request latency.</p>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing">Distributed tracing</a>, which tracks requests and activities across components in a distributed system so that you can see where time is spent and track down specific failures.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Together, logs, metrics, and distributed tracing are known as the <em>3 pillars of observability</em>.</p>
+</div>
+<div class="paragraph">
+<p>Each pillar might include telemetry data from:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The .NET runtime, such as the garbage collector or JIT compiler.</p>
+</li>
+<li>
+<p>Libraries, such as from Kestrel (the ASP.NET web server) and <code>HttpClient</code>.</p>
+</li>
+<li>
+<p>Application-specific telemetry that&#8217;s emitted by your code.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="observability-approaches-in-net">2.2. Observability approaches in .NET</h3>
+<div class="paragraph">
+<p>There are a few different ways to achieve observability in .NET applications:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Explicitly in code, by referencing and using a library such as OpenTelemetry.</p>
+<div class="paragraph">
+<p>If you have access to the source code and can rebuild the app, then this is the most powerful and configurable mechanism.</p>
+</div>
+</li>
+<li>
+<p>Out-of-process using <a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/eventpipe">EventPipe</a>.</p>
+<div class="paragraph">
+<p>Tools such as <a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-monitor">dotnet-monitor</a> can listen to logs and metrics and then process them without affecting any code.</p>
+</div>
+</li>
+<li>
+<p><a href="https://github.com/dotnet/runtime/blob/main/docs/design/features/host-startup-hook.md">Using a startup hook</a>, assemblies can be injected into the process that can then collect instrumentation.</p>
+<div class="paragraph">
+<p>An example of this approach is <a href="https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/blob/main/docs/README.md">OpenTelemetry .NET Automatic Instrumentation</a>.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="what-is-opentelemetry">2.3. What is OpenTelemetry</h3>
+<div class="paragraph">
+<p><a href="https://opentelemetry.io/">OpenTelemetry</a> (OTel) is a cross-platform, open standard for collecting and emitting telemetry data, which includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://opentelemetry.io/docs/concepts/instrumentation/manual/">APIs</a> for libraries to use to record telemetry data as code is running.</p>
+</li>
+<li>
+<p><a href="https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Api/README.md">APIs</a> that app developers use to configure what portion of the recorded data will be sent across the network, where it will be sent to, and how it may be filtered, buffered, enriched, and transformed.</p>
+</li>
+<li>
+<p><a href="https://github.com/open-telemetry/semantic-conventions">Semantic conventions</a> provide guidance on naming and content of telemetry data. It is important for the apps that produce telemetry data and the tools that receive the data to agree on what different kinds of data means and what sorts of data are useful so that the tools can provide effective analysis.</p>
+</li>
+<li>
+<p>An interface for <a href="https://opentelemetry.io/docs/concepts/components/#exporters">exporters</a>. Exporters are plugins that allow telemetry data to be transmitted in specific formats to different telemetry backends.</p>
+</li>
+<li>
+<p><a href="https://github.com/open-telemetry/opentelemetry-proto/blob/main/docs/README.md">OTLP wire protocol</a> is a vendor neutral network protocol option for transmitting telemetry data. Some tools and vendors support this protocol in addition to pre-existing proprietary protocols they may have.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using OTel enables the use of a wide variety of APM (Application Performance Monitoring) systems including open-source systems such as <a href="https://prometheus.io/">Prometheus</a> and <a href="https://grafana.com/oss/grafana/">Grafana</a>, <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview?tabs=net">Azure Monitor</a> - Microsoft&#8217;s APM product in Azure, or from the many <a href="https://opentelemetry.io/ecosystem/vendors/">APM vendors</a> that partner with OpenTelemetry.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="net-implementation-of-opentelemetry">2.4. .NET implementation of OpenTelemetry</h3>
+<div class="paragraph">
+<p>The .NET OpenTelemetry implementation is a little different from other platforms, as .NET provides logging, metrics, and activity APIs in the framework. That means OTel doesn&#8217;t need to provide APIs for library authors to use. The .NET OTel implementation uses these platform APIs for instrumentation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Microsoft.Extensions.Logging.ILogger&lt;TCategoryName&gt;</code> for <code>logging</code></p>
+</li>
+<li>
+<p><code>System.Diagnostics.Metrics.Meter</code> for <code>metrics</code></p>
+</li>
+<li>
+<p><code>System.Diagnostics.ActivitySource</code> and <code>System.Diagnostics.Activity</code> for distributed <code>tracing</code></p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/media/layered-approach.svg" alt=".NET OTel architecture" width="55%" height="55%">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="opentelemetry-packages">2.5. OpenTelemetry packages</h3>
+<div class="paragraph">
+<p><a href="https://github.com/open-telemetry/opentelemetry-dotnet">OpenTelemetry in .NET</a> is implemented as a series of NuGet packages that form a couple of categories:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Core API</p>
+</li>
+<li>
+<p>Instrumentation - these packages collect instrumentation from the runtime and common libraries.</p>
+</li>
+<li>
+<p>Exporters - these interface with APM systems such as Prometheus, Jaeger, and OTLP.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following table describes the main packages.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Package Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main library that provides the core OTEL functionality</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Instrumentation.AspNetCore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instrumentation for ASP.NET Core and Kestrel</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Instrumentation.GrpcNetClient</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instrumentation for gRPC Client for tracking outbound gRPC calls</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Instrumentation.Http</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instrumentation for HttpClient and HttpWebRequest to track outbound HTTP calls</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Instrumentation.SqlClient</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instrumentation for SqlClient used to trace database operations</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Exporter.Console</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exporter for the console, commonly used to diagnose what telemetry is being exported</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Exporter.OpenTelemetryProtocol</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exporter using the OTLP protocol</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Exporter.Prometheus.AspNetCore</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exporter for Prometheus implemented using an ASP.NET Core endpoint</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OpenTelemetry.Exporter.Zipkin</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exporter for Zipkin tracing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="example-use-opentelemetry-with-prometheus-grafana-and-jaeger">2.6. Example: Use OpenTelemetry with Prometheus, Grafana, and Jaeger</h3>
+<div class="paragraph">
+<p>This example uses Prometheus for metrics collection, Grafana for creating a dashboard, and Jaeger to show distributed tracing.</p>
+</div>
+<div class="sect3">
+<h4 id="create-the-project">2.6.1. Create the project</h4>
+<div class="paragraph">
+<p>Create a simple web API project by using the <strong>ASP.NET Core Empty</strong> template in Visual Studio or the following .NET CLI command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet new web</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="view-metrics-with-dotnet-counters">2.6.2. View metrics with dotnet-counters</h4>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-counters">dotnet-counters</a> is a command-line tool that can view live metrics for .NET Core apps on demand.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If the <code>dotnet-counters</code> tool isn&#8217;t installed, run the following command:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet tool update <span class="nt">-g</span> dotnet-counters</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Start the testing web app.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet run</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open a new terminal, and send test HTTP request with <code>curl</code> or browser.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">watch curl <span class="nt">-k</span> http://localhost:5000</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open a new terminal, and launch <code>dotnet-counters</code> to monitor all metrics from the <code>Microsoft.AspNetCore.Hosting</code> meter.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Lists the dotnet processes that can be monitored.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>dotnet-counters ps
+<span class="go"> 3123  dotnet            /usr/share/dotnet/dotnet                             dotnet run
+ 3154  OtPrGrYa.Example  /OtPrGrYa.Example/bin/Debug/net9.0/OtPrGrYa.Example</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">dotnet-counters monitor <span class="nt">-n</span> OtPrGrYa.Example <span class="nt">--counters</span> Microsoft.AspNetCore.Hosting</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Press p to pause, r to resume, q to quit.
+    Status: Running
+
+Name                                                                                                                                      Current Value
+[Microsoft.AspNetCore.Hosting]
+    http.server.active_requests ({request})
+        http.request.method url.scheme
+        GET                 http                                                                                                                  0
+    http.server.request.duration (s)
+        http.request.method http.response.status_code http.route network.protocol.version url.scheme Percentile
+        GET                 200                       /          1.1                      http       50                                           0.001
+        GET                 200                       /          1.1                      http       95                                           0.001
+        GET                 200                       /          1.1                      http       99                                           0.001
+
+</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="add-metrics-and-activity-definitions">2.6.3. Add metrics and activity definitions</h4>
+<div class="paragraph">
+<p>The following code defines a new metric (<code>greetings.count</code>) for the number of times the API has been called, and a new activity source (<code>OtPrGrYa.Example</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// using System.Diagnostics;</span>
+<span class="c1">// using System.Diagnostics.Metrics;</span>
+
+<span class="c1">// Custom metrics for the application</span>
+<span class="kt">var</span> <span class="n">greeterMeter</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Meter</span><span class="p">(</span><span class="s">"OtPrGrYa.Example"</span><span class="p">,</span> <span class="s">"1.0.0"</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">countGreetings</span> <span class="p">=</span> <span class="n">greeterMeter</span><span class="p">.</span><span class="n">CreateCounter</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="s">"greetings.count"</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="s">"Counts the number of greetings"</span><span class="p">);</span>
+
+<span class="c1">// Custom ActivitySource for the application</span>
+<span class="kt">var</span> <span class="n">greeterActivitySource</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ActivitySource</span><span class="p">(</span><span class="s">"OtPrGrJa.Example"</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="create-or-update-an-api-endpoint">2.6.4. Create or update an API endpoint</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">app</span><span class="p">.</span><span class="nf">MapGet</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span> <span class="n">SendGreeting</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span> <span class="nf">SendGreeting</span><span class="p">(</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">Program</span><span class="p">&gt;</span> <span class="n">logger</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Create a new Activity scoped to the method</span>
+    <span class="k">using</span> <span class="nn">var</span> <span class="n">activity</span> <span class="p">=</span> <span class="n">greeterActivitySource</span><span class="p">.</span><span class="nf">StartActivity</span><span class="p">(</span><span class="s">"GreeterActivity"</span><span class="p">);</span>
+
+    <span class="c1">// Log a message</span>
+    <span class="n">logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span><span class="s">"Sending greeting"</span><span class="p">);</span>
+
+    <span class="c1">// Increment the custom counter</span>
+    <span class="n">countGreetings</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+
+    <span class="c1">// Add a tag to the Activity</span>
+    <span class="n">activity</span><span class="p">?.</span><span class="nf">SetTag</span><span class="p">(</span><span class="s">"greeting"</span><span class="p">,</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="s">"Hello World!"</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The API definition does not use anything specific to OpenTelemetry. It uses the .NET APIs for observability.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="reference-the-opentelemetry-packages">2.6.5. Reference the OpenTelemetry packages</h4>
+<div class="paragraph">
+<p>Use the NuGet Package Manager or command line to add the following NuGet packages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;ItemGroup&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Exporter.Console"</span> <span class="na">Version=</span><span class="s">"1.5.0"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Exporter.OpenTelemetryProtocol"</span> <span class="na">Version=</span><span class="s">"1.5.0"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Exporter.Prometheus.AspNetCore"</span> <span class="na">Version=</span><span class="s">"1.5.0-rc.1"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Exporter.Zipkin"</span> <span class="na">Version=</span><span class="s">"1.5.0"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Extensions.Hosting"</span> <span class="na">Version=</span><span class="s">"1.5.0"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Instrumentation.AspNetCore"</span> <span class="na">Version=</span><span class="s">"1.5.0-beta.1"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;PackageReference</span> <span class="na">Include=</span><span class="s">"OpenTelemetry.Instrumentation.Http"</span> <span class="na">Version=</span><span class="s">"1.5.0-beta.1"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/ItemGroup&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Use the latest versions, as the OTel APIs are constantly evolving.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="configure-opentelemetry-with-the-correct-providers">2.6.6. Configure OpenTelemetry with the correct providers</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// using OpenTelemetry.Metrics;</span>
+<span class="c1">// using OpenTelemetry.Resources;</span>
+<span class="c1">// using OpenTelemetry.Trace;</span>
+
+<span class="kt">var</span> <span class="n">tracingOtlpEndpoint</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="n">Configuration</span><span class="p">[</span><span class="s">"OTLP_ENDPOINT_URL"</span><span class="p">];</span>
+<span class="kt">var</span> <span class="n">otel</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddOpenTelemetry</span><span class="p">();</span>
+
+<span class="c1">// Configure OpenTelemetry Resources with the application name</span>
+<span class="n">otel</span><span class="p">.</span><span class="nf">ConfigureResource</span><span class="p">(</span><span class="n">resource</span> <span class="p">=&gt;</span> <span class="n">resource</span>
+    <span class="p">.</span><span class="nf">AddService</span><span class="p">(</span><span class="n">serviceName</span><span class="p">:</span> <span class="n">builder</span><span class="p">.</span><span class="n">Environment</span><span class="p">.</span><span class="n">ApplicationName</span><span class="p">));</span>
+
+<span class="c1">// Add Metrics for ASP.NET Core and our custom metrics and export to Prometheus</span>
+<span class="n">otel</span><span class="p">.</span><span class="nf">WithMetrics</span><span class="p">(</span><span class="n">metrics</span> <span class="p">=&gt;</span> <span class="n">metrics</span>
+    <span class="c1">// Metrics provider from OpenTelemetry</span>
+    <span class="p">.</span><span class="nf">AddAspNetCoreInstrumentation</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">AddMeter</span><span class="p">(</span><span class="n">greeterMeter</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+    <span class="c1">// Metrics provides by ASP.NET Core in .NET 8</span>
+    <span class="p">.</span><span class="nf">AddMeter</span><span class="p">(</span><span class="s">"Microsoft.AspNetCore.Hosting"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">AddMeter</span><span class="p">(</span><span class="s">"Microsoft.AspNetCore.Server.Kestrel"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">AddPrometheusExporter</span><span class="p">());</span>
+
+<span class="c1">// Add Tracing for ASP.NET Core and our custom ActivitySource and export to Jaeger</span>
+<span class="n">otel</span><span class="p">.</span><span class="nf">WithTracing</span><span class="p">(</span><span class="n">tracing</span> <span class="p">=&gt;</span>
+<span class="p">{</span>
+    <span class="n">tracing</span><span class="p">.</span><span class="nf">AddAspNetCoreInstrumentation</span><span class="p">();</span>
+    <span class="n">tracing</span><span class="p">.</span><span class="nf">AddHttpClientInstrumentation</span><span class="p">();</span>
+    <span class="n">tracing</span><span class="p">.</span><span class="nf">AddSource</span><span class="p">(</span><span class="n">greeterActivitySource</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">tracingOtlpEndpoint</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">tracing</span><span class="p">.</span><span class="nf">AddOtlpExporter</span><span class="p">(</span><span class="n">otlpOptions</span> <span class="p">=&gt;</span>
+         <span class="p">{</span>
+             <span class="n">otlpOptions</span><span class="p">.</span><span class="n">Endpoint</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">tracingOtlpEndpoint</span><span class="p">);</span>
+         <span class="p">});</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">tracing</span><span class="p">.</span><span class="nf">AddConsoleExporter</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">});</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This code uses ASP.NET Core instrumentation to get metrics and activities from ASP.NET Core. It also registers the <code>Metrics</code> and <code>ActivitySource</code> providers for metrics and tracing respectively.</p>
+</div>
+<div class="paragraph">
+<p>The code uses the Prometheus exporter for metrics, which uses ASP.NET Core to host the endpoint, so you also need to add:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Configure the Prometheus scraping endpoint</span>
+<span class="n">app</span><span class="p">.</span><span class="nf">MapPrometheusScrapingEndpoint</span><span class="p">();</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="run-the-project">2.6.7. Run the project</h4>
+<div class="paragraph">
+<p>Run the project and then access the API with the browser or curl.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl <span class="nt">-k</span> http://localhost:5000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each time you request the page, it will increment the count for the number of greetings that have been made. You can access the metrics endpoint using the same base url, with the path <code>/metrics</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl <span class="nt">-k</span> http://localhost:5000/metrics</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">#</span><span class="w"> </span>TYPE greetings_count_total counter
+<span class="gp">#</span><span class="w"> </span>HELP greetings_count_total Counts the number of greetings
+<span class="go">greetings_count_total{otel_scope_name="OtPrGrYa.Example",otel_scope_version="1.0.0"} 45 1735894061045
+</span><span class="gp">#</span><span class="w"> </span>TYPE kestrel_active_connections gauge
+<span class="gp">#</span><span class="w"> </span>HELP kestrel_active_connections Number of connections that are currently active on the server.
+<span class="go">kestrel_active_connections{otel_scope_name="Microsoft.AspNetCore.Server.Kestrel",network_transport="tcp",network_type="ipv4",server_address="127.0.0.1",server_port="5000"} 1 1735894061045
+</span><span class="gp">#</span><span class="w"> </span>TYPE kestrel_connection_duration_seconds histogram
+<span class="gp">#</span><span class="w"> </span>UNIT kestrel_connection_duration_seconds seconds
+<span class="gp">#</span><span class="w"> </span>HELP kestrel_connection_duration_seconds The duration of connections on the server.
+<span class="go">kestrel_connection_duration_seconds_bucket{otel_scope_name="Microsoft.AspNetCore.Server
+. . .</span></code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="log-output">2.6.7.1. Log output</h5>
+<div class="paragraph">
+<p>The logging statements from the code are output using <code>ILogger</code>. By default, the <a href="https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line#configure-logging">Console Provider</a> is enabled so that output is directed to the console.</p>
+</div>
+<div class="paragraph">
+<p>There are a couple of options for how logs can be egressed from .NET:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>stdout</code> and <code>stderr</code> output is redirected to log files by container systems such as <a href="https://kubernetes.io/docs/concepts/cluster-administration/logging/#how-nodes-handle-container-logs">Kubernetes</a>.</p>
+</li>
+<li>
+<p>Using logging libraries that will integrate with ILogger, these include <a href="https://serilog.net/">Serilog</a> or <a href="https://nlog-project.org/">NLog</a>.</p>
+</li>
+<li>
+<p>Using logging providers for OTel such as OTLP or the Azure Monitor exporter shown further below.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="access-the-metrics">2.6.7.2. Access the metrics</h5>
+<div class="paragraph">
+<p>You can access the metrics using the <code>/metrics</code> endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-k</span> http://localhost:5000/
+<span class="go">Hello World!
+
+</span><span class="gp">$</span><span class="w"> </span>curl <span class="nt">-k</span> http://localhost:5000/metrics
+<span class="gp">#</span><span class="w"> </span>TYPE greetings_count_total counter
+<span class="gp">#</span><span class="w"> </span>HELP greetings_count_total Counts the number of greetings
+<span class="go">greetings_count_total{otel_scope_name="OtPrGrYa.Example",otel_scope_version="1.0.0"} 45 1735894061045
+</span><span class="gp">#</span><span class="w"> </span>TYPE kestrel_active_connections gauge
+<span class="gp">#</span><span class="w"> </span>HELP kestrel_active_connections Number of connections that are currently active on the server.
+<span class="go">kestrel_active_connections{otel_scope_name="Microsoft.AspNetCore.Server.Kestrel",network_transport="tcp",network_type="ipv4",server_address="127.0.0.1",server_port="5000"} 1 1735894061045
+</span><span class="gp">#</span><span class="w"> </span>TYPE kestrel_connection_duration_seconds histogram
+<span class="gp">#</span><span class="w"> </span>UNIT kestrel_connection_duration_seconds seconds
+<span class="gp">#</span><span class="w"> </span>HELP kestrel_connection_duration_seconds The duration of connections on the server.
+<span class="go">kestrel_connection_duration_seconds_bucket{otel_scope_name="Microsoft.AspNetCore.Server
+. . .</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="access-the-tracing">2.6.7.3. Access the tracing</h5>
+<div class="paragraph">
+<p>If you look at the console for the server, you&#8217;ll see the output from the console trace exporter, which outputs the information in a human readable format. This should show two activities, one from your custom <code>ActivitySource</code>, and the other from ASP.NET Core:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">Activity.TraceId:            9ef749f2829d7837e6edd163b8b6bb81
+Activity.SpanId:             45e86b6601f6b09d
+Activity.TraceFlags:         Recorded
+Activity.ParentSpanId:       d1af72ebe3cd5dba
+Activity.ActivitySourceName: OtPrGrJa.Example
+Activity.DisplayName:        GreeterActivity
+Activity.Kind:               Internal
+Activity.StartTime:          2023-07-19T00:44:43.2738232Z
+Activity.Duration:           00:00:00.0027491
+Activity.Tags:
+    greeting: Hello World!
+Resource associated with Activity:
+    service.name: OtPrGrJa.Example
+    service.instance.id: 11a771a5-d03b-4f66-baa0-2e968bd8b981
+    telemetry.sdk.name: opentelemetry
+    telemetry.sdk.language: dotnet
+    telemetry.sdk.version: 1.5.0
+
+Activity.TraceId:            9ef749f2829d7837e6edd163b8b6bb81
+Activity.SpanId:             d1af72ebe3cd5dba
+Activity.TraceFlags:         Recorded
+Activity.ActivitySourceName: OpenTelemetry.Instrumentation.AspNetCore
+Activity.DisplayName:        /
+Activity.Kind:               Server
+Activity.StartTime:          2023-07-19T00:44:43.2443183Z
+Activity.Duration:           00:00:00.0446847
+Activity.Tags:
+    net.host.name: localhost
+    net.host.port: 5138
+    http.method: GET
+    http.scheme: http
+    http.target: /
+    http.url: http://localhost:5138/
+    http.flavor: 1.1
+    http.user_agent: curl/7.88.1
+    http.status_code: 200
+Resource associated with Activity:
+    service.name: OtPrGrJa.Example
+    service.instance.id: 11a771a5-d03b-4f66-baa0-2e968bd8b981
+    telemetry.sdk.name: opentelemetry
+    telemetry.sdk.language: dotnet
+    telemetry.sdk.version: 1.5.0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first is the inner custom activity you created. The second is created by ASP.NET for the request and includes tags for the HTTP request properties.</p>
+</div>
+<div class="paragraph">
+<p>You will see that both have the same <code>TraceId</code>, which identifies a single transaction and in a distributed system can be used to correlate the traces from each service involved in a transaction.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The IDs are transmitted as HTTP headers.</p>
+</li>
+<li>
+<p>ASP.NET Core assigns a <code>TraceId</code> if none is present when it receives a request.</p>
+</li>
+<li>
+<p><code>HttpClient</code> includes the headers by default on outbound requests. Each activity has a <code>SpanId</code>, which is the combination of <code>TraceId</code> and <code>SpanId</code> that uniquely identify each activity.</p>
+</li>
+<li>
+<p>The <code>Greeter</code> activity is parented to the HTTP activity through its <code>ParentSpanId</code>, which maps to the <code>SpanId</code> of the HTTP activity.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="collect-metrics-with-prometheus">2.6.8. Collect metrics with Prometheus</h4>
+<div class="paragraph">
+<p>Prometheus is a metrics collection, aggregation, and time-series database system.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="use-grafana-to-create-a-metrics-dashboard">2.6.9. Use Grafana to create a metrics dashboard</h4>
+<div class="paragraph">
+<p>Grafana is a dashboarding product that can create dashboards and alerts based on Prometheus or other data sources.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="distributed-tracing-with-jaeger">2.6.10. Distributed tracing with Jaeger</h4>
+<div class="paragraph">
+<p>Jaeger (pronounced "Yay-ger") is an open-source, end-to-end distributed tracing system.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="opentelemetry-net-reaches-v1-0"></a>[1] <a href="https://devblogs.microsoft.com/dotnet/opentelemetry-net-reaches-v1-0/" class="bare">https://devblogs.microsoft.com/dotnet/opentelemetry-net-reaches-v1-0/</a></p>
+</li>
+<li>
+<p><a id="otel"></a>[2] <a href="https://opentelemetry.io/" class="bare">https://opentelemetry.io/</a></p>
+</li>
+<li>
+<p><a id="otel-docs"></a>[3] <a href="https://opentelemetry.io/docs/" class="bare">https://opentelemetry.io/docs/</a></p>
+</li>
+<li>
+<p><a id="otel-observability-primer"></a>[4] <a href="https://opentelemetry.io/docs/concepts/observability-primer/" class="bare">https://opentelemetry.io/docs/concepts/observability-primer/</a></p>
+</li>
+<li>
+<p><a id="otel-dotnet"></a>[5] <a href="https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel" class="bare">https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-with-otel</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

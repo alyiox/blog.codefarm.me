@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Linux Shared Library Management &amp; Debugging Problem | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Linux Shared Library Management &amp; Debugging Problem" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="If you are a developer, you will re-use code provided by others. Usually /lib, /lib64, /usr/local/lib, and other directories stores various shared libraries. You can write your own program using these shared libraries. As a sys admin you need to manage and install these shared libraries. Use the following commands for shared libraries management, security, and debugging problems. What is a Library In Linux or UNIX ? In Linux or UNIX like operating system, a library is nothing but a collection of resources such as subroutines / functions, classes, values or type specifications. There are two types of libraries: Static…" />
+<meta name="twitter:description" property="og:description" content="If you are a developer, you will re-use code provided by others. Usually /lib, /lib64, /usr/local/lib, and other directories stores various shared libraries. You can write your own program using these shared libraries. As a sys admin you need to manage and install these shared libraries. Use the following commands for shared libraries management, security, and debugging problems. What is a Library In Linux or UNIX ? In Linux or UNIX like operating system, a library is nothing but a collection of resources such as subroutines / functions, classes, values or type specifications. There are two types of libraries: Static…" />
+<link rel="canonical" href="https://blog.codefarm.me/linux-commands-for-shared-library-management-and-debugging-problem/" />
+<meta property="og:url" content="https://blog.codefarm.me/linux-commands-for-shared-library-management-and-debugging-problem/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-05-12T18:26:42+08:00" />
+<meta property="article:modified_time" content="2016-05-12T18:26:42+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Linux Shared Library Management &amp; Debugging Problem" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2016-05-12T18:26:42+08:00","datePublished":"2016-05-12T18:26:42+08:00","description":"If you are a developer, you will re-use code provided by others. Usually /lib, /lib64, /usr/local/lib, and other directories stores various shared libraries. You can write your own program using these shared libraries. As a sys admin you need to manage and install these shared libraries. Use the following commands for shared libraries management, security, and debugging problems. What is a Library In Linux or UNIX ? In Linux or UNIX like operating system, a library is nothing but a collection of resources such as subroutines / functions, classes, values or type specifications. There are two types of libraries: Static…","headline":"Linux Shared Library Management &amp; Debugging Problem","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/linux-commands-for-shared-library-management-and-debugging-problem/"},"url":"https://blog.codefarm.me/linux-commands-for-shared-library-management-and-debugging-problem/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Linux Shared Library Management &amp; Debugging Problem</h1><p class="c-post-meta">12 May 2016</p>
+  </header>
+
+  <div class="c-post-content">
+    <p>If you are a developer, you will re-use code provided by others.</p>
+
+<p>Usually <strong>/lib, /lib64, /usr/local/lib</strong>, and other directories stores various shared libraries. You can write your own program using these shared libraries. As a sys admin you need to manage and install these shared libraries. Use the following commands for shared libraries management, security, and debugging problems.</p>
+
+<h2 id="what-is-a-library-in-linux-or-unix-">What is a Library In Linux or UNIX ?</h2>
+
+<p>In Linux or UNIX like operating system, a library is nothing but a collection of resources such as subroutines / functions, classes, values or type specifications. There are two types of libraries:</p>
+
+<ol>
+  <li>
+    <p><strong>Static libraries</strong></p>
+
+    <p>All <code class="language-plaintext highlighter-rouge">lib*.a</code> files are included into executables that use their functions.</p>
+  </li>
+  <li>
+    <p><strong>Dynamic libraries or linking</strong> [also known as DSO (dynamic shared object)]</p>
+
+    <p>All <code class="language-plaintext highlighter-rouge">lib*.so*</code> files are not copied into executables. The executable will automatically load the libraries using <code class="language-plaintext highlighter-rouge">ld.so</code> or <code class="language-plaintext highlighter-rouge">ld-linux.so</code>.</p>
+  </li>
+</ol>
+
+<h2 id="linux-library-management-commands">Linux Library Management Commands</h2>
+
+<ol>
+  <li>
+    <p><strong>ldconfig</strong>: Updates the necessary links for the run time link bindings.</p>
+  </li>
+  <li>
+    <p><strong>ldd</strong>: Tells what libraries a given program needs to run.</p>
+  </li>
+  <li>
+    <p><strong>ltrace</strong>: A library call tracer.</p>
+  </li>
+  <li>
+    <p><strong>ld.so/ld-linux.so</strong>: Dynamic linker/loader.</p>
+  </li>
+</ol>
+
+<h3 id="important-files">Important Files</h3>
+
+<p>As a sys admin you should be aware of important files related to shared libraries:</p>
+
+<ol>
+  <li>
+    <p><strong>/lib/ld-linux.so.*</strong>: Execution time linker/loader.</p>
+  </li>
+  <li>
+    <p><strong>/etc/ld.so.conf</strong>: File containing a list of colon, space, tab, newline, or comma separated directories in which to search for libraries.</p>
+  </li>
+  <li>
+    <p><strong>/etc/ld.so.cache</strong>: File containing an ordered list of libraries found in the diretories specified in <code class="language-plaintext highlighter-rouge">/etc/ld.so.conf</code>. This file is not in human readable format, and is not intended to be edited. This file is created by <code class="language-plaintext highlighter-rouge">ldconfig</code> command.</p>
+  </li>
+  <li>
+    <p><strong>lib*.so.version</strong>: Shared libraries stores in <strong>/lib, /lib64, /usr/lib, /usr/lib64, /usr/local/lib</strong> directories.</p>
+  </li>
+</ol>
+
+<h3 id="1-ldconfig-command">#1: <strong>ldconfig</strong> command</h3>
+
+<p>You need to use the <strong>ldconfig command</strong> to create, update, and remove the necessary links and cache (for use by the run-time linker, <em>ld.so</em>) to the most recent shared libraries foudn in the directories specified on the command line, in the file <em>/etc/ld.so.conf</em>, and in the trused directories (<em>/usr/lib</em>, <em>/lib64</em> and <em>/lib</em>). The ldconfig command checks the header and file names of the libraries it encounters when determining which versions should have their links updated. This command also creates a file called <strong><em>/etc/ld.so.cache which is used to speed up linking.</em></strong></p>
+
+<p><strong>Examples</strong></p>
+
+<p>In this exmaple, you’ve installed a new set of shared libraries at <em>/usr/local/lib/</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ls -l /usr/local/lib/
+
+-rw-r--r-- 1 root root 878738 Jun 16  2010 libGeoIP.a
+-rwxr-xr-x 1 root root    799 Jun 16  2010 libGeoIP.la
+lrwxrwxrwx 1 root root     17 Jun 16  2010 libGeoIP.so -&gt; libGeoIP.so.1.4.6
+lrwxrwxrwx 1 root root     17 Jun 16  2010 libGeoIP.so.1 -&gt; libGeoIP.so.1.4.6
+-rwxr-xr-x 1 root root 322776 Jun 16  2010 libGeoIP.so.1.4.6
+-rw-r--r-- 1 root root  72172 Jun 16  2010 libGeoIPUpdate.a
+-rwxr-xr-x 1 root root    872 Jun 16  2010 libGeoIPUpdate.la
+lrwxrwxrwx 1 root root     23 Jun 16  2010 libGeoIPUpdate.so -&gt; libGeoIPUpdate.so.0.0.0
+lrwxrwxrwx 1 root root     23 Jun 16  2010 libGeoIPUpdate.so.0 -&gt; libGeoIPUpdate.so.0.0.0
+-rwxr-xr-x 1 root root  55003 Jun 16  2010 libGeoIPUpdate.so.0.0.0
+</code></pre></div></div>
+
+<p>You need to run ldconfig command mannully to link libraries by passing them as command line arguments with the <strong>-l</strong> switch:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldconfig -l /path/to/lib/our.new.lib.so
+</code></pre></div></div>
+
+<p>Another recommended options for sys admin is to create a file called <strong>/etc/ld.so.conf.d/geoip.conf</strong> as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/usr/local/lib
+</code></pre></div></div>
+
+<p>Now just run ldconfig to update the cache:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldconfig
+</code></pre></div></div>
+
+<p>To verify new libs or to look for a linked library, enter:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldconfig -v
+# ldconfig -v | grep -i geoip
+</code></pre></div></div>
+
+<p><strong>Troubleshooting Chrooted Jails</strong></p>
+
+<p>You can print the current cache with the <code class="language-plaintext highlighter-rouge">-p</code> option:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldconfig -p
+</code></pre></div></div>
+
+<p><strong>Common error</strong></p>
+
+<p>You may see the errors as follows:</p>
+
+<blockquote>
+  <p>Dynamic linker error in foo</p>
+</blockquote>
+
+<blockquote>
+  <p>Can’t map cache file cache-file</p>
+</blockquote>
+
+<p>All of the above errors means the linker cache file <code class="language-plaintext highlighter-rouge">/etc/ld.so.cache</code> is corrupt or does not exits. To fix these errors simply run the <code class="language-plaintext highlighter-rouge">ldconfig</code> command as follows:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldconfig
+</code></pre></div></div>
+
+<blockquote>
+  <p>Can’t find library xyz Error</p>
+</blockquote>
+
+<p>The executable required a dynamically linked library that <code class="language-plaintext highlighter-rouge">ld.so</code> or <code class="language-plaintext highlighter-rouge">ld-linux.so</code> cannot find. It means a library called <em>xyz</em> needed by the program called <em>foo</em> not installed or path is not set.</p>
+
+<p>To fix this problem install <em>xyz</em> library and set path in <code class="language-plaintext highlighter-rouge">/etc/ld.so.conf</code> file or create a file in <code class="language-plaintext highlighter-rouge">/etc/ld.so.conf.d/</code> directory.</p>
+
+<h3 id="2-ldd-command">#2: <strong>ldd</strong> command</h3>
+
+<p><strong>ldd</strong> (List Dynamic Dependencies) is a Unix and Linux program to display the shared libraries required by each program. This tools is required to build and run various server program in a chroot jail. A typical example is as follows to list the Apache server shared libraries, enter:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldd /usr/sbin/httpd
+
+libm.so.6 =&gt; /lib64/libm.so.6 (0x00002aff52a0c000)
+libpcre.so.0 =&gt; /lib64/libpcre.so.0 (0x00002aff52c8f000)
+libselinux.so.1 =&gt; /lib64/libselinux.so.1 (0x00002aff52eab000)
+</code></pre></div></div>
+
+<p>Now, you can copy all those libs one by one to <code class="language-plaintext highlighter-rouge">/jail</code> directory.</p>
+
+<p><strong>Report Missing Functions</strong></p>
+
+<p>Type the following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd -d /path/to/executable
+</code></pre></div></div>
+
+<p><strong>Report Missing Objects</strong></p>
+
+<p>Type the following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd -r /path/to/executable
+</code></pre></div></div>
+
+<p><strong>Determine If Particular Feature Supported Or Not</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ldd /usr/sbin/sshd | grep libwrap
+</code></pre></div></div>
+
+<p><strong>Other usage of ldd command</strong></p>
+
+<p>You can use the ldd command when an executable is failing because of a missing dependency. Once you found a missing dependency, you can install it or update the cache with the ldconfig command as mentioned above.</p>
+
+<h3 id="3-ltrace-command">#3: <strong>ltrace</strong> command</h3>
+
+<p>The <strong>ltrace command</strong> simply runs the specified command until it exits. It intercepts and records the dynamic library calls which are called by the executed process and the signals which are received by that process. It can also intercept and print the system calls executed by the program.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ltrace /usr/sbin/httpd
+# ltrace /sbin/chroot /usr/sbin/httpd
+# ltrace /bin/ls
+</code></pre></div></div>
+
+<h3 id="4-ldsold-linuxso-command">#4: <strong>ld.so/ld-linux.so</strong> Command</h3>
+
+<p>The <strong>ld.so / ld-linux.so</strong> used as follows by Linux:</p>
+
+<ol>
+  <li>To load the shared libraries needed by a program.</li>
+  <li>To prepare the program to run, and then runs it.</li>
+</ol>
+
+<p><strong>List All Dependencies and How They Are Resolved</strong></p>
+
+<p>Type the following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># cd /lib
+</code></pre></div></div>
+
+<p>For 64 bit systems:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># cd /lib64
+</code></pre></div></div>
+
+<p>Pass the <code class="language-plaintext highlighter-rouge">--list</code> option, enter:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># ./ld-2.5.so --list /path/to/executable
+</code></pre></div></div>
+
+<p>Other options</p>
+
+<p>From the man page:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>--verify                   verify that given object really is a dynamically linked object we can handle
+--library-path PATH   use given PATH instead of content of the environment variable LD_LIBRARY_PATH
+--inhibit-rpath LIST    ignore RUNPATH and RPATH information in object names in LIST
+</code></pre></div></div>
+
+<p><strong>Environment Variables</strong></p>
+
+<p>The <strong>LD_LIBRARY_PATH</strong> can be used to set a library path for finding dynamic libraries using LD_LIBRARY_PATH, in the standard colon seperated format:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ export LD_LIBRARY_PATH=/opt/simulator/lib:/usr/local/lib
+</code></pre></div></div>
+
+<p>The <strong>LD_PRELOAD</strong> allow an <em>extra library</em> not specified in the executable to be loaded:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ export LD_PRELOAD=/home/vivek/dirhard/libdiehard.so
+</code></pre></div></div>
+
+<p>Please note that these variables are ignored when executing setuid/setgid programs.</p>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="http://www.cyberciti.biz/tips/linux-shared-library-management.html">Linux Commands For Shared Library Management &amp; Debugging Problem</a></li>
+</ul>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Garbage Collection in .NET | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Garbage Collection in .NET" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="In the common language runtime (CLR), the garbage collector (GC) serves as an automatic memory manager to manages the allocation and release of memory for an application. [1] All processes on the same computer share the same physical memory and the page file, if there&#8217;s one. Each process has its own, separate virtual address space. By default, on 32-bit computers, each process has a 2-GB user-mode virtual address space. The garbage collector allocates and frees virtual memory for an appliction on the managed heap. Virtual memory can be in three states: Free: The block of memory has no references to…" />
+<meta name="twitter:description" property="og:description" content="In the common language runtime (CLR), the garbage collector (GC) serves as an automatic memory manager to manages the allocation and release of memory for an application. [1] All processes on the same computer share the same physical memory and the page file, if there&#8217;s one. Each process has its own, separate virtual address space. By default, on 32-bit computers, each process has a 2-GB user-mode virtual address space. The garbage collector allocates and frees virtual memory for an appliction on the managed heap. Virtual memory can be in three states: Free: The block of memory has no references to…" />
+<link rel="canonical" href="https://blog.codefarm.me/garbage-collection-in-net/" />
+<meta property="og:url" content="https://blog.codefarm.me/garbage-collection-in-net/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-26T11:58:01+08:00" />
+<meta property="article:modified_time" content="2023-11-26T11:58:01+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Garbage Collection in .NET" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-11-26T11:58:01+08:00","datePublished":"2023-11-26T11:58:01+08:00","description":"In the common language runtime (CLR), the garbage collector (GC) serves as an automatic memory manager to manages the allocation and release of memory for an application. [1] All processes on the same computer share the same physical memory and the page file, if there&#8217;s one. Each process has its own, separate virtual address space. By default, on 32-bit computers, each process has a 2-GB user-mode virtual address space. The garbage collector allocates and frees virtual memory for an appliction on the managed heap. Virtual memory can be in three states: Free: The block of memory has no references to…","headline":"Garbage Collection in .NET","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/garbage-collection-in-net/"},"url":"https://blog.codefarm.me/garbage-collection-in-net/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Garbage Collection in .NET</h1><p class="c-post-meta">26 Nov 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the common language runtime (CLR), the garbage collector (GC) serves as an automatic memory manager to manages the allocation and release of memory for an application. <a href="#dotnet-gc">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>All processes on the same computer share the same physical memory and the page file, if there&#8217;s one.</p>
+</li>
+<li>
+<p>Each process has its own, separate virtual address space.</p>
+</li>
+<li>
+<p>By default, on 32-bit computers, each process has a 2-GB user-mode virtual address space.</p>
+</li>
+<li>
+<p>The garbage collector allocates and frees virtual memory for an appliction on the managed heap.</p>
+</li>
+<li>
+<p>Virtual memory can be in three states:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Free: The block of memory has no references to it and is available for allocation.</p>
+</li>
+<li>
+<p>Reserved: The block of memory is available for using and can&#8217;t be used for any other allocation request. However, data can&#8217;t be stored to this memory block until it&#8217;s committed.</p>
+</li>
+<li>
+<p>Committed: The block of memory is assigned to physical storage.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Virtual address space can get fragmented, which means that there are free blocks known as holes in the address space.</p>
+</li>
+<li>
+<p>When a virtual memory allocation is requested, the virtual memory manager has to find a single free block that is large enough to satisfy the allocation request.</p>
+</li>
+<li>
+<p>An application can run out of memory if there isn&#8217;t enough virtual address space to reserve or physical space to commit.</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#memory-allocation-release-and-compaction">1. Memory allocation, release, and compaction</a></li>
+<li><a href="#generations">2. Generations</a></li>
+<li><a href="#unmanaged-resources">3. Unmanaged resources</a></li>
+<li><a href="#dispose-patterns">4. Dispose patterns</a>
+<ul class="sectlevel2">
+<li><a href="#system-iasyncdisposable">4.1. System.IAsyncDisposable</a></li>
+<li><a href="#system-object-finalize">4.2. System.Object.Finalize</a></li>
+</ul>
+</li>
+<li><a href="#workstation-and-server-gc">5. Workstation and server GC</a>
+<ul class="sectlevel2">
+<li><a href="#background-gc">5.1. Background GC</a></li>
+<li><a href="#background-workstation-vs-server-gc">5.2. Background workstation vs. server GC</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="memory-allocation-release-and-compaction">1. Memory allocation, release, and compaction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When initializing a new process, the runtime reserves a contiguous region of address space for the process which is called the <strong>managed heap</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The managed heap maintains a pointer to the address where the next object in the heap will be allocated. Initially, this pointer is set to the managed heap&#8217;s base address.</p>
+</li>
+<li>
+<p>All reference types are allocated on the managed heap.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When an application creates the first reference type, memory is allocated for the type at the base address of the managed heap.</p>
+</li>
+<li>
+<p>When the application creates the next object, the runtime allocates memory for it in the address space immediately following the first object.</p>
+</li>
+<li>
+<p>Allocating memory from the managed heap is faster than unmanaged memory allocation.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Because the runtime allocates memory for an object by adding a value to a pointer, it&#8217;s almost as fast as allocating memory from the stack.</p>
+</li>
+<li>
+<p>In addition, because new objects that are allocated consecutively are stored contiguously in the managed heap, an application can access the objects quickly.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>When the garbage collector performs a collection, it releases the memory for objects that are no longer being used by the application by examining the application&#8217;s roots.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An <strong>application&#8217;s roots</strong> include static fields, local variables on a thread&#8217;s stack, CPU registers, GC handles, and the finalize queue.</p>
+</li>
+<li>
+<p>Each root either refers to an object on the managed heap or is set to null.</p>
+</li>
+<li>
+<p>The garbage collector uses this list to create a <strong>graph</strong> that contains all the objects that are reachable from the roots.</p>
+</li>
+<li>
+<p>Objects that aren&#8217;t in the graph are unreachable from the application&#8217;s roots.</p>
+</li>
+<li>
+<p>The garbage collector considers unreachable objects garbage and releases the memory allocated for them.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The garbage collector examines the managed heap, and uses a memory-copying function to <strong>compact</strong> the reachable objects in memory, freeing up the blocks of address spaces allocated to unreachable objects.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Memory is compacted only if a collection discovers a significant number of unreachable objects.</p>
+</li>
+<li>
+<p>If all the objects in the managed heap survive a collection, then there&#8217;s no need for memory compaction.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>To improve performance, the runtime allocates memory for large objects in a separate heap, <a href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap">the <strong>large object heap</strong> (LOH)</a>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The garbage collector automatically releases the memory for large objects.</p>
+</li>
+<li>
+<p>However, to avoid moving large objects in memory, this memory is usually not compacted.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Before a garbage collection starts, all managed threads are <strong>suspended</strong> except for the thread that triggered the garbage collection.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/media/gc-triggered.png" alt="Screenshot of how a thread triggers a Garbage Collection.">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="generations">2. Generations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The GC algorithm is based on several considerations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s faster to compact the memory for a portion of the managed heap than for the entire managed heap.</p>
+</li>
+<li>
+<p>Newer objects have shorter lifetimes, and older objects have longer lifetimes.</p>
+</li>
+<li>
+<p>Newer objects tend to be related to each other and accessed by the application around the same time.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Garbage collection primarily occurs with the reclamation of short-lived objects. To optimize the performance of the garbage collector, the managed heap is divided into three <strong>generations</strong>, <code>0</code>, <code>1</code>, and <code>2</code>, so it can handle <strong>long-lived</strong> and <strong>short-lived</strong> objects separately.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The garbage collector stores new objects in generation <code>0</code>.</p>
+</li>
+<li>
+<p>Objects created early in the application&#8217;s lifetime that survive collections are promoted and stored in generations <code>1</code> and <code>2</code>.</p>
+</li>
+<li>
+<p>However, if they&#8217;re large objects, they go on the large object heap (LOH), which is sometimes referred to as generation <code>3</code>.</p>
+</li>
+<li>
+<p>Most objects are reclaimed for garbage collection in generation <code>0</code> and don&#8217;t survive to the next generation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If an application attempts to create a new object when generation <code>0</code> is full, the garbage collector performs a collection to free address space for the object.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>After the garbage collector performs a collection of generation <code>0</code>, it compacts the memory for the reachable objects and promotes them to generation <code>1</code>.</p>
+</li>
+<li>
+<p>If a collection of generation <code>0</code> doesn&#8217;t reclaim enough memory for the application to create a new object, the garbage collector can perform a collection of generation <code>1</code> and then generation <code>2</code>.</p>
+</li>
+<li>
+<p>Objects in generation <code>2</code> that survive a collection remain in generation <code>2</code> until they&#8217;re determined to be unreachable in a future collection.</p>
+</li>
+<li>
+<p>Objects on the large object heap (which is sometimes referred to as generation <code>3</code>) are also collected in generation <code>2</code>.</p>
+</li>
+<li>
+<p>A generation <code>2</code> garbage collection is also known as a <strong>full garbage collection</strong> because it reclaims objects in all generations (that is, all objects in the managed heap).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Objects that aren&#8217;t reclaimed in a garbage collection are known as survivors and are promoted to the next generation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Objects that survive a generation <code>0</code> garbage collection are promoted to generation <code>1</code>.</p>
+</li>
+<li>
+<p>Objects that survive a generation <code>1</code> garbage collection are promoted to generation <code>2</code>.</p>
+</li>
+<li>
+<p>Objects that survive a generation <code>2</code> garbage collection remain in generation <code>2</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="unmanaged-resources">3. Unmanaged resources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The .NET garbage collector doesn&#8217;t allocate or release unmanaged memory.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For unmanaged resources, they requires to be explicitly cleanup.</p>
+</li>
+<li>
+<p>The most common type of unmanaged resource is an object that wraps an operating system resource, such as a file handle, window handle, network connection, or database connections.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Although the garbage collector is able to track the lifetime of an object that encapsulates an unmanaged resource, it doesn&#8217;t know how to release and clean up the unmanaged resource.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dispose-patterns">4. Dispose patterns</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable.dispose"><code>Dispose</code></a> method in .NET is primarily for releasing unmanaged resources (like file handles, network connections, memory allocated outside .NET).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>While often used to cascade dispose calls for <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable"><code>IDisposable</code></a> members to release unmanaged resources, it can also be used for other cleanup tasks, for example, to free memory that was allocated, remove an item that was added to a collection, or signal the release of a lock that was acquired.</p>
+</li>
+<li>
+<p>The .NET garbage collector doesn&#8217;t handle unmanaged memory, so the <strong>dispose pattern</strong> is crucial for managing these resources that implement the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable.dispose"><code>IDisposable</code></a> interface.</p>
+</li>
+<li>
+<p>A well-written <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable"><code>Dispose</code></a> method should be idempotent (callable multiple times without errors), with subsequent calls doing nothing.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="kt">string</span> <span class="n">filePath</span> <span class="p">=</span> <span class="s">"example.txt"</span><span class="p">;</span>
+<span class="kt">string</span> <span class="n">textToWrite</span> <span class="p">=</span> <span class="s">"Hello, this is a test message!"</span><span class="p">;</span>
+
+<span class="c1">// Use the using statement to ensure the StreamWriter is properly disposed of</span>
+<span class="k">using</span> <span class="p">(</span><span class="n">StreamWriter</span> <span class="n">writer</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">StreamWriter</span><span class="p">(</span><span class="n">filePath</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">writer</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">textToWrite</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To enable the deterministic release of unmanaged resources, provide an <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable.dispose">IDisposable.Dispose</a> dispose pattern implementation.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Dispose of unmanaged resources.</span>
+    <span class="nf">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="c1">// Suppress finalization.</span>
+    <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Any non-sealed class should have an Dispose(bool) overload method.</span>
+<span class="c1">// If the method call comes from a finalizer, only the code that frees</span>
+<span class="c1">// unmanaged resources should execute.</span>
+<span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_disposed</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// TODO: dispose managed state (managed objects).</span>
+    <span class="p">}</span>
+
+    <span class="c1">// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.</span>
+    <span class="c1">// TODO: set large fields to null.</span>
+
+    <span class="n">_disposed</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">~</span><span class="nf">Disposable</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="nf">Dispose</span><span class="p">(</span><span class="k">false</span><span class="p">);</span> <span class="c1">// finalizer</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <code>disposing</code> parameter should be <code>false</code> when called from a finalizer, and <code>true</code> when called from the <code>IDisposable.Dispose</code> method. In other words, it is true when deterministically called and false when non-deterministically called.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_disposed</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span> <span class="c1">// Deterministic call (from IDisposable.Dispose or using)</span>
+    <span class="p">{</span>
+        <span class="c1">// Dispose managed resources:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_managedResource</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">_managedResource</span><span class="p">.</span><span class="nf">Dispose</span><span class="p">();</span> <span class="c1">// Safe to access managed objects</span>
+            <span class="n">_managedResource</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Free unmanaged resources:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_unmanagedResource</span> <span class="p">!=</span> <span class="n">IntPtr</span><span class="p">.</span><span class="n">Zero</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nf">CloseHandle</span><span class="p">(</span><span class="n">_unmanagedResource</span><span class="p">);</span> <span class="c1">// Always release unmanaged resources</span>
+        <span class="n">_unmanagedResource</span> <span class="p">=</span> <span class="n">IntPtr</span><span class="p">.</span><span class="n">Zero</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">_disposed</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">~</span><span class="nf">Disposable</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="nf">Dispose</span><span class="p">(</span><span class="k">false</span><span class="p">);</span> <span class="c1">// Non-deterministic call (from finalizer)</span></code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>To enable the non-deterministic release of unmanaged resources when the consumer of a type fails to call <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable.dispose">IDisposable.Dispose</a>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use a <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.safehandle">safe handle</a> to wrap the unmanaged resource.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">using</span> <span class="nn">Microsoft.Win32.SafeHandles</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Runtime.InteropServices</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">BaseClassWithSafeHandle</span> <span class="p">:</span> <span class="n">IDisposable</span>
+<span class="p">{</span>
+    <span class="c1">// To detect redundant calls</span>
+    <span class="k">private</span> <span class="kt">bool</span> <span class="n">_disposed</span><span class="p">;</span>
+
+    <span class="c1">// Instantiate a SafeHandle instance.</span>
+    <span class="k">private</span> <span class="n">SafeHandle</span><span class="p">?</span> <span class="n">_safeHandle</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SafeFileHandle</span><span class="p">(</span><span class="n">IntPtr</span><span class="p">.</span><span class="n">Zero</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+    <span class="c1">//  FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite);</span>
+    <span class="c1">//  _safeHandle = new SafeFileHandle(fs.SafeFileHandle.DangerousGetHandle(), true);</span>
+
+    <span class="c1">// Public implementation of Dispose pattern callable by consumers.</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nf">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Protected implementation of Dispose pattern.</span>
+    <span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="n">_disposed</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">_safeHandle</span><span class="p">?.</span><span class="nf">Dispose</span><span class="p">();</span>
+                <span class="n">_safeHandle</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="n">_disposed</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Or, define a <a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/finalizers">finalizer</a>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">BaseClassWithFinalizer</span> <span class="p">:</span> <span class="n">IDisposable</span>
+<span class="p">{</span>
+    <span class="c1">// To detect redundant calls</span>
+    <span class="k">private</span> <span class="kt">bool</span> <span class="n">_disposed</span><span class="p">;</span>
+
+    <span class="p">~</span><span class="nf">BaseClassWithFinalizer</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="nf">Dispose</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+
+    <span class="c1">// Public implementation of Dispose pattern callable by consumers.</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nf">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+        <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Protected implementation of Dispose pattern.</span>
+    <span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="n">_disposed</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// TODO: dispose managed state (managed objects)</span>
+            <span class="p">}</span>
+
+            <span class="c1">// TODO: free unmanaged resources (unmanaged objects) and override finalizer</span>
+            <span class="c1">// TODO: set large fields to null</span>
+            <span class="n">_disposed</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+A finalizer is only required if you directly reference unmanaged resources.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Object finalization can be a complex and error-prone operation, it&#8217;s recommend to use a safe handle instead of providing the finalizer.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="system-iasyncdisposable">4.1. System.IAsyncDisposable</h3>
+<div class="paragraph">
+<p>The <a href="https://learn.microsoft.com/en-us/dotnet/api/system.iasyncdisposable.disposeasync">IAsyncDisposable.DisposeAsync</a> is used to asynchronously close or release unmanaged resources such as files, streams, and handles, instead of <a href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable.dispose">IDisposable.Dispose</a> to perform a resource-intensive dispose operation without blocking the main thread of a GUI application for a long time. <a href="#api-iasyncdisposable">[2]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>It&#8217;s typical when implementing the <code>IAsyncDisposable</code> interface that classes also implement the <code>IDisposable</code> interface for either synchronous or asynchronous disposal, however, it&#8217;s not a requirement.</p>
+</div>
+<div class="paragraph">
+<p>If a class implements <code>IAsyncDisposable</code>, but not <code>IDisposable</code>, and a consumer only calls <code>Dispose</code>, the implementation would never call <code>DisposeAsync</code>, which would result in a resource leak.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Any nonsealed class should define a <code>DisposeAsyncCore()</code> method that also returns a <code>ValueTask</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">async</span> <span class="n">ValueTask</span> <span class="nf">DisposeAsync</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Perform async cleanup.</span>
+    <span class="k">await</span> <span class="nf">DisposeAsyncCore</span><span class="p">();</span>
+
+    <span class="c1">// Dispose of unmanaged resources.</span>
+    <span class="nf">Dispose</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+
+    <span class="c1">// Suppress finalization.</span>
+    <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">protected</span> <span class="k">virtual</span> <span class="n">ValueTask</span> <span class="nf">DisposeAsyncCore</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>If an implementation of <code>IAsyncDisposable</code> is sealed, the <code>DisposeAsyncCore()</code> method is not needed.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">SealedExampleAsyncDisposable</span> <span class="p">:</span> <span class="n">IAsyncDisposable</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IAsyncDisposable</span> <span class="n">_example</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">SealedExampleAsyncDisposable</span><span class="p">()</span> <span class="p">=&gt;</span>
+        <span class="n">_example</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">NoopAsyncDisposable</span><span class="p">();</span>
+
+    <span class="c1">// the asynchronous cleanup can be performed directly</span>
+    <span class="k">public</span> <span class="n">ValueTask</span> <span class="nf">DisposeAsync</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="n">_example</span><span class="p">.</span><span class="nf">DisposeAsync</span><span class="p">();</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>An example that implements both dispose and async dispose patterns</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">class</span> <span class="nc">ExampleConjunctiveDisposableusing</span> <span class="p">:</span> <span class="n">IDisposable</span><span class="p">,</span> <span class="n">IAsyncDisposable</span>
+<span class="p">{</span>
+    <span class="n">IDisposable</span><span class="p">?</span> <span class="n">_disposableResource</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">MemoryStream</span><span class="p">();</span>
+    <span class="n">IAsyncDisposable</span><span class="p">?</span> <span class="n">_asyncDisposableResource</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">MemoryStream</span><span class="p">();</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nf">Dispose</span><span class="p">(</span><span class="n">disposing</span><span class="p">:</span> <span class="k">true</span><span class="p">);</span>
+        <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">ValueTask</span> <span class="nf">DisposeAsync</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">await</span> <span class="nf">DisposeAsyncCore</span><span class="p">().</span><span class="nf">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+
+        <span class="nf">Dispose</span><span class="p">(</span><span class="n">disposing</span><span class="p">:</span> <span class="k">false</span><span class="p">);</span>
+        <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">_disposableResource</span><span class="p">?.</span><span class="nf">Dispose</span><span class="p">();</span>
+            <span class="n">_disposableResource</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">_asyncDisposableResource</span> <span class="k">is</span> <span class="n">IDisposable</span> <span class="n">disposable</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">disposable</span><span class="p">.</span><span class="nf">Dispose</span><span class="p">();</span>
+                <span class="n">_asyncDisposableResource</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">virtual</span> <span class="k">async</span> <span class="n">ValueTask</span> <span class="nf">DisposeAsyncCore</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_asyncDisposableResource</span> <span class="k">is</span> <span class="n">not</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">await</span> <span class="n">_asyncDisposableResource</span><span class="p">.</span><span class="nf">DisposeAsync</span><span class="p">().</span><span class="nf">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">_disposableResource</span> <span class="k">is</span> <span class="n">IAsyncDisposable</span> <span class="n">disposable</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">await</span> <span class="n">disposable</span><span class="p">.</span><span class="nf">DisposeAsync</span><span class="p">().</span><span class="nf">ConfigureAwait</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">_disposableResource</span><span class="p">?.</span><span class="nf">Dispose</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="n">_asyncDisposableResource</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+        <span class="n">_disposableResource</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>To properly consume an object that implements the <code>IAsyncDisposable</code> interface, using the <code>await</code> and <code>using</code> keywords together.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">await</span> <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">writer</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">StreamWriter</span><span class="p">(</span><span class="s">"./hello"</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="k">await</span> <span class="n">writer</span><span class="p">.</span><span class="nf">WriteAsync</span><span class="p">(</span><span class="s">"Hello, World!"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">using</span> <span class="nn">var</span> <span class="n">reader</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">StreamReader</span><span class="p">(</span><span class="s">"./hello"</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">text</span> <span class="p">=</span> <span class="k">await</span> <span class="n">reader</span><span class="p">.</span><span class="nf">ReadToEndAsync</span><span class="p">();</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="n">text</span><span class="p">);</span> <span class="c1">// Hello, World!</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="system-object-finalize">4.2. System.Object.Finalize</h3>
+<div class="paragraph">
+<p>The <a href="https://learn.microsoft.com/en-us/dotnet/api/system.object.finalize">Finalize</a> method is used to allow an object to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="p">~</span><span class="nf">Object</span> <span class="p">();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a type does override the <code>Finalize</code> method, the garbage collector adds an entry for each instance of the type to an internal structure called the finalization queue. The finalization queue contains entries for all the objects in the managed heap whose finalization code must run before the garbage collector can reclaim their memory.</p>
+</div>
+<div class="paragraph">
+<p>The garbage collector calls the <code>Finalize</code> method automatically under the following conditions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>After the garbage collector has discovered that an object is inaccessible, unless the object has been exempted from finalization by a call to the <code>GC.SuppressFinalize</code> method.</p>
+</li>
+<li>
+<p>On .NET Framework only, during shutdown of an application domain, unless the object is exempt from finalization. During shutdown, even objects that are still accessible are finalized.</p>
+</li>
+<li>
+<p>Finalize is automatically called only once on a given instance, unless the object is re-registered by using a mechanism such as <code>GC.ReRegisterForFinalize</code> and the <code>GC.SuppressFinalize</code> method has not been subsequently called.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Finalize should be overriden  for a class that uses unmanaged resources, such as file handles or database connections that must be released when the managed object that uses them is discarded during garbage collection. It shouldn&#8217;t be implemented for managed objects because the garbage collector releases managed resources automatically.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// Dispose of unmanaged resources.</span>
+    <span class="nf">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+    <span class="c1">// Suppress finalization.</span>
+    <span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="workstation-and-server-gc">5. Workstation and server GC</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The garbage collector is self-tuning and can work in a wide variety of scenarios. However, the CLR also provides the following types of garbage collection to be set based on the characteristics of the workload: <a href="#gc-workstation-server-gc">[4]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Workstation</strong> garbage collection (GC), which is designed for client apps.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s the default GC flavor for standalone apps.</p>
+</li>
+<li>
+<p>For hosted apps, for example, those hosted by ASP.NET, the host determines the default GC flavor.</p>
+</li>
+<li>
+<p>Workstation garbage collection can be concurrent or non-concurrent.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Concurrent (or background) garbage collection enables managed threads to continue operations during a garbage collection.</p>
+</li>
+<li>
+<p>Background garbage collection replaces concurrent garbage collection in .NET Framework 4 and later versions.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Workstation garbage collection is always used on a computer that has only one logical CPU, regardless of the <a href="https://learn.microsoft.com/en-us/dotnet/core/runtime-config/garbage-collector#workstation-vs-server">configuration setting</a>.</p>
+</li>
+<li>
+<p>The collection occurs on the user thread that triggered the garbage collection and remains at the same priority.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Server</strong> garbage collection, which is intended for server applications that need high throughput and scalability.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In .NET Core, server garbage collection can be non-concurrent or background.</p>
+</li>
+<li>
+<p>In .NET Framework 4.5 and later versions, server garbage collection can be non-concurrent or background. In .NET Framework 4 and previous versions, server garbage collection is non-concurrent.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/media/gc-server.png" alt="Server Garbage Collection Threads" width="55%" height="55%">
+</div>
+<div class="title">Figure 1. Server Garbage Collection Threads</div>
+</div>
+</li>
+<li>
+<p>The collection occurs on multiple dedicated threads. On Windows, these threads run at <code>THREAD_PRIORITY_HIGHEST</code> priority level.</p>
+</li>
+<li>
+<p>A heap and a dedicated thread to perform garbage collection are provided for each logical CPU, and the heaps are collected at the same time. Each heap contains a small object heap and a large object heap, and all heaps can be accessed by user code. Objects on different heaps can refer to each other.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="background-gc">5.1. Background GC</h3>
+<div class="paragraph">
+<p>In <strong>background</strong> garbage collection (GC), ephemeral generations (<code>0</code> and <code>1</code>) are collected as needed while the collection of generation <code>2</code> is in progress. <a href="#gc-background-gc">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Background garbage collection is performed on one or more dedicated threads, depending on whether it&#8217;s workstation or server GC, and applies only to generation <code>2</code> collections.</p>
+</li>
+<li>
+<p>Background garbage collection is enabled by default.</p>
+</li>
+<li>
+<p>Background garbage collection removes allocation restrictions imposed by concurrent garbage collection, because ephemeral garbage collections can occur during background garbage collection.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A collection on ephemeral generations during background garbage collection is known as <strong>foreground</strong> garbage collection.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When foreground garbage collections occur, all managed threads (both dedicated background garbage collection threads and user threads) are suspended.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="background-workstation-vs-server-gc">5.2. Background workstation vs. server GC</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Background workstation garbage collection uses one dedicated background garbage collection thread, whereas background server garbage collection uses multiple threads. Typically, there&#8217;s a dedicated thread for each logical processor.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/media/fundamentals/background-workstation-garbage-collection.png" alt="Background workstation garbage collection" width="55%" height="55%">
+</div>
+<div class="title">Figure 2. Background workstation garbage collection</div>
+</div>
+</li>
+<li>
+<p>Unlike the workstation background garbage collection thread, the background server GC threads do not time out.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/media/fundamentals/background-server-garbage-collection.png" alt="Background server garbage collection" width="55%" height="55%">
+</div>
+<div class="title">Figure 3. Background server garbage collection</div>
+</div>
+</li>
+<li>
+<p>Starting with .NET Framework 4.5, background garbage collection is available for server GC. Background GC is the default mode for server garbage collection.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Concurrent GC</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Concurrent garbage is replaced by background garbage collection in the modern .NET Framework versions.</p>
+<div class="paragraph">
+<p>.NET Framework 3.5 and earlier for workstation garbage collection</p>
+</div>
+<div class="paragraph">
+<p>.NET Framework 4 and earlier for server garbage collection</p>
+</div>
+</li>
+<li>
+<p>Concurrent garbage collection enables interactive applications to be more responsive by minimizing pauses for a collection.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Managed threads can continue to run most of the time while the concurrent garbage collection thread is running.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Concurrent garbage collection is performed on a dedicated thread.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>By default, the CLR runs workstation garbage collection with concurrent garbage collection enabled on both single-processor and multi-processor computers.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/media/gc-concurrent.png" alt="Concurrent Garbage Collection Threads" width="55%" height="55%">
+</div>
+<div class="title">Figure 4. Concurrent Garbage Collection Threads</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="dotnet-gc"></a>[1] <a href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/</a></p>
+</li>
+<li>
+<p><a id="api-iasyncdisposable"></a>[2] <a href="https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-iasyncdisposable" class="bare">https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-iasyncdisposable</a></p>
+</li>
+<li>
+<p><a id="dotnet-finalizer"></a>[3] <a href="https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-object-finalize" class="bare">https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-object-finalize</a></p>
+</li>
+<li>
+<p><a id="gc-workstation-server-gc"></a>[4] <a href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/workstation-server-gc" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/workstation-server-gc</a></p>
+</li>
+<li>
+<p><a id="gc-background-gc"></a>[5] <a href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/background-gc" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/background-gc</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>HTTP 报文 | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="HTTP 报文" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="报文流 HTTP 报文是在 HTTP 应用程序之间发送的由文本形式的元信息 (meta-information)和可选的数据的数据块。 HTTP 使用流入 (inbound)和流出 (outbound)来描述事务处理 (transaction)的方向。报文流入源端服务器，工作完成之后，会流回用户的 Agent 代理中。 HTTP 报文会像河水一样流动。不管是请求报文还是响应报文，所有报文都会向下游 (donwstream)流动。所有报文的发送者都在接受者的上游 (upstream)。 报文的组成部分 HTTP 报文是简单的格式化数据块。每条报文都包含一条来自客户端的请求，或者一条来自服务器的响应。它们由三个部分组成：对报文进行描述的起始行 (start line)、包含属性的首部 (header)块，以及可选的、包含数据的主体 (body)部分。 起始行和首部就是由行 (CRLF) 分隔的 ASCII 文本。 实体的主体或者报文的主体是一个可选的数据块。与起始行和首部不同的是，主体可以包含文本或者二进制数据，也可以为空。 请求报文 (request message) 请求报文会向 Web 服务器请求一个动作。 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; &lt;headers&gt; &lt;entity-body&gt; 响应报文 (response message) 响应报文会将请求的结果返回给客户端。 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; &lt;headers&gt; &lt;entity-body&gt; 起始行 (start line) 请求行 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; 响应行 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; 方法 (method) 客户端希望服务器对资源执行的动作。 HTTP 定义了一组被称为安全方法的方法。 GET 方法和 HEAD 方法都被认为是安全的，这就意味着使用 GET 或者 HEAD 方法的 HTTP 请求都不会产生什么动作。不产生动作，在这里意味着 HTTP 请求不会在服务器上产生什么结果。 方 法 描 述 是否包含主体 GET 从服务器获取一份稳定 否 HEAD 只从服务获取文档的首部 否 POST 向服务器发送需要处理的数据 是 PUT 将请求的主体部分存储在服务器上 是 TRACE 对可能经过代理服务器传送到服务器上的去的报文进行跟踪 否 OPTIONS 决定可以在服务器上执行哪些方法…" />
+<meta name="twitter:description" property="og:description" content="报文流 HTTP 报文是在 HTTP 应用程序之间发送的由文本形式的元信息 (meta-information)和可选的数据的数据块。 HTTP 使用流入 (inbound)和流出 (outbound)来描述事务处理 (transaction)的方向。报文流入源端服务器，工作完成之后，会流回用户的 Agent 代理中。 HTTP 报文会像河水一样流动。不管是请求报文还是响应报文，所有报文都会向下游 (donwstream)流动。所有报文的发送者都在接受者的上游 (upstream)。 报文的组成部分 HTTP 报文是简单的格式化数据块。每条报文都包含一条来自客户端的请求，或者一条来自服务器的响应。它们由三个部分组成：对报文进行描述的起始行 (start line)、包含属性的首部 (header)块，以及可选的、包含数据的主体 (body)部分。 起始行和首部就是由行 (CRLF) 分隔的 ASCII 文本。 实体的主体或者报文的主体是一个可选的数据块。与起始行和首部不同的是，主体可以包含文本或者二进制数据，也可以为空。 请求报文 (request message) 请求报文会向 Web 服务器请求一个动作。 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; &lt;headers&gt; &lt;entity-body&gt; 响应报文 (response message) 响应报文会将请求的结果返回给客户端。 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; &lt;headers&gt; &lt;entity-body&gt; 起始行 (start line) 请求行 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; 响应行 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; 方法 (method) 客户端希望服务器对资源执行的动作。 HTTP 定义了一组被称为安全方法的方法。 GET 方法和 HEAD 方法都被认为是安全的，这就意味着使用 GET 或者 HEAD 方法的 HTTP 请求都不会产生什么动作。不产生动作，在这里意味着 HTTP 请求不会在服务器上产生什么结果。 方 法 描 述 是否包含主体 GET 从服务器获取一份稳定 否 HEAD 只从服务获取文档的首部 否 POST 向服务器发送需要处理的数据 是 PUT 将请求的主体部分存储在服务器上 是 TRACE 对可能经过代理服务器传送到服务器上的去的报文进行跟踪 否 OPTIONS 决定可以在服务器上执行哪些方法…" />
+<link rel="canonical" href="https://blog.codefarm.me/http-message/" />
+<meta property="og:url" content="https://blog.codefarm.me/http-message/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-09-26T18:31:14+08:00" />
+<meta property="article:modified_time" content="2016-09-26T18:31:14+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="HTTP 报文" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2016-09-26T18:31:14+08:00","datePublished":"2016-09-26T18:31:14+08:00","description":"报文流 HTTP 报文是在 HTTP 应用程序之间发送的由文本形式的元信息 (meta-information)和可选的数据的数据块。 HTTP 使用流入 (inbound)和流出 (outbound)来描述事务处理 (transaction)的方向。报文流入源端服务器，工作完成之后，会流回用户的 Agent 代理中。 HTTP 报文会像河水一样流动。不管是请求报文还是响应报文，所有报文都会向下游 (donwstream)流动。所有报文的发送者都在接受者的上游 (upstream)。 报文的组成部分 HTTP 报文是简单的格式化数据块。每条报文都包含一条来自客户端的请求，或者一条来自服务器的响应。它们由三个部分组成：对报文进行描述的起始行 (start line)、包含属性的首部 (header)块，以及可选的、包含数据的主体 (body)部分。 起始行和首部就是由行 (CRLF) 分隔的 ASCII 文本。 实体的主体或者报文的主体是一个可选的数据块。与起始行和首部不同的是，主体可以包含文本或者二进制数据，也可以为空。 请求报文 (request message) 请求报文会向 Web 服务器请求一个动作。 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; &lt;headers&gt; &lt;entity-body&gt; 响应报文 (response message) 响应报文会将请求的结果返回给客户端。 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; &lt;headers&gt; &lt;entity-body&gt; 起始行 (start line) 请求行 &lt;method&gt; &lt;request-url&gt; &lt;version&gt; 响应行 &lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt; 方法 (method) 客户端希望服务器对资源执行的动作。 HTTP 定义了一组被称为安全方法的方法。 GET 方法和 HEAD 方法都被认为是安全的，这就意味着使用 GET 或者 HEAD 方法的 HTTP 请求都不会产生什么动作。不产生动作，在这里意味着 HTTP 请求不会在服务器上产生什么结果。 方 法 描 述 是否包含主体 GET 从服务器获取一份稳定 否 HEAD 只从服务获取文档的首部 否 POST 向服务器发送需要处理的数据 是 PUT 将请求的主体部分存储在服务器上 是 TRACE 对可能经过代理服务器传送到服务器上的去的报文进行跟踪 否 OPTIONS 决定可以在服务器上执行哪些方法…","headline":"HTTP 报文","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/http-message/"},"url":"https://blog.codefarm.me/http-message/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">HTTP 报文</h1><p class="c-post-meta">26 Sep 2016</p>
+  </header>
+
+  <div class="c-post-content">
+    <h2 id="报文流">报文流</h2>
+
+<p>HTTP 报文是在 HTTP 应用程序之间发送的由文本形式的<strong>元信息</strong> (meta-information)和可选的数据的数据块。</p>
+
+<p>HTTP 使用<strong>流入</strong> (inbound)和<strong>流出</strong> (outbound)来描述<strong>事务处理</strong> (transaction)的方向。报文流入源端服务器，工作完成之后，会流回用户的 Agent 代理中。</p>
+
+<p>HTTP 报文会像河水一样流动。不管是请求报文还是响应报文，所有报文都会向<strong>下游</strong> (donwstream)流动。所有报文的发送者都在接受者的<strong>上游</strong> (upstream)。</p>
+
+<h2 id="报文的组成部分">报文的组成部分</h2>
+
+<p>HTTP 报文是简单的格式化数据块。每条报文都包含一条来自客户端的请求，或者一条来自服务器的响应。它们由三个部分组成：对报文进行描述的<strong>起始行</strong> (start line)、包含属性的<strong>首部</strong> (header)块，以及可选的、包含数据的<strong>主体</strong> (body)部分。</p>
+
+<p>起始行和首部就是由行 (CRLF) 分隔的 ASCII 文本。</p>
+
+<p>实体的主体或者报文的主体是一个可选的数据块。与起始行和首部不同的是，主体可以包含文本或者二进制数据，也可以为空。</p>
+
+<h3 id="请求报文-request-message">请求报文 (request message)</h3>
+
+<p>请求报文会向 Web 服务器请求一个动作。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;method&gt; &lt;request-url&gt; &lt;version&gt;
+&lt;headers&gt;
+
+&lt;entity-body&gt;
+</code></pre></div></div>
+
+<h3 id="响应报文-response-message">响应报文 (response message)</h3>
+
+<p>响应报文会将请求的结果返回给客户端。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt;
+&lt;headers&gt;
+
+&lt;entity-body&gt;
+</code></pre></div></div>
+
+<ul>
+  <li>起始行 (start line)
+    <ul>
+      <li>
+        <p>请求行 <code class="language-plaintext highlighter-rouge">&lt;method&gt; &lt;request-url&gt; &lt;version&gt;</code></p>
+      </li>
+      <li>
+        <p>响应行 <code class="language-plaintext highlighter-rouge">&lt;version&gt; &lt;status&gt; &lt;reson-phrase&gt;</code></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>方法 (method)</p>
+
+    <p>客户端希望服务器对资源执行的动作。</p>
+
+    <p>HTTP 定义了一组被称为<strong>安全方法</strong>的方法。 GET 方法和 HEAD 方法都被认为是安全的，这就意味着使用 GET 或者 HEAD 方法的 HTTP 请求都不会产生什么动作。不产生动作，在这里意味着 HTTP 请求不会在服务器上产生什么结果。</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>方 法</th>
+          <th style="text-align: left">描 述</th>
+          <th style="text-align: right">是否包含主体</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GET</td>
+          <td style="text-align: left">从服务器获取一份稳定</td>
+          <td style="text-align: right">否</td>
+        </tr>
+        <tr>
+          <td>HEAD</td>
+          <td style="text-align: left">只从服务获取文档的首部</td>
+          <td style="text-align: right">否</td>
+        </tr>
+        <tr>
+          <td>POST</td>
+          <td style="text-align: left">向服务器发送需要处理的数据</td>
+          <td style="text-align: right">是</td>
+        </tr>
+        <tr>
+          <td>PUT</td>
+          <td style="text-align: left">将请求的主体部分存储在服务器上</td>
+          <td style="text-align: right">是</td>
+        </tr>
+        <tr>
+          <td>TRACE</td>
+          <td style="text-align: left">对可能经过代理服务器传送到服务器上的去的报文进行跟踪</td>
+          <td style="text-align: right">否</td>
+        </tr>
+        <tr>
+          <td>OPTIONS</td>
+          <td style="text-align: left">决定可以在服务器上执行哪些方法</td>
+          <td style="text-align: right">否</td>
+        </tr>
+        <tr>
+          <td>DELETE</td>
+          <td style="text-align: left">从服务器上删除一份文档</td>
+          <td style="text-align: right">否</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p>请求 URL (request-URL)</p>
+
+    <p>命名了所请求的资源，或者 URL 路径组件的完整 URL。</p>
+  </li>
+  <li>
+    <p>版本 (version)</p>
+
+    <p>报文所使用的 HTTP 版本。</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HTTP/&lt;major&gt;.&lt;minor&gt;
+</code></pre></div>    </div>
+
+    <p>其<strong>主要版本</strong> (major) 和<strong>次要版本</strong> (minor) 都是整数。</p>
+  </li>
+  <li>
+    <p>状态码 (status-code)</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>整体范围</th>
+          <th>已定义范围</th>
+          <th>分类</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>100 ~ 199</td>
+          <td>100 ~ 101</td>
+          <td>信息提示</td>
+        </tr>
+        <tr>
+          <td>200 ~ 299</td>
+          <td>200 ~ 206</td>
+          <td>成功</td>
+        </tr>
+        <tr>
+          <td>300 ~ 399</td>
+          <td>300 ~ 305</td>
+          <td>重定向</td>
+        </tr>
+        <tr>
+          <td>400 ~ 499</td>
+          <td>400 ~ 415</td>
+          <td>客户端错误</td>
+        </tr>
+        <tr>
+          <td>500 ~ 599</td>
+          <td>500 ~ 505</td>
+          <td>服务器错误</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p>原因短语 (reason-phrase)</p>
+
+    <p>数字状态码的可读版本，包含行终止序列之前的所有文本。原因短语只对人类有意义。</p>
+  </li>
+  <li>
+    <p>首部 (header)</p>
+
+    <p>可以有零个或者多个首部，每个首部都包含一个名字，后面跟着一个冒号 (:)，然后是一个可选的空格，接着是一个值，最后是 CRLF。</p>
+
+    <p>首部是有一个空行 (CRLF) 结束的，表示了首部列表和实体主体部分的开始。</p>
+
+    <p>将长的首部行分为多行可以提高可读性，多出来的每行前至少要有一个空格或者制表符 (tab)。</p>
+
+    <ul>
+      <li>通用首部</li>
+      <li>请求首部</li>
+      <li>响应首部</li>
+      <li>实体首部</li>
+      <li>扩展首部</li>
+    </ul>
+  </li>
+  <li>
+    <p>实体的主体部分 (entity-body)</p>
+
+    <p>实体的主体部分包含一个由任意数据组成的数据块。</p>
+
+    <p>一组 HTTP 首部总是应该以一个空行 (CRLF) 结束，甚至即使没有首部和实体的主体部分也应如此。客户端和服务器也都应该接受那些没有最后那个 CRLF 的报文。</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="references">References</h3>
+
+<ol>
+  <li><a href="https://www.amazon.cn/HTTP%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97-%E5%90%89%E5%B0%94%E5%88%A9/dp/B008XFDQ14/ref=sr_1_1?ie=UTF8&amp;qid=1474890436&amp;sr=8-1&amp;keywords=http+%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97">HTTP权威指南</a></li>
+</ol>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

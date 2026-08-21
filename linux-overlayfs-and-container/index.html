@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Linux OverlayFS and Container | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Linux OverlayFS and Container" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Linux OverlayFS 1.1. Upper and Lower 1.2. Directories 1.3. Non-directories 1.4. Multiple lower layers 1.5. Talk is cheep 2. Open Container Initiative (OCI) 3. Docker storage drivers 3.1. Images and layers 3.2. Container and layers 3.3. OverlayFS storage driver 4. References 1. Linux OverlayFS In computing, OverlayFS is a union mount filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory…" />
+<meta name="twitter:description" property="og:description" content="1. Linux OverlayFS 1.1. Upper and Lower 1.2. Directories 1.3. Non-directories 1.4. Multiple lower layers 1.5. Talk is cheep 2. Open Container Initiative (OCI) 3. Docker storage drivers 3.1. Images and layers 3.2. Container and layers 3.3. OverlayFS storage driver 4. References 1. Linux OverlayFS In computing, OverlayFS is a union mount filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory…" />
+<link rel="canonical" href="https://blog.codefarm.me/linux-overlayfs-and-container/" />
+<meta property="og:url" content="https://blog.codefarm.me/linux-overlayfs-and-container/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-26T16:44:57+08:00" />
+<meta property="article:modified_time" content="2021-11-26T16:44:57+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Linux OverlayFS and Container" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-11-26T16:44:57+08:00","datePublished":"2021-11-26T16:44:57+08:00","description":"1. Linux OverlayFS 1.1. Upper and Lower 1.2. Directories 1.3. Non-directories 1.4. Multiple lower layers 1.5. Talk is cheep 2. Open Container Initiative (OCI) 3. Docker storage drivers 3.1. Images and layers 3.2. Container and layers 3.3. OverlayFS storage driver 4. References 1. Linux OverlayFS In computing, OverlayFS is a union mount filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory…","headline":"Linux OverlayFS and Container","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/linux-overlayfs-and-container/"},"url":"https://blog.codefarm.me/linux-overlayfs-and-container/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Linux OverlayFS and Container</h1><p class="c-post-meta">26 Nov 2021</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#linux-overlayfs">1. Linux OverlayFS</a>
+<ul class="sectlevel2">
+<li><a href="#upper-and-lower">1.1. Upper and Lower</a></li>
+<li><a href="#directories">1.2. Directories</a></li>
+<li><a href="#non-directories">1.3. Non-directories</a></li>
+<li><a href="#multiple-lower-layers">1.4. Multiple lower layers</a></li>
+<li><a href="#talk-is-cheep">1.5. Talk is cheep</a></li>
+</ul>
+</li>
+<li><a href="#open-container-initiative-oci">2. Open Container Initiative (OCI)</a></li>
+<li><a href="#docker-storage-drivers">3. Docker storage drivers</a>
+<ul class="sectlevel2">
+<li><a href="#images-and-layers">3.1. Images and layers</a></li>
+<li><a href="#container-and-layers">3.2. Container and layers</a></li>
+<li><a href="#overlayfs-storage-driver">3.3. OverlayFS storage driver</a></li>
+</ul>
+</li>
+<li><a href="#references">4. References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="linux-overlayfs">1. Linux OverlayFS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In computing, <a href="https://en.wikipedia.org/wiki/OverlayFS"><strong>OverlayFS</strong></a> is a <a href="https://en.wikipedia.org/wiki/Union_mount">union mount</a> filesystem implementation for Linux. It combines multiple different underlying mount points into one, resulting in single directory structure that contains underlying files and sub-directories from all sources. Common applications overlay a read/write partition over a read-only partition, such as with LiveCDs and IoT devices with limited flash memory write cycles.</p>
+</div>
+<div class="paragraph">
+<p>The main mechanics of OverlayFS relate to the merging of directory access when both filesystems present a directory for the same name. Otherwise, OverlayFS presents the object, if any, yielded by one or the other, with the "upper" filesystem taking precedence. Unlike some other overlay filesystems, the directory subtrees being merged by OverlayFS do not necessarily have to be from distinct filesystems.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OverlayFS supports whiteouts and opaque directories in the upper filesystem to allow file and directory deletion.</p>
+</li>
+<li>
+<p>OverlayFS does not support renaming files without performing a full <strong>copy-up</strong> of the file; however, renaming directories in an upper filesystem has limited support.</p>
+</li>
+<li>
+<p>OverlayFS does not support merging changes from an <strong>upper</strong> filesystem to a <strong>lower</strong> filesystem.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="upper-and-lower">1.1. Upper and Lower</h3>
+<div class="paragraph">
+<p>An overlay filesystem combines two filesystems - an ‘upper’ filesystem and a ‘lower’ filesystem. When a name exists in both filesystems, the object in the ‘upper’ filesystem is visible while the object in the ‘lower’ filesystem is either hidden or, in the case of directories, merged with the ‘upper’ object.</p>
+</div>
+<div class="paragraph">
+<p>It would be more correct to refer to an upper and lower ‘directory tree’ rather than ‘filesystem’ as it is quite possible for both directory trees to be in the same filesystem and there is no requirement that the root of a filesystem be given for either upper or lower.</p>
+</div>
+<div class="paragraph">
+<p>A wide range of filesystems supported by Linux can be the lower filesystem, but not all filesystems that are mountable by Linux have the features needed for OverlayFS to work. The lower filesystem does not need to be writable. The lower filesystem can even be another overlayfs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="directories">1.2. Directories</h3>
+<div class="paragraph">
+<p>Overlaying mainly involves directories. If a given name appears in both upper and lower filesystems and refers to a non-directory in either, then the lower object is hidden - the name refers only to the upper object.</p>
+</div>
+<div class="paragraph">
+<p>Where both upper and lower objects are directories, a merged directory is formed.</p>
+</div>
+<div class="paragraph">
+<p>At mount time, the two directories given as mount options “lowerdir” and “upperdir” are combined into a merged directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mount <span class="nt">-t</span> overlay overlay <span class="nt">-olowerdir</span><span class="o">=</span>/lower,upperdir<span class="o">=</span>/upper,workdir<span class="o">=</span>/work /merged</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The “workdir” needs to be an empty directory on the same filesystem as upperdir.</p>
+</div>
+<div class="paragraph">
+<p>Then whenever a lookup is requested in such a merged directory, the lookup is performed in each actual directory and the combined result is cached in the dentry belonging to the overlay filesystem. If both actual lookups find directories, both are stored and a merged directory is created, otherwise only one is stored: the upper if it exists, else the lower.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="non-directories">1.3. Non-directories</h3>
+<div class="paragraph">
+<p>Objects that are not directories (files, symlinks, device-special files etc.) are presented either from the upper or lower filesystem as appropriate. When a file in the lower filesystem is accessed in a way the requires write-access, such as opening for write access, changing some metadata etc., the file is first copied from the lower filesystem to the upper filesystem (<strong>copy_up</strong>). Note that creating a hard-link also requires copy_up, though of course creation of a symlink does not.</p>
+</div>
+<div class="paragraph">
+<p>The copy_up may turn out to be unnecessary, for example if the file is opened for read-write but the data is not modified.</p>
+</div>
+<div class="paragraph">
+<p>The copy_up process first makes sure that the containing directory exists in the upper filesystem - creating it and any parents as necessary. It then creates the object with the same metadata (owner, mode, mtime, symlink-target etc.) and then if the object is a file, the data is copied from the lower to the upper filesystem. Finally any extended attributes are copied up.</p>
+</div>
+<div class="paragraph">
+<p>Once the copy_up is complete, the overlay filesystem simply provides direct access to the newly created file in the upper filesystem - future operations on the file are barely noticed by the overlay filesystem (though an operation on the name of the file such as rename or unlink will of course be noticed and handled).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="multiple-lower-layers">1.4. Multiple lower layers</h3>
+<div class="paragraph">
+<p>Multiple lower layers can now be given using the colon (“:”) as a separator character between the directory names. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">mount <span class="nt">-t</span> overlay overlay <span class="nt">-olowerdir</span><span class="o">=</span>/lower1:/lower2:/lower3 /merged</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the example shows, “upperdir=” and “workdir=” may be omitted. In that case the overlay will be read-only.</p>
+</div>
+<div class="paragraph">
+<p>The specified lower directories will be stacked beginning from the rightmost one and going left. In the above example lower1 will be the top, lower2 the middle and lower3 the bottom layer.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="talk-is-cheep">1.5. Talk is cheep</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tree /tmp/
+<span class="go">/tmp/
+├── lower1
+│   ├── foo
+│   └── hello
+├── lower2
+│   ├── bar
+│   └── hello
+├── merged
+├── upper
+└── work
+
+5 directories, 4 files
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>mount <span class="nt">-t</span> overlay overlay <span class="nt">-olowerdir</span><span class="o">=</span>/tmp/lower2:/tmp/lower1,upperdir<span class="o">=</span>/tmp/upper,workdir<span class="o">=</span>/tmp/work /tmp/merged
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> /proc/mounts | <span class="nb">grep</span> <span class="s1">'/tmp/merged'</span>
+<span class="go">overlay /tmp/merged overlay rw,relatime,lowerdir=/tmp/lower2:/tmp/lower1,upperdir=/tmp/upper,workdir=/tmp/work 0 0
+
+</span><span class="gp">$</span><span class="w"> </span>tree /tmp/
+<span class="go">/tmp/
+├── lower1
+│   ├── foo
+│   └── hello
+├── lower2
+│   ├── bar
+│   └── hello
+├── merged
+│   ├── bar
+│   ├── foo
+│   └── hello
+├── upper
+└── work
+    └── work [error opening dir]
+
+6 directories, 7 files
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">touch</span> /tmp/merged/newfile
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span>tree /tmp/
+<span class="go">/tmp/
+├── lower1
+│   ├── foo
+│   └── hello
+├── lower2
+│   ├── bar
+│   └── hello
+├── merged
+│   ├── bar
+│   ├── foo
+│   ├── hello
+│   └── newfile
+├── upper
+│   └── newfile
+└── work
+    └── work [error opening dir]
+
+6 directories, 9 files
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> /tmp/lower1/hello /tmp/lower2/hello /tmp/merged/hello
+<span class="go">hello
+world
+world
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">sudo </span>umount /tmp/merged</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="open-container-initiative-oci">2. Open Container Initiative (OCI)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Open Container Initiative (<strong>OCI</strong>) is a lightweight, open governance structure (project), formed under the auspices of the Linux Foundation, for the express purpose of creating open industry standards around container formats and runtime.</p>
+</div>
+<div class="paragraph">
+<p>The OCI currently contains two specifications: the <strong>Runtime Specification</strong> (runtime-spec) and the <strong>Image Specification</strong> (image-spec). The Runtime Specification outlines how to run a “filesystem bundle” that is unpacked on disk. At a high-level an OCI implementation would download an OCI Image then unpack that image into an OCI Runtime filesystem bundle. At this point the OCI Runtime Bundle would be run by an OCI Runtime.</p>
+</div>
+<div class="paragraph">
+<p>To support this UX the OCI Image Format contains sufficient information to launch the application on the target platform (e.g. command, arguments, environment variables, etc). This specification defines how to create an OCI Image, which will generally be done by a build system, and output an <a href="https://github.com/opencontainers/image-spec/blob/master/manifest.md">image manifest</a>, a <a href="https://github.com/opencontainers/image-spec/blob/master/layer.md">filesystem (layer) serialization</a>, and an <a href="https://github.com/opencontainers/image-spec/blob/master/config.md">image configuration</a>. At a high level the image manifest contains metadata about the contents and dependencies of the image including the content-addressable identity of one or more filesystem serialization archives that will be unpacked to make up the final runnable filesystem. The image configuration includes information such as application arguments, environments, etc. The combination of the image manifest, image configuration, and one or more filesystem serializations is called the OCI Image.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="docker-storage-drivers">3. Docker storage drivers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Docker uses <strong>storage drivers</strong> to store image layers, and to store data in the <strong>writable layer</strong> of a container. The container’s writable layer does not persist after the container is deleted, but is suitable for storing ephemeral data that is generated at runtime. Storage drivers are optimized for space efficiency, but (depending on the storage driver) write speeds are lower than native file system performance, especially for storage drivers that a use <strong>copy-on-write</strong> filesystem. Write-intensive applications, such as database storage, are impacted by a performance overhead, particularly if pre-existing data exists in the <strong>read-only layer</strong>.</p>
+</div>
+<div class="sect2">
+<h3 id="images-and-layers">3.1. Images and layers</h3>
+<div class="paragraph">
+<p>A Docker <strong>image</strong> is built up from a series of <strong>layer</strong>s. Each layer represents an instruction in the image’s <strong>Dockerfile</strong>. Each layer except the very last one is read-only. Consider the following Dockerfile:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="dockerfile"><span class="c"># syntax=docker/dockerfile:1</span>
+<span class="k">FROM</span><span class="s"> ubuntu:18.04</span>
+<span class="k">LABEL</span><span class="s"> org.opencontainers.image.authors="org@example.com"</span>
+<span class="k">COPY</span><span class="s"> . /app</span>
+<span class="k">RUN </span>make /app
+<span class="k">RUN </span><span class="nb">rm</span> <span class="nt">-r</span> <span class="nv">$HOME</span>/.cache
+<span class="k">CMD</span><span class="s"> python /app/app.py</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This Dockerfile contains four commands. <strong>Commands that modify the filesystem create a layer</strong>. The <code>FROM</code> statement starts out by creating a layer from the <code>ubuntu:18.04</code> image. The <code>LABEL</code> command only modifies the image’s <strong><em>metadata</em></strong>, and does not produce a new layer. The <code>COPY</code> command adds some files from your Docker client’s current directory. The first <code>RUN</code> command builds your application using the <code>make</code> command, and writes the result to a new layer. The second <code>RUN</code> command removes a cache directory, and writes the result to a new layer. Finally, the <code>CMD</code> instruction specifies what command to run within the container, which only modifies the image’s metadata, which does not produce an image layer.</p>
+</div>
+<div class="paragraph">
+<p>The layers are stacked on top of each other. When you create a new container, you add a new writable layer on top of the underlying layers. This layer is often called the “<strong>container layer</strong>”. All changes made to the running container, such as writing new files, modifying existing files, and deleting files, are written to this thin writable container layer. The diagram below shows a container based on an <code>ubuntu:15.04</code> image.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="https://docs.docker.com/storage/storagedriver/images/container-layers.jpg" alt="container layers" width="55%" height="55%"></span></p>
+</div>
+<div class="paragraph">
+<p>A <strong><em>storage driver</em></strong> handles the details about the way these layers interact with each other. Different storage drivers are available, which have advantages and disadvantages in different situations.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="container-and-layers">3.2. Container and layers</h3>
+<div class="paragraph">
+<p>The major difference between a <strong>container</strong> and an <strong>image</strong> is the top writable layer. All writes to the container that add new or modify existing data are stored in this writable layer. When the container is deleted, the writable layer is also deleted. The underlying image remains unchanged.</p>
+</div>
+<div class="paragraph">
+<p>Because each container has its own writable container layer, and all changes are stored in this container layer, multiple containers can share access to the same underlying image and yet have their own data state. The diagram below shows multiple containers sharing the same Ubuntu 15.04 image.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="https://docs.docker.com/storage/storagedriver/images/sharing-layers.jpg" alt="sharing layers" width="55%" height="55%"></span></p>
+</div>
+<div class="paragraph">
+<p>Docker uses storage drivers to manage the contents of the image layers and the writable container layer. Each storage driver handles the implementation differently, but all drivers use stackable image layers and the copy-on-write (<strong>CoW</strong>) strategy.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="overlayfs-storage-driver">3.3. OverlayFS storage driver</h3>
+<div class="paragraph">
+<p><strong>OverlayFS</strong> is a modern <strong><em>union filesystem</em></strong> that is similar to AUFS, but faster and with a simpler implementation. Docker provides two storage drivers for OverlayFS: the original <code>overlay</code>, and the newer and more stable <code>overlay2</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you use <code>OverlayFS</code>, use the <code>overlay2</code> driver rather than the <code>overlay</code> driver, because it is more efficient in terms of inode utilization. To use the new driver, you need version 4.0 or higher of the Linux kernel, or RHEL or CentOS using version 3.10.0-514 and above.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>OverlayFS</strong> layers two directories on a single Linux host and presents them as a single directory. These directories are called <strong>layers</strong> and the unification process is referred to as a <strong><em>union mount</em></strong>. OverlayFS refers to the lower directory as <strong>lowerdir</strong> and the upper directory a <strong>upperdir</strong>. The unified view is exposed through its own directory called <strong>merged</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>overlay2</code> driver natively supports up to 128 lower <code>OverlayFS</code> layers.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker inspect mcr.microsoft.com/dotnet/sdk:6.0
+<span class="go">[</span>
+<span class="go">    {</span>
+<span class="go">        "Id": "sha256:9c1e3c82ea06ae547e96fbf0f79f730415f3455382e1579c3ec2622d10501ef4",</span>
+<span class="go">        "Created": "2021-11-08T14:19:59.103176004Z",</span>
+<span class="go">        "Author": "",</span>
+<span class="go">        "Config": {</span>
+<span class="c">...</span>
+<span class="go">        },</span>
+<span class="go">        "Architecture": "amd64",</span>
+<span class="go">        "Os": "linux",</span>
+<span class="go">        "Size": 716092661,</span>
+<span class="go">        "VirtualSize": 716092661,</span>
+<span class="hll"><span class="go">        "GraphDriver": {</span>
+</span><span class="hll"><span class="go">            "Data": {</span>
+</span><span class="hll"><span class="go">                "LowerDir": "/var/lib/docker/overlay2/ea211697af6b071e56ce17df4d54226d4353d0de05a3ad8033767e8f6ed3023f/diff:/var/lib/docker/overlay2/b5fd146da25ab16508a79a53a3c78b699a8e18f2d9c4553ba8d8f172167a87a5/diff:/var/lib/docker/overlay2/2b5ce862e9d32969e8b2b3e8a8f0a514017cb9c7bee6fe58bc66f458f0dd567a/diff:/var/lib/docker/overlay2/0d92388fa7bddbdd5ea02f72d0a8c39496f702ded180e4851933ca4bfdcd915b/diff:/var/lib/docker/overlay2/13311071290c03e561fa8624d087c44458c12489a26a36e657c9a81be446e7e7/diff:/var/lib/docker/overlay2/640923cae84f10bdf0b8a5e1a33f0c11beaeaa2fdaf8a88e7d2cf15df923dbf5/diff:/var/lib/docker/overlay2/23da192846a08500d2bdd7b722e24f21417519559dad2c9c0d7ec77ec8c0c54a/diff",</span>
+</span><span class="hll"><span class="go">                "MergedDir": "/var/lib/docker/overlay2/162d5deed8943e85231e0fa8d6955da344dc17f45e860a69455b0897a6f046d4/merged",</span>
+</span><span class="hll"><span class="go">                "UpperDir": "/var/lib/docker/overlay2/162d5deed8943e85231e0fa8d6955da344dc17f45e860a69455b0897a6f046d4/diff",</span>
+</span><span class="hll"><span class="go">                "WorkDir": "/var/lib/docker/overlay2/162d5deed8943e85231e0fa8d6955da344dc17f45e860a69455b0897a6f046d4/work"</span>
+</span><span class="hll"><span class="go">            },</span>
+</span><span class="hll"><span class="go">            "Name": "overlay2"</span>
+</span><span class="hll"><span class="go">        },</span>
+</span><span class="hll"><span class="go">        "RootFS": {</span>
+</span><span class="hll"><span class="go">            "Type": "layers",</span>
+</span><span class="hll"><span class="go">            "Layers": [</span>
+</span><span class="hll"><span class="go">                "sha256:e8b689711f21f9301c40bf2131ce1a1905c3aa09def1de5ec43cf0adf652576e",</span>
+</span><span class="hll"><span class="go">                "sha256:20debbac273f9807ed9db9c09a97dbcf328e1ba049fb754b528c6bbcf0e062b7",</span>
+</span><span class="hll"><span class="go">                "sha256:59acba85fd35a919862cb8d3e52eb7ea19a0c1e7418e5219f1c5b8fc35de9a35",</span>
+</span><span class="hll"><span class="go">                "sha256:488c0e360c4107f7ec49bcda9ebad2a077d276cd37db8da1c05f8b6f2e2ffa8d",</span>
+</span><span class="hll"><span class="go">                "sha256:3545d521d2dea1ac4f126a59fb28efce96577ecf59794b4ae2fc89282d6fa612",</span>
+</span><span class="hll"><span class="go">                "sha256:b56a3e5973f3cca46ab8fd5519d8ed7bb373934c3ae2f7f26e670832c463dc22",</span>
+</span><span class="hll"><span class="go">                "sha256:4764cdc9aa40e1841b92001e485b73d1c70a5571a633bf12a8055727a0ba6663",</span>
+</span><span class="hll"><span class="go">                "sha256:8eaa7029894562a570d2f9e5db4b6d2384fedec934381996695e82f8d826d897"</span>
+</span><span class="hll"><span class="go">            ]</span>
+</span><span class="hll"><span class="go">        }</span>
+</span><span class="go">    }</span>
+<span class="go">]</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">4. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/OverlayFS" class="bare">https://en.wikipedia.org/wiki/OverlayFS</a></p>
+</li>
+<li>
+<p><a href="https://www.kernel.org/doc/html/latest/filesystems/overlayfs.html" class="bare">https://www.kernel.org/doc/html/latest/filesystems/overlayfs.html</a></p>
+</li>
+<li>
+<p><a href="https://man7.org/linux/man-pages/man8/mount.8.html" class="bare">https://man7.org/linux/man-pages/man8/mount.8.html</a></p>
+</li>
+<li>
+<p><a href="https://opencontainers.org/about/overview/" class="bare">https://opencontainers.org/about/overview/</a></p>
+</li>
+<li>
+<p><a href="https://docs.docker.com/storage/storagedriver/" class="bare">https://docs.docker.com/storage/storagedriver/</a></p>
+</li>
+<li>
+<p><a href="https://docs.docker.com/storage/storagedriver/overlayfs-driver/" class="bare">https://docs.docker.com/storage/storagedriver/overlayfs-driver/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

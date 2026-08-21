@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Intro to PostgreSQL | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Intro to PostgreSQL" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. What Is PostgreSQL 2. Installation from Docker 2.1. start a postgres instance 2.2. &#8230;&#8203; or via psql 2.3. &#8230;&#8203; via docker-compose 3. Clusters, Databases, Tables, Rows, Columns 4. Schemas 4.1. Creating a Schema 4.2. The Public Schema 4.3. The Schema Search Path 4.4. Schemas and Privileges 4.5. The System Catalog Schema 4.6. Portability 5. Tablespaces 6. Database Roles, Users, Groups 6.1. Database Roles 6.2. Role Attributes 6.3. Role Membership 6.4. Predefined Roles 7. Privileges 8. SQL Syntax: Identifiers and Key Words 8.1. Identifiers and Key Words 9. Transactions 10. Walk-through PostgresSQL References 1. What Is PostgreSQL PostgreSQL is an…" />
+<meta name="twitter:description" property="og:description" content="1. What Is PostgreSQL 2. Installation from Docker 2.1. start a postgres instance 2.2. &#8230;&#8203; or via psql 2.3. &#8230;&#8203; via docker-compose 3. Clusters, Databases, Tables, Rows, Columns 4. Schemas 4.1. Creating a Schema 4.2. The Public Schema 4.3. The Schema Search Path 4.4. Schemas and Privileges 4.5. The System Catalog Schema 4.6. Portability 5. Tablespaces 6. Database Roles, Users, Groups 6.1. Database Roles 6.2. Role Attributes 6.3. Role Membership 6.4. Predefined Roles 7. Privileges 8. SQL Syntax: Identifiers and Key Words 8.1. Identifiers and Key Words 9. Transactions 10. Walk-through PostgresSQL References 1. What Is PostgreSQL PostgreSQL is an…" />
+<link rel="canonical" href="https://blog.codefarm.me/what-is-postgresql/" />
+<meta property="og:url" content="https://blog.codefarm.me/what-is-postgresql/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-05-20T09:36:40+08:00" />
+<meta property="article:modified_time" content="2022-05-20T09:36:40+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Intro to PostgreSQL" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-05-20T09:36:40+08:00","datePublished":"2022-05-20T09:36:40+08:00","description":"1. What Is PostgreSQL 2. Installation from Docker 2.1. start a postgres instance 2.2. &#8230;&#8203; or via psql 2.3. &#8230;&#8203; via docker-compose 3. Clusters, Databases, Tables, Rows, Columns 4. Schemas 4.1. Creating a Schema 4.2. The Public Schema 4.3. The Schema Search Path 4.4. Schemas and Privileges 4.5. The System Catalog Schema 4.6. Portability 5. Tablespaces 6. Database Roles, Users, Groups 6.1. Database Roles 6.2. Role Attributes 6.3. Role Membership 6.4. Predefined Roles 7. Privileges 8. SQL Syntax: Identifiers and Key Words 8.1. Identifiers and Key Words 9. Transactions 10. Walk-through PostgresSQL References 1. What Is PostgreSQL PostgreSQL is an…","headline":"Intro to PostgreSQL","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/what-is-postgresql/"},"url":"https://blog.codefarm.me/what-is-postgresql/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Intro to PostgreSQL</h1><p class="c-post-meta">30 Nov 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#what-is-postgresql">1. What Is PostgreSQL</a></li>
+<li><a href="#installation-from-docker">2. Installation from Docker</a>
+<ul class="sectlevel2">
+<li><a href="#start-a-postgres-instance">2.1. start a postgres instance</a></li>
+<li><a href="#or-via-psql">2.2. &#8230;&#8203; or via psql</a></li>
+<li><a href="#via-docker-compose">2.3. &#8230;&#8203; via docker-compose</a></li>
+</ul>
+</li>
+<li><a href="#clusters-databases-tables-rows-columns">3. Clusters, Databases, Tables, Rows, Columns</a></li>
+<li><a href="#schemas">4. Schemas</a>
+<ul class="sectlevel2">
+<li><a href="#creating-a-schema">4.1. Creating a Schema</a></li>
+<li><a href="#the-public-schema">4.2. The Public Schema</a></li>
+<li><a href="#the-schema-search-path">4.3. The Schema Search Path</a></li>
+<li><a href="#schemas-and-privileges">4.4. Schemas and Privileges</a></li>
+<li><a href="#the-system-catalog-schema">4.5. The System Catalog Schema</a></li>
+<li><a href="#portability">4.6. Portability</a></li>
+</ul>
+</li>
+<li><a href="#tablespaces">5. Tablespaces</a></li>
+<li><a href="#database-roles-users-groups">6. Database Roles, Users, Groups</a>
+<ul class="sectlevel2">
+<li><a href="#database-roles">6.1. Database Roles</a></li>
+<li><a href="#role-attributes">6.2. Role Attributes</a></li>
+<li><a href="#role-membership">6.3. Role Membership</a></li>
+<li><a href="#predefined-roles">6.4. Predefined Roles</a></li>
+</ul>
+</li>
+<li><a href="#privileges">7. Privileges</a></li>
+<li><a href="#sql-syntax-identifiers-and-key-words">8. SQL Syntax:  Identifiers and Key Words</a>
+<ul class="sectlevel2">
+<li><a href="#identifiers-and-key-words">8.1. Identifiers and Key Words</a></li>
+</ul>
+</li>
+<li><a href="#transactions">9. Transactions</a></li>
+<li><a href="#walk-through-postgressql">10. Walk-through PostgresSQL</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="what-is-postgresql">1. What Is PostgreSQL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQL is an object-relational database management system (ORDBMS) based on <a href="https://dsf.berkeley.edu/postgres.html">POSTGRES, Version 4.2</a>, developed at the University of California at Berkeley Computer Science Department. POSTGRES pioneered many concepts that only became available in some commercial database systems much later. <a href="#1">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>PostgreSQL is an open-source descendant of this original Berkeley code. It supports a large part of the SQL standard and offers many modern features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>complex queries</p>
+</li>
+<li>
+<p>foreign keys</p>
+</li>
+<li>
+<p>triggers</p>
+</li>
+<li>
+<p>updatable views</p>
+</li>
+<li>
+<p>transactional integrity</p>
+</li>
+<li>
+<p>multiversion concurrency control</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Also, PostgreSQL can be extended by the user in many ways, for example by adding new</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>data types</p>
+</li>
+<li>
+<p>functions</p>
+</li>
+<li>
+<p>operators</p>
+</li>
+<li>
+<p>aggregate functions</p>
+</li>
+<li>
+<p>index methods</p>
+</li>
+<li>
+<p>procedural languages</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installation-from-docker">2. Installation from Docker</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="start-a-postgres-instance">2.1. start a postgres instance</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">--name</span> some-postgres <span class="nt">-e</span> <span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>mysecretpassword <span class="nt">-d</span> postgres</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="or-via-psql">2.2. &#8230;&#8203; or via psql</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker run <span class="nt">-it</span> <span class="nt">--rm</span> <span class="nt">--network</span> some-network postgres psql <span class="nt">-h</span> some-postgres <span class="nt">-U</span> postgres
+<span class="go">psql (9.5.0)
+Type "help" for help.
+
+</span><span class="gp">postgres=#</span><span class="w"> </span>SELECT 1<span class="p">;</span>
+<span class="go"> ?column?
+----------
+        1
+(1 row)</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="via-docker-compose">2.3. &#8230;&#8203; via <a href="https://github.com/docker/compose">docker-compose</a></h3>
+<div class="listingblock">
+<div class="title">compose.yaml</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">services</span><span class="pi">:</span>
+  <span class="na">database</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:14</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">on-failure</span>
+      <span class="s"># The PostgreSQL image uses several environment variables which are easy to miss.</span>
+      <span class="s"># The only variable required is POSTGRES_PASSWORD, the rest are optional.</span>
+      <span class="s">#</span>
+      <span class="s"># Warning</span><span class="err">:</span> <span class="s">the Docker specific variables will only have an effect if you start</span>
+      <span class="s"># the container with a data directory that is empty; any pre-existing database</span>
+      <span class="s"># will be left untouched on container startup.</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="c1"># This environment variable is required for you to use the PostgreSQL image.</span>
+      <span class="c1"># It must not be empty or undefined. This environment variable sets the superuser</span>
+      <span class="c1"># password for PostgreSQL.</span>
+      <span class="c1"># The default superuser is defined by the POSTGRES_USER environment variable.</span>
+      <span class="c1">#</span>
+      <span class="c1"># Note 1: The PostgreSQL image sets up trust authentication locally so you may notice</span>
+      <span class="c1"># a password is not required when connecting from localhost (inside the same container).</span>
+      <span class="c1"># However, a password will be required if connecting from a different host/container.</span>
+      <span class="c1">#</span>
+      <span class="c1"># Note 2: This variable defines the superuser password in the PostgreSQL instance, as</span>
+      <span class="c1"># set by the initdb script during initial container startup. It has no effect on the</span>
+      <span class="c1"># PGPASSWORD environment variable that may be used by the psql client at runtime, as</span>
+      <span class="c1"># described at https://www.postgresql.org/docs/current/libpq-envars.html.</span>
+      <span class="c1"># PGPASSWORD, if used, will be specified as a separate environment variable.</span>
+      <span class="c1">#</span>
+      <span class="na">POSTGRES_PASSWORD</span><span class="pi">:</span> <span class="s">postgres</span>
+
+      <span class="c1"># This optional environment variable is used in conjunction with POSTGRES_PASSWORD to</span>
+      <span class="c1"># set a user and its password. This variable will create the specified user with</span>
+      <span class="c1"># superuser power and a database with the same name. If it is not specified, then the</span>
+      <span class="c1"># default user of `postgres` will be used.</span>
+      <span class="c1">#</span>
+      <span class="c1"># Be aware that if this parameter is specified, PostgreSQL will still show The files</span>
+      <span class="c1"># belonging to this database system will be owned by user "postgres" during initialization.</span>
+      <span class="c1"># This refers to the Linux system user (from /etc/passwd in the image) that the postgres</span>
+      <span class="c1"># daemon runs as, and as such is unrelated to the POSTGRES_USER option.</span>
+      <span class="na">POSTGRES_USER</span><span class="pi">:</span> <span class="s">postgres</span>
+
+      <span class="c1"># This optional environment variable can be used to define a different name for the</span>
+      <span class="c1"># default database that is created when the image is first started. If it is not</span>
+      <span class="c1"># specified, then the value of `POSTGRES_USER` will be used.</span>
+      <span class="na">POSTGRES_DB</span><span class="pi">:</span> <span class="s">postgres</span>
+
+      <span class="c1"># This optional variable can be used to define another location - like a subdirectory - for</span>
+      <span class="c1"># the database files. The default is /var/lib/postgresql/data. If the data volume you're</span>
+      <span class="c1"># using is a filesystem mountpoint (like with GCE persistent disks) or remote folder that</span>
+      <span class="c1"># cannot be chowned to the postgres user (like some NFS mounts), Postgres initdb recommends</span>
+      <span class="c1"># a subdirectory be created to contain the data.</span>
+      <span class="c1">#</span>
+      <span class="c1"># For example:</span>
+      <span class="c1">#</span>
+      <span class="c1"># $ docker run -d \</span>
+      <span class="c1"># 	--name some-postgres \</span>
+      <span class="c1"># 	-e POSTGRES_PASSWORD=mysecretpassword \</span>
+      <span class="c1"># 	-e PGDATA=/var/lib/postgresql/data/pgdata \</span>
+      <span class="c1"># 	-v /custom/mount:/var/lib/postgresql/data \</span>
+      <span class="c1"># 	postgres</span>
+      <span class="c1">#</span>
+      <span class="c1"># This is an environment variable that is not Docker specific. Because the variable is used by</span>
+      <span class="c1"># the postgres server binary (see the PostgreSQL docs), the entrypoint script takes it into account.</span>
+      <span class="na">PGDATA</span><span class="pi">:</span> <span class="s">/var/lib/postgresql/data/pgdata</span>
+
+    <span class="na">volumes</span><span class="pi">:</span> <span class="pi">[]</span>
+      <span class="c1"># If you would like to do additional initialization in an image derived from this one,</span>
+      <span class="c1"># add one or more *.sql, *.sql.gz, or *.sh scripts</span>
+      <span class="c1"># under /docker-entrypoint-initdb.d (creating the directory if necessary). After the</span>
+      <span class="c1"># entrypoint calls initdb to create the default postgres user and database, it will run</span>
+      <span class="c1"># any *.sql files, run any executable *.sh scripts, and source any non-executable *.sh</span>
+      <span class="c1"># scripts found in that directory to do further initialization before starting the service.</span>
+      <span class="c1">#</span>
+      <span class="c1"># Warning: scripts in /docker-entrypoint-initdb.d are only run if you start the container</span>
+      <span class="c1"># with a data directory that is empty; any pre-existing database will be left untouched on</span>
+      <span class="c1"># container startup. One common problem is that if one of your /docker-entrypoint-initdb.d</span>
+      <span class="c1"># scripts fails (which will cause the entrypoint script to exit) and your orchestrator</span>
+      <span class="c1"># restarts the container with the already initialized data directory, it will not continue</span>
+      <span class="c1"># on with your scripts.</span>
+      <span class="c1">#</span>
+      <span class="c1"># These initialization files will be executed in sorted name order as defined by the current</span>
+      <span class="c1"># locale, which defaults to en_US.utf8. Any *.sql files will be executed by POSTGRES_USER,</span>
+      <span class="c1"># which defaults to the postgres superuser. It is recommended that any psql commands that are</span>
+      <span class="c1"># run inside of a *.sh script be executed as POSTGRES_USER by using</span>
+      <span class="c1"># the --username "$POSTGRES_USER" flag. This user will be able to connect without a password</span>
+      <span class="c1"># due to the presence of trust authentication for Unix socket connections made inside the container.</span>
+      <span class="c1">#</span>
+      <span class="c1"># - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql</span>
+      <span class="c1"># - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker-compose config
+<span class="go">services:
+  database:
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres:14
+    restart: on-failure
+    volumes: []
+version: '3.9'
+
+</span><span class="gp">$</span><span class="w"> </span>docker-compose up <span class="nt">-d</span>
+<span class="go">Creating network "pg_default" with the default driver
+Creating pg_database_1 ... done
+
+</span><span class="gp">$</span><span class="w"> </span>docker-compose <span class="nb">exec </span>database psql <span class="nt">-U</span> postgres
+<span class="go">psql (14.2 (Debian 14.2-1.pgdg110+1))
+Type "help" for help.
+
+</span><span class="gp">postgres=#</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="clusters-databases-tables-rows-columns">3. Clusters, Databases, Tables, Rows, Columns</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQL is a <strong>relational database management system</strong> (RDBMS). That means it is a system for managing data stored in <strong>relations</strong>. Relation is essentially a mathematical term for <strong>table</strong>. The notion of storing data in tables is so commonplace today that it might seem inherently obvious, but there are a number of other ways of organizing databases. Files and directories on Unix-like operating systems form an example of a hierarchical database. A more modern development is the object-oriented database. <a href="#2">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>Each table is a named collection of <strong>rows</strong>. Each row of a given table has the same set of named <strong>columns</strong>, and each column is of a specific data type. Whereas columns have a fixed order in each row, it is important to remember that SQL does not guarantee the order of the rows within the table in any way (although they can be explicitly sorted for display).</p>
+</div>
+<div class="paragraph">
+<p>Tables are grouped into <strong>databases</strong>, and a collection of databases managed by a single PostgreSQL server instance constitutes a <strong>database cluster</strong>.</p>
+</div>
+<div class="paragraph">
+<p>A small number of objects, like role, database, and tablespace names, are defined at the cluster level and stored in the <code>pg_global</code> tablespace. Inside the cluster are multiple databases, which are isolated from each other but can access cluster-level objects. Inside each database are multiple schemas, which contain objects like tables and functions. So the full hierarchy is: <code>cluster</code>, <code>database</code>, <code>schema</code>, <code>table</code> (or some other kind of object, such as a <code>function</code>). <a href="#3">[3]</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Databases are called “catalogs” in the SQL standard.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>see also: <a href="https://stackoverflow.com/questions/7022755/whats-the-difference-between-a-catalog-and-a-schema-in-a-relational-database" class="bare">https://stackoverflow.com/questions/7022755/whats-the-difference-between-a-catalog-and-a-schema-in-a-relational-database</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>ceate a login user named 'test' with password 'test'</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">USER</span> <span class="n">test</span> <span class="k">OWNER</span> <span class="n">test</span> <span class="n">PASSWORD</span> <span class="s1">'test'</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>ceate a database/catalog as the user same name, i.e. 'test'</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">test</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>alter a database owner to a user</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>psql <span class="nt">-h</span> localhost postgres postgres <span class="nt">-W</span> <span class="nt">-q</span>
+<span class="go">Password:
+</span><span class="gp">postgres=#</span><span class="w"> </span>SELECT datname AS Name, pg_get_userbyid<span class="o">(</span>datdba<span class="o">)</span> AS Owner FROM pg_database WHERE datname <span class="o">=</span> <span class="s1">'testdb'</span><span class="p">;</span>
+<span class="go">  name  | owner
+--------+-------
+ testdb | postgres
+(1 row)
+</span><span class="gp">postgres=#</span><span class="w"> </span><span class="se">\d</span>u
+<span class="go">                                   List of roles
+ Role name |                         Attributes                         | Member of
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ test      |                                                            | {}
+</span><span class="gp">postgres=#</span><span class="w"> </span>ALTER DATABASE testdb OWNER TO <span class="nb">test</span><span class="p">;</span>
+<span class="gp">postgres=#</span><span class="w"> </span>SELECT datname AS Name, pg_get_userbyid<span class="o">(</span>datdba<span class="o">)</span> AS Owner FROM pg_database WHERE datname <span class="o">=</span> <span class="s1">'testdb'</span><span class="p">;</span>
+<span class="go">  name  | owner
+--------+-------
+ testdb | test
+(1 row)</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>connect the <code>test</code> catalog with <strong>psql</strong></p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>psql <span class="nt">-h</span> localhost <span class="nt">-W</span> <span class="nt">-q</span> testdb <span class="nb">test</span>
+<span class="go">Password:
+</span><span class="gp">testdb=&gt;</span></code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="schemas">4. Schemas</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A PostgreSQL database cluster contains one or more named databases. Roles and a few other object types are shared across the entire cluster. A client connection to the server can only access data in a single database, the one specified in the connection request. <a href="#4">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>A database contains one or more named <strong>schemas</strong>, which in turn contain tables.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Schemas also contain other kinds of named objects, including data types, functions, and operators.</p>
+</li>
+<li>
+<p>The same object name can be used in different schemas without conflict; for example, both <em>schema1</em> and <em>myschema</em> can contain tables named <em>mytable</em>.</p>
+</li>
+<li>
+<p>Unlike databases, schemas are not rigidly separated: a user can access objects in any of the schemas in the database they are connected to, if they have privileges to do so.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are several reasons why one might want to use schemas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To allow many users to use one database without interfering with each other.</p>
+</li>
+<li>
+<p>To organize database objects into logical groups to make them more manageable.</p>
+</li>
+<li>
+<p>Third-party applications can be put into separate schemas so they do not collide with the names of other objects.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Schemas are analogous to directories at the operating system level, except that schemas cannot be nested.</p>
+</div>
+<div class="sect2">
+<h3 id="creating-a-schema">4.1. Creating a Schema</h3>
+<div class="paragraph">
+<p>To create a schema, use the <code>CREATE SCHEMA</code> command. Give the schema a name of your choice. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">SCHEMA</span> <span class="n">myschema</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To create or access objects in a schema, write a <strong>qualified name</strong> consisting of the schema name and table name separated by a dot:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">schema</span><span class="p">.</span><span class="k">table</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Actually, the even more general syntax</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">database</span><span class="p">.</span><span class="k">schema</span><span class="p">.</span><span class="k">table</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>can be used too, but at present this is just for pro forma compliance with the SQL standard. If you write a database name, it must be the same as the database you are connected to.</p>
+</div>
+<div class="paragraph">
+<p>To drop a schema if it&#8217;s empty (all objects in it have been dropped), use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">DROP</span> <span class="k">SCHEMA</span> <span class="n">myschema</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To drop a schema including all contained objects, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">DROP</span> <span class="k">SCHEMA</span> <span class="n">myschema</span> <span class="k">CASCADE</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Schema names beginning with <strong>pg_</strong> are reserved for system purposes and cannot be created by users.</p>
+</div>
+<div class="paragraph">
+<p>To list schema, use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">select</span> <span class="k">catalog_name</span><span class="p">,</span><span class="k">schema_name</span><span class="p">,</span><span class="n">schema_owner</span> <span class="k">from</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">schemata</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or use <code>psql</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="psql">postgres=&gt; \dn+</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-public-schema">4.2. The Public Schema</h3>
+<div class="paragraph">
+<p>By default tables (and other objects) are automatically put into a schema named “public”. Every new database contains such a schema. Thus, the following are equivalent:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">products</span> <span class="p">(</span> <span class="p">...</span> <span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">public</span><span class="p">.</span><span class="n">products</span> <span class="p">(</span> <span class="p">...</span> <span class="p">);</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-schema-search-path">4.3. The Schema Search Path</h3>
+<div class="paragraph">
+<p>Qualified names are tedious to write, and it&#8217;s often best not to wire a particular schema name into applications anyway.</p>
+</div>
+<div class="paragraph">
+<p>Therefore tables are often referred to by <strong>unqualified names</strong>, which consist of just the table name.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The system determines which table is meant by following a <strong>search path</strong>, which is a list of schemas to look in.</p>
+</li>
+<li>
+<p>The first matching table in the search path is taken to be the one wanted.</p>
+</li>
+<li>
+<p>If there is no match in the search path, an error is reported, even if matching table names exist in other schemas in the database.</p>
+</li>
+<li>
+<p>The first schema named in the search path is called the <strong>current schema</strong>.</p>
+<div class="paragraph">
+<p>Aside from being the first schema searched, it is also the schema in which new tables will be created if the CREATE TABLE command does not specify a schema name.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To show the current search path, use the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SHOW</span> <span class="n">search_path</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the default setup this returns:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"> search_path
+--------------
+ "$user", public</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The first element specifies that a schema with the same name as the current user is to be searched. If no such schema exists, the entry is ignored.</p>
+</li>
+<li>
+<p>The second element refers to the <em>public</em> schema that we have seen already.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The first schema in the search path that exists is the default location for creating new objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>That is the reason that by default objects are created in the public schema.</p>
+</li>
+<li>
+<p>When objects are referenced in any other context without schema qualification (table modification, data modification, or query commands) the search path is traversed until a matching object is found.</p>
+</li>
+<li>
+<p>Therefore, in the default configuration, any unqualified access again can only refer to the public schema.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To put our new schema in the path, we use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SET</span> <span class="n">search_path</span> <span class="k">TO</span> <span class="n">myschema</span><span class="p">,</span><span class="k">public</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="schemas-and-privileges">4.4. Schemas and Privileges</h3>
+<div class="paragraph">
+<p>By default, users cannot access any objects in schemas they do not own.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To allow that, the owner of the schema must grant the <strong>USAGE</strong> privilege on the schema.</p>
+</li>
+<li>
+<p>To allow users to make use of the objects in the schema, additional privileges might need to be granted, as appropriate for the object.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A user can also be allowed to create objects in someone else&#8217;s schema.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To allow that, the <strong>CREATE</strong> privilege on the schema needs to be granted.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Note that by default, everyone has <strong>CREATE</strong> and <strong>USAGE</strong> privileges on the schema <strong>public</strong>.</p>
+</div>
+<div class="paragraph">
+<p>This allows all users that are able to connect to a given database to create objects in its <strong>public</strong> schema.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-system-catalog-schema">4.5. The System Catalog Schema</h3>
+<div class="paragraph">
+<p>In addition to <em>public</em> and <em>user-created</em> schemas, each database contains a <strong>pg_catalog</strong> schema, which contains the system tables and all the built-in data types, functions, and operators. <em>pg_catalog</em> is always effectively part of the search path.</p>
+</div>
+<div class="paragraph">
+<p>If it is not named explicitly in the path then it is implicitly searched before searching the path&#8217;s schemas. This ensures that built-in names will always be findable. However, you can explicitly place <em>pg_catalog</em> at the end of your search path if you prefer to have user-defined names override built-in names.</p>
+</div>
+<div class="paragraph">
+<p>Since system table names begin with <strong>pg_</strong>, it is best to avoid such names to ensure that you won&#8217;t suffer a conflict if some future version defines a system table named the same as your table. (With the default search path, an unqualified reference to your table name would then be resolved as the system table instead.) System tables will continue to follow the convention of having names beginning with <strong>pg_</strong>, so that they will not conflict with unqualified user-table names so long as users avoid the <strong>pg_</strong> prefix.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="portability">4.6. Portability</h3>
+<div class="paragraph">
+<p>In the SQL standard, the notion of objects in the same schema being owned by different users does not exist. Moreover, some implementations do not allow you to create schemas that have a different name than their owner.</p>
+</div>
+<div class="paragraph">
+<p>In fact, the concepts of schema and user are nearly equivalent in a database system that implements only the basic schema support specified in the standard. Therefore, many users consider qualified names to really consist of <strong>user_name.table_name</strong>. This is how PostgreSQL will effectively behave if you create a per-user schema for every user.</p>
+</div>
+<div class="paragraph">
+<p>Also, there is no concept of a <strong>public</strong> schema in the SQL standard. For maximum conformance to the standard, you should not use the <em>public</em> schema.</p>
+</div>
+<div class="paragraph">
+<p>Of course, some SQL database systems might not implement schemas at all, or provide namespace support by allowing (possibly limited) cross-database access. If you need to work with those systems, then maximum portability would be achieved by not using schemas at all.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tablespaces">5. Tablespaces</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Tablespaces in PostgreSQL allow database administrators to define locations in the file system where the files representing database objects can be stored. Once created, a tablespace can be referred to by name when creating database objects.</p>
+</div>
+<div class="paragraph">
+<p>By using tablespaces, an administrator can control the <strong>disk layout</strong> of a PostgreSQL installation. This is useful in at least two ways.</p>
+</div>
+<div class="paragraph">
+<p>First, if the partition or volume on which the cluster was initialized runs out of space and cannot be extended, a tablespace can be created on a different partition and used until the system can be reconfigured.</p>
+</div>
+<div class="paragraph">
+<p>Second, tablespaces allow an administrator to use knowledge of the usage pattern of database objects to optimize performance. For example, an index which is very heavily used can be placed on a very fast, highly available disk, such as an expensive solid state device. At the same time a table storing archived data which is rarely used or not performance critical could be stored on a less expensive, slower disk system.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="database-roles-users-groups">6. Database Roles, Users, Groups</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>PostgreSQL manages database access permissions using the concept of <strong>roles</strong>.</p>
+</div>
+<div class="paragraph">
+<p><em>A role can be thought of as either a database <strong>user</strong>, or a <strong>group</strong> of database users, depending on how the role is set up</em>.</p>
+</div>
+<div class="paragraph">
+<p>Roles can own database objects (for example, tables and functions) and can assign privileges on those objects to other roles to control who has access to which objects.</p>
+</div>
+<div class="paragraph">
+<p>Furthermore, it is possible to grant membership in a role to another role, thus allowing the member role to use privileges assigned to another role.</p>
+</div>
+<div class="paragraph">
+<p>The concept of roles subsumes the concepts of “users” and “groups”.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In PostgreSQL versions before 8.1, users and groups were distinct kinds of entities, but now there are only roles.</p>
+</li>
+<li>
+<p><em>Any role can act as a user, a group, or both</em>.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="database-roles">6.1. Database Roles</h3>
+<div class="paragraph">
+<p>Database roles are conceptually completely separate from operating system users. In practice it might be convenient to maintain a correspondence, but this is not required.</p>
+</div>
+<div class="paragraph">
+<p><em>Database roles are global across a database cluster installation (and not per individual database).</em></p>
+</div>
+<div class="paragraph">
+<p>To create a role use the <strong>CREATE ROLE</strong> SQL command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">name</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To remove an existing role, use the analogous <strong>DROP ROLE</strong> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">DROP</span> <span class="k">ROLE</span> <span class="n">name</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To determine the set of existing roles, examine the <em>pg_roles</em> system catalog, for example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SELECT</span> <span class="n">rolname</span> <span class="k">FROM</span> <span class="n">pg_roles</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong>psql</strong> program&#8217;s <strong>\du</strong> meta-command is also useful for listing the existing roles.</p>
+</div>
+<div class="paragraph">
+<p>In order to bootstrap the database system, a freshly initialized system always contains one predefined role.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>This role is always a “superuser”, and by default (unless altered when running <em>initdb</em>) it will have the same name as the operating system user that initialized the database cluster.</p>
+</li>
+<li>
+<p>Customarily, this role will be named <strong>postgres</strong>.</p>
+</li>
+<li>
+<p>In order to create more roles you first have to connect as this initial role.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Every connection to the database server is made using the name of some particular role, and this role determines the initial access privileges for commands issued in that connection.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The role name to use for a particular database connection is indicated by the client that is initiating the connection request in an application-specific fashion.</p>
+<div class="paragraph">
+<p>For example, the <strong>psql</strong> program uses the <strong>-U</strong> command line option to indicate the role to connect as.</p>
+</div>
+</li>
+<li>
+<p>Many applications assume the name of the current operating system user by default (including <strong>createuser</strong> and <strong>psql</strong>).</p>
+<div class="paragraph">
+<p>Therefore it is often convenient to maintain a naming correspondence between roles and operating system users.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="role-attributes">6.2. Role Attributes</h3>
+<div class="paragraph">
+<p>A database role can have a number of attributes that define its privileges and interact with the client authentication system.</p>
+</div>
+<div class="sect3">
+<h4 id="login-privilege">6.2.1. login privilege</h4>
+<div class="paragraph">
+<p>Only roles that have the <strong>LOGIN</strong> attribute can be used as the initial role name for a database connection. A role with the <strong>LOGIN</strong> attribute can be considered the same as a “<strong>database user</strong>”.</p>
+</div>
+<div class="paragraph">
+<p>To create a role with login privilege, use either:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">name</span> <span class="n">LOGIN</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">USER</span> <span class="n">name</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<strong>CREATE USER</strong> is equivalent to <strong>CREATE ROLE</strong> except that <strong>CREATE USER</strong> includes <strong>LOGIN</strong> by default, while <strong>CREATE ROLE</strong> does not.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="superuser-status">6.2.2. superuser status</h4>
+<div class="paragraph">
+<p>A database superuser bypasses all permission checks, except the right to log in. This is a dangerous privilege and should not be used carelessly; it is best to do most of your work as a role that is not a superuser.</p>
+</div>
+<div class="paragraph">
+<p>To create a new database superuser, use <strong>CREATE ROLE name SUPERUSER</strong>. You must do this as a role that is already a superuser.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="database-creation">6.2.3. database creation</h4>
+<div class="paragraph">
+<p>A role must be explicitly given permission to create databases (except for superusers, since those bypass all permission checks).</p>
+</div>
+<div class="paragraph">
+<p>To create such a role, use <strong>CREATE ROLE name CREATEDB</strong>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="role-creation">6.2.4. role creation</h4>
+<div class="paragraph">
+<p>A role must be explicitly given permission to create more roles (except for superusers, since those bypass all permission checks).</p>
+</div>
+<div class="paragraph">
+<p>To create such a role, use <strong>CREATE ROLE name CREATEROLE</strong>.</p>
+</div>
+<div class="paragraph">
+<p>A role with <strong>CREATEROLE</strong> privilege can alter and drop other roles, too, as well as grant or revoke membership in them.</p>
+</div>
+<div class="paragraph">
+<p>However, to create, alter, drop, or change membership of a superuser role, <em>superuser status</em> is required; <strong>CREATEROLE</strong> is insufficient for that.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="initiating-replication">6.2.5. initiating replication</h4>
+<div class="paragraph">
+<p>A role must explicitly be given permission to initiate streaming replication (except for superusers, since those bypass all permission checks). A role used for streaming replication must have <strong>LOGIN</strong> permission as well.</p>
+</div>
+<div class="paragraph">
+<p>To create such a role, use <strong>CREATE ROLE name REPLICATION LOGIN</strong>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="password">6.2.6. password</h4>
+<div class="paragraph">
+<p>A password is only significant if the client authentication method requires the user to supply a password when connecting to the database. The password and md5 authentication methods make use of passwords. Database passwords are separate from operating system passwords.</p>
+</div>
+<div class="paragraph">
+<p>Specify a password upon role creation with <strong>CREATE ROLE name PASSWORD 'string'</strong>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>A role&#8217;s attributes can be modified after creation with <strong>ALTER ROLE</strong>. See the reference pages for the <em>CREATE ROLE</em> and <em>ALTER ROLE</em> commands for details.</p>
+</div>
+<div class="paragraph">
+<p>It is good practice to create a role that has the <strong>CREATEDB</strong> and <strong>CREATEROLE</strong> privileges, but is not a superuser, and then use this role for all routine management of databases and roles. This approach avoids the dangers of operating as a superuser for tasks that do not really require it.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="role-membership">6.3. Role Membership</h3>
+<div class="paragraph">
+<p>It is frequently convenient to group users together to ease management of privileges: that way, privileges can be granted to, or revoked from, a group as a whole.</p>
+</div>
+<div class="paragraph">
+<p>In PostgreSQL this is done by creating a role that represents the group, and then granting membership in the group role to individual user roles.</p>
+</div>
+<div class="paragraph">
+<p>To set up a group role, first create the role:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">name</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Typically a role being used as a group would not have the <strong>LOGIN</strong> attribute, though you can set it if you wish.</p>
+</div>
+<div class="paragraph">
+<p>Once the group role exists, you can add and remove members using the <strong>GRANT</strong> and <strong>REVOKE</strong> commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">GRANT</span> <span class="n">group_role</span> <span class="k">TO</span> <span class="n">role1</span><span class="p">,</span> <span class="p">...</span> <span class="p">;</span>
+<span class="k">REVOKE</span> <span class="n">group_role</span> <span class="k">FROM</span> <span class="n">role1</span><span class="p">,</span> <span class="p">...</span> <span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can grant membership to other group roles, too (since there isn&#8217;t really any distinction between group roles and non-group roles). The database will not let you set up circular membership loops. Also, it is not permitted to grant membership in a role to <strong>PUBLIC</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The members of a group role can use the privileges of the role in two ways.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, every member of a group can explicitly do <strong>SET ROLE</strong> to temporarily “become” the group role.</p>
+<div class="paragraph">
+<p>In this state, the database session has access to the privileges of the group role rather than the original login role, and any database objects created are considered owned by the group role not the login role.</p>
+</div>
+</li>
+<li>
+<p>Second, member roles that have the <strong>INHERIT</strong> attribute automatically have use of the privileges of roles of which they are members, including any privileges inherited by those roles.</p>
+<div class="paragraph">
+<p>As an example, suppose we have done:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">joe</span> <span class="n">LOGIN</span> <span class="n">INHERIT</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="k">admin</span> <span class="n">NOINHERIT</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">ROLE</span> <span class="n">wheel</span> <span class="n">NOINHERIT</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">admin</span> <span class="k">TO</span> <span class="n">joe</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="n">wheel</span> <span class="k">TO</span> <span class="k">admin</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="predefined-roles">6.4. Predefined Roles</h3>
+<div class="paragraph">
+<p>PostgreSQL provides a set of predefined roles that provide access to certain, commonly needed, privileged capabilities and information.</p>
+</div>
+<div class="paragraph">
+<p>Administrators (including roles that have the <code>CREATEROLE</code> privilege) can <code>GRANT</code> these roles to users and/or other roles in their environment, providing those users with access to the specified capabilities and information.</p>
+</div>
+<div class="paragraph">
+<p>see also: <a href="https://www.postgresql.org/docs/14/predefined-roles.html" class="bare">https://www.postgresql.org/docs/14/predefined-roles.html</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="privileges">7. Privileges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When an object is created, it is assigned an owner. The owner is normally the role that executed the creation statement.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For most kinds of objects, the initial state is that only the owner (or a superuser) can do anything with the object.</p>
+</li>
+<li>
+<p>To allow other roles to use it, privileges must be granted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are different kinds of privileges: <strong>SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER, CREATE, CONNECT, TEMPORARY, EXECUTE</strong>, and <strong>USAGE</strong>. The privileges applicable to a particular object vary depending on the object&#8217;s type (table, function, etc).</p>
+</div>
+<div class="paragraph">
+<p>An object can be assigned to a new owner with an <strong>ALTER</strong> command of the appropriate kind for the object, for example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span> <span class="k">OWNER</span> <span class="k">TO</span> <span class="n">new_owner</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Superusers can always do this; ordinary roles can only do it if they are both the current owner of the object (or a member of the owning role) and a member of the new owning role.</p>
+</div>
+<div class="paragraph">
+<p>To assign privileges, the <strong>GRANT</strong> command is used. For example, if joe is an existing role, and accounts is an existing table, the privilege to update the table can be granted with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">GRANT</span> <span class="k">UPDATE</span> <span class="k">ON</span> <span class="n">accounts</span> <span class="k">TO</span> <span class="n">joe</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Writing <strong>ALL</strong> in place of a specific privilege grants all privileges that are relevant for the object type.</p>
+</div>
+<div class="paragraph">
+<p>The special “role” name <strong>PUBLIC</strong> can be used to grant a privilege to every role on the system.</p>
+</div>
+<div class="paragraph">
+<p>To revoke a previously-granted privilege, use the fittingly named <strong>REVOKE</strong> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">REVOKE</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="n">accounts</span> <span class="k">FROM</span> <span class="k">PUBLIC</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sql-syntax-identifiers-and-key-words">8. SQL Syntax:  Identifiers and Key Words</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SQL input consists of a sequence of <em>commands</em>. A command is composed of a sequence of <em>tokens</em>, terminated by a semicolon (“;”). The end of the input stream also terminates a command. Which tokens are valid depends on the syntax of the particular command. <a href="#5">[5]</a></p>
+</div>
+<div class="paragraph">
+<p>A token can be a <strong><em>key word</em></strong>, an <strong><em>identifier</em></strong>, a <strong><em>quoted identifier</em></strong>, a <em>literal</em> (or constant), or a special character symbol. Tokens are normally separated by whitespace (space, tab, newline), but need not be if there is no ambiguity (which is generally only the case if a special character is adjacent to some other token type).</p>
+</div>
+<div class="paragraph">
+<p>For example, the following is (syntactically) valid SQL input:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">MY_TABLE</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">MY_TABLE</span> <span class="k">SET</span> <span class="n">A</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">MY_TABLE</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'hi there'</span><span class="p">);</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="identifiers-and-key-words">8.1. Identifiers and Key Words</h3>
+<div class="paragraph">
+<p>Tokens such as <code>SELECT</code>, <code>UPDATE</code>, or <code>VALUES</code> in the example above are examples of <strong><em>key words</em></strong>, that is, words that have a fixed meaning in the SQL language. The tokens <code>MY_TABLE</code> and <code>A</code> are examples of <strong><em>identifiers</em></strong>. They identify names of tables, columns, or other database objects, depending on the command they are used in. Therefore they are sometimes simply called “names”. Key words and identifiers have the same lexical structure, meaning that one cannot know whether a token is an identifier or a key word without knowing the language.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key words and unquoted identifiers are case insensitive</strong>. Therefore:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">UPDATE</span> <span class="n">MY_TABLE</span> <span class="k">SET</span> <span class="n">A</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>can equivalently be written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">uPDaTE</span> <span class="n">my_TabLE</span> <span class="k">SeT</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>A convention often used is to write key words in upper case and names in lower case</strong>, e.g.:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">UPDATE</span> <span class="n">my_table</span> <span class="k">SET</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is a second kind of identifier: the <strong><em>delimited identifier</em></strong> or <strong><em>quoted identifier</em></strong>. It is formed by enclosing an arbitrary sequence of characters in double-quotes (<code>"</code>). A delimited identifier is always an identifier, never a key word. So "select" could be used to refer to a column or table named “select”, whereas an unquoted select would be taken as a key word and would therefore provoke a parse error when used where a table or column name is expected. The example can be written with quoted identifiers like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">UPDATE</span> <span class="nv">"my_table"</span> <span class="k">SET</span> <span class="nv">"a"</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Quoting an identifier also makes it case-sensitive, whereas unquoted names are always folded to lower case</strong>. For example, the identifiers FOO, foo, and "foo" are considered the same by PostgreSQL, but "Foo" and "FOO" are different from these three and each other. (The folding of unquoted names to lower case in PostgreSQL is incompatible with the SQL standard, which says that unquoted names should be folded to upper case. Thus, foo should be equivalent to "FOO" not "foo" according to the standard. If you want to write portable applications you are advised to always quote a particular name or never quote it.)</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Object name case sensitivity might be different for SQL Server and PostgreSQL.</p>
+</div>
+<div class="paragraph">
+<p>By default, SQL Server names are case insensitive. However, you can create a case sensitive SQL Server database by changing the <code>COLLATION</code> property.</p>
+</div>
+<div class="paragraph">
+<p>In PostgreSQL, object names are case insensitive. <a href="#aws-psql-cases">[6]</a></p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transactions">9. Transactions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Transactions are a fundamental concept of all database systems to bundle multiple steps into a single, all-or-nothing operation. <a href="#psql-tutor-transactions">[7]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In PostgreSQL, a transaction is set up by surrounding the SQL commands of the transaction with <a href="https://www.postgresql.org/docs/15/sql-begin.html"><code>BEGIN</code></a> and <a href="https://www.postgresql.org/docs/15/sql-commit.html"><code>COMMIT</code></a> or <a href="https://www.postgresql.org/docs/15/sql-rollback.html"><code>ROLLBACK</code></a> commands.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="c1">-- A group of statements surrounded by BEGIN and COMMIT is sometimes called a transaction block.</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">accounts</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span> <span class="o">-</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span>
+    <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'Alice'</span><span class="p">;</span>
+<span class="c1">-- etc etc</span>
+<span class="k">COMMIT</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>By default (without <code>BEGIN</code>), PostgreSQL executes transactions in “autocommit” mode, that is, each statement is executed in its own transaction and a commit is implicitly performed at the end of the statement (if execution was successful, otherwise a rollback is done).</p>
+</li>
+<li>
+<p>It&#8217;s possible to control the statements in a transaction in a more granular fashion through the use of <strong>savepoints</strong> to selectively discard parts of the transaction, while committing the rest.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">accounts</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span> <span class="o">-</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span>
+    <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'Alice'</span><span class="p">;</span>
+<span class="n">SAVEPOINT</span> <span class="n">my_savepoint</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">accounts</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span> <span class="o">+</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span>
+    <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'Bob'</span><span class="p">;</span>
+<span class="c1">-- oops ... forget that and use Wally's account</span>
+<span class="k">ROLLBACK</span> <span class="k">TO</span> <span class="n">my_savepoint</span><span class="p">;</span>
+<span class="k">UPDATE</span> <span class="n">accounts</span> <span class="k">SET</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span> <span class="o">+</span> <span class="mi">100</span><span class="p">.</span><span class="mi">00</span>
+    <span class="k">WHERE</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'Wally'</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://www.postgresql.org/docs/15/sql-set-transaction.html">SET TRANSACTION</a> command sets the characteristics of the current transaction. The <a href="https://www.postgresql.org/docs/15/sql-set-transaction.html">SET SESSION CHARACTERISTICS</a> sets the default transaction characteristics for subsequent transactions of a session.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">SET TRANSACTION transaction_mode [, ...]
+SET TRANSACTION SNAPSHOT snapshot_id
+SET SESSION CHARACTERISTICS AS TRANSACTION transaction_mode [, ...]
+
+where transaction_mode is one of:
+
+    ISOLATION LEVEL { SERIALIZABLE | REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED }
+    READ WRITE | READ ONLY
+    [ NOT ] DEFERRABLE</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SHOW</span> <span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="c1">--  transaction_isolation</span>
+<span class="c1">-- -----------------------</span>
+<span class="c1">--  read committed</span>
+<span class="c1">-- (1 row)</span>
+
+<span class="k">BEGIN</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">REPEATABLE</span> <span class="k">READ</span><span class="p">;</span>
+<span class="k">SHOW</span> <span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+<span class="c1">--  transaction_isolation</span>
+<span class="c1">-- -----------------------</span>
+<span class="c1">--  repeatable read</span>
+<span class="c1">-- (1 row)</span>
+<span class="c1">--</span>
+<span class="c1">-- COMMIT</span>
+<span class="k">SHOW</span> <span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="c1">--  transaction_isolation</span>
+<span class="c1">-- -----------------------</span>
+<span class="c1">--  read committed</span>
+<span class="c1">-- (1 row)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sql"><span class="k">SHOW</span> <span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">SET</span> <span class="n">TRANSACTION</span> <span class="k">ISOLATION</span> <span class="k">LEVEL</span> <span class="k">READ</span> <span class="k">UNCOMMITTED</span><span class="p">;</span>
+<span class="k">SHOW</span> <span class="n">transaction_isolation</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+<span class="c1">--  transaction_isolation</span>
+<span class="c1">-- -----------------------</span>
+<span class="c1">--  read committed</span>
+<span class="c1">-- (1 row)</span>
+<span class="c1">--</span>
+<span class="c1">-- BEGIN</span>
+<span class="c1">-- SET</span>
+<span class="c1">--  transaction_isolation</span>
+<span class="c1">-- -----------------------</span>
+<span class="c1">--  read uncommitted</span>
+<span class="c1">-- (1 row)</span>
+<span class="c1">--</span>
+<span class="c1">-- COMMIT</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="walk-through-postgressql">10. Walk-through PostgresSQL</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>psql <span class="nt">-V</span>
+<span class="go">psql (PostgreSQL) 15.3 (Debian 15.3-0+deb12u1)
+</span><span class="gp">$</span><span class="w"> </span>psql <span class="nt">--help</span>
+<span class="go">psql is the PostgreSQL interactive terminal.
+
+Usage:
+  psql [OPTION]... [DBNAME [USERNAME]]
+
+General options:
+  -?, --help[=options]     show this help, then exit
+      --help=commands      list backslash commands, then exit
+      --help=variables     list special variables, then exit
+</span><span class="c">...
+</span><span class="go">Connection options:
+  -h, --host=HOSTNAME      database server host or socket directory (default: "local socket")
+  -p, --port=PORT          database server port (default: "5432")
+  -U, --username=USERNAME  database user name (default: "x")
+  -w, --no-password        never prompt for password
+  -W, --password           force password prompt (should happen automatically)
+
+For more information, type "\?" (for internal commands) or "\help" (for SQL
+commands) from within psql, or consult the psql section in the PostgreSQL
+documentation.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>psql <span class="nt">-h</span> localhost <span class="nt">-p</span> 5432 <span class="nt">-W</span> postgres postgres
+<span class="go">Password:
+psql (15.3 (Debian 15.3-0+deb12u1), server 13.10 (Debian 13.10-1.pgdg110+1))
+Type "help" for help.
+
+</span><span class="gp">postgres=#</span><span class="w"> </span>CREATE DATABASE testdb<span class="p">;</span>
+<span class="go">CREATE DATABASE
+</span><span class="gp">postgres=#</span><span class="w"> </span>CREATE ROLE <span class="nb">test </span>LOGIN<span class="p">;</span> <span class="nt">--</span> CREATE USER <span class="nb">test</span><span class="p">;</span>
+<span class="go">CREATE ROLE
+</span><span class="gp">postgres=#</span><span class="w"> </span>ALTER USER <span class="nb">test </span>PASSWORD <span class="s1">'test'</span><span class="p">;</span>
+<span class="go">ALTER ROLE
+</span><span class="gp">postgres=#</span><span class="w"> </span>GRANT ALL ON DATABASE testdb TO <span class="nb">test</span><span class="p">;</span>
+<span class="go">GRANT
+</span><span class="gp">postgres=#</span><span class="w"> </span><span class="nb">exit</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>psql <span class="nt">-h</span> localhost <span class="nt">-p</span> 5432 <span class="nt">-q</span> <span class="nt">-W</span> testdb <span class="nb">test</span>
+<span class="go">Password:
+</span><span class="gp">testdb=&gt;</span><span class="w"> </span><span class="se">\d</span>n+
+<span class="go">                          List of schemas
+  Name  |  Owner   |  Access privileges   |      Description
+--------+----------+----------------------+------------------------
+ public | postgres | postgres=UC/postgres+| standard public schema
+        |          | =UC/postgres         |
+(1 row)</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="intro-whatis"></a>[1] <a href="https://www.postgresql.org/docs/15/intro-whatis.html" class="bare">https://www.postgresql.org/docs/15/intro-whatis.html</a></p>
+</li>
+<li>
+<p><a id="tutorial-concepts"></a>[2] <a href="https://www.postgresql.org/docs/15/tutorial-concepts.html" class="bare">https://www.postgresql.org/docs/15/tutorial-concepts.html</a></p>
+</li>
+<li>
+<p><a id="manage-ag-overview"></a>[3] <a href="https://www.postgresql.org/docs/15/manage-ag-overview.html" class="bare">https://www.postgresql.org/docs/15/manage-ag-overview.html</a></p>
+</li>
+<li>
+<p><a id="ddl-schemas"></a>[4] <a href="https://www.postgresql.org/docs/15/ddl-schemas.html" class="bare">https://www.postgresql.org/docs/15/ddl-schemas.html</a></p>
+</li>
+<li>
+<p><a id="sql-syntax-lexical"></a>[5] <a href="https://www.postgresql.org/docs/15/sql-syntax-lexical.html" class="bare">https://www.postgresql.org/docs/15/sql-syntax-lexical.html</a></p>
+</li>
+<li>
+<p><a id="aws-psql-cases"></a>[6]<a href="https://docs.aws.amazon.com/dms/latest/sql-server-to-aurora-postgresql-migration-playbook/chap-sql-server-aurora-pg.sql.casesensitivity.html" class="bare">https://docs.aws.amazon.com/dms/latest/sql-server-to-aurora-postgresql-migration-playbook/chap-sql-server-aurora-pg.sql.casesensitivity.html</a></p>
+</li>
+<li>
+<p><a id="psql-tutor-transactions"></a>[7] <a href="https://www.postgresql.org/docs/15/tutorial-transactions.html" class="bare">https://www.postgresql.org/docs/15/tutorial-transactions.html</a></p>
+</li>
+<li>
+<p><a href="https://hub.docker.com/_/postgres/" class="bare">https://hub.docker.com/_/postgres/</a></p>
+</li>
+<li>
+<p><a href="https://tableplus.com/blog/2018/04/postgresql-how-to-grant-access-to-users.html" class="bare">https://tableplus.com/blog/2018/04/postgresql-how-to-grant-access-to-users.html</a></p>
+</li>
+<li>
+<p>PostgreDB stores table name is lower case, <a href="https://www.postgresql.org/message-id/aad4c17d-09a8-2525-23fe-c745d0c6ba27%40aklaver.com" class="bare">https://www.postgresql.org/message-id/aad4c17d-09a8-2525-23fe-c745d0c6ba27%40aklaver.com</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Delegates and Lambdas, Events in .NET | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Delegates and Lambdas, Events in .NET" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Delegates, acting as type-safe function pointers, provide the foundation for dynamic method invocation, and treat methods as first-class citizens, passing them as arguments and storing them in variables. Lambdas, concise anonymous functions, offer a streamlined way to define these methods inline, often simplifying delegate creation. Events, built upon the powerful mechanism of multicast delegates, enable the elegant implementation of the observer pattern. 1. Delegates 1.1. Delegate and MulticastDelegate 1.2. Func&lt;&gt;, Action&lt;&gt;, and Predicate&lt;&gt; 1.3. Anonymous delegates 2. Lambda expressions 3. Events References 1. Delegates Delegates are type-safe, secure, and verifiable reference types in .NET, similar in purpose to function pointers…" />
+<meta name="twitter:description" property="og:description" content="Delegates, acting as type-safe function pointers, provide the foundation for dynamic method invocation, and treat methods as first-class citizens, passing them as arguments and storing them in variables. Lambdas, concise anonymous functions, offer a streamlined way to define these methods inline, often simplifying delegate creation. Events, built upon the powerful mechanism of multicast delegates, enable the elegant implementation of the observer pattern. 1. Delegates 1.1. Delegate and MulticastDelegate 1.2. Func&lt;&gt;, Action&lt;&gt;, and Predicate&lt;&gt; 1.3. Anonymous delegates 2. Lambda expressions 3. Events References 1. Delegates Delegates are type-safe, secure, and verifiable reference types in .NET, similar in purpose to function pointers…" />
+<link rel="canonical" href="https://blog.codefarm.me/delegates-events-lambdas-in-net/" />
+<meta property="og:url" content="https://blog.codefarm.me/delegates-events-lambdas-in-net/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-12-25T21:12:40+08:00" />
+<meta property="article:modified_time" content="2023-12-25T21:12:40+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Delegates and Lambdas, Events in .NET" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-12-25T21:12:40+08:00","datePublished":"2023-12-25T21:12:40+08:00","description":"Delegates, acting as type-safe function pointers, provide the foundation for dynamic method invocation, and treat methods as first-class citizens, passing them as arguments and storing them in variables. Lambdas, concise anonymous functions, offer a streamlined way to define these methods inline, often simplifying delegate creation. Events, built upon the powerful mechanism of multicast delegates, enable the elegant implementation of the observer pattern. 1. Delegates 1.1. Delegate and MulticastDelegate 1.2. Func&lt;&gt;, Action&lt;&gt;, and Predicate&lt;&gt; 1.3. Anonymous delegates 2. Lambda expressions 3. Events References 1. Delegates Delegates are type-safe, secure, and verifiable reference types in .NET, similar in purpose to function pointers…","headline":"Delegates and Lambdas, Events in .NET","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/delegates-events-lambdas-in-net/"},"url":"https://blog.codefarm.me/delegates-events-lambdas-in-net/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Delegates and Lambdas, Events in .NET</h1><p class="c-post-meta">25 Dec 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Delegates, acting as type-safe <em>function pointers</em>, provide the foundation for dynamic method invocation, and treat methods as first-class citizens, passing them as arguments and storing them in variables.</p>
+</div>
+<div class="paragraph">
+<p>Lambdas, concise <em>anonymous functions</em>, offer a streamlined way to define these methods inline, often simplifying delegate creation.</p>
+</div>
+<div class="paragraph">
+<p>Events, built upon the powerful mechanism of <em>multicast delegates</em>, enable the elegant implementation of the <em>observer pattern</em>.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#delegates">1. Delegates</a>
+<ul class="sectlevel2">
+<li><a href="#delegate-and-multicastdelegate">1.1. Delegate and MulticastDelegate</a></li>
+<li><a href="#func-action-and-predicate">1.2. Func&lt;&gt;, Action&lt;&gt;, and Predicate&lt;&gt;</a></li>
+<li><a href="#anonymous-delegates">1.3. Anonymous delegates</a></li>
+</ul>
+</li>
+<li><a href="#lambda-expressions-1">2. Lambda expressions</a></li>
+<li><a href="#events">3. Events</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="delegates">1. Delegates</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Delegates are type-safe, secure, and verifiable reference types in .NET, similar in purpose to function pointers in C++, and commonly used for event handlers and callback functions. <a href="#cts-delegates">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A delegate type can represent any instance method or static method that has a compatible signature.</p>
+</li>
+<li>
+<p>A delegate&#8217;s parameter is compatible with the corresponding parameter of a method if the type of the delegate&#8217;s parameter is more restrictive than the type of the method parameter, because an argument passed to the delegate can be passed safely to the method.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">DogHandler</span> <span class="n">dogHandler</span> <span class="p">=</span> <span class="n">AnimalMethod</span><span class="p">;</span> <span class="c1">// allowed!</span>
+<span class="n">AnimalHandler</span> <span class="n">animalHandler</span> <span class="p">=</span> <span class="n">DogMethod</span><span class="p">;</span> <span class="c1">// compiler error!</span>
+
+<span class="k">static</span> <span class="k">void</span> <span class="nf">AnimalMethod</span><span class="p">(</span><span class="n">Animal</span> <span class="n">a</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Animal method called"</span><span class="p">);</span>
+<span class="k">static</span> <span class="k">void</span> <span class="nf">DogMethod</span><span class="p">(</span><span class="n">Dog</span> <span class="n">d</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Dog method called"</span><span class="p">);</span>
+
+<span class="k">delegate</span> <span class="k">void</span> <span class="nf">DogHandler</span><span class="p">(</span><span class="n">Dog</span> <span class="n">d</span><span class="p">);</span>
+<span class="k">delegate</span> <span class="k">void</span> <span class="nf">AnimalHandler</span><span class="p">(</span><span class="n">Animal</span> <span class="n">a</span><span class="p">);</span>
+
+<span class="k">class</span> <span class="nc">Animal</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">class</span> <span class="nc">Dog</span> <span class="p">:</span> <span class="n">Animal</span> <span class="p">{</span> <span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A delegate&#8217;s return type is compatible with the return type of a method if the return type of the method is more restrictive than the return type of the delegate, because the return value of the method can be cast safely to the return type of the delegate.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">AnimalGetter</span> <span class="n">animalGetter</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Dog</span><span class="p">();</span>
+<span class="n">Animal</span> <span class="n">myAnimal</span> <span class="p">=</span> <span class="nf">animalGetter</span><span class="p">();</span> <span class="c1">// No problem!</span>
+
+<span class="k">static</span> <span class="n">Dog</span> <span class="nf">GetDog</span><span class="p">()</span> <span class="p">=&gt;</span> <span class="k">new</span><span class="p">();</span>
+
+<span class="k">delegate</span> <span class="n">Animal</span> <span class="nf">AnimalGetter</span><span class="p">();</span></code></pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov substitution principle</a></p>
+</div>
+<div class="paragraph">
+<p>Liskov&#8217;s notion of a behavioural subtype defines a notion of substitutability for objects; that is, if S is a subtype of T, then objects of type T in a program may be replaced with objects of type S without altering any of the desirable properties of that program (e.g. correctness).</p>
+</div>
+</blockquote>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="delegate-and-multicastdelegate">1.1. Delegate and MulticastDelegate</h3>
+<div class="paragraph">
+<p>All delegates inherit from <a href="https://learn.microsoft.com/en-us/dotnet/api/system.multicastdelegate"><code>System.MulticastDelegate</code></a>, which inherits from <a href="https://learn.microsoft.com/en-us/dotnet/api/system.delegate"><code>System.Delegate</code></a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">MulticastDelegate</span> <span class="p">:</span> <span class="n">Delegate</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The C#, Visual Basic, and C++ languages do not allow inheritance from these types.</p>
+</li>
+<li>
+<p>Instead, they provide keywords for declaring delegates.</p>
+</li>
+<li>
+<p>A delegate, inherit from <code>MulticastDelegate</code>,  has an invocation list, which is a list of methods that the delegate represents and that are executed when the delegate is invoked.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>All methods in the list receive the arguments supplied when the delegate is invoked.</p>
+</li>
+<li>
+<p>The return value is not defined for a delegate that has more than one method in its invocation list, even if the delegate has a return type.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Create a delegate instance using a lambda expression.</span>
+<span class="n">MyDelegate</span> <span class="n">myDelegate</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="s">"Hello, "</span><span class="p">);</span>
+
+<span class="c1">// Combine (add) another lambda expression to the delegate, making it multicast.</span>
+<span class="n">myDelegate</span> <span class="p">+=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"World!"</span><span class="p">);</span>
+
+<span class="c1">// Invoke the delegate; both lambda expressions will be executed.</span>
+<span class="nf">myDelegate</span><span class="p">();</span> <span class="c1">// Output: Hello, World!</span>
+
+<span class="c1">// Declare a delegate type for methods with no parameters and void return.</span>
+<span class="k">public</span> <span class="k">delegate</span> <span class="k">void</span> <span class="nf">MyDelegate</span><span class="p">();</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In many cases, such as with callback methods, a delegate represents only one method, and the only actions you have to take are creating the delegate and invoking it.</p>
+</li>
+<li>
+<p>A delegate object is normally constructed by providing the name of the method the delegate will wrap, or with a <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/lambda-expressions">lambda expression</a>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="k">public</span> <span class="k">delegate</span> <span class="k">void</span> <span class="nf">Callback</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">);</span>
+
+<span class="c1">// Create a method for a delegate.</span>
+<span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">DelegateMethod</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+
+<span class="n">Callback</span> <span class="n">handler1</span> <span class="p">=</span> <span class="n">DelegateMethod</span><span class="p">;</span> <span class="c1">// method name</span>
+<span class="n">Callback</span> <span class="n">handler2</span> <span class="p">=</span> <span class="n">s</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">s</span><span class="p">);</span> <span class="c1">// lambda expression</span>
+
+<span class="c1">// Call the delegate.</span>
+<span class="nf">handler1</span><span class="p">(</span><span class="s">"Hello, "</span><span class="p">);</span>
+<span class="nf">handler2</span><span class="p">(</span><span class="s">"World!"</span><span class="p">);</span>
+<span class="c1">// Hello, World!</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>A delegate can call more than one method when invoked, which is referred to as multicasting.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>For delegates that represent multiple methods, .NET provides methods of the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.delegate">Delegate</a> and <a href="https://learn.microsoft.com/en-us/dotnet/api/system.multicastdelegate">MulticastDelegate</a> delegate classes to support operations such as:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>Delegate.Combine</code> method to add a method to a delegate&#8217;s invocation list.</p>
+</li>
+<li>
+<p>the <code>Delegate.Remove</code> method to remove a method, and</p>
+</li>
+<li>
+<p>the <code>Delegate.GetInvocationList</code> method to get the invocation list.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>To add an extra method to the delegate&#8217;s list of methods—the invocation list—simply requires adding two delegates using the addition or addition assignment operators (<code>+</code> or <code>+=</code>).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="kt">var</span> <span class="n">obj</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">MethodClass</span><span class="p">();</span>
+<span class="n">Callback</span> <span class="n">d1</span> <span class="p">=</span> <span class="n">obj</span><span class="p">.</span><span class="n">Method1</span><span class="p">;</span>
+<span class="n">Callback</span> <span class="n">d2</span> <span class="p">=</span> <span class="n">obj</span><span class="p">.</span><span class="n">Method2</span><span class="p">;</span>
+<span class="n">Callback</span> <span class="n">d3</span> <span class="p">=</span> <span class="n">MethodClass</span><span class="p">.</span><span class="n">Method3</span><span class="p">;</span>
+
+<span class="n">Callback</span> <span class="n">allMethodsDelegate</span> <span class="p">=</span> <span class="n">d1</span> <span class="p">+</span> <span class="n">d2</span><span class="p">;</span>
+<span class="n">allMethodsDelegate</span> <span class="p">+=</span> <span class="n">d3</span><span class="p">;</span>
+<span class="n">allMethodsDelegate</span> <span class="p">-=</span> <span class="n">d2</span><span class="p">;</span>
+<span class="n">Delegate</span><span class="p">[]</span> <span class="n">delegates</span> <span class="p">=</span> <span class="n">allMethodsDelegate</span><span class="p">.</span><span class="nf">GetInvocationList</span><span class="p">();</span>
+<span class="kt">int</span> <span class="n">invocationCount</span> <span class="p">=</span> <span class="n">delegates</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MethodClass</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Method1</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Method 1: </span><span class="p">{</span><span class="n">message</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Method2</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Method 2: </span><span class="p">{</span><span class="n">message</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Method3</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Method 3: </span><span class="p">{</span><span class="n">message</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="func-action-and-predicate">1.2. Func&lt;&gt;, Action&lt;&gt;, and Predicate&lt;&gt;</h3>
+<div class="paragraph">
+<p>In order to streamline the development process, .NET includes a set of delegate types that programmers can reuse and not have to create new types, which are <code>Func&lt;&gt;</code>, <code>Action&lt;&gt;</code> and <code>Predicate&lt;&gt;</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Action&lt;&gt;</code> - Represents a method that takes up to 16 input parameters and has a void return type.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Action with no parameters</span>
+<span class="n">Action</span> <span class="n">myAction1</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Action with no parameters"</span><span class="p">);</span>
+<span class="nf">myAction1</span><span class="p">();</span>
+
+<span class="c1">// Action with one parameter</span>
+<span class="n">Action</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">myAction2</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Action with one parameter: </span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+<span class="nf">myAction2</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+
+<span class="c1">// Action with two parameters</span>
+<span class="n">Action</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">myAction3</span> <span class="p">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Action with two parameters: </span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="s">, </span><span class="p">{</span><span class="n">s</span><span class="p">}</span><span class="s">"</span><span class="p">);</span>
+<span class="nf">myAction3</span><span class="p">(</span><span class="m">20</span><span class="p">,</span> <span class="s">"Hello"</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>Func&lt;&gt;</code> - Represents a method that takes up to 16 input parameters and returns a value of the type specified by the <code>TResult</code> parameter, and last type parameter is <strong>always</strong> the return type.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="c1">// Func with no parameters (returns a string)</span>
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">myFunction1</span> <span class="p">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="s">"Func with no parameters"</span><span class="p">;</span>
+<span class="kt">string</span> <span class="n">result1</span> <span class="p">=</span> <span class="nf">myFunction1</span><span class="p">();</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result1</span><span class="p">);</span>
+
+<span class="c1">// Func with one parameter (takes an int, returns a string)</span>
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">myFunction2</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="s">$"Func with one parameter: </span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="s">"</span><span class="p">;</span>
+<span class="kt">string</span> <span class="n">result2</span> <span class="p">=</span> <span class="nf">myFunction2</span><span class="p">(</span><span class="m">30</span><span class="p">);</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result2</span><span class="p">);</span>
+
+<span class="c1">// Func with two parameters (takes int and string, returns bool)</span>
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;</span> <span class="n">myFunction3</span> <span class="p">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">result3</span> <span class="p">=</span> <span class="nf">myFunction3</span><span class="p">(</span><span class="m">40</span><span class="p">,</span> <span class="s">"Test"</span><span class="p">);</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result3</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>Predicate&lt;&gt;</code> - Represents a method, a specialized version of <code>Func</code>, that takes a single input parameter and returns a boolean value.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">Predicate</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">myPredicate1</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">50</span><span class="p">;</span>
+<span class="kt">bool</span> <span class="n">result4</span> <span class="p">=</span> <span class="nf">myPredicate1</span><span class="p">(</span><span class="m">60</span><span class="p">);</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result4</span><span class="p">);</span>
+
+<span class="n">Predicate</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">myPredicate2</span> <span class="p">=</span> <span class="n">s</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">result5</span> <span class="p">=</span> <span class="nf">myPredicate2</span><span class="p">(</span><span class="k">null</span><span class="p">);</span> <span class="c1">// Or "A string"</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result5</span><span class="p">);</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anonymous-delegates">1.3. Anonymous delegates</h3>
+<div class="paragraph">
+<p>.NET Framework 2.0 introduced the concept of <strong>anonymous delegates</strong> (more accurately: anonymous methods) to create "inline" delegates without having to specify any additional type or method. <a href="#delegates-lambdas">[3]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">nums</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;([</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">4</span><span class="p">]);</span>
+<span class="n">nums</span><span class="p">.</span><span class="nf">Sort</span><span class="p">(</span><span class="k">delegate</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">y</span> <span class="p">-</span> <span class="n">x</span><span class="p">;</span> <span class="p">});</span>
+<span class="n">nums</span><span class="p">.</span><span class="nf">ForEach</span><span class="p">(</span><span class="k">delegate</span> <span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span> <span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="n">num</span><span class="p">}</span><span class="s"> "</span><span class="p">);</span> <span class="p">});</span>
+<span class="c1">// 5 4 3 2 1 0</span>
+
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="k">add</span> <span class="p">=</span> <span class="k">delegate</span> <span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="p">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">};</span>
+<span class="k">add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span> <span class="c1">// 2</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lambda-expressions-1">2. Lambda expressions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Lambda expressions</strong>, or just "lambdas" for short, were introduced in C# 3.0 as one of the core building blocks of Language Integrated Query (LINQ). <a href="#delegates-lambdas">[3]</a> <a href="#lambda-expressions">[4]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">nums</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;([</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">4</span><span class="p">]);</span>
+<span class="n">nums</span><span class="p">.</span><span class="nf">Sort</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">y</span> <span class="p">-</span> <span class="n">x</span><span class="p">);</span>
+<span class="n">nums</span><span class="p">.</span><span class="nf">ForEach</span><span class="p">(</span><span class="n">num</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="n">num</span><span class="p">}</span><span class="s"> "</span><span class="p">));</span>
+<span class="c1">// 5 4 3 2 1 0</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="kt">var</span> <span class="n">tasks</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Task</span><span class="p">&gt;();</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+<span class="p">{</span>
+    <span class="c1">// await Task.Delay(100); // 1 2 3 4 5</span>
+    <span class="kt">var</span> <span class="n">task</span> <span class="p">=</span> <span class="n">Task</span><span class="p">.</span><span class="nf">Run</span><span class="p">(()</span> <span class="p">=&gt;</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="s">$"</span><span class="p">{</span><span class="n">i</span><span class="p">}</span><span class="s"> "</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">tasks</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+    <span class="c1">// await Task.Delay(100); // 0 1 2 3 4</span>
+<span class="p">}</span>
+
+<span class="k">await</span> <span class="n">Task</span><span class="p">.</span><span class="nf">WhenAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">);</span>
+<span class="c1">// 5 5 5 5 5</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="events">3. Events</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Events</strong> in .NET are based on the delegate model that follows the <a href="https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern">observer design pattern</a>, which enables a subscriber to register with and receive notifications from a provider. <a href="#dotnet-standard-events">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To define an event, use the C# <code>event</code> or the Visual Basic <code>Event</code> keyword in the signature of your event class, and specify the type of delegate for the event.</p>
+</li>
+<li>
+<p>To raise an event, add a method that is marked as <code>protected</code> and <code>virtual</code> (in C#) or <code>Protected</code> and <code>Overridable</code> (in Visual Basic).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="cs"><span class="n">Counter</span> <span class="n">counter</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Counter</span><span class="p">();</span>
+<span class="n">counter</span><span class="p">.</span><span class="n">Callback</span> <span class="p">+=</span> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">;</span>
+<span class="n">counter</span><span class="p">.</span><span class="n">Count</span><span class="p">++;</span>
+<span class="n">counter</span><span class="p">.</span><span class="n">Count</span><span class="p">++;</span>
+
+<span class="k">class</span> <span class="nc">Counter</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">event</span> <span class="n">Callback</span><span class="p">?</span> <span class="n">Callback</span><span class="p">;</span>
+
+    <span class="k">private</span> <span class="k">void</span> <span class="nf">OnCallback</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Callback</span><span class="p">?.</span><span class="nf">Invoke</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="kt">int</span> <span class="n">_count</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Count</span>
+    <span class="p">{</span>
+        <span class="k">get</span> <span class="p">=&gt;</span> <span class="n">_count</span><span class="p">;</span>
+        <span class="k">set</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">value</span> <span class="p">!=</span> <span class="n">_count</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">old</span> <span class="p">=</span> <span class="n">_count</span><span class="p">;</span>
+                <span class="n">_count</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+                <span class="nf">OnCallback</span><span class="p">(</span><span class="s">$"Count was changed from </span><span class="p">{</span><span class="n">old</span><span class="p">}</span><span class="s"> to </span><span class="p">{</span><span class="n">_count</span><span class="p">}</span><span class="s">."</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* Create an event using custom accessors (add and remove blocks)
+    private Callback _callback; // The underlying delegate
+
+    // Event declaration with custom accessors
+    public event Callback? CallbackEvent
+    {
+        add
+        {
+            _callback += value; // Add the handler
+        }
+        remove
+        {
+            _callback -= value; // Remove the handler
+        }
+    }
+    */</span>
+<span class="p">}</span>
+
+<span class="c1">// $ dotnet run</span>
+<span class="c1">// Count was changed from 0 to 1.</span>
+<span class="c1">// Count was changed from 1 to 2.</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="cts-delegates"></a>[1] <a href="https://learn.microsoft.com/en-us/dotnet/standard/base-types/common-type-system#delegates" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/base-types/common-type-system#delegates</a></p>
+</li>
+<li>
+<p><a id="using-delegates"></a>[2] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/using-delegates" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/using-delegates</a></p>
+</li>
+<li>
+<p><a id="delegates-lambdas"></a>[3] <a href="https://learn.microsoft.com/en-us/dotnet/standard/delegates-lambdas" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/delegates-lambdas</a></p>
+</li>
+<li>
+<p><a id="lambda-expressions"></a>[4] <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/lambda-expressions" class="bare">https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/lambda-expressions</a></p>
+</li>
+<li>
+<p><a id="dotnet-standard-events"></a>[5] <a href="https://learn.microsoft.com/en-us/dotnet/standard/events/" class="bare">https://learn.microsoft.com/en-us/dotnet/standard/events/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

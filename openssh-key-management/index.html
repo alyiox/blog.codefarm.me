@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>OpenSSH management | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="OpenSSH management" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="The Secure Shell Protocol (SSH), designed on Unix-like operating systems, is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution. SSH uses public-key cryptography to authenticate the remote computer and allow it to authenticate the user, if necessary. SSH may be used in several methodologies. In the simplest manner, both ends of a communication channel use automatically generated public-private key pairs to encrypt a network connection, and then use a password to authenticate the user. [1] On Unix-like systems, the list of authorized public keys is…" />
+<meta name="twitter:description" property="og:description" content="The Secure Shell Protocol (SSH), designed on Unix-like operating systems, is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution. SSH uses public-key cryptography to authenticate the remote computer and allow it to authenticate the user, if necessary. SSH may be used in several methodologies. In the simplest manner, both ends of a communication channel use automatically generated public-private key pairs to encrypt a network connection, and then use a password to authenticate the user. [1] On Unix-like systems, the list of authorized public keys is…" />
+<link rel="canonical" href="https://blog.codefarm.me/openssh-key-management/" />
+<meta property="og:url" content="https://blog.codefarm.me/openssh-key-management/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-03-26T10:05:54+08:00" />
+<meta property="article:modified_time" content="2024-03-26T10:05:54+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="OpenSSH management" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-03-26T10:05:54+08:00","datePublished":"2024-03-26T10:05:54+08:00","description":"The Secure Shell Protocol (SSH), designed on Unix-like operating systems, is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution. SSH uses public-key cryptography to authenticate the remote computer and allow it to authenticate the user, if necessary. SSH may be used in several methodologies. In the simplest manner, both ends of a communication channel use automatically generated public-private key pairs to encrypt a network connection, and then use a password to authenticate the user. [1] On Unix-like systems, the list of authorized public keys is…","headline":"OpenSSH management","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/openssh-key-management/"},"url":"https://blog.codefarm.me/openssh-key-management/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">OpenSSH management</h1><p class="c-post-meta">26 Mar 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://en.wikipedia.org/wiki/Secure_Shell">Secure Shell Protocol (SSH)</a>, designed on Unix-like operating systems, is a cryptographic network protocol for operating network services securely over an unsecured network. Its most notable applications are remote login and command-line execution.</p>
+</div>
+<div class="paragraph">
+<p>SSH uses <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">public-key cryptography</a> to authenticate the remote computer and allow it to authenticate the user, if necessary. SSH may be used in several methodologies. In the simplest manner, both ends of a communication channel use automatically generated public-private key pairs to encrypt a network connection, and then use a password to authenticate the user. <a href="#wiki-Secure_Shell">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>On Unix-like systems, the list of authorized public keys is typically stored in the home directory of the user that is allowed to log in remotely, in the file <code>~/.ssh/authorized_keys</code> which is respected by SSH only if it is not writable by anything apart from the owner and root.</p>
+</div>
+<div class="paragraph">
+<p>When the public key is present on the remote end and the matching private key is present on the local end, typing in the password is no longer required. However, for additional security the private key itself can be locked with a passphrase.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#openssh">1. OpenSSH</a>
+<ul class="sectlevel2">
+<li><a href="#client-configuration-files">1.1. Client Configuration Files</a>
+<ul class="sectlevel3">
+<li><a href="#system-wide-client-configuration-files">1.1.1. System-wide Client Configuration Files</a></li>
+<li><a href="#user-specific-client-configuration-files">1.1.2. User-specific Client Configuration Files</a></li>
+</ul>
+</li>
+<li><a href="#ssh-keys">1.2. SSH keys</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="openssh">1. OpenSSH</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://en.wikipedia.org/wiki/OpenSSH">OpenSSH</a> (also known as OpenBSD Secure Shell) is a suite of secure networking utilities based on the <a href="https://en.wikipedia.org/wiki/Secure_Shell">Secure Shell</a> (SSH) protocol, which provides a secure channel over an unsecured network in a client–server architecture. <a href="#wiki-OpenSSH">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>The OpenSSH suite includes the following command-line utilities and daemons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>scp</code>, a replacement for <code>rcp</code>.</p>
+</li>
+<li>
+<p><code>sftp</code>, a replacement for <code>ftp</code> to copy files between computers.</p>
+</li>
+<li>
+<p><code>ssh</code>, a replacement for <code>rlogin</code>, <code>rsh</code> and <code>telnet</code> to allow shell access to a remote machine.</p>
+</li>
+<li>
+<p><code>ssh-add</code> and <code>ssh-agent</code>, utilities to ease authentication by holding keys ready and avoid the need to enter passphrases every time they are used.</p>
+</li>
+<li>
+<p><code>ssh-keygen</code>, a tool to inspect and generate the RSA, DSA and elliptic-curve keys that are used for user and host authentication.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>generate new key pairs, either ECDSA, Ed25519, RSA, ECDSA-SK or Ed25519-SK.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-t</span> ed25519</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>remove keys from known hosts</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-R</span> github.com <span class="nt">-f</span> .ssh/known_hosts</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>regenerate a public key from a private key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-y</span> <span class="nt">-f</span> .ssh/id_ed25519</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>change the passphrase of a private key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-p</span> <span class="nt">-f</span> .ssh/id_ed25519</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>change the comment text of a private key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-c</span> <span class="nt">-f</span> .ssh/id_ed25519</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>show the fingerprint of a specific public key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-lf</span> .ssh/id_ed25519.pub</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>show ASCII art fingerprint of a specific public key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-lvf</span> .ssh/id_ed25519.pub</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>load or read a key to or from a smartcard, if the reader is available</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>ssh-keyscan</code>, which scans a list of hosts and collects their public keys.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keyscan <span class="nt">-t</span> ed25519 <span class="nt">-H</span> github.com <span class="o">&gt;&gt;</span> .ssh/known_hosts</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>ssh-copy-id</code> — use locally available keys to authorise logins on a remote machine</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id <span class="nt">-i</span> .ssh/id_ed25519.pub jenkins@node-3</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>sshd</code>, the SSH server daemon.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="client-configuration-files">1.1. Client Configuration Files</h3>
+<div class="paragraph">
+<p>Client configuration files can be per user or system wide, with the former taking precedence over the latter and run-time arguments in the shell overriding both. In these configuration files, one parameter per line is allowed. <a href="#wikibooks-OpenSSH-Client_Configuration_Files">[3]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The syntax is the parameter name followed by its value or values.</p>
+</li>
+<li>
+<p>Empty lines and lines starting with the hash (<code>#</code>) are ignored.</p>
+</li>
+<li>
+<p>An equal sign (<code>=</code>) can be used instead of whitespace between the parameter name and the values.</p>
+</li>
+<li>
+<p>Values are case-sensitive, but parameter names are not.</p>
+</li>
+<li>
+<p>The first value assigned is used.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="system-wide-client-configuration-files">1.1.1. System-wide Client Configuration Files</h4>
+<div class="paragraph">
+<p>System-wide client files set the default configuration for all users of OpenSSH clients on that system. These defaults can be overridden in most cases by the user&#8217;s own default settings in a local configuration file.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>/etc/ssh/ssh_config</code></p>
+<div class="paragraph">
+<p>This file defines all the default settings for the client utilities for all users on that system. It must be readable by all users. The configuration options are described in detail in <code>ssh_config(5)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Below a shortcut is made for connecting to <code>arc.example.org</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="n">Host</span> <span class="n">arc</span>
+        <span class="n">Port</span> <span class="m">2022</span>
+        <span class="n">HostName</span> <span class="n">arc</span>.<span class="n">example</span>.<span class="n">org</span>
+        <span class="n">User</span> <span class="n">fred</span>
+        <span class="n">IdentityFile</span> ~/.<span class="n">ssh</span>/<span class="n">id_rsa_arc</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So with that configuration, it is enough to enter <code>ssh arc</code> and the rest of the information gets filled in automatically.</p>
+</div>
+</li>
+<li>
+<p><code>/etc/ssh/ssh_known_hosts</code></p>
+<div class="paragraph">
+<p>This contains the system-wide list of known host keys used to verify the identity of the remote host and thus hinder impersonation or eavesdropping. This file should be prepared by the system administrator to contain the public host keys of all necessary hosts. It should be world-readable.</p>
+</div>
+</li>
+<li>
+<p><code>/etc/ssh/sshrc</code></p>
+<div class="paragraph">
+<p>This file resides on the server and programs in this file are executed there by <code>ssh (1)</code> when the user logs in, just before the user&#8217;s shell or designated program is started. It is not run as root, but instead as the user who is logging in.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="user-specific-client-configuration-files">1.1.2. User-specific Client Configuration Files</h4>
+<div class="paragraph">
+<p>Users can override the default system-wide client settings and choose their own defaults. For situations where the same change is made repeatedly it is recommended to add it to the user&#8217;s local configuration.</p>
+</div>
+<div class="paragraph">
+<p><strong>Client-Side Files</strong></p>
+</div>
+<div class="paragraph">
+<p>These files reside on the client machine.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>~/.ssh/config</code></p>
+<div class="paragraph">
+<p>The user&#8217;s own configuration file which, where applicable, overrides the settings in the global client configuration file, <code>/etc/ssh/ssh_config</code>.</p>
+</div>
+<div class="paragraph">
+<p>This file MUST NOT be accessible to other users in any way. Set strict permissions: read/write for the user, and not accessible by others. It may group-writable if and only if that user is the only member of the group in question.</p>
+</div>
+</li>
+<li>
+<p>Local Override of Client Defaults</p>
+<div class="paragraph">
+<p>The file is usually named <code>~/.ssh/config</code>. However, a different configuration file can be specified at runtime using the <code>-F</code> option. General options intended to apply to all hosts can be set by matching all hosts and should be done at the end of the configuration file. The first match takes precedence, therefore more specific definitions must come first and more general overrides at the end of the file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="n">Host</span> <span class="n">server1</span>
+        <span class="n">ServerAliveInterval</span>	<span class="m">200</span>
+        <span class="n">HostName</span>	<span class="m">203</span>.<span class="m">0</span>.<span class="m">113</span>.<span class="m">76</span>
+
+<span class="n">Host</span> <span class="n">server2</span>
+        <span class="n">HostName</span>	<span class="m">203</span>.<span class="m">0</span>.<span class="m">113</span>.<span class="m">76</span>
+        <span class="n">ProxyCommand</span> <span class="n">nc</span> -<span class="n">X</span> <span class="m">5</span> -<span class="n">x</span> <span class="n">PROXY_HOST</span>:<span class="n">PORT</span> %<span class="n">h</span> %<span class="n">p</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="n">Match</span> <span class="n">host</span>=<span class="n">github</span>.<span class="n">com</span>
+   <span class="n">IdentitiesOnly</span> <span class="n">yes</span>
+   <span class="n">IdentityFile</span> ~/.<span class="n">ssh</span>/<span class="n">id_ed25519</span>
+   <span class="c"># https://nmap.org/download.html#windows
+</span>   <span class="n">ProxyCommand</span> <span class="n">ncat</span> --<span class="n">proxy</span>-<span class="n">type</span> <span class="n">socks5</span> --<span class="n">proxy</span> <span class="n">PROXY_HOST</span>:<span class="n">PORT</span> %<span class="n">h</span> %<span class="n">p</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+<span class="n">Host</span> *
+        <span class="n">ExitOnForwardFailure</span>	<span class="n">yes</span>
+        <span class="n">Protocol</span>	<span class="m">2</span>
+        <span class="n">ServerAliveInterval</span>	<span class="m">400</span></code></pre>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Tunneling SSH via a SOCKS5 proxy with NetCat (<code>netcat-openbsd</code>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tunneling ssh via a SOCKS5 Proxy on Windows with <a href="https://nmap.org/download.html#windows">NCat</a>.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Options given as runtime arguments will override even those in the configuration file. However, not all options can be set or overriden by the user. Those options which may not be set or overridden will be ignored.</p>
+</div>
+</li>
+<li>
+<p><code>~/.ssh/known_hosts</code></p>
+<div class="paragraph">
+<p>This file is local to the user account and contains the known keys for remote hosts. Often these are collected from the hosts when connecting for the first time, but they can be added manually. As with those keys stored in the global file, <code>/etc/ssh/ssh_known_hosts</code>, these keys are used to verify the identity of the remote host, thus protecting against impersonation or man-in-the-middle attacks. With each subsequent connection the key will be compared to the key provided by the remote server. If there is a match, the connection will proceed. If the match fails, <code>ssh (1)</code> will fail with an error message. If there is no key at all listed for that remote host, then the key&#8217;s fingerprint will be displayed and there will be the option to automatically add the key to the file. This file can be created and edited manually, but if it does not exist it will be created automatically by <code>ssh (1)</code> when it first connects to a remote host.</p>
+</div>
+<div class="paragraph">
+<p>The <code>~/.ssh/known_hosts</code> file can use either hashed or clear text host names. Even with hashed names, it can still be searched using <code>ssh-keygen</code> using the <code>-F</code> option.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-F</span> server3.example.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default file to be searched will be <code>~/.ssh/known_hosts</code> and the key is printed if found. A different file can be searched using the <code>-f</code> option. If a key must be removed from the file, the <code>-R</code> option works similarly to search by host and then remove it if found even if the host name is hashed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-R</span> server4.example.com <span class="nt">-f</span> ~/.ssh/known_hosts</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a key is removed, it will then be appended to the file <code>~/.ssh/known_hosts.old</code> in case it is needed later. Again, see the manual page for <code>sshd(8)</code> for the format of these known_host files.</p>
+</div>
+<div class="paragraph">
+<p>If the global file <code>/etc/ssh/ssh_known_hosts</code> is used then it should be prepared by the system administrator to contain the public host keys of all necessary hosts and it should be world-readable.</p>
+</div>
+</li>
+<li>
+<p>Manually Adding Public Keys to <code>~/.ssh/known_hosts</code></p>
+<div class="paragraph">
+<p>Manually adding public host keys to <code>known_hosts</code> is a matter of adding one unbroken line per key. How the key is obtained is not important, as long as it is complete, valid, and <strong>guaranteed to be the real key and not a fake</strong>. The utility <code>ssh-keyscan(1)</code> can fetch a key and <code>ssh-keygen(1)</code> can be used to show the fingerprint for verification.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Server-Side Client Files</strong></p>
+</div>
+<div class="paragraph">
+<p>These client files reside on the server. By default they are kept in the user&#8217;s directory. However, the server can be configured to look for them in other locations if needed.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>~/.ssh/authorized_keys</code></p>
+<div class="paragraph">
+<p><code>authorized_keys</code> is a one-key-per-line register of public ECDSA, RSA, and ED25519 keys that this account can use to log in with. The file&#8217;s contents are not highly sensitive, but the recommended permissions are read/write for the user and not accessible by others. As always, the whole key including options and comments must be on a single, unbroken line.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">ssh-rsa AAAAB3NzaC1yc2EAAA...41Ev521Ei2hvz7S2QNr1zAiVaOFy5Lwc8Lo+Jk=</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lines starting with a hash (<code>#</code>) are ignored and can be used as comments. Whitespace separates the key&#8217;s fields, which are in sequence an optional list of login options, the key type (usually ssh-rsa or better like ecdsa-sha2-nistp256), the key itself encoded as base64, and an optional comment.</p>
+</div>
+</li>
+<li>
+<p><code>~/.ssh/authorized_principals</code></p>
+<div class="paragraph">
+<p>By default this file does not exist. If it is specified in <code>sshd_config(5)</code>, it contains a list of names which can be used in place of the username when authorizing a certificate. This option is useful for role accounts, disjoint account namespaces and "user@realm"-style naming policies in certificates. Principals can also be specified in authorized_keys.</p>
+</div>
+</li>
+<li>
+<p><code>~/.ssh/environment</code></p>
+<div class="paragraph">
+<p>If the server is configured to accept user-supplied, automatic changes to environment variables as part of the login process, then these changes can be set in this file.</p>
+</div>
+</li>
+<li>
+<p><code>~/.ssh/rc</code></p>
+<div class="paragraph">
+<p>This is a script which is executed by <code>sh(1)</code> just before the user&#8217;s shell or command is started. It is not run if <code>ForceCommand</code> is used. The script is run after reading the environment variables. The corresponding global file, <code>/etc/ssh/sshrc</code>, is not run if the user&#8217;s rc script exists.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ssh-keys">1.2. SSH keys</h3>
+<div class="paragraph">
+<p>SSH keys can serve as a means of identifying yourself to an SSH server using <a href="https://en.wikipedia.org/wiki/Public-key_cryptography">public-key cryptography</a> and <a href="https://en.wikipedia.org/wiki/Challenge-response_authentication">challenge-response authentication</a>. The major advantage of key-based authentication is that, in contrast to password authentication, it is not prone to brute-force attacks, and you do not expose valid credentials if the server has been compromised (see <a href="https://tools.ietf.org/html/rfc4251#section-9.4.4">RFC 4251 9.4.4</a>). <a href="#archlinux-org-SSH_keys">[4]</a> <a href="#ssh-ssh-keys">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Generating an SSH key pair</p>
+<div class="paragraph">
+<p>An SSH key pair can be generated by running the <code>ssh-keygen</code> command, see the <code>ssh-keygen(1)</code> man page for what is "generally considered sufficient" and should be compatible with virtually all clients and servers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-t</span> ed25519</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Print the SSH public key from a private key</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">$ </span>ssh-keygen <span class="nt">-y</span> <span class="nt">-f</span> .ssh/id_ed25519
+ssh-ed25519 AAAAC...gos3</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Changing the private key&#8217;s passphrase without changing the key</p>
+<div class="paragraph">
+<p>If the originally chosen SSH key passphrase is undesirable or must be changed, one can use the ssh-keygen command to change the passphrase without changing the actual key. This can also be used to change the password encoding format to the new standard.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-f</span> ~/.ssh/id_rsa <span class="nt">-p</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Managing multiple keys</p>
+<div class="paragraph">
+<p>If you have multiple SSH identities, you can set different keys to be used for different hosts or remote users by using the Match and IdentityFile directives in your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># ~/.ssh/config
+</span>
+<span class="n">Match</span> <span class="n">host</span>=<span class="n">SERVER1</span>
+   <span class="n">IdentitiesOnly</span> <span class="n">yes</span>
+   <span class="n">IdentityFile</span> ~/.<span class="n">ssh</span>/<span class="n">id_rsa_IDENTITY1</span>
+
+<span class="n">Match</span> <span class="n">host</span>=<span class="n">SERVER2</span>,<span class="n">SERVER3</span>
+   <span class="n">IdentitiesOnly</span> <span class="n">yes</span>
+   <span class="n">IdentityFile</span> ~/.<span class="n">ssh</span>/<span class="n">id_ed25519_IDENTITY2</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copying the public key to the remote server</p>
+<div class="paragraph">
+<p>If your key file is <code>~/.ssh/id_rsa.pub</code> you can simply enter the following command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id remote-server.org</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your username differs on remote machine, be sure to prepend the username followed by <code>@</code> to the server name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id username@remote-server.org</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your public key filename is anything other than the default of <code>~/.ssh/id_rsa.pub</code>, you must explicitly provide the location of the public key.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id <span class="nt">-i</span> ~/.ssh/id_ed25519.pub username@remote-server.org</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the ssh server is listening on a port other than default of <code>22</code>, be sure to include it within the host argument.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-copy-id <span class="nt">-i</span> ~/.ssh/id_ed25519.pub <span class="nt">-p</span> 221 username@remote-server.org</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Manual method</div>
+<div class="paragraph">
+<p>By default, for OpenSSH, the public key needs to be concatenated with <code>~/.ssh/authorized_keys</code>. Begin by copying the public key to the remote server.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">scp ~/.ssh/id_ecdsa.pub username@remote-server.org:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example copies the public key (<code>id_ecdsa.pub</code>) to your home directory on the remote server via scp. Do not forget to include the <code>:</code> at the end of the server address. Also note that the name of your public key may differ from the example given.</p>
+</div>
+<div class="paragraph">
+<p>On the remote server, you will need to create the <code>~/.ssh</code> directory if it does not yet exist and append your public key to the <code>authorized_keys</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh username@remote-server.org
+<span class="go">username@remote-server.org's password:
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">mkdir</span> ~/.ssh
+<span class="gp">$</span><span class="w"> </span><span class="nb">chmod </span>700 ~/.ssh
+<span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> ~/id_ecdsa.pub <span class="o">&gt;&gt;</span> ~/.ssh/authorized_keys
+<span class="gp">$</span><span class="w"> </span><span class="nb">rm</span> ~/id_ecdsa.pub
+<span class="gp">$</span><span class="w"> </span><span class="nb">chmod </span>600 ~/.ssh/authorized_keys</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The last two commands remove the public key file from the server and set the permissions on the <code>authorized_keys</code> file such that it is only readable and writable by you, the owner.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Getting remote system details from the known_hosts file <a href="#linuxhandbook-known-hosts-file">[6]</a></p>
+<div class="paragraph">
+<p>You can get the related entries from the known_hosts if you know the hostname or the IP address of the system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-l</span> <span class="nt">-F</span> &lt;server-IP-or-hostname&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But if you want a single command that could list all the servers and their details in clear text, that&#8217;s not possible.</p>
+</div>
+</li>
+<li>
+<p>Remove an entry from the known_hosts <a href="#linuxhandbook-known-hosts-file">[6]</a></p>
+<div class="paragraph">
+<p>If you want to remove a specific entry from the known_hosts file, you can do so if you know the hostname or IP of the remote system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keygen <span class="nt">-R</span> server-hostname-or-IP</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Bypassing SSH Server Verification at the Command Line</p>
+<div class="paragraph">
+<p>We can bypass the SSH client interactive question with a command-line switch:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>ssh <span class="nt">-o</span> <span class="nv">StrictHostKeyChecking</span><span class="o">=</span>no test.rebex.net</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Adding a Host Public Key to the known_hosts File <a href="#baeldung-public-key-known_hosts">[7]</a></p>
+<div class="paragraph">
+<p>To add a public key to our known_hosts file, we need to find it from the server. We can scan the host’s public key using <code>ssh-keyscan</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keyscan github.com</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># github.com:22 SSH-2.0-babeld-05989c77
+</span><span class="n">github</span>.<span class="n">com</span> <span class="n">ssh</span>-<span class="n">rsa</span> <span class="n">AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt</span>+<span class="n">VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6</span>+<span class="n">PKCUXaDbC7qtbW8gIkhL7aGCsOr</span>/<span class="n">C56SJMy</span>/<span class="n">BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9</span>/<span class="n">hWCqBywINIR</span>+<span class="m">5</span><span class="n">dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL</span>+<span class="m">38</span><span class="n">TGxkxCflmO</span>+<span class="m">5</span><span class="n">Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw</span>+<span class="n">wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk</span>+<span class="n">S4dhPeAUC5y</span>+<span class="n">bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn</span>+<span class="n">EjqoTwvqNj4kqx5QUCI0ThS</span>/<span class="n">YkOxJCXmPUWZbhjpCg56i</span>+<span class="m">2</span><span class="n">aB6CmK2JGhn57K5mj0MNdBXA4</span>/<span class="n">WnwH6XoPWJzK5Nyu2zB3nAZp</span>+<span class="n">S5hpQs</span>+<span class="n">p1vN1</span>/<span class="n">wsjk</span>=
+<span class="c"># github.com:22 SSH-2.0-babeld-05989c77
+</span><span class="n">github</span>.<span class="n">com</span> <span class="n">ecdsa</span>-<span class="n">sha2</span>-<span class="n">nistp256</span> <span class="n">AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT</span>/<span class="n">y6v0mKV0U2w0WZ2YB</span>/++<span class="n">Tpockg</span>=
+<span class="c"># github.com:22 SSH-2.0-babeld-05989c77
+</span><span class="n">github</span>.<span class="n">com</span> <span class="n">ssh</span>-<span class="n">ed25519</span> <span class="n">AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl</span>
+<span class="c"># github.com:22 SSH-2.0-babeld-05989c77
+</span><span class="err">#</span> <span class="n">github</span>.<span class="n">com</span>:<span class="m">22</span> <span class="n">SSH</span>-<span class="m">2</span>.<span class="m">0</span>-<span class="n">babeld</span>-<span class="m">05989</span><span class="n">c77</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can also use the <code>-H</code> to get the hasing and <code>-t</code> to specify the type of the key:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keyscan <span class="nt">-t</span> rsa <span class="nt">-H</span> github.com</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="conf"><span class="c"># github.com:22 SSH-2.0-babeld-05989c77
+</span>|<span class="m">1</span>|<span class="n">BB</span>+<span class="n">YMCFo5Dpac</span>/<span class="n">r1Ptr9DFwDZPA</span>=|<span class="n">gShKP35K5VlC8clQ</span>+<span class="n">MqLGnjvtXM</span>= <span class="n">ssh</span>-<span class="n">rsa</span> <span class="n">AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt</span>+<span class="n">VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6</span>+<span class="n">PKCUXaDbC7qtbW8gIkhL7aGCsOr</span>/<span class="n">C56SJMy</span>/<span class="n">BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9</span>/<span class="n">hWCqBywINIR</span>+<span class="m">5</span><span class="n">dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL</span>+<span class="m">38</span><span class="n">TGxkxCflmO</span>+<span class="m">5</span><span class="n">Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw</span>+<span class="n">wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk</span>+<span class="n">S4dhPeAUC5y</span>+<span class="n">bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn</span>+<span class="n">EjqoTwvqNj4kqx5QUCI0ThS</span>/<span class="n">YkOxJCXmPUWZbhjpCg56i</span>+<span class="m">2</span><span class="n">aB6CmK2JGhn57K5mj0MNdBXA4</span>/<span class="n">WnwH6XoPWJzK5Nyu2zB3nAZp</span>+<span class="n">S5hpQs</span>+<span class="n">p1vN1</span>/<span class="n">wsjk</span>=</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And to add the host pub keys, we can append the above result to known_hosts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keyscan <span class="nt">-t</span> rsa <span class="nt">-H</span> github.com <span class="o">&gt;&gt;</span> <span class="o">&gt;&gt;</span> ~/.ssh/known_hosts</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similarly, we can also add all host public keys to the known_hosts File:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">ssh-keyscan <span class="nt">-H</span> github.com <span class="o">&gt;&gt;</span> <span class="o">&gt;&gt;</span> ~/.ssh/known_hosts</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="wiki-Secure_Shell"></a>[1] <a href="https://en.wikipedia.org/wiki/Secure_Shell" class="bare">https://en.wikipedia.org/wiki/Secure_Shell</a></p>
+</li>
+<li>
+<p><a id="wiki-OpenSSH"></a>[2] <a href="https://en.wikipedia.org/wiki/OpenSSH" class="bare">https://en.wikipedia.org/wiki/OpenSSH</a></p>
+</li>
+<li>
+<p><a id="wikibooks-OpenSSH-Client_Configuration_Files"></a>[3] <a href="https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files" class="bare">https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files</a></p>
+</li>
+<li>
+<p><a id="archlinux-org-SSH_keys"></a>[4] <a href="https://wiki.archlinux.org/title/SSH_keys" class="bare">https://wiki.archlinux.org/title/SSH_keys</a></p>
+</li>
+<li>
+<p><a id="ssh-ssh-keys"></a>[5] <a href="https://www.ssh.com/academy/ssh-keys" class="bare">https://www.ssh.com/academy/ssh-keys</a></p>
+</li>
+<li>
+<p><a id="linuxhandbook-known-hosts-file"></a>[6] <a href="https://linuxhandbook.com/known-hosts-file/" class="bare">https://linuxhandbook.com/known-hosts-file/</a></p>
+</li>
+<li>
+<p><a id="baeldung-public-key-known_hosts"></a>[7] <a href="https://www.baeldung.com/linux/public-key-known_hosts" class="bare">https://www.baeldung.com/linux/public-key-known_hosts</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Oracle Database Architecture | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Oracle Database Architecture" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="A database server is the key to information management. In general, a server reliably manages a large amount of data in a multiuser environment so that users can concurrently access the same data. A database server also prevents unauthorized access and provides efficient solutions for failure recovery. 1. Database and Instance 1.1. Multitenant Architecture 1.2. Sharding Architecture 1.3. Database Storage Structures 2. References 1. Database and Instance An Oracle database server consists of a database and at least one database instance, commonly referred to as simply an instance. Because an instance and a database are so closely connected, the term…" />
+<meta name="twitter:description" property="og:description" content="A database server is the key to information management. In general, a server reliably manages a large amount of data in a multiuser environment so that users can concurrently access the same data. A database server also prevents unauthorized access and provides efficient solutions for failure recovery. 1. Database and Instance 1.1. Multitenant Architecture 1.2. Sharding Architecture 1.3. Database Storage Structures 2. References 1. Database and Instance An Oracle database server consists of a database and at least one database instance, commonly referred to as simply an instance. Because an instance and a database are so closely connected, the term…" />
+<link rel="canonical" href="https://blog.codefarm.me/oracle-database-architecture/" />
+<meta property="og:url" content="https://blog.codefarm.me/oracle-database-architecture/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-11-24T10:20:33+08:00" />
+<meta property="article:modified_time" content="2022-11-24T10:20:33+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Oracle Database Architecture" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-11-24T10:20:33+08:00","datePublished":"2022-11-24T10:20:33+08:00","description":"A database server is the key to information management. In general, a server reliably manages a large amount of data in a multiuser environment so that users can concurrently access the same data. A database server also prevents unauthorized access and provides efficient solutions for failure recovery. 1. Database and Instance 1.1. Multitenant Architecture 1.2. Sharding Architecture 1.3. Database Storage Structures 2. References 1. Database and Instance An Oracle database server consists of a database and at least one database instance, commonly referred to as simply an instance. Because an instance and a database are so closely connected, the term…","headline":"Oracle Database Architecture","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/oracle-database-architecture/"},"url":"https://blog.codefarm.me/oracle-database-architecture/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Oracle Database Architecture</h1><p class="c-post-meta">24 Nov 2022</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>A <strong>database server</strong> is the key to information management.</p>
+</div>
+<div class="paragraph">
+<p>In general, a server reliably manages a large amount of data in a multiuser environment so that users can concurrently access the same data.</p>
+</div>
+<div class="paragraph">
+<p>A database server also prevents unauthorized access and provides efficient solutions for failure recovery.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#database-and-instance">1. Database and Instance</a>
+<ul class="sectlevel2">
+<li><a href="#multitenant-architecture">1.1. Multitenant Architecture</a></li>
+<li><a href="#sharding-architecture">1.2. Sharding Architecture</a></li>
+<li><a href="#database-storage-structures">1.3. Database Storage Structures</a></li>
+</ul>
+</li>
+<li><a href="#references">2. References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="database-and-instance">1. Database and Instance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An Oracle database server consists of a database and at least one <strong>database instance</strong>, commonly referred to as simply an <strong>instance</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Because an instance and a database are so closely connected, the term <strong>Oracle database</strong> sometimes refers to both instance and database.</p>
+</div>
+<div class="paragraph">
+<p>In the strictest sense, the terms have the following meanings:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Database</p>
+<div class="paragraph">
+<p>A database is a set of files, located on disk, that store user data.</p>
+</div>
+<div class="paragraph">
+<p>These data files can exist independently of a database instance.</p>
+</div>
+<div class="paragraph">
+<p>Starting in Oracle Database 21c, "database" refers specifically to the data files of a <em>multitenant container database</em> (<strong>CDB</strong>), <em>pluggable database</em> (<strong>PDB</strong>), or <em>application container</em>.</p>
+</div>
+</li>
+<li>
+<p>Database instance</p>
+<div class="paragraph">
+<p>An instance is a named set of memory structures that manage database files.</p>
+</div>
+<div class="paragraph">
+<p>A database instance consists of a shared memory area, called the <em>system global area</em> (<strong>SGA</strong>), and a set of background processes.</p>
+</div>
+<div class="paragraph">
+<p>An instance can exist independently of database files.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="multitenant-architecture">1.1. Multitenant Architecture</h3>
+<div class="paragraph">
+<p>The <strong>multitenant architecture</strong> enables an Oracle database to be a CDB.</p>
+</div>
+<div class="paragraph">
+<p>Every Oracle database must contain or be able to be contained by another database.</p>
+</div>
+<div class="paragraph">
+<p>For example, a CDB contains PDBs, and an application container contains application PDBs.</p>
+</div>
+<div class="paragraph">
+<p>A PDB is contained by a CDB or application container, and an application container is contained by a CDB.</p>
+</div>
+<div class="paragraph">
+<p>Starting in Oracle Database 21c, a multitenant container database is the only supported architecture.</p>
+</div>
+<div class="paragraph">
+<p>In previous releases, Oracle supported non-container databases (non-CDBs).</p>
+</div>
+<div class="sect3">
+<h4 id="cdbs">1.1.1. CDBs</h4>
+<div class="paragraph">
+<p>A <strong>CDB</strong> contains one or more user-created PDBs and application containers.</p>
+</div>
+<div class="paragraph">
+<p>At the physical level, a CDB is a set of files: control file, online redo log files, and data files.</p>
+</div>
+<div class="paragraph">
+<p>The database instance manages the files that make up the CDB.</p>
+</div>
+<div class="paragraph">
+<p>The following figure shows a CDB and an associated database instance.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/img/cncpt233.gif" alt="Database Instance and CDB" width="45%" height="45%">
+</div>
+<div class="title">Figure 1. Database Instance and CDB</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="pdbs">1.1.2. PDBs</h4>
+<div class="paragraph">
+<p>A <strong>PDB</strong> is a portable collection of schemas, schema objects, and nonschema objects that appears to an application as a separate database.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>At the physical level, each PDB has its own set of data files that store the data for the PDB.</p>
+</li>
+<li>
+<p>The CDB includes all the data files for the PDBs contained within it, and a set of system data files that store metadata for the CDB itself.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To move or archive a PDB, you can unplug it.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An unplugged PDB consists of the PDB data files and a metadata file.</p>
+</li>
+<li>
+<p>An unplugged PDB is not usable until it is plugged in to a CDB.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following figure shows a CDB named <em>MYCDB</em>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/img/cncpt352.png" alt="PDBs in a CDB" width="45%" height="45%">
+</div>
+<div class="title">Figure 2. PDBs in a CDB</div>
+</div>
+<div class="paragraph">
+<p>Physically, <em>MYCDB</em> is an Oracle database, in the sense of a set of data files associated with an instance.</p>
+</div>
+<div class="paragraph">
+<p><em>MYCDB</em> has one database instance, although multiple instances are possible in <em>Oracle Real Application Clusters</em>, and one set of database files.</p>
+</div>
+<div class="paragraph">
+<p><em>MYCDB</em> contains two PDBs: <em>hrpdb</em> and <em>salespdb</em>. As shown in the above figure, these PDBs appear to their respective applications as separate, independent databases.</p>
+</div>
+<div class="paragraph">
+<p>An application has no knowledge of whether it is connecting to a CDB or PDB.</p>
+</div>
+<div class="paragraph">
+<p>To administer the CDB itself or any PDB within it, you can connect to the <strong>CDB root</strong>. The root is a collection of schemas, schema objects, and nonschema objects to which all PDBs and application containers belong.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="application-containers">1.1.3. Application Containers</h4>
+<div class="paragraph">
+<p>An <strong>application container</strong> is an optional, user-created container within a CDB that stores data and metadata for one or more applications.</p>
+</div>
+<div class="paragraph">
+<p>In this context, an application (also called the <em>master application definition</em>) is a named, versioned set of common data and metadata stored in the application root.</p>
+</div>
+<div class="paragraph">
+<p>For example, the application might include definitions of tables, views, user accounts, and PL/SQL packages that are common to a set of PDBs.</p>
+</div>
+<div class="paragraph">
+<p>In some ways, an application container functions as an application-specific CDB within a CDB.</p>
+</div>
+<div class="paragraph">
+<p>An application container, like the CDB itself, can include multiple application PDBs, and enables these PDBs to share metadata and data.</p>
+</div>
+<div class="paragraph">
+<p>At the physical level, an application container has its own set of data files, just like a PDB.</p>
+</div>
+<div class="paragraph">
+<p>For example, a SaaS deployment can use multiple application PDBs, each for a separate customer, which share application metadata and data.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For example, in the following figure, <em>sales_app</em> is the application model in the application root.</p>
+</li>
+<li>
+<p>The application PDB named <em>cust1_pdb</em> contains sales data only for customer 1, whereas the application PDB named <em>cust2_pdb</em> contains sales data only for customer 2.</p>
+</li>
+<li>
+<p>Plugging, unplugging, cloning, and other PDB-level operations are available for individual customer PDBs.</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/img/cncpt389.png" alt="SaaS Use Case" width="45%" height="45%">
+</div>
+<div class="title">Figure 3. SaaS Use Case</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sharding-architecture">1.2. Sharding Architecture</h3>
+<div class="paragraph">
+<p>Oracle Sharding is a database scaling technique based on <em>horizontal partitioning of data across multiple PDBs</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Applications perceive the pool of PDBs as a single logical database.</p>
+</li>
+<li>
+<p>Key benefits of sharding for OLTP applications include linear scalability, fault containment, and geographical data distribution.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In a sharding architecture, each CDB is hosted on a dedicated server with its own local resources: CPU, memory, flash, or disk.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can designate a PDB as a <strong>shard</strong>.</p>
+</li>
+<li>
+<p>PDB shards from different CDBs make up a single logical database, which is referred to as a <strong>sharded database</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Horizontal partitioning involves splitting a database table across shards so that each shard contains the table with the same columns but a different subset of rows. A table split up in this manner is also known as a <strong>sharded table</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The following figure shows a sharded table horizontally partitioned across three shards, each of which is a PDB in a separate CDB.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/img/admin_3v_134a.png" alt="Horizontal Partitioning of a Table Across Shards" width="45%" height="45%">
+</div>
+<div class="title">Figure 4. Horizontal Partitioning of a Table Across Shards</div>
+</div>
+<div class="paragraph">
+<p>A use case is distributing customer account data across multiple CDBs.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For example, a customer with ID <em>28459361</em> may look up his records.</p>
+<div class="paragraph">
+<p>The customer request is routed through a <em>connection pool</em>, where <em>sharding directors</em> (network listeners) direct the request to the appropriate PDB <em>shard</em>, which contains all the customer rows.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/img/admin_3v_143d.png" alt="Oracle Sharding Architecture" width="45%" height="45%">
+</div>
+<div class="title">Figure 5. Oracle Sharding Architecture</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="database-storage-structures">1.3. Database Storage Structures</h3>
+<div class="paragraph">
+<p>A database can be considered from both a physical and logical perspective.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Physical data is data viewable at the operating system level.</p>
+<div class="paragraph">
+<p>For example, operating system utilities such as the Linux <em>ls</em> and <em>ps</em> can list database files and processes.</p>
+</div>
+</li>
+<li>
+<p>Logical data such as a table is meaningful only for the database.</p>
+<div class="paragraph">
+<p>A SQL statement can list the tables in an Oracle database, but an operating system utility cannot.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The database has physical structures and logical structures.</p>
+</div>
+<div class="paragraph">
+<p>Because the physical and logical structures are separate, you can manage the physical storage of data without affecting access to logical storage structures.</p>
+</div>
+<div class="paragraph">
+<p>For example, renaming a physical database file does not rename the tables whose data is stored in this file.</p>
+</div>
+<div class="sect3">
+<h4 id="physical-storage-structures">1.3.1. Physical Storage Structures</h4>
+<div class="paragraph">
+<p>The physical database structures are the files that store the data.</p>
+</div>
+<div class="paragraph">
+<p>When you execute a <em>CREATE DATABASE</em> command, you create a CDB. The following files are created:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Data files</p>
+<div class="paragraph">
+<p>Every CDB has one or more physical data files, which contain all the database data.</p>
+</div>
+<div class="paragraph">
+<p>The data of logical database structures, such as tables and indexes, is physically stored in the data files.</p>
+</div>
+</li>
+<li>
+<p>Control files</p>
+<div class="paragraph">
+<p>Every CDB has a control file.</p>
+</div>
+<div class="paragraph">
+<p>A control file contains metadata specifying the physical structure of the database, including the database name and the names and locations of the database files.</p>
+</div>
+</li>
+<li>
+<p>Online redo log files</p>
+<div class="paragraph">
+<p>Every CDB has an <em>online redo log</em>, which is a set of two or more online redo log files.</p>
+</div>
+<div class="paragraph">
+<p>An online redo log is made up of redo entries (also called redo log records), which record all changes made to data.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When you execute a <em>CREATE PLUGGABLE DATABASE</em> command within a CDB, you create a PDB.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The PDB contains a dedicated set of data files within the CDB.</p>
+</li>
+<li>
+<p>A PDB does not have a separate, dedicated control file and online redo log: these files are shared by the PDBs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Many other files are important for the functioning of a CDB.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>These include parameter files and networking files.</p>
+</li>
+<li>
+<p>Backup files and archived redo log files are offline files important for backup and recovery.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="logical-storage-structures">1.3.2. Logical Storage Structures</h4>
+<div class="paragraph">
+<p>Logical storage structures enable Oracle Database to have fine-grained control of disk space use.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Data blocks</p>
+<div class="paragraph">
+<p>At the finest level of granularity, Oracle Database data is stored in data blocks.</p>
+</div>
+<div class="paragraph">
+<p>Other names for data blocks include Oracle blocks or pages.</p>
+</div>
+<div class="paragraph">
+<p>One data block corresponds to a specific number of bytes of physical space on disk.</p>
+</div>
+</li>
+<li>
+<p>Extents</p>
+<div class="paragraph">
+<p>An extent is a specific number of logically contiguous data blocks, obtained in a single allocation, used to store a specific type of information.</p>
+</div>
+</li>
+<li>
+<p>Segments</p>
+<div class="paragraph">
+<p>A segment is a set of extents allocated for a user object (for example, a table or index), undo data, or temporary data.</p>
+</div>
+</li>
+<li>
+<p>Tablespaces</p>
+<div class="paragraph">
+<p>A database is divided into logical storage units called tablespaces.</p>
+</div>
+<div class="paragraph">
+<p>A tablespace is the logical container for segments.</p>
+</div>
+<div class="paragraph">
+<p>Each tablespace consists of at least one data file.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">2. References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/introduction-to-oracle-database.html" class="bare">https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/introduction-to-oracle-database.html</a></p>
+</li>
+<li>
+<p><a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/glossary.html" class="bare">https://docs.oracle.com/en/database/oracle/oracle-database/21/cncpt/glossary.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

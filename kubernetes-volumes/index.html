@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Kubernetes Volumes | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Kubernetes Volumes" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. Docker Storage Drivers and Volumes 1.1. Storage Drivers 1.2. Volumes 2. Kubernetes Volumes 2.1. ConfigMaps 2.2. Secrets 2.3. Container Storage Interface (CSI) 2.4. Persistent Volumes 2.4.1. Lifecycle of a volume and claim 2.4.1.1. Provisioning 2.4.1.2. Binding 2.4.1.3. Using 2.4.1.4. Storage Object in Use Protection 2.4.1.5. Reclaiming 2.4.1.6. PersistentVolume deletion protection finalizer 2.4.1.7. Reserving a PersistentVolume 2.4.1.8. Expanding Persistent Volumes Claims 2.4.2. Claims As Volumes 2.4.3. Raw Block Volume Support 3. CSI Storage Drivers on Azure Kubernetes Service (AKS) Referenes 1. Docker Storage Drivers and Volumes Docker uses storage drivers to store image layers, and to store data in the…" />
+<meta name="twitter:description" property="og:description" content="1. Docker Storage Drivers and Volumes 1.1. Storage Drivers 1.2. Volumes 2. Kubernetes Volumes 2.1. ConfigMaps 2.2. Secrets 2.3. Container Storage Interface (CSI) 2.4. Persistent Volumes 2.4.1. Lifecycle of a volume and claim 2.4.1.1. Provisioning 2.4.1.2. Binding 2.4.1.3. Using 2.4.1.4. Storage Object in Use Protection 2.4.1.5. Reclaiming 2.4.1.6. PersistentVolume deletion protection finalizer 2.4.1.7. Reserving a PersistentVolume 2.4.1.8. Expanding Persistent Volumes Claims 2.4.2. Claims As Volumes 2.4.3. Raw Block Volume Support 3. CSI Storage Drivers on Azure Kubernetes Service (AKS) Referenes 1. Docker Storage Drivers and Volumes Docker uses storage drivers to store image layers, and to store data in the…" />
+<link rel="canonical" href="https://blog.codefarm.me/kubernetes-volumes/" />
+<meta property="og:url" content="https://blog.codefarm.me/kubernetes-volumes/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-02-29T20:07:20+08:00" />
+<meta property="article:modified_time" content="2024-02-29T20:07:20+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Kubernetes Volumes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-02-29T20:07:20+08:00","datePublished":"2024-02-29T20:07:20+08:00","description":"1. Docker Storage Drivers and Volumes 1.1. Storage Drivers 1.2. Volumes 2. Kubernetes Volumes 2.1. ConfigMaps 2.2. Secrets 2.3. Container Storage Interface (CSI) 2.4. Persistent Volumes 2.4.1. Lifecycle of a volume and claim 2.4.1.1. Provisioning 2.4.1.2. Binding 2.4.1.3. Using 2.4.1.4. Storage Object in Use Protection 2.4.1.5. Reclaiming 2.4.1.6. PersistentVolume deletion protection finalizer 2.4.1.7. Reserving a PersistentVolume 2.4.1.8. Expanding Persistent Volumes Claims 2.4.2. Claims As Volumes 2.4.3. Raw Block Volume Support 3. CSI Storage Drivers on Azure Kubernetes Service (AKS) Referenes 1. Docker Storage Drivers and Volumes Docker uses storage drivers to store image layers, and to store data in the…","headline":"Kubernetes Volumes","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/kubernetes-volumes/"},"url":"https://blog.codefarm.me/kubernetes-volumes/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Kubernetes Volumes</h1><p class="c-post-meta">29 Feb 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#docker-storage-drivers-and-volumes">1. Docker Storage Drivers and Volumes</a>
+<ul class="sectlevel2">
+<li><a href="#storage-drivers">1.1. Storage Drivers</a></li>
+<li><a href="#volumes">1.2. Volumes</a></li>
+</ul>
+</li>
+<li><a href="#kubernetes-volumes">2. Kubernetes Volumes</a>
+<ul class="sectlevel2">
+<li><a href="#configmaps">2.1. ConfigMaps</a></li>
+<li><a href="#secrets">2.2. Secrets</a></li>
+<li><a href="#container-storage-interface-csi">2.3. Container Storage Interface (CSI)</a></li>
+<li><a href="#persistent-volumes">2.4. Persistent Volumes</a>
+<ul class="sectlevel3">
+<li><a href="#lifecycle-of-a-volume-and-claim">2.4.1. Lifecycle of a volume and claim</a>
+<ul class="sectlevel4">
+<li><a href="#provisioning">2.4.1.1. Provisioning</a></li>
+<li><a href="#binding">2.4.1.2. Binding</a></li>
+<li><a href="#using">2.4.1.3. Using</a></li>
+<li><a href="#storage-object-in-use-protection">2.4.1.4. Storage Object in Use Protection</a></li>
+<li><a href="#reclaiming">2.4.1.5. Reclaiming</a></li>
+<li><a href="#persistentvolume-deletion-protection-finalizer">2.4.1.6. PersistentVolume deletion protection finalizer</a></li>
+<li><a href="#reserving-a-persistentvolume">2.4.1.7. Reserving a PersistentVolume</a></li>
+<li><a href="#expanding-persistent-volumes-claims">2.4.1.8. Expanding Persistent Volumes Claims</a></li>
+</ul>
+</li>
+<li><a href="#claims-as-volumes">2.4.2. Claims As Volumes</a></li>
+<li><a href="#raw-block-volume-support">2.4.3. Raw Block Volume Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#csi-storage-drivers-on-azure-kubernetes-service-aks">3. CSI Storage Drivers on Azure Kubernetes Service (AKS)</a></li>
+<li><a href="#referenes">Referenes</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="docker-storage-drivers-and-volumes">1. Docker Storage Drivers and Volumes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Docker uses <a href="https://docs.docker.com/storage/storagedriver/select-storage-driver/">storage drivers</a> to store image layers, and to store data in the writable layer of a container. <a href="#docker-storagedriver">[1]</a></p>
+</div>
+<div class="paragraph">
+<p>Storage drivers are optimized for space efficiency, but (depending on the storage driver) write speeds are lower than native file system performance, especially for storage drivers that use a <em>copy-on-write</em> filesystem.</p>
+</div>
+<div class="paragraph">
+<p>Use Docker <a href="https://docs.docker.com/storage/volumes/">volumes</a> for write-intensive data, data that must persist beyond the container&#8217;s lifespan, and data that must be shared between containers.</p>
+</div>
+<div class="sect2">
+<h3 id="storage-drivers">1.1. Storage Drivers</h3>
+<div class="paragraph">
+<p>A Docker image is built up from a series of layers. Each layer represents an instruction in the image&#8217;s Dockerfile. Each layer except the very last one is read-only. Consider the following Dockerfile:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="dockerfile"><span class="c"># syntax=docker/dockerfile:1</span>
+
+<span class="k">FROM</span><span class="s"> ubuntu:22.04</span>
+<span class="k">LABEL</span><span class="s"> org.opencontainers.image.authors="org@example.com"</span>
+<span class="k">COPY</span><span class="s"> . /app</span>
+<span class="k">RUN </span>make /app
+<span class="k">RUN </span><span class="nb">rm</span> <span class="nt">-r</span> <span class="nv">$HOME</span>/.cache
+<span class="k">CMD</span><span class="s"> python /app/app.py</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This Dockerfile contains four commands. <em>Commands that modify the filesystem create a layer.</em></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>FROM</code> statement starts out by creating a layer from the <code>ubuntu:22.04</code> image.</p>
+</li>
+<li>
+<p>The <code>LABEL</code> command only modifies the image&#8217;s metadata, and doesn&#8217;t produce a new layer.</p>
+</li>
+<li>
+<p>The <code>COPY</code> command adds some files from your Docker client&#8217;s current directory.</p>
+</li>
+<li>
+<p>The first <code>RUN</code> command builds your application using the make command, and writes the result to a new layer.</p>
+<div class="paragraph">
+<p>The second <code>RUN</code> command removes a cache directory, and writes the result to a new layer.</p>
+</div>
+</li>
+<li>
+<p>Finally, the <code>CMD</code> instruction specifies what command to run within the container, which only modifies the image&#8217;s metadata, which doesn&#8217;t produce an image layer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When a new container is created, a new writable layer is added on top of the underlying layers, which is often called the container layer.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.docker.com/storage/storagedriver/images/container-layers.webp?w=450&h=300" alt="Layers of a container based on the Ubuntu image" width="35%" height="35%">
+</div>
+</div>
+<div class="paragraph">
+<p>A storage driver handles the details about the way these layers interact with each other.</p>
+</div>
+<div class="paragraph">
+<p>To see what storage driver Docker is currently using, use <code>docker</code> info and look for the <code>Storage Driver</code> line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>docker info 2&gt; /dev/null | <span class="nb">grep</span> <span class="s1">'Storage Driver'</span> <span class="nt">-A</span> 5
+<span class="go"> Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">df</span> <span class="nt">-T</span> /var/lib/docker
+<span class="go">Filesystem     Type 1K-blocks     Used Available Use% Mounted on
+/dev/sda1      ext4 102624184 57865288  39499736  60% /</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>containerd, the industry-standard container runtime, uses snapshotters instead of the classic storage drivers for storing image and container data. While the <code>overlay2</code> driver still remains the default driver for Docker Engine, you can opt in to using containerd snapshotters as an experimental feature. <a href="#docker-storage-containerd">[2]</a></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the following configuration to the <code>/etc/docker/daemon.json</code> configuration file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"features"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"containerd-snapshotter"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Restart the daemon for the changes to take effect.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nb">sudo </span>systemctl restart docker</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check the Storage Driver.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh"><span class="nv">$ </span>docker info 2&gt; /dev/null | <span class="nb">grep</span> <span class="s1">'Storage Driver'</span> <span class="nt">-A</span> 2
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="volumes">1.2. Volumes</h3>
+<div class="paragraph">
+<p>Docker has two options for containers to store files on the host machine, so that the files are persisted even after the container stops: <em>volumes</em>, and <em>bind mounts</em>. <a href="#docker-storage">[3]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://docs.docker.com/storage/images/types-of-mounts.webp?w=450&h=300a" alt="Types of mounts and where they live on the Docker host" width="35%" height="35%">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Volumes</strong> are stored in a part of the host filesystem which is <em>managed by Docker</em> (<code>/var/lib/docker/volumes/</code> on Linux). Non-Docker processes should not modify this part of the filesystem. Volumes are the best way to persist data in Docker.</p>
+</li>
+<li>
+<p><strong>Bind mounts</strong> may be stored anywhere on the host system. They may even be important system files or directories. Non-Docker processes on the Docker host or a Docker container can modify them at any time.</p>
+</li>
+<li>
+<p><strong>tmpfs mounts</strong> are stored in the host system&#8217;s memory only, and are never written to the host system&#8217;s filesystem.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kubernetes-volumes">2. Kubernetes Volumes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kubernetes volumes provide a way for containers in a pods to access and share data via the filesystem, facilitating the data sharing can be between different local processes within a container, or between different containers, or between Pods. <a href="#kube-storage-volumes">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>Kubernetes supports many types of volumes. <a href="https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/">Ephemeral volume</a> types have a lifetime of a pod, but <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">persistent volumes</a> exist beyond the lifetime of a pod. <a href="#kube-storage-volumes">[4]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To use a volume, specify the volumes to provide for the Pod in <code>.spec.volumes</code> and declare where to mount those volumes into containers in <code>.spec.containers[*].volumeMounts</code>.</p>
+</li>
+<li>
+<p>The <code>volumeMounts[*].subPath</code> property specifies a sub-path inside the referenced volume instead of its root.</p>
+<div class="paragraph">
+<p>Kubernetes will only mount the specified path or file from the volume into the container&#8217;s filesystem at the given <code>mountPath</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">test-pod</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-container</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">busybox:stable</span>
+      <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">tail'</span><span class="pi">,</span> <span class="s1">'</span><span class="s">-f'</span><span class="pi">,</span> <span class="s1">'</span><span class="s">/dev/null'</span><span class="pi">]</span>
+      <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-data</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/lib/test-data/foo</span>
+          <span class="na">subPath</span><span class="pi">:</span> <span class="s">foo</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-data-file</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/var/lib/test-data/hello.txt</span>
+          <span class="na">subPath</span><span class="pi">:</span> <span class="s">hello.txt</span>
+  <span class="na">volumes</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-data</span>
+      <span class="na">hostPath</span><span class="pi">:</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/tmp/test-data</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-data-file</span>
+      <span class="na">hostPath</span><span class="pi">:</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/tmp/test-data/foo</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>tree /tmp/test-data/
+<span class="go">/tmp/test-data/
+├── bar
+│   └── world.txt
+└── foo
+    └── hello.txt
+</span><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>test-pod <span class="nt">--</span> <span class="nb">ls</span> <span class="nt">-l</span> /var/lib/test-data/
+<span class="go">total 8
+drwxr-xr-x    2 1000     1000          4096 Feb 26 07:22 foo
+-rw-r--r--    1 1000     1000             6 Feb 26 07:22 hello.txt
+</span><span class="gp">$</span><span class="w"> </span>kubectl <span class="nb">exec </span>test-pod <span class="nt">--</span> <span class="nb">ls</span> <span class="nt">-l</span> /var/lib/test-data/foo
+<span class="go">total 4
+-rw-r--r--    1 1000     1000             6 Feb 26 07:22 hello.txt</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <code>subPathExpr</code>, mutually exclusive with <code>subPath</code>, can be used to dynamically create <code>subPath</code> directory names using downward API environment variables.</p>
+</li>
+<li>
+<p>A mount can be made read-only by setting the <code>.spec.containers[].volumeMounts[].readOnly</code> field to <code>true</code>.</p>
+</li>
+<li>
+<p>Recursive read-only mounts can be enabled by setting the <code>.spec.containers[].volumeMounts[].recursiveReadOnly</code> field for a pod.</p>
+</li>
+<li>
+<p>A process in a container sees a filesystem view composed from the initial contents of the container image, plus volumes (if defined) mounted inside the container.</p>
+</li>
+<li>
+<p>Mount propagation of a volume is controlled by the <code>mountPropagation</code> field in <code>containers[*].volumeMounts</code> for sharing volumes mounted by a container to other containers in the same pod, or even to other pods on the same node.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>None</code> - The volume mount will not receive any subsequent mounts that are mounted to this volume or any of its subdirectories by the host, and no mounts created by the container will be visible on the host.</p>
+</li>
+<li>
+<p><code>HostToContainer</code> - The volume mount will receive all subsequent mounts that are mounted to it or any of its subdirectories.</p>
+</li>
+<li>
+<p><code>Bidirectional</code> - The volume mount behaves the same the <code>HostToContainer</code> mount, and all volume mounts created by the container will be propagated back to the host and to all containers of all pods that use the same volume.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The storage media (such as Disk or SSD) of an <code>emptyDir</code> volume is determined by the medium of the filesystem holding the kubelet root dir (typically <code>/var/lib/kubelet</code>).</p>
+</li>
+<li>
+<p>There is no limit on how much space an <code>emptyDir</code> or <code>hostPath</code> volume can consume, and no isolation between containers or pods.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Kubernetes supports several types of volumes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configMap</p>
+<div class="paragraph">
+<p>A <code>configMap</code> volume is used to inject configuration data from a <code>ConfigMap</code> into a Pod, which is backed by a directory mounted on the pod&#8217;s filesystem, making the data accessible to containerized applications.</p>
+</div>
+</li>
+<li>
+<p>secret</p>
+<div class="paragraph">
+<p>A <code>secret</code> volume is used to pass sensitive information, such as passwords, from a <code>Secret</code> into a Pod, which is backed by tmpfs (a RAM-backed filesystem) so they are never written to non-volatile storage.</p>
+</div>
+</li>
+<li>
+<p>downwardAPI</p>
+<div class="paragraph">
+<p>A <code>downwardAPI</code> volume makes downward API data available to applications, exposing data as read-only files in plain text format.</p>
+</div>
+</li>
+<li>
+<p>emptyDir</p>
+<div class="paragraph">
+<p>An <code>emptyDir</code> volume provides temporary scratch space, created as empty directory when a pod is scheduled to a node, allowing all containers within the pod to share the same files.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When a Pod is removed from a node for any reason, the data in the <code>emptyDir</code> is deleted permanently.</p>
+</li>
+<li>
+<p>The data in an <code>emptyDir</code> volume is safe across container crashes, as a container crashing does not remove a Pod from a node.</p>
+</li>
+<li>
+<p>By default <code>emptyDir</code> volumes are stored on whatever medium that backs the node such as disk, SSD, or network storage, determined by the medium of the filesystem holding the kubelet root dir (typically <code>/var/lib/kubelet</code>).</p>
+</li>
+<li>
+<p>If the <code>emptyDir.medium</code> field is set to <code>Memory</code>, Kubernetes mounts a tmpfs (RAM-backed filesystem) instead.</p>
+</li>
+<li>
+<p>The kubelet tracks tmpfs <code>emptyDir</code> volumes as container memory use, which is constrained by the memory limit for the Pod or container, rather than as local ephemeral storage.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>hostPath</p>
+<div class="paragraph">
+<p>A <code>hostPath</code> volume mounts a file or directory from the host node&#8217;s filesystem into a Pod.</p>
+</div>
+</li>
+<li>
+<p>local</p>
+<div class="paragraph">
+<p>A <code>local</code> volume represents a mounted local storage device such as a disk, partition or directory.</p>
+</div>
+<div class="paragraph">
+<p>Local volumes can only be used as a statically pre-created <code>PersistentVolume</code>.</p>
+</div>
+<div class="paragraph">
+<p>It is recommended to create a <code>StorageClass</code> with <code>volumeBindingMode: WaitForFirstConsumer</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">storage.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StorageClass</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">local-storage</span>
+<span class="na">provisioner</span><span class="pi">:</span> <span class="s">kubernetes.io/no-provisioner</span>
+<span class="na">volumeBindingMode</span><span class="pi">:</span> <span class="s">WaitForFirstConsumer</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>nfs</p>
+<div class="paragraph">
+<p>An <code>nfs</code> volume allows an existing NFS (Network File System) share to be mounted into a Pod by multiple writers simultaneously.</p>
+</div>
+</li>
+<li>
+<p>persistentVolumeClaim</p>
+<div class="paragraph">
+<p>A <code>persistentVolumeClaim</code> volume is a way for users to "claim" durable storage (such as an iSCSI volume) without knowing the details of the particular cloud environment to mount a <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">PersistentVolume</a> into a Pod.</p>
+</div>
+</li>
+<li>
+<p>projected</p>
+<div class="paragraph">
+<p>A <code>projected</code> volume maps several existing volume sources into the same directory.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="configmaps">2.1. ConfigMaps</h3>
+<div class="paragraph">
+<p>A <code>ConfigMap</code> is an API object used to store non-confidential data in key-value pairs, that can be consumed by a Pod as environment variables, command-line arguments, or as configuration files in a volume.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A <code>ConfigMap</code> has <code>data</code> and <code>binaryData</code> fields that accept key-value pairs as their values.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Both the <code>data</code> field and the <code>binaryData</code> are optional.</p>
+</li>
+<li>
+<p>The <code>data</code> field is designed to contain UTF-8 strings while the <code>binaryData</code> field is designed to contain binary data as base64-encoded strings.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>When a <code>ConfigMap</code> currently consumed in a volume is updated, projected keys are eventually updated as well.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The kubelet checks whether the mounted <code>ConfigMap</code> is fresh on every periodic sync. However, the kubelet uses its local cache for getting the current value of the <code>ConfigMap</code>.</p>
+</li>
+<li>
+<p>A <code>ConfigMap</code> can be either propagated by watch (default), ttl-based, or by redirecting all requests directly to the API server.</p>
+</li>
+<li>
+<p>A <code>ConfigMap</code> consumed as environment variable is not updated automatically and require a pod restart.</p>
+</li>
+<li>
+<p>A container using a <code>ConfigMap</code> as a <code>subPath</code> volume mount will not receive <code>ConfigMap</code> updates.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>A <code>ConfigMap</code> can be created either using <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/"><code>kubectl create configmap</code> or a <code>ConfigMap</code> generator in <code>kustomization.yaml</code></a>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create cm game-config <span class="nt">--from-file</span> configure-pod-container/configmap/
+<span class="go">configmap/game-config created
+</span><span class="gp">$</span><span class="w"> </span>kubectl get cm game-config <span class="nt">-oyaml</span>
+<span class="go">apiVersion: v1
+data:
+  game.properties: |-
+    enemies=aliens
+    lives=3
+    enemies.cheat=true
+    enemies.cheat.level=noGoodRotten
+    secret.code.passphrase=UUDDLRLRBABAS
+    secret.code.allowed=true
+    secret.code.lives=30
+  ui.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-02-26T06:27:24Z"
+  name: game-config
+  namespace: default
+  resourceVersion: "373961"
+  uid: fe6e6cf4-2d05-4152-af8f-b2563514d851</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create cm game-config-2 <span class="se">\</span>
+<span class="go">    --from-env-file configure-pod-container/configmap/game.properties \
+    --from-env-file configure-pod-container/configmap/ui.properties
+configmap/game-config-2 created
+</span><span class="gp">$</span><span class="w"> </span>kubectl get cm game-config-2 <span class="nt">-oyaml</span>
+<span class="go">apiVersion: v1
+data:
+  allow.textmode: "true"
+  color.bad: yellow
+  color.good: purple
+  enemies: aliens
+  enemies.cheat: "true"
+  enemies.cheat.level: noGoodRotten
+  how.nice.to.look: fairlyNice
+  lives: "3"
+  secret.code.allowed: "true"
+  secret.code.lives: "30"
+  secret.code.passphrase: UUDDLRLRBABAS
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-02-26T06:29:05Z"
+  name: game-config-2
+  namespace: default
+  resourceVersion: "374137"
+  uid: a6094626-907f-412a-a2d1-5b3fdda225aa</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>kubectl create configmap special-config <span class="se">\</span>
+<span class="go">    --from-literal SPECIAL_LEVEL=very \
+    --from-literal SPECIAL_TYPE=charm
+configmap/special-config created
+</span><span class="gp">$</span><span class="w"> </span>kubectl get cm special-config <span class="nt">-oyaml</span>
+<span class="go">apiVersion: v1
+data:
+  SPECIAL_LEVEL: very
+  SPECIAL_TYPE: charm
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-02-26T06:36:29Z"
+  name: special-config
+  namespace: default
+  resourceVersion: "374899"
+  uid: 4d194d31-5fe3-4255-8ee9-e951943d92db
+</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="secrets">2.2. Secrets</h3>
+<div class="paragraph">
+<p>A <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secret</a> is an object, similar to a ConfigMap but is specifically intended to hold confidential data, that contains a small amount of sensitive data such as a password, a token, or a key.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kubernetes offers built-in types for common scenarios, varying in validation and imposed constraints.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create secret generic empty-secret
+kubectl get secret empty-secret</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create secret docker-registry secret-tiger-docker <span class="se">\</span>
+  <span class="nt">--docker-email</span><span class="o">=</span>tiger@acme.example <span class="se">\</span>
+  <span class="nt">--docker-username</span><span class="o">=</span>tiger <span class="se">\</span>
+  <span class="nt">--docker-password</span><span class="o">=</span>pass1234 <span class="se">\</span>
+  <span class="nt">--docker-server</span><span class="o">=</span>my-registry.example:5000</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">kubectl create secret tls my-tls-secret <span class="se">\</span>
+  <span class="nt">--cert</span><span class="o">=</span>path/to/cert/file <span class="se">\</span>
+  <span class="nt">--key</span><span class="o">=</span>path/to/key/file</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">foo</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">awesomeapps</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">foo</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">janedoe/awesomeapp:v1</span>
+  <span class="na">imagePullSecrets</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">myregistrykey</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">dev.test</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">dev.test</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">service</span><span class="pi">:</span>
+            <span class="na">name</span><span class="pi">:</span> <span class="s">echoserver</span>
+            <span class="na">port</span><span class="pi">:</span>
+              <span class="na">number</span><span class="pi">:</span> <span class="m">80</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">pathType</span><span class="pi">:</span> <span class="s">ImplementationSpecific</span>
+  <span class="na">tls</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s1">'</span><span class="s">*.dev.test'</span>
+    <span class="na">secretName</span><span class="pi">:</span> <span class="s">dev.test</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="container-storage-interface-csi">2.3. Container Storage Interface (CSI)</h3>
+<div class="paragraph">
+<p><a href="https://github.com/container-storage-interface/spec/blob/master/spec.md">Container Storage Interface (CSI)</a> defines a standard interface for container orchestration systems (like Kubernetes) to expose arbitrary storage systems to their container workloads.</p>
+</div>
+<div class="paragraph">
+<p>Once a CSI compatible volume driver is deployed on a Kubernetes cluster, users may use the <code>csi</code> volume type to attach or mount the volumes exposed by the CSI driver.</p>
+</div>
+<div class="paragraph">
+<p>A <code>csi</code> volume can be used in a Pod in three different ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>through a reference to a <a href="https://kubernetes.io/docs/concepts/storage/volumes/#persistentvolumeclaim">PersistentVolumeClaim</a></p>
+</li>
+<li>
+<p>with a <a href="https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes">generic ephemeral volume</a></p>
+</li>
+<li>
+<p>with a <a href="https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#csi-ephemeral-volumes">CSI ephemeral volume</a> if the driver supports that</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The following fields are available to storage administrators to configure a CSI persistent volume:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>driver</code>: A string value that specifies the name of the volume driver to use.</p>
+</li>
+<li>
+<p><code>volumeHandle</code>: A string value that uniquely identifies the volume.</p>
+</li>
+<li>
+<p><code>readOnly</code>: An optional boolean value indicating whether the volume is to be "ControllerPublished" (attached) as read only. Default is false.</p>
+</li>
+<li>
+<p><code>fsType</code>: If the PV&#8217;s <code>VolumeMode</code> is <code>Filesystem</code> then this field may be used to specify the filesystem that should be used to mount the volume.</p>
+<div class="paragraph">
+<p>If the volume has not been formatted and formatting is supported, this value will be used to format the volume.</p>
+</div>
+</li>
+<li>
+<p><code>volumeAttributes</code>: A map of string to string that specifies static properties of a volume.</p>
+</li>
+<li>
+<p><code>controllerPublishSecretRef</code>: A reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI <code>ControllerPublishVolume</code> and <code>ControllerUnpublishVolume</code> calls.</p>
+</li>
+<li>
+<p><code>nodeExpandSecretRef</code>: A reference to the secret containing sensitive information to pass to the CSI driver to complete the CSI <code>NodeExpandVolume</code> call.</p>
+</li>
+<li>
+<p><code>nodePublishSecretRef</code>: A reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI <code>NodePublishVolume</code> call.</p>
+</li>
+<li>
+<p><code>nodeStageSecretRef</code>: A reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI <code>NodeStageVolume</code> call.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="persistent-volumes">2.4. Persistent Volumes</h3>
+<div class="paragraph">
+<p>Managing storage is a distinct problem from managing compute instances. The PersistentVolume subsystem provides an API for users and administrators that abstracts details of how storage is provided from how it is consumed.</p>
+</div>
+<div class="paragraph">
+<p>A <em>PersistentVolume (PV)</em> is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">Storage Classes</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It is a resource in the cluster just like a node is a cluster resource, that  captures the details of the implementation of the storage, be that NFS, iSCSI, or a cloud-provider-specific storage system.</p>
+</li>
+<li>
+<p>PVs are volume plugins like Volumes, but have a lifecycle independent of any individual Pod that uses the PV.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A <em>PersistentVolumeClaim (PVC)</em> is a request for storage by a user. It is similar to a Pod.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pods consume node resources and PVCs consume PV resources. Pods can request specific levels of resources (CPU and Memory).</p>
+</li>
+<li>
+<p>Claims can request specific size and access modes (e.g., ReadWriteOnce, ReadOnlyMany, ReadWriteMany, or ReadWriteOncePod).</p>
+</li>
+<li>
+<p>While PersistentVolumeClaims allow a user to consume abstract storage resources, it is common that users need PersistentVolumes with varying properties, such as performance, for different problems.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A <em>StorageClass</em> provides a way for administrators to describe the classes of storage they offer. Different classes might map to quality-of-service levels, or to backup policies, or to arbitrary policies determined by the cluster administrators. <a href="#kube-storage-classes">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each StorageClass contains the fields <code>provisioner</code>, <code>parameters</code>, and <code>reclaimPolicy</code>, which are used when a PersistentVolume belonging to the class needs to be dynamically provisioned to satisfy a PersistentVolumeClaim (PVC).</p>
+</li>
+<li>
+<p>The name of a StorageClass object is significant, and is how users can request a particular class. Administrators set the name and other parameters of a class when first creating StorageClass objects.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">storage.k8s.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StorageClass</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">local-storage</span>
+<span class="na">provisioner</span><span class="pi">:</span> <span class="s">kubernetes.io/no-provisioner</span>
+<span class="na">volumeBindingMode</span><span class="pi">:</span> <span class="s">WaitForFirstConsumer</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="lifecycle-of-a-volume-and-claim">2.4.1. Lifecycle of a volume and claim</h4>
+<div class="paragraph">
+<p>PVs are resources in the cluster. PVCs are requests for those resources and also act as claim checks to the resource. The interaction between PVs and PVCs follows this lifecycle: <a href="#kube-persistent-volumes">[6]</a></p>
+</div>
+<div class="sect4">
+<h5 id="provisioning">2.4.1.1. Provisioning</h5>
+<div class="paragraph">
+<p>There are two ways PVs may be provisioned: <em>statically</em> or <em>dynamically</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Static</p>
+<div class="paragraph">
+<p>A cluster administrator creates a number of PVs. They carry the details of the real storage, which is available for use by cluster users. They exist in the Kubernetes API and are available for consumption.</p>
+</div>
+</li>
+<li>
+<p>Dynamic</p>
+<div class="paragraph">
+<p>When none of the static PVs the administrator created match a user&#8217;s PersistentVolumeClaim, the cluster may try to dynamically provision a volume specially for the PVC based on StorageClasses.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="binding">2.4.1.2. Binding</h5>
+<div class="paragraph">
+<p>A control loop in the control plane watches for new PVCs, finds a matching PV (if possible), and binds them together.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a PV was dynamically provisioned for a new PVC, the loop will always bind that PV to the PVC.</p>
+</li>
+<li>
+<p>Otherwise, the user will always get at least what they asked for, but the volume may be in excess of what was requested.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>volumeBindingMode</code> field of a StorageClass controls when volume binding and dynamic provisioning should occur, and when unset, <code>Immediate</code> mode is used by default. <a href="#kube-storage-classes">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>Immediate</code> mode indicates that volume binding and dynamic provisioning occurs once the PersistentVolumeClaim is created.</p>
+<div class="paragraph">
+<p>For storage backends that are topology-constrained and not globally accessible from all Nodes in the cluster, PersistentVolumes will be bound or provisioned without knowledge of the Pod&#8217;s scheduling requirements. This may result in unschedulable Pods.</p>
+</div>
+</li>
+<li>
+<p>A cluster administrator can address this issue by specifying the <code>WaitForFirstConsumer</code> mode which will delay the binding and provisioning of a PersistentVolume until a Pod using the PersistentVolumeClaim is created.</p>
+<div class="paragraph">
+<p>PersistentVolumes will be selected or provisioned conforming to the topology that is specified by the Pod&#8217;s scheduling constraints.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="using">2.4.1.3. Using</h5>
+<div class="paragraph">
+<p>Pods use claims as volumes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The cluster inspects the claim to find the bound volume and mounts that volume for a Pod.</p>
+</li>
+<li>
+<p>For volumes that support multiple access modes, the user specifies which mode is desired when using their claim as a volume in a Pod.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="storage-object-in-use-protection">2.4.1.4. Storage Object in Use Protection</h5>
+<div class="paragraph">
+<p>If a user deletes a PVC in active use by a Pod, the PVC is not removed immediately. PVC removal is postponed until the PVC is no longer actively used by any Pods. Also, if an admin deletes a PV that is bound to a PVC, the PV is not removed immediately. PV removal is postponed until the PV is no longer bound to a PVC.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="reclaiming">2.4.1.5. Reclaiming</h5>
+<div class="paragraph">
+<p>The reclaim policy for a PersistentVolume tells the cluster what to do with it after it has been released of its claim,  which can either be Retained or Deleted.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="persistentvolume-deletion-protection-finalizer">2.4.1.6. PersistentVolume deletion protection finalizer</h5>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.23 [alpha]</p>
+</div>
+<div class="paragraph">
+<p>Finalizers can be added on a PersistentVolume to ensure that PersistentVolumes having Delete reclaim policy are deleted only after the backing storage are deleted.</p>
+</div>
+<div class="paragraph">
+<p>The newly introduced finalizers <code>kubernetes.io/pv-controller</code> and <code>external-provisioner.volume.kubernetes.io/finalizer</code> are only added to dynamically provisioned volumes.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The finalizer <code>kubernetes.io/pv-controller</code> is added to in-tree plugin volumes.</p>
+</li>
+<li>
+<p>The finalizer <code>external-provisioner.volume.kubernetes.io/finalizer</code> is added for CSI volumes.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="reserving-a-persistentvolume">2.4.1.7. Reserving a PersistentVolume</h5>
+<div class="paragraph">
+<p>If you want a PVC to bind to a specific PV, you need to pre-bind them.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By specifying a PersistentVolume in a PersistentVolumeClaim, you declare a binding between that specific PV and PVC.</p>
+</li>
+<li>
+<p>If the PersistentVolume exists and has not reserved PersistentVolumeClaims through its <code>claimRef</code> field, then the PersistentVolume and PersistentVolumeClaim will be bound.</p>
+</li>
+<li>
+<p>The binding happens regardless of some volume matching criteria, including node affinity.</p>
+<div class="paragraph">
+<p>The control plane still checks that storage class, access modes, and requested storage size are valid.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolumeClaim</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">foo-pvc</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">foo</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="c1"># Empty string must be explicitly set otherwise default StorageClass will be set.</span>
+  <span class="na">storageClassName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+  <span class="na">volumeName</span><span class="pi">:</span> <span class="s">foo-pv</span>
+  <span class="s">...</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolume</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">foo-pv</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">storageClassName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+  <span class="na">claimRef</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">foo-pvc</span>
+    <span class="na">namespace</span><span class="pi">:</span> <span class="s">foo</span>
+  <span class="s">...</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="expanding-persistent-volumes-claims">2.4.1.8. Expanding Persistent Volumes Claims</h5>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.24 [stable]</p>
+</div>
+<div class="paragraph">
+<p>To request a larger volume for a PVC, edit the PVC object and specify a larger size. This triggers expansion of the volume that backs the underlying PersistentVolume. A new PersistentVolume is never created to satisfy the claim. Instead, an existing volume is resized.</p>
+</div>
+<div class="paragraph">
+<p>You can only expand a PVC if its storage class&#8217;s <code>allowVolumeExpansion</code> field is set to true.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="claims-as-volumes">2.4.2. Claims As Volumes</h4>
+<div class="paragraph">
+<p>Pods access storage by using the claim as a volume.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Claims must exist in the same namespace as the Pod using the claim.</p>
+</li>
+<li>
+<p>The cluster finds the claim in the Pod&#8217;s namespace and uses it to get the PersistentVolume backing the claim.</p>
+</li>
+<li>
+<p>The volume is then mounted to the host and into the Pod.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="raw-block-volume-support">2.4.3. Raw Block Volume Support</h4>
+<div class="paragraph">
+<p>FEATURE STATE: Kubernetes v1.18 [stable]</p>
+</div>
+<div class="paragraph">
+<p>The following volume plugins support raw block volumes, including dynamic provisioning where applicable:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>CSI</p>
+</li>
+<li>
+<p>FC (Fibre Channel)</p>
+</li>
+<li>
+<p>iSCSI</p>
+</li>
+<li>
+<p>Local volume</p>
+</li>
+<li>
+<p>OpenStack Cinder</p>
+</li>
+<li>
+<p>RBD (deprecated)</p>
+</li>
+<li>
+<p>RBD (Ceph Block Device; deprecated)</p>
+</li>
+<li>
+<p>VsphereVolume</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolume</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">block-pv</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">accessModes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">ReadWriteOnce</span>
+  <span class="na">capacity</span><span class="pi">:</span>
+    <span class="na">storage</span><span class="pi">:</span> <span class="s">5Gi</span>
+  <span class="na">local</span><span class="pi">:</span>
+    <span class="na">path</span><span class="pi">:</span> <span class="s">/dev/sdb</span>
+  <span class="na">nodeAffinity</span><span class="pi">:</span>
+    <span class="na">required</span><span class="pi">:</span>
+      <span class="na">nodeSelectorTerms</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">matchExpressions</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">node.local.io/block-storage</span>
+          <span class="na">operator</span><span class="pi">:</span> <span class="s">In</span>
+          <span class="na">values</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s">local</span>
+  <span class="na">persistentVolumeReclaimPolicy</span><span class="pi">:</span> <span class="s">Retain</span>
+  <span class="na">storageClassName</span><span class="pi">:</span> <span class="s">local-storage</span>
+  <span class="na">volumeMode</span><span class="pi">:</span> <span class="s">Block</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolumeClaim</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">block-pvc</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">accessModes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">ReadWriteOnce</span>
+  <span class="na">resources</span><span class="pi">:</span>
+    <span class="na">limits</span><span class="pi">:</span>
+      <span class="na">storage</span><span class="pi">:</span> <span class="s">5Gi</span>
+    <span class="na">requests</span><span class="pi">:</span>
+      <span class="na">storage</span><span class="pi">:</span> <span class="s">5Gi</span>
+  <span class="na">storageClassName</span><span class="pi">:</span> <span class="s">local-storage</span>
+  <span class="na">volumeMode</span><span class="pi">:</span> <span class="s">Block</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">pod-with-block-volume</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">busybox</span>
+      <span class="na">image</span><span class="pi">:</span> <span class="s">busybox:stable</span>
+      <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/sh"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-c"</span><span class="pi">]</span>
+      <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">tail</span><span class="nv"> </span><span class="s">-f</span><span class="nv"> </span><span class="s">/dev/null"</span> <span class="pi">]</span>
+      <span class="na">volumeDevices</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">data</span>
+          <span class="na">devicePath</span><span class="pi">:</span> <span class="s">/dev/xvda</span>
+  <span class="na">volumes</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">data</span>
+      <span class="na">persistentVolumeClaim</span><span class="pi">:</span>
+        <span class="na">claimName</span><span class="pi">:</span> <span class="s">block-pvc</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="gp">$</span><span class="w"> </span>lsblk
+<span class="go">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0    7:0    0   10G  0 loop
+sda      8:0    0  100G  0 disk
+└─sda1   8:1    0  100G  0 part /
+sdb      8:16   0   10G  0 disk
+</span><span class="gp">$</span><span class="w"> </span>kubectl get storageclasses.storage.k8s.io local-storage
+<span class="go">NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-storage   kubernetes.io/no-provisioner   Delete          WaitForFirstConsumer   false                  3d11h</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="csi-storage-drivers-on-azure-kubernetes-service-aks">3. CSI Storage Drivers on Azure Kubernetes Service (AKS)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Container Storage Interface (CSI) is a standard for exposing arbitrary block and file storage systems to containerized workloads on Kubernetes.</p>
+</div>
+<div class="paragraph">
+<p>By adopting and using CSI, Azure Kubernetes Service (AKS) can write, deploy, and iterate plug-ins to expose new or improve existing storage systems in Kubernetes without having to touch the core Kubernetes code and wait for its release cycles. <a href="#azure-aks-csi-storage-drivers">[6]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/azure/aks/media/concepts-storage/aks-storage-options.png" alt="Storage options for applications in an Azure Kubernetes Services (AKS) cluster" width="35%" height="35%">
+</div>
+</div>
+<div class="paragraph">
+<p>A PersistentVolumeClaim requests storage of a particular StorageClass, access mode, and size. The Kubernetes API server can dynamically provision the underlying Azure storage resource if no existing resource can fulfill the claim based on the defined StorageClass.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/azure/aks/media/concepts-storage/persistent-volume-claims.png" alt="Persistent volume claims in an Azure Kubernetes Services (AKS) cluster" width="45%" height="45%">
+</div>
+</div>
+<div class="paragraph">
+<p>The CSI storage driver support on AKS allows you to natively use:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/azure/aks/azure-disk-csi">Azure Disks</a> can be used to create a Kubernetes DataDisk resource.</p>
+<div class="paragraph">
+<p>Disks can use Azure Premium Storage, backed by high-performance SSDs, or Azure Standard Storage, backed by regular HDDs or Standard SSDs. For most production and development workloads, use Premium Storage.</p>
+</div>
+<div class="paragraph">
+<p>Azure Disks are mounted as <em>ReadWriteOnce</em> and are only available to one node in AKS. For storage volumes that can be accessed by multiple nodes simultaneously, use Azure Files.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">kind</span><span class="pi">:</span> <span class="s">StorageClass</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">storage.k8s.io/v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">azuredisk-csi-waitforfirstconsumer</span>
+<span class="na">provisioner</span><span class="pi">:</span> <span class="s">disk.csi.azure.com</span>
+<span class="na">parameters</span><span class="pi">:</span>
+  <span class="na">skuname</span><span class="pi">:</span> <span class="s">StandardSSD_LRS</span>
+<span class="na">allowVolumeExpansion</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">reclaimPolicy</span><span class="pi">:</span> <span class="s">Delete</span>
+<span class="na">volumeBindingMode</span><span class="pi">:</span> <span class="s">WaitForFirstConsumer</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/azure/aks/azure-files-csi">Azure Files</a> can be used to mount an SMB 3.0/3.1 share backed by an Azure storage account to pods.</p>
+<div class="paragraph">
+<p>With Azure Files, you can share data across multiple nodes and pods.</p>
+</div>
+<div class="paragraph">
+<p>Azure Files can use Azure Standard storage backed by regular HDDs or Azure Premium storage backed by high-performance SSDs.</p>
+</div>
+</li>
+<li>
+<p><a href="https://learn.microsoft.com/en-us/azure/aks/azure-blob-csi">Azure Blob storage</a> can be used to mount Blob storage (or object storage) as a file system into a container or pod.</p>
+<div class="paragraph">
+<p>Using Blob storage enables your cluster to support applications that work with large unstructured datasets like log file data, images or documents, HPC, and others.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, if you ingest data into Azure Data Lake storage, you can directly mount and use it in AKS without configuring another interim filesystem.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="referenes">Referenes</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="docker-storagedriver"></a>[1] <a href="https://docs.docker.com/storage/storagedriver/" class="bare">https://docs.docker.com/storage/storagedriver/</a></p>
+</li>
+<li>
+<p><a id="docker-storage-containerd"></a>[2] <a href="https://docs.docker.com/storage/containerd/" class="bare">https://docs.docker.com/storage/containerd/</a></p>
+</li>
+<li>
+<p><a id="docker-storage"></a>[3] <a href="https://docs.docker.com/storage/" class="bare">https://docs.docker.com/storage/</a></p>
+</li>
+<li>
+<p><a id="kube-storage-volumes"></a>[4] <a href="https://kubernetes.io/docs/concepts/storage/volumes/" class="bare">https://kubernetes.io/docs/concepts/storage/volumes/</a></p>
+</li>
+<li>
+<p><a id="kube-storage-classes"></a>[5] <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/" class="bare">https://kubernetes.io/docs/concepts/storage/storage-classes/</a></p>
+</li>
+<li>
+<p><a id="kube-persistent-volumes"></a>[6] <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/" class="bare">https://kubernetes.io/docs/concepts/storage/persistent-volumes/</a></p>
+</li>
+<li>
+<p><a id="azure-aks-csi-storage-drivers"></a>[6] <a href="https://learn.microsoft.com/en-us/azure/aks/csi-storage-drivers" class="bare">https://learn.microsoft.com/en-us/azure/aks/csi-storage-drivers</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

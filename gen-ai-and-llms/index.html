@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>AI and Large Language Models | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AI and Large Language Models" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="1. What is AI? 1.1. Machine Learning 1.2. Computer Vision 1.3. Natural language processing (NLP) 1.4. Document Intelligence 1.5. Knowledge Mining 1.6. Generative AI? 2. Large language models 2.1. Transformer models 2.1.1. Tokenization 2.1.2. Embeddings 2.1.3. Attention 3. What is Azure OpenAI? 3.1. Models 3.2. Prompts &amp; completions 3.3. Tokens 3.4. Prompt engineering 3.5. RAG (Retrieval Augmented Generation) 3.6. Fine-tuning 3.7. Chat Completions vs. Completions 3.8. Code generation Appendix A: FAQ A.1. Large Language Model (LLM) Platforms: A Comparison A.2. How does RAG work like GPT, Gemini, ERNIE? A.3. What&#8217;s vector search and embedding? A.3.1. What&#8217;s its relationship with LLM,…" />
+<meta name="twitter:description" property="og:description" content="1. What is AI? 1.1. Machine Learning 1.2. Computer Vision 1.3. Natural language processing (NLP) 1.4. Document Intelligence 1.5. Knowledge Mining 1.6. Generative AI? 2. Large language models 2.1. Transformer models 2.1.1. Tokenization 2.1.2. Embeddings 2.1.3. Attention 3. What is Azure OpenAI? 3.1. Models 3.2. Prompts &amp; completions 3.3. Tokens 3.4. Prompt engineering 3.5. RAG (Retrieval Augmented Generation) 3.6. Fine-tuning 3.7. Chat Completions vs. Completions 3.8. Code generation Appendix A: FAQ A.1. Large Language Model (LLM) Platforms: A Comparison A.2. How does RAG work like GPT, Gemini, ERNIE? A.3. What&#8217;s vector search and embedding? A.3.1. What&#8217;s its relationship with LLM,…" />
+<link rel="canonical" href="https://blog.codefarm.me/gen-ai-and-llms/" />
+<meta property="og:url" content="https://blog.codefarm.me/gen-ai-and-llms/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-05-06T09:03:40+08:00" />
+<meta property="article:modified_time" content="2024-05-06T09:03:40+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="AI and Large Language Models" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-05-06T09:03:40+08:00","datePublished":"2024-05-06T09:03:40+08:00","description":"1. What is AI? 1.1. Machine Learning 1.2. Computer Vision 1.3. Natural language processing (NLP) 1.4. Document Intelligence 1.5. Knowledge Mining 1.6. Generative AI? 2. Large language models 2.1. Transformer models 2.1.1. Tokenization 2.1.2. Embeddings 2.1.3. Attention 3. What is Azure OpenAI? 3.1. Models 3.2. Prompts &amp; completions 3.3. Tokens 3.4. Prompt engineering 3.5. RAG (Retrieval Augmented Generation) 3.6. Fine-tuning 3.7. Chat Completions vs. Completions 3.8. Code generation Appendix A: FAQ A.1. Large Language Model (LLM) Platforms: A Comparison A.2. How does RAG work like GPT, Gemini, ERNIE? A.3. What&#8217;s vector search and embedding? A.3.1. What&#8217;s its relationship with LLM,…","headline":"AI and Large Language Models","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/gen-ai-and-llms/"},"url":"https://blog.codefarm.me/gen-ai-and-llms/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">AI and Large Language Models</h1><p class="c-post-meta">06 May 2024</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#what-is-ai">1. What is AI?</a>
+<ul class="sectlevel2">
+<li><a href="#machine-learning">1.1. Machine Learning</a></li>
+<li><a href="#computer-vision">1.2. Computer Vision</a></li>
+<li><a href="#natural-language-processing-nlp">1.3. Natural language processing (NLP)</a></li>
+<li><a href="#document-intelligence">1.4. Document Intelligence</a></li>
+<li><a href="#knowledge-mining">1.5. Knowledge Mining</a></li>
+<li><a href="#generative-ai">1.6. Generative AI?</a></li>
+</ul>
+</li>
+<li><a href="#large-language-models">2. Large language models</a>
+<ul class="sectlevel2">
+<li><a href="#transformer-models">2.1. Transformer models</a>
+<ul class="sectlevel3">
+<li><a href="#tokenization">2.1.1. Tokenization</a></li>
+<li><a href="#embeddings">2.1.2. Embeddings</a></li>
+<li><a href="#attention">2.1.3. Attention</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#what-is-azure-openai">3. What is Azure OpenAI?</a>
+<ul class="sectlevel2">
+<li><a href="#models">3.1. Models</a></li>
+<li><a href="#prompts-completions">3.2. Prompts &amp; completions</a></li>
+<li><a href="#tokens">3.3. Tokens</a></li>
+<li><a href="#prompt-engineering">3.4. Prompt engineering</a></li>
+<li><a href="#rag-retrieval-augmented-generation">3.5. RAG (Retrieval Augmented Generation)</a></li>
+<li><a href="#fine-tuning">3.6. Fine-tuning</a></li>
+<li><a href="#chat-completions-vs-completions">3.7. Chat Completions vs. Completions</a></li>
+<li><a href="#code-generation">3.8. Code generation</a></li>
+</ul>
+</li>
+<li><a href="#faq">Appendix A: FAQ</a>
+<ul class="sectlevel2">
+<li><a href="#large-language-model-llm-platforms-a-comparison">A.1. Large Language Model (LLM) Platforms: A Comparison</a></li>
+<li><a href="#how-does-rag-work-like-gpt-gemini-ernie">A.2. How does RAG work like GPT, Gemini, ERNIE?</a></li>
+<li><a href="#whats-vector-search-and-embedding">A.3. What&#8217;s vector search and embedding?</a>
+<ul class="sectlevel3">
+<li><a href="#whats-its-relationship-with-llm-like-gemini-or-gpt">A.3.1. What&#8217;s its relationship with LLM, like Gemini or GPT?</a></li>
+<li><a href="#what-are-the-popular-tools-or-databases-that-support-vector-search">A.3.2. What are the popular tools or databases that support Vector Search?</a></li>
+<li><a href="#im-new-to-search-engine-show-the-learn-path-about-vector-search">A.3.3. I&#8217;m new to search engine. show the learn path about vector search.</a></li>
+<li><a href="#should-i-also-need-to-learn-ml-and-dl">A.3.4. Should I also need to learn ML and DL?</a></li>
+<li><a href="#papers-gemini">A.3.5. Papers [Gemini]</a></li>
+<li><a href="#how-to-read-a-paper-gemini">A.3.6. How to read a paper? [Gemini]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="what-is-ai">1. What is AI?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Simply put, AI is software that imitates human behaviors and capabilities. Key workloads include: <a href="#ms-training-ai">[1]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Machine learning</strong> - This is often the foundation for an AI system, and is the way we "teach" a computer model to make predictions and draw conclusions from data.</p>
+</li>
+<li>
+<p><strong>Computer vision</strong> - Capabilities within AI to interpret the world visually through cameras, video, and images.</p>
+</li>
+<li>
+<p><strong>Natural language processing</strong> - Capabilities within AI for a computer to interpret written or spoken language, and respond in kind.</p>
+</li>
+<li>
+<p><strong>Document intelligence</strong> - Capabilities within AI that deal with managing, processing, and using high volumes of data found in forms and documents.</p>
+</li>
+<li>
+<p><strong>Knowledge mining</strong> - Capabilities within AI to extract information from large volumes of often unstructured data to create a searchable knowledge store.</p>
+</li>
+<li>
+<p><strong>Generative AI</strong> - Capabilities within AI that create original content in a variety of formats including natural language, image, code, and more.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="machine-learning">1.1. Machine Learning</h3>
+<div class="paragraph">
+<p>Machine Learning is the foundation for most AI solutions.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Since the 1950&#8217;s, researchers, often known as <em>data scientists</em>, have worked on different approaches to AI.</p>
+</li>
+<li>
+<p>Most modern applications of AI have their origins in machine learning, a branch of AI that combines <em>computer science</em> and <em>mathematics</em>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>How machine learning works?</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The answer is, from <strong>data</strong>.</p>
+<div class="paragraph">
+<p>In today&#8217;s world, we create huge volumes of data as we go about our everyday lives. From the text messages, emails, and social media posts we send to the photographs and videos we take on our phones, we generate massive amounts of information. More data still is created by millions of sensors in our homes, cars, cities, public transport infrastructure, and factories.</p>
+</div>
+</li>
+<li>
+<p>Data scientists can use all of that data to train <em>machine learning models</em> that can make predictions and inferences based on the <em>relationships</em> they find in the data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Deep learning, machine learning, and AI</strong></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://learn.microsoft.com/en-us/azure/machine-learning/media/concept-deep-learning-vs-machine-learning/ai-vs-machine-learning-vs-deep-learning.png?view=azureml-api-2" alt="Relationship diagram: AI vs. machine learning vs. deep learning" width="35%" height="35%">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="computer-vision">1.2. Computer Vision</h3>
+<div class="paragraph">
+<p>Computer Vision is an area of AI that deals with visual processing.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Image Analysis</em>: capabilities for analyzing images and video, and extracting descriptions, tags, objects, and text.</p>
+</li>
+<li>
+<p><em>Face</em>: capabilities that enable you to build face detection and facial recognition solutions.</p>
+</li>
+<li>
+<p><em>Optical Character Recognition (OCR)</em>: capabilities for extracting printed or handwritten text from images, enabling access to a digital version of the scanned text.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="natural-language-processing-nlp">1.3. Natural language processing (NLP)</h3>
+<div class="paragraph">
+<p>Natural language processing (NLP) is the area of AI that deals with creating software that understands written and spoken language.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Analyze and interpret text in documents, email messages, and other sources.</p>
+</li>
+<li>
+<p>Interpret spoken language, and synthesize speech responses.</p>
+</li>
+<li>
+<p>Automatically translate spoken or written phrases between languages.</p>
+</li>
+<li>
+<p>Interpret commands and determine appropriate actions.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="document-intelligence">1.4. Document Intelligence</h3>
+<div class="paragraph">
+<p>Document Intelligence is the area of AI that deals with managing, processing, and using high volumes of a variety of data found in forms and documents.</p>
+</div>
+<div class="paragraph">
+<p>Document intelligence enables us to create software that can automate processing for contracts, health documents, financial forms and more.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="knowledge-mining">1.5. Knowledge Mining</h3>
+<div class="paragraph">
+<p>Knowledge mining is the term used to describe solutions that involve extracting information from large volumes of often unstructured data to create a searchable knowledge store.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="generative-ai">1.6. Generative AI?</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Generative artificial intelligence (<em>generative AI</em>, GenAI, or GAI) is artificial intelligence capable of generating text, images, videos, or other data using generative models, often in response to <a href="https://en.wikipedia.org/wiki/Prompt_(natural_language)">prompts</a>.</p>
+</div>
+<div class="paragraph">
+<p>Improvements in transformer-based deep neural networks, particularly large language models (LLMs), enabled an AI boom of generative AI systems in the early 2020s. These include chatbots such as ChatGPT, Copilot, Gemini and LLaMA, text-to-image artificial intelligence image generation systems such as Stable Diffusion, Midjourney and DALL-E, and text-to-video AI generators such as Sora.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; From Wikipedia<br>
+<cite>the free encyclopedia</cite>
+</div>
+</div>
+<div class="paragraph">
+<p>Artificial Intelligence (AI) imitates human behavior by using machine learning to interact with the environment and execute tasks without explicit directions on what to output. <a href="#ms-training-generative-ai">[2]</a></p>
+</div>
+<div class="paragraph">
+<p><em>Generative AI</em> describes a category of capabilities within AI that create original content.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>People typically interact with generative AI that has been built into chat applications. One popular example of such an application is <a href="https://openai.com/chatgpt">ChatGPT</a>, a chatbot created by OpenAI, an AI research company that partners closely with Microsoft.</p>
+</li>
+<li>
+<p>Generative AI applications take in natural language input, and return appropriate responses in a variety of formats including natural language, image, code, audio, and video.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="large-language-models">2. Large language models</h2>
+<div class="sectionbody">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A <a href="https://en.wikipedia.org/wiki/Large_language_model">large language model (LLM)</a> is a computational model notable for its ability to achieve general-purpose language generation and other natural language processing tasks such as classification. Based on language models, LLMs acquire these abilities by learning statistical relationships from text documents during a computationally intensive self-supervised and semi-supervised training process. LLMs can be used for text generation, a form of generative AI, by taking an input text and repeatedly predicting the next token or word.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; From Wikipedia<br>
+<cite>the free encyclopedia</cite>
+</div>
+</div>
+<div class="paragraph">
+<p>Generative AI applications are powered by <em>large language models</em> (LLMs), which are a specialized type of machine learning model that you can use to perform natural language processing (NLP) tasks, including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Determining sentiment or otherwise classifying natural language text.</p>
+</li>
+<li>
+<p>Summarizing text.</p>
+</li>
+<li>
+<p>Comparing multiple text sources for semantic similarity.</p>
+</li>
+<li>
+<p>Generating new natural language.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="transformer-models">2.1. Transformer models</h3>
+<div class="paragraph">
+<p>Machine learning models for natural language processing have evolved over many years. Today&#8217;s cutting-edge large language models are based on the <em>transformer</em> architecture, which builds on and extends some techniques that have been proven successful in modeling vocabularies to support NLP tasks - and in particular in generating language.</p>
+</div>
+<div class="paragraph">
+<p>Transformer models are trained with large volumes of text, enabling them to represent the semantic relationships between words and use those relationships to determine <em>probable</em> sequences of text that make sense.</p>
+</div>
+<div class="paragraph">
+<p>Transformer models with a large enough vocabulary are capable of generating language responses that are tough to distinguish from human responses.</p>
+</div>
+<div class="paragraph">
+<p>Transformer model architecture consists of two components, or blocks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An <em>encoder</em> block that creates semantic representations of the training vocabulary.</p>
+</li>
+<li>
+<p>A <em>decoder</em> block that generates new language sequences.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In practice, the specific implementations of the architecture vary – for example,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <em>Bidirectional Encoder Representations from Transformers</em> (BERT) model developed by Google to support their search engine uses only the encoder block, while</p>
+</li>
+<li>
+<p>the <em>Generative Pretrained Transformer</em> (GPT) model developed by OpenAI uses only the decoder block.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="tokenization">2.1.1. Tokenization</h4>
+<div class="paragraph">
+<p>The first step in training a transformer model is to decompose the training text into <em>tokens</em> - in other words, identify each unique text value. With a sufficiently large set of training text, a vocabulary of many thousands of tokens could be compiled. For the sake of simplicity, we can think of each distinct word in the training text as a token (though in reality, tokens can be generated for partial words, or combinations of words and punctuation).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="embeddings">2.1.2. Embeddings</h4>
+<div class="paragraph">
+<p>To create a vocabulary that encapsulates semantic relationships between the tokens, we define contextual vectors, known as <em>embeddings</em>, for them.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vectors are multi-valued numeric representations of information, for example <code>[10, 3, 1]</code> in which each numeric element represents a particular attribute of the information.</p>
+</li>
+<li>
+<p>For language tokens, each element of a token&#8217;s vector represents some semantic attribute of the token.</p>
+</li>
+<li>
+<p>The specific categories for the elements of the vectors in a language model are determined during training based on how commonly words are used together or in similar contexts.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It can be useful to think of the elements in a token embedding vector as <em>coordinates</em> in multidimensional space, so that each token occupies a specific "location."</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The closer tokens are to one another along a particular dimension, the more semantically related they are.</p>
+</li>
+<li>
+<p>In other words, related words are grouped closer together.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="attention">2.1.3. Attention</h4>
+<div class="paragraph">
+<p>The <em>encoder</em> and <em>decoder</em> blocks in a transformer model include multiple layers that form the neural network for the model. One of the types of layers that is used in both blocks are <em>attention layers</em>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Attention</em> is a technique used to examine a sequence of text tokens and try to quantify the strength of the relationships between them.</p>
+</li>
+<li>
+<p>In particular, <em>self-attention</em> involves considering how other tokens around one particular token influence that token&#8217;s meaning.</p>
+</li>
+<li>
+<p>In an encoder block, each token is carefully examined in context, and an appropriate encoding is determined for its vector embedding. The vector values are based on the relationship between the token and other tokens with which it frequently appears.</p>
+</li>
+<li>
+<p>In a decoder block, attention layers are used to predict the next token in a sequence. For each token generated, the model has an attention layer that takes into account the sequence of tokens up to that point. The model considers which of the tokens are the most influential when considering what the next token should be.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Remember that the attention layer is working with numeric vector representations of the tokens, not the actual text.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In a decoder, the process starts with a sequence of token embeddings representing the text to be completed.</p>
+</li>
+<li>
+<p>During training, the goal is to predict the vector for the final token in the sequence based on the preceding tokens.</p>
+</li>
+<li>
+<p>The attention layer assigns a numeric <em>weight</em> to each token in the sequence so far. It uses that value to perform a calculation on the weighted vectors that produces an <em>attention score</em> that can be used to calculate a possible vector for the next token.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In practice, a technique called <em>multi-head attention</em> uses different elements of the embeddings to calculate multiple attention scores.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A neural network is then used to evaluate all possible tokens to determine the most probable token with which to continue the sequence.</p>
+</li>
+<li>
+<p>The process continues iteratively for each token in the sequence, with the output sequence so far being used regressively as the input for the next <em>iteration</em> – essentially building the output one token at a time.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>What all of this means, is that a transformer model such as GPT-4 (the model behind ChatGPT and Bing) is designed to take in a text input (called a <em>prompt</em>) and generate a syntactically correct output (called a <em>completion</em>).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In effect, the “magic” of the model is that it has the ability to string a coherent sentence together.</p>
+</li>
+<li>
+<p>This ability doesn&#8217;t imply any “knowledge” or “intelligence” on the part of the model; just a large vocabulary and the ability to generate meaningful sequences of words.</p>
+</li>
+<li>
+<p>What makes a large language model like GPT-4 so powerful however, is the sheer volume of data with which it has been trained (public and licensed data from the Internet) and the complexity of the network.</p>
+</li>
+<li>
+<p>This enables the model to generate completions that are based on the relationships between words in the vocabulary on which the model was trained; often generating output that is indistinguishable from a human response to the same prompt.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-azure-openai">3. What is Azure OpenAI?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Azure OpenAI Service is Microsoft&#8217;s cloud solution for deploying, customizing, and hosting large language models, which is a result of the partnership between Microsoft and OpenAI. The service combines Azure&#8217;s enterprise-grade capabilities with OpenAI&#8217;s generative AI model capabilities. <a href="#ms-training-azure-openai">[3]</a><a href="#ms-training-generative-ai-azopenai">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>Azure OpenAI is available for Azure users and consists of four components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pre-trained generative AI models</p>
+</li>
+<li>
+<p>Customization capabilities; the ability to fine-tune AI models with your own data</p>
+</li>
+<li>
+<p>Built-in tools to detect and mitigate harmful use cases so users can implement AI responsibly</p>
+</li>
+<li>
+<p>Enterprise-grade security with role-based access control (RBAC) and private networks</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Azure OpenAI Service provides REST API access to OpenAI&#8217;s powerful language models which can be easily adapted to specific task including but not limited to content generation, summarization, image understanding, semantic search, and natural language to code translation. Users can access the service through REST APIs, Python SDK, or web-based interface in the Azure OpenAI Studio. <a href="#ms-az-oai-overview">[6]</a></p>
+</div>
+<div class="sect2">
+<h3 id="models">3.1. Models</h3>
+<div class="paragraph">
+<p>Azure OpenAI supports many models that can serve different needs. These models include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>GPT-4 models</strong> are the latest generation of <em>generative pretrained</em> (GPT) models that can generate natural language and code completions based on natural language prompts.</p>
+<div class="paragraph">
+<p>The latest most capable Azure OpenAI models, <strong>GPT-4 Turbo</strong>, is a large <em>multimodal</em> model (accepting text or image inputs and generating text) that can solve difficult problems with greater accuracy than any of OpenAI&#8217;s previous models. <a href="#ms-az-oai-models">[5]</a></p>
+</div>
+</li>
+<li>
+<p><strong>GPT 3.5 models</strong> can generate natural language and code completions based on natural language prompts.</p>
+<div class="paragraph">
+<p>In particular, <strong>GPT-35-turbo models</strong> are optimized for chat-based interactions and work well in most generative AI scenarios.</p>
+</div>
+</li>
+<li>
+<p><strong>Embeddings models</strong> convert text into numeric vectors, and are useful in language analytics scenarios such as comparing text sources for similarities.</p>
+</li>
+<li>
+<p><strong>DALL-E (/ˈdɑːli/) models</strong> are used to generate images based on natural language prompts.</p>
+</li>
+<li>
+<p><strong>Whisper models</strong> can be used for speech to text. <a href="#ms-az-oai-models">[5]</a></p>
+</li>
+<li>
+<p><strong>Text to speech models</strong>, currently in preview, can be used to synthesize text to speech. <a href="#ms-az-oai-models">[5]</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="prompts-completions">3.2. Prompts &amp; completions</h3>
+<div class="paragraph">
+<p>The completions endpoint is the core component of the API service which provides access to the model&#8217;s text-in, text-out interface. Users simply need to provide an input prompt containing the English text command, and the model will generate a text completion. <a href="#ms-az-oai-overview">[6]</a></p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s an example of a simple prompt and completion:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Prompt: """ count to 5 in a for loop """</p>
+</div>
+<div class="paragraph">
+<p>Completion: for i in range(1, 6): print(i)</p>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tokens">3.3. Tokens</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Text tokens <a href="#ms-az-oai-overview">[6]</a></p>
+<div class="paragraph">
+<p>Azure OpenAI processes text by breaking it down into tokens. Tokens can be words or just chunks of characters. For example, the word “hamburger” gets broken up into the tokens “ham”, “bur” and “ger”, while a short and common word like “pear” is a single token. Many tokens start with a whitespace, for example “ hello” and “ bye”.</p>
+</div>
+<div class="paragraph">
+<p>The total number of tokens processed in a given request depends on the length of your input, output and request parameters. The quantity of tokens being processed will also affect your response latency and throughput for the models.</p>
+</div>
+</li>
+<li>
+<p>Image tokens (GPT-4 Turbo with Vision)</p>
+<div class="paragraph">
+<p>The token cost of an input image depends on two main factors: the size of the image and the detail setting (low or high) used for each image.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="prompt-engineering">3.4. Prompt engineering</h3>
+<div class="paragraph">
+<p>The GPT-3, GPT-3.5 and GPT-4 models from OpenAI are prompt-based. With <em>prompt-based models</em>, the user interacts with the model by entering a text prompt, to which the model responds with a text completion. This completion is the model’s continuation of the input text. <a href="#ms-az-oai-overview">[6]</a></p>
+</div>
+<div class="paragraph">
+<p>While these models are extremely powerful, their behavior is also very sensitive to the prompt, that makes <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering">prompt engineering</a> an important skill to develop.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering">Prompt engineering</a> is a technique that is both art and science, which involves designing prompts for generative AI models, that utilizes in-context learning (zero shot and few shot) and, with iteration, improves accuracy and relevancy in responses, optimizing the performance of the model. <a href="#ms-az-oai-customizing-llms">[7]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Note that with the <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chatgpt">Chat Completion API</a> few-shot learning examples are typically added to the messages array in the form of example user/assistant interactions after the initial system message. <a href="#ms-az-oai-prompt-engineering">[8]</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Prompt construction can be difficult. In practice, the prompt acts to configure the model weights to complete the desired task, but it&#8217;s more of an art than a science, often requiring experience and intuition to craft a successful prompt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rag-retrieval-augmented-generation">3.5. RAG (Retrieval Augmented Generation)</h3>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/azure/ai-studio/concepts/retrieval-augmented-generation">RAG (Retrieval Augmented Generation)</a> is a method that integrates external data into a Large Language Model prompt to generate relevant responses. <a href="#ms-az-oai-customizing-llms">[7]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It is particularly beneficial when using a large corpus of unstructured text based on different topics.</p>
+</li>
+<li>
+<p>It allows for answers to be grounded in the organization’s knowledge base (KB), providing a more tailored and accurate response.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>RAG is also advantageous when answering questions based on an organization’s private data or when the public data that the model was trained on might have become outdated, that helps ensure that the responses are always up-to-date and relevant, regardless of the changes in the data landscape.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fine-tuning">3.6. Fine-tuning</h3>
+<div class="paragraph">
+<p><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/fine-tuning-considerations">Fine-tuning</a>, specifically supervised fine-tuning in this context, is an iterative process that adapts an existing large language model to a provided training set in order to improve performance, teach the model new skills, or reduce latency. <a href="#ms-az-oai-customizing-llms">[7]</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="chat-completions-vs-completions">3.7. Chat Completions vs. Completions</h3>
+<div class="paragraph">
+<p>The <a href="https://platform.openai.com/docs/guides/text-generation/chat-completions-api">Chat Completions</a> format was designed specifically for multi-turn conversations, but can be made similar to the <a href="https://platform.openai.com/docs/guides/text-generation/completions-api">completions</a> format for nonchat scenarios by constructing a request using a single user message. For example, one can translate from English to French with the following completions prompt: <a href="#ms-az-oai-chatgpt">[9]</a><a href="#oai-chat-completions">[10]</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">Translate the following English text to French: "{text}"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And an equivalent chat prompt would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="txt">[{"role": "user", "content": 'Translate the following English text to French: "{text}"'}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Likewise, the completions API can be used to simulate a chat between a user and an assistant by formatting the input accordingly.</p>
+</div>
+<div class="paragraph">
+<p>The difference between these APIs is the underlying models that are available in each.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top">Model families</th>
+<th class="tableblock halign-left valign-top">API endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Newer models (2023–)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gpt-4, gpt-4-turbo-preview, gpt-3.5-turbo</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://api.openai.com/v1/chat/completions" class="bare">https://api.openai.com/v1/chat/completions</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updated LEGACY models (2023)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gpt-3.5-turbo-instruct, babbage-002, davinci-002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://api.openai.com/v1/completions" class="bare">https://api.openai.com/v1/completions</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">OpenAI Chat Completions API</div>
+<div class="paragraph">
+<p>Chat models take a list of messages as input and return a model-generated message as output. Although the chat format is designed to make <em>multi-turn</em> conversations easy, it’s just as useful for <em>single-turn</em> tasks without any conversation.</p>
+</div>
+<div class="paragraph">
+<p>An example Chat Completions API call looks like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl https://api.openai.com/v1/chat/completions <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$OPENAI_API_KEY</span><span class="s2">"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "Who won the world series in 2020?"
+      },
+      {
+        "role": "assistant",
+        "content": "The Los Angeles Dodgers won the World Series in 2020."
+      },
+      {
+        "role": "user",
+        "content": "Where was it played?"
+      }
+    ]
+  }'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An example Chat Completions API response looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"choices"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"finish_reason"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stop"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The 2020 World Series was played in Texas at Globe Life Field in Arlington."</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"logprobs"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1677664795</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"chatcmpl-7QyqpwdfhqwajicIEznoc6Q47XAyW"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gpt-3.5-turbo-0613"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"chat.completion"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"usage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"completion_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">17</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"prompt_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">57</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"total_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">74</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To learn more, you can view the full <a href="https://platform.openai.com/docs/api-reference/chat">API reference documentation</a> for the Chat API.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Azure OpenAI Chat Completions API</div>
+<div class="paragraph">
+<p>An example Chat Completions API in Azure OpenAI call looks like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="sh">curl https://YOUR_ENDPOINT_NAME.openai.azure.com/openai/deployments/YOUR_DEPLOYMENT_NAME/chat/completions?api-version<span class="o">=</span>2023-03-15-preview <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"api-key: YOUR_API_KEY"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{"messages":[{"role": "system", "content": "You are a helpful assistant, teaching people about AI."},
+{"role": "user", "content": "Does Azure OpenAI support multiple languages?"},
+{"role": "assistant", "content": "Yes, Azure OpenAI supports several languages, and can translate between them."},
+{"role": "user", "content": "Do other Azure AI Services support translation too?"}]}'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The response from the API will be similar to the following JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"chatcmpl-6v7mkQj980V1yBec6ETrKPRqFjNw9"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"object"</span><span class="p">:</span><span class="w"> </span><span class="s2">"chat.completion"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1679001781</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gpt-35-turbo"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"usage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"prompt_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">95</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"completion_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">84</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"total_tokens"</span><span class="p">:</span><span class="w"> </span><span class="mi">179</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"choices"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Yes, other Azure AI Services also support translation. Azure AI Services offer translation between multiple languages for text, documents, or custom translation through Azure AI Services Translator."</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"finish_reason"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stop"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To learn more, you can view the full <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/reference">Azure OpenAI Service REST API reference</a> for the Chat API.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="code-generation">3.8. Code generation</h3>
+<div class="paragraph">
+<p>GPT models are able to take natural language or code snippets and translate them into code. The OpenAI GPT models are proficient in over a dozen languages, such as C#, JavaScript, Perl, PHP, and is most capable in Python. <a href="#ms-az-oai-code-generation">[11]</a></p>
+</div>
+<div class="paragraph">
+<p>GPT models have been trained on both natural language and billions of lines of code from public repositories. The models are able to generate code from natural language instructions such as code comments, and can suggest ways to complete code functions.</p>
+</div>
+<div class="paragraph">
+<p>Part of the training data for GPT-3 included programming languages, so it&#8217;s no surprise that GPT models can answer programming questions if asked. What&#8217;s unique about the <em>Codex model family</em> is that it&#8217;s more capable across more languages than GPT models.</p>
+</div>
+<div class="paragraph">
+<p>OpenAI partnered with GitHub to create <em>GitHub Copilot</em>, which they call an AI pair programmer. GitHub Copilot integrates the power of OpenAI Codex into a plugin for developer environments like Visual Studio Code.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="faq">Appendix A: FAQ</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="large-language-model-llm-platforms-a-comparison">A.1. Large Language Model (LLM) Platforms: A Comparison</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. WARNING: Generated by Google Gemini.</caption>
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1112%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Platform</th>
+<th class="tableblock halign-left valign-top">Model Families</th>
+<th class="tableblock halign-left valign-top">Representative Products</th>
+<th class="tableblock halign-left valign-top">Key Features</th>
+<th class="tableblock halign-left valign-top">RAG Functionality</th>
+<th class="tableblock halign-left valign-top">Pros</th>
+<th class="tableblock halign-left valign-top">Cons</th>
+<th class="tableblock halign-left valign-top">Documentation Quality</th>
+<th class="tableblock halign-left valign-top">Supported SDKs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenAI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GPT-n (e.g., GPT-3, GPT-4+)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ChatGPT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text generation, translation, writing different creative text formats, code generation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited (integrations in progress)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Powerful text generation, user-friendly interface (ChatGPT)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited control over factual accuracy, potential for bias in outputs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Python, Node.js</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Azure OpenAI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GPT-n (based on OpenAI)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Azure OpenAI Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Similar to OpenAI&#8217;s offerings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integrated with Azure AI Search for retrieval-augmented generation (RAG)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Easy integration with Azure services, access to Microsoft&#8217;s computing power</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited control over model (based on OpenAI&#8217;s offerings), potential for bias in outputs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Python, Java, C#, JavaScript</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Google AI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LaMDA, PaLM, T5, Gemini (Bard)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LaMDA, Gemini (Bard)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text generation, translation, question answering, chatbot interactions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not publicly available for RAG integration</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Powerful for various tasks (PaLM), focus on conversational abilities (LaMDA, Gemini)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited public access to some models (e.g., PaLM), potential for bias in outputs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Python, Java</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Meta</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BlenderBot 3, Jurassic-1 Jumbo, Llama</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BlenderBot 3, Llama</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus on chatbots, strong performance in benchmarks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not currently available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Promising for chatbots, good benchmark performance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited public information on model capabilities, potential for bias in outputs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Python (PyTorch Hub)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anthropic</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Claude 3 (various models)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">N/A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus on safety and responsible use, multiple models for various tasks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not publicly available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strong focus on safety and ethical considerations</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited public access, early development stage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not publicly available yet</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alibaba DashScope</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Proprietary models + Third-party models (limited info)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tongyi Qianwen, Ali NLG</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text generation, machine translation, NLP tasks (limited public info)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not publicly available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus on domestic market, potential for customization, third-party model support</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited transparency on models and capabilities, potential for language bias</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low (limited public info)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java, Python (limited information available)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Baidu Qianfan</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ERNIE (Wénxīn Yīyán) + Third-party models (limited info)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Baidu Qianfan (text generation, translation, code generation, chatbot interactions)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text generation, translation, code generation, chatbot interactions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not directly supported (potential internal solutions for information retrieval)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Powerful models (WuDao 2.0), user-friendly interface (Qianfan), third-party model support</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited public information on RAG implementation, potential for bias in outputs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Python, Java, Go, Node.js</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Huawei Pangu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Proprietary models</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(no public product yet)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus on three-layer architecture: foundational LLM, industry-specific models, scenario-specific models</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not applicable (no public product)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus on customization for specific industries and use cases (based on announcements)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited public information on capabilities, early access might be restricted</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not applicable (no public product)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not applicable (no public product yet)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="how-does-rag-work-like-gpt-gemini-ernie">A.2. How does RAG work like GPT, Gemini, ERNIE?</h3>
+<div class="paragraph">
+<p>RAG (Retrieval-Augmented Generation) differs fundamentally from large language models (LLMs) like GPT, Gemini, ERNIE, and others in its approach to generating text. Here&#8217;s a breakdown:</p>
+</div>
+<div class="paragraph">
+<p><strong>LLMs (GPT, Gemini, ERNIE):</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Function</strong>: LLMs are trained on massive amounts of text data. This allows them to learn complex statistical relationships between words and phrases. When given a prompt or query, they use this knowledge to generate text that is statistically similar to the text they were trained on.</p>
+</li>
+<li>
+<p><strong>Process</strong>: Here&#8217;s a simplified view of how LLMs work:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>Input</strong>: You provide a prompt or question.</p>
+</li>
+<li>
+<p><strong>Internal Representation</strong>: The LLM converts the input into an internal representation, like a series of numbers.</p>
+</li>
+<li>
+<p><strong>Prediction</strong>: The LLM predicts the next word or phrase in the sequence based on the internal representation and its knowledge of language patterns.</p>
+</li>
+<li>
+<p><strong>Output</strong>: The LLM continues predicting words or phrases, building a coherent text response based on the prompt or question.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Focus</strong>: LLMs excel at generating different creative text formats, translating languages, writing different kinds of creative content, and answering your questions in an informative way. They rely solely on their internal knowledge base for generating text.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>RAG (Retrieval-Augmented Generation):</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Function</strong>: RAG combines retrieval techniques with LLM capabilities. It retrieves relevant information from an external source (like a search engine or document database) and feeds that information to an LLM for text generation.</p>
+</li>
+<li>
+<p><strong>Process</strong>: Here&#8217;s a simplified view of how RAG works:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>Input</strong>: You provide a prompt or question.</p>
+</li>
+<li>
+<p><strong>Retrieval System</strong>: An information retrieval system searches for relevant documents or information based on the prompt.</p>
+</li>
+<li>
+<p><strong>Information Extraction</strong>: Key information from the retrieved documents is extracted.</p>
+</li>
+<li>
+<p><strong>Feeding the LLM</strong>: The prompt, along with the extracted information, is fed to an LLM.</p>
+</li>
+<li>
+<p><strong>Text Generation</strong>: The LLM uses the prompt and extracted information to generate a text response.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><strong>Focus</strong>: RAG aims to improve the factual accuracy and grounding of the generated text by incorporating external information. It&#8217;s particularly valuable for tasks where access to relevant information is crucial.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Key Differences:</strong></p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a table summarizing the key differences:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 75%;">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Feature</th>
+<th class="tableblock halign-left valign-top">LLM (GPT, Gemini, ERNIE)</th>
+<th class="tableblock halign-left valign-top">RAG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data Source</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Massive text corpus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External source (search engine, document database) + LLM&#8217;s internal knowledge</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Information Retrieval</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Focus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Statistical similarity, fluency</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Factual accuracy, grounding</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In essence, LLMs are self-contained text generation machines, while RAG leverages external information to enhance the quality of the generated text.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="whats-vector-search-and-embedding">A.3. What&#8217;s vector search and embedding?</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Feature</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full-Text Search</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keyword Search</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vector Search</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Search Method</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scans entire document content</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches specific keywords</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses vector embeddings for semantic similarity</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strengths</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">More comprehensive, finds documents with similar meaning</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Simple, fast</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Finds similar data points even without exact keywords</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Weaknesses</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less efficient for large datasets, might return irrelevant results</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Misses relevant documents with different phrasing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires complex infrastructure, computationally expensive (large datasets)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ideal Use Cases</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Searching large document collections, finding documents related to a topic</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Finding documents with specific terminology</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Efficient search for similar data points (documents, images) based on meaning</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Vector search and embedding are two techniques that work together to efficiently search through large amounts of data, particularly textual data. Here&#8217;s a breakdown of each concept:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Vector Embedding</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Imagine representing data points (like words, documents, images) as points in a high-dimensional space.</p>
+</li>
+<li>
+<p>Vector embedding is the process of converting these data points into numerical vectors that capture their semantic meaning and relationships.</p>
+</li>
+<li>
+<p>These vectors are like unique fingerprints that encode the essence of the data point.</p>
+</li>
+<li>
+<p>Techniques like word2vec, GloVe, and transformers are used to create these embeddings.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Vector Search</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Once you have data points converted into vectors, you can perform vector search.</p>
+</li>
+<li>
+<p>This involves comparing a query vector (an embedding of your search term) to the document vectors in your collection.</p>
+</li>
+<li>
+<p>The documents whose vectors are closest to the query vector are considered the most relevant results.</p>
+</li>
+<li>
+<p>Vector search algorithms like cosine similarity are used to measure the closeness between vectors.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Benefits of using vector search and embedding:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Efficiency</strong>: Compared to traditional keyword search, vector search can find similar data points much faster, especially for large datasets.</p>
+</li>
+<li>
+<p><strong>Semantic understanding</strong>: Vector search goes beyond exact keyword matches and retrieves results based on meaning and context.</p>
+</li>
+<li>
+<p><strong>Handling synonyms and variations</strong>: Similar words or phrases with different wording will have close vectors, allowing for broader and more relevant searches.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Applications of vector search and embedding:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Search engines</strong>: Can improve search results by finding semantically similar documents, even if they don&#8217;t contain the exact keywords.</p>
+</li>
+<li>
+<p><strong>Recommendation systems</strong>: Recommend products, articles, or music similar to what a user has liked in the past.</p>
+</li>
+<li>
+<p><strong>Chatbots and virtual assistants</strong>: Understand the user&#8217;s intent better and provide more relevant responses.</p>
+</li>
+<li>
+<p><strong>Anomaly detection</strong>: Identify data points that deviate significantly from the norm, potentially indicating fraud or errors.</p>
+</li>
+<li>
+<p><strong>Image retrieval</strong>: Find similar images based on their content, not just their filenames or captions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s an analogy to understand it better:</p>
+</div>
+<div class="paragraph">
+<p>Imagine a library with books on various topics. Traditional keyword search is like looking for a specific book title. Vector search and embedding are like browsing the library by genre or topic. You can find relevant books even if they don&#8217;t have the exact keywords you were looking for.</p>
+</div>
+<div class="sect3">
+<h4 id="whats-its-relationship-with-llm-like-gemini-or-gpt">A.3.1. What&#8217;s its relationship with LLM, like Gemini or GPT?</h4>
+<div class="paragraph">
+<p>LLMs (Large Language Models) like Gemini and GPT-3 are a powerful tool for generating text, translating languages, writing different kinds of creative content, and answering your questions in an informative way. However, they  primarily focus on processing and understanding the meaning of text data itself.</p>
+</div>
+<div class="paragraph">
+<p>Vector search and embedding, on the other hand, are complementary techniques that help LLMs find and retrieve relevant information more efficiently. Here&#8217;s how they relate:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Finding the data</strong>: LLMs are excellent at understanding and processing textual information. But when it comes to finding specific data points within a vast collection, they can be less efficient. This is where vector search comes in.</p>
+</li>
+<li>
+<p><strong>Embeddings bridge the gap</strong>: Vector embeddings act as a bridge between the textual world that LLMs understand and the numerical world of vector search. By converting text data (documents, queries) into numerical vectors, vector search algorithms can efficiently find similar data points based on their semantic meaning.</p>
+</li>
+<li>
+<p><strong>LLMs leverage the results</strong>: Once a vector search retrieves the most relevant data points (documents, articles, code) based on the query, the LLM can take over. It can process the retrieved information, analyze it in detail and provide a comprehensive answer or complete the task at hand.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Analogy:</p>
+</div>
+<div class="paragraph">
+<p>Imagine you&#8217;re a researcher and you need to find information for a project. LLM is like a highly skilled assistant who understands your research topic and the kind of information you need. But, if the information is scattered across a massive library, your assistant might get overwhelmed searching through everything. Here&#8217;s where vector search comes in. It acts like a sophisticated library catalog system that can quickly point you to the most relevant books (data points) based on your research topic. With this curated list, your assistant (LLM) can then delve deeper into those resources and provide you with the insights you need.</p>
+</div>
+<div class="paragraph">
+<p>In essence, LLMs and vector search/embedding work together to create a more powerful and efficient system for processing information and retrieving relevant data.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="what-are-the-popular-tools-or-databases-that-support-vector-search">A.3.2. What are the popular tools or databases that support Vector Search?</h4>
+<div class="paragraph">
+<p>Here are some popular tools and databases that support Vector Search:</p>
+</div>
+<div class="paragraph">
+<p>Vector Databases:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Pinecone</strong>: A managed vector database service with a focus on ease of use and scalability. It offers a user-friendly interface and integrates well with various machine learning frameworks.</p>
+</li>
+<li>
+<p><strong>Milvus</strong>: An open-source vector database known for its high performance and flexibility. It supports various similarity search algorithms and offers features like multilingual search and data partitioning.</p>
+</li>
+<li>
+<p><strong>Weaviate</strong>: An open-source vector database that allows you to store not only vector embeddings but also the original data objects. This can be helpful for tasks like visualizing search results or managing metadata.</p>
+</li>
+<li>
+<p><strong>Faiss (Facebook AI Similarity Search)</strong>: A popular open-source library for efficient similarity search on GPUs and CPUs. While not a full-fledged database itself, Faiss is often used as the underlying engine for vector search functionalities within other tools.</p>
+</li>
+<li>
+<p><strong>MongoDB Atlas Vector Search</strong>: This is a managed vector search offering built on top of the popular MongoDB database platform. It allows you to leverage MongoDB&#8217;s existing functionalities for data storage and management alongside vector search capabilities.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Libraries and Tools:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ScaNN (Scalable Nearest Neighbors)</strong>: An open-source library by Google Research that offers efficient and scalable algorithms for approximate nearest neighbor search. It&#8217;s a good option for large-scale datasets where exact similarity might not be crucial.</p>
+</li>
+<li>
+<p><strong>Annoy (Approximate Nearest Neighbors Optimized for Yandex)</strong>: Another open-source library offering approximate nearest neighbor search functionality. It&#8217;s known for its memory efficiency and can be a good choice for resource-constrained environments.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Remember, this is not an exhaustive list, and new tools and databases are emerging all the time. It&#8217;s always a good idea to research and compare different options based on your specific requirements.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="im-new-to-search-engine-show-the-learn-path-about-vector-search">A.3.3. I&#8217;m new to search engine. show the learn path about vector search.</h4>
+<div class="paragraph">
+<p><strong>Learning Path for Vector Search Beginners</strong></p>
+</div>
+<div class="paragraph">
+<p>Welcome to the world of vector search!  Here&#8217;s a roadmap to guide you through the basics and get you started with this exciting technology.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 1: Grasp the Fundamentals</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Understand Text Search Limitations</strong>: Traditional search engines rely on keyword matching, which can be limiting. Start by understanding the challenges of keyword-based search, especially when dealing with synonyms, context, and variations in phrasing.</p>
+</li>
+<li>
+<p><strong>Demystify Vector Embeddings</strong>: These are the magic behind vector search! They&#8217;re numerical representations of data (text, images) that capture their meaning and relationships. Explore concepts like word2vec, GloVe, and transformers, which are techniques used to create embeddings. Resources like <a href="https://jalammar.github.io/illustrated-word2vec/" class="bare">https://jalammar.github.io/illustrated-word2vec/</a> or <a href="https://nlp.stanford.edu/projects/glove/" class="bare">https://nlp.stanford.edu/projects/glove/</a> can provide a good introduction.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Step 2: Deep Dive into Vector Search</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Explore the Core Concepts</strong>: Learn how vector search works! This involves converting queries and data points into vectors, then using algorithms like cosine similarity to find the closest matches. Resources like <a href="https://learn.microsoft.com/en-us/azure/search/vector-search-overview" class="bare">https://learn.microsoft.com/en-us/azure/search/vector-search-overview</a> or <a href="https://learn.microsoft.com/en-us/azure/search/vector-search-overview" class="bare">https://learn.microsoft.com/en-us/azure/search/vector-search-overview</a> offer good explanations.</p>
+</li>
+<li>
+<p><strong>Benefits and Applications</strong>: Discover the advantages of vector search over traditional methods. See how it&#8217;s used in search engines, recommendation systems, chatbots, anomaly detection, and image retrieval. Articles like <a href="https://www.algolia.com/blog/ai/what-is-vector-search/" class="bare">https://www.algolia.com/blog/ai/what-is-vector-search/</a> or <a href="https://engineering.fb.com/2017/03/29/data-infrastructure/faiss-a-library-for-efficient-similarity-search/" class="bare">https://engineering.fb.com/2017/03/29/data-infrastructure/faiss-a-library-for-efficient-similarity-search/</a> can be helpful.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Step 3: Explore Tools and Techniques</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Popular Vector Search Tools</strong>: Investigate some of the leading tools and databases that support vector search. This includes Pinecone, Milvus, Weaviate, Faiss, and MongoDB Atlas Vector Search. <a href="https://www.pinecone.io/" class="bare">https://www.pinecone.io/</a> offers a good starting point.</p>
+</li>
+<li>
+<p><strong>Experiment with Libraries</strong>: If you&#8217;re comfortable with coding, try out open-source libraries like ScaNN (Scalable Nearest Neighbors) or Annoy (Approximate Nearest Neighbors Optimized for Yandex). They provide efficient algorithms for vector search. Tutorials on these libraries can be found online.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Step 4: Practice and Refine</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Find a Project</strong>: Apply your newfound knowledge! Look for a small project where you can experiment with vector search. This could be building a simple search engine for documents, a recommendation system for movies, or a chatbot with improved understanding.</p>
+</li>
+<li>
+<p><strong>Refine your Skills</strong>: As you work on your project, keep learning and exploring. There are many online resources, tutorials, and communities dedicated to vector search. Don&#8217;t hesitate to seek help and feedback from experienced users.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Additional Resources:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Books</strong>: "Deep Learning with Python" by Francois Chollet (Chapter 18 covers embeddings)</p>
+</li>
+<li>
+<p><strong>Online Courses</strong>: Platforms like Coursera, edX, and Udacity might offer courses related to vector search or information retrieval.</p>
+</li>
+<li>
+<p><strong>Blogs</strong>: Many companies and research institutions working on vector search publish informative blog posts. Look for blogs from Pinecone, Milvus, Facebook AI, and Google AI.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Remember, this is a beginner-friendly path, and you can adjust it based on your interests and pace. The key is to start with the basics, explore the practical applications, and don&#8217;t be afraid to experiment!</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="should-i-also-need-to-learn-ml-and-dl">A.3.4. Should I also need to learn ML and DL?</h4>
+<div class="paragraph">
+<p>Whether you need to learn Machine Learning (ML) and Deep Learning (DL) to delve into Large Language Models (LLMs) depends on your specific goals:</p>
+</div>
+<div class="paragraph">
+<p><strong>If you want to use LLMs:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Basic understanding is helpful</strong>: Familiarizing yourself with core ML concepts like training data, evaluation metrics, and different types of models will be beneficial. You&#8217;ll encounter these terms when using or interacting with LLMs.</p>
+</li>
+<li>
+<p><strong>No need to be an expert</strong>: You don&#8217;t necessarily need to become an ML or DL expert to utilize LLMs for various tasks like text generation, translation, or writing different creative content formats. Many user-friendly LLM APIs and tools are available that don&#8217;t require in-depth knowledge of the underlying algorithms.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>If you want to build or modify LLMs:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ML &amp; DL are crucial</strong>: Understanding ML and DL is essential if you want to develop or customize LLMs. These fields provide the foundation for training and fine-tuning LLM models, as well as exploring cutting-edge research areas.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Learning Path:</strong></p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a potential learning path based on your goals:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Focus on using LLMs</strong>: Start with a basic understanding of ML through online resources, tutorials, or introductory courses. This will give you a good foundation for working with LLMs and interpreting their outputs.</p>
+</li>
+<li>
+<p><strong>Aiming to build or modify LLMs</strong>: Invest time in learning ML and DL. Numerous online courses, textbooks, and tutorials can equip you with the necessary skills.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Additional Resources:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Machine Learning Crash Course by Google</strong>: <a href="https://developers.google.com/machine-learning/crash-course" class="bare">https://developers.google.com/machine-learning/crash-course</a> (Great introduction to ML concepts)</p>
+</li>
+<li>
+<p><strong>Fast.ai Practical Deep Learning for Coders</strong>: <a href="https://course.fast.ai/" class="bare">https://course.fast.ai/</a> (Practical approach to learning DL with coding exercises)</p>
+</li>
+<li>
+<p><strong>Deep Learning Book by Ian Goodfellow, Yoshua Bengio, and Aaron Courville</strong>: <a href="https://www.deeplearningbook.org/" class="bare">https://www.deeplearningbook.org/</a> (Comprehensive textbook for in-depth DL knowledge)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Remember, the field of AI, ML, and LLMs is constantly evolving. Start with manageable goals and gradually expand your knowledge as you gain experience and confidence!</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="papers-gemini">A.3.5. Papers [Gemini]</h4>
+<div class="paragraph">
+<p>There are many research papers that can deepen your understanding of Large Language Models (LLMs).  Here&#8217;s a breakdown of how to approach learning about LLMs through research papers:</p>
+</div>
+<div class="paragraph">
+<p><strong>Start with Foundational Papers:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Attention Is All You Need (Vaswani et al., 2017)</strong>: This groundbreaking paper introduced the Transformer architecture, a core building block for many modern LLMs.</p>
+</li>
+<li>
+<p><strong>A Primer on Neural Language Processing (Jurafsky &amp; Martin, 2014)</strong>: This comprehensive textbook provides a solid foundation in NLP concepts essential for understanding LLMs.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Explore Specific LLM Implementations:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>GPT-3: Language Models are Few-Shot Learners (Brown et al., 2020)</strong>: This paper describes the capabilities and training methods behind GPT-3, a highly influential LLM.</p>
+</li>
+<li>
+<p><strong>PaLM: Scaling Language Models with Pathways (Chowdhery et al., 2022)</strong>: This paper introduces PaLM, a powerful LLM from Google AI, focusing on its training methodology and capabilities.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Delve into Specific LLM Applications:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Learning to Code with Large Language Models (Chen et al., 2021)</strong>: This paper explores how LLMs can be used for code generation and programming tasks.</p>
+</li>
+<li>
+<p><strong>Reasoning with Large Language Models (McCoy et al., 2022)</strong>: This paper delves into the challenges and potential of LLMs for reasoning and logical tasks.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Finding Resources:</strong></p>
+</div>
+<div class="paragraph">
+<p>These are just a few examples, and the specific papers you choose will depend on your interests and goals. Here are some resources to help you find relevant research papers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ArXiv</strong>: A leading repository for pre-print research papers in various fields, including NLP and AI (arxiv.org)</p>
+</li>
+<li>
+<p><strong>Google Scholar</strong>: A powerful search engine for academic publications (scholar.google.com)</p>
+</li>
+<li>
+<p><strong>AI Open Access Papers with Code (The A List)</strong>: A curated list of influential AI papers with their corresponding code (allenai.org)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Additional Tips:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Start with introductory papers</strong>: Begin with foundational papers to establish a solid understanding of core NLP concepts.</p>
+</li>
+<li>
+<p><strong>Explore blog posts and summaries</strong>: Many blogs and websites provide summaries or explanations of research papers, making them easier to digest.</p>
+</li>
+<li>
+<p><strong>Join online communities</strong>: Engage in discussions and get recommendations from other researchers or enthusiasts in online forums or communities.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Remember, the field of LLMs is evolving rapidly, so staying updated with current research is crucial. Enjoy your exploration of the fascinating world of LLMs!</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="how-to-read-a-paper-gemini">A.3.6. How to read a paper? [Gemini]</h4>
+<div class="paragraph">
+<p>Here&#8217;s a breakdown of how to effectively approach reading a research paper, particularly in the field of AI and Large Language Models (LLMs):</p>
+</div>
+<div class="paragraph">
+<p><strong>Preparation:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Identify your goal</strong>: Before diving in, clarify your purpose for reading the paper. Are you aiming for a general understanding, specific details, or critical evaluation? This will guide your focus while reading.</p>
+</li>
+<li>
+<p><strong>Gather background knowledge</strong>: Familiarize yourself with the general area of research. Skim the introduction or abstract to understand the paper&#8217;s topic and its contribution to the field. Consider searching for related blog posts or introductory articles for basic concepts.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Active Reading:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Start with the abstract and introduction</strong>: The abstract provides a concise overview of the paper&#8217;s purpose, methodology, key findings, and conclusions. The introduction elaborates on the context, motivation, and research question(s) addressed in the paper.</p>
+</li>
+<li>
+<p><strong>Survey the structure</strong>: Most research papers follow a similar format: Introduction, Related Work, Methodology, Results, Discussion, Conclusion, and References. Skimming these sections gives you a roadmap of the paper&#8217;s content.</p>
+</li>
+<li>
+<p><strong>Focus on key sections</strong>: Depending on your goal, prioritize specific sections. For a general understanding, focus on the Introduction, Results, and Conclusion. For a deeper dive, delve into the Methodology section to understand how the research was conducted.</p>
+</li>
+<li>
+<p><strong>Engage with the content</strong>: Don&#8217;t just passively read. Take notes, highlight important points, and write down any questions or confusions you have.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Critical Analysis:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Evaluate the methodology</strong>:  Consider the data used, the training approach, and the evaluation metrics. Are they appropriate for the research question? Are there any limitations or biases to be aware of?</p>
+</li>
+<li>
+<p><strong>Analyze the results</strong>:  Pay close attention to the figures, tables, and data visualizations. Do the results support the conclusions? Are there alternative explanations or interpretations?</p>
+</li>
+<li>
+<p><strong>Consider the broader context</strong>:  How does this research contribute to the field? Does it align with existing knowledge or challenge current understanding? Are there any ethical implications to consider?</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Additional Tips:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Use online resources</strong>: Many research papers are accompanied by supplementary materials like code, datasets, or presentations. Utilize these resources to gain a deeper understanding.</p>
+</li>
+<li>
+<p><strong>Consult online communities</strong>: Engage in discussions about the paper in online forums or communities related to AI or LLMs. This can help clarify concepts and gain different perspectives.</p>
+</li>
+<li>
+<p><strong>Don&#8217;t be afraid to re-read</strong>: Complex research papers often require multiple readings to fully grasp the content. Don&#8217;t hesitate to revisit confusing sections or consult online resources for clarification.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>By following these steps and actively engaging with the material, you can effectively read and understand research papers in the field of AI and LLMs, even if you&#8217;re new to the subject. Remember, it&#8217;s a journey of exploration and learning!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="ms-training-ai"></a>[1] <a href="https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/" class="bare">https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/</a></p>
+</li>
+<li>
+<p><a id="ms-training-generative-ai"></a>[2] <a href="https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/" class="bare">https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/</a></p>
+</li>
+<li>
+<p><a id="ms-training-azure-openai"></a>[3] <a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-openai/" class="bare">https://learn.microsoft.com/en-us/training/modules/explore-azure-openai/</a></p>
+</li>
+<li>
+<p><a id="ms-training-generative-ai-azopenai"></a>[4] <a href="https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/4-azure-openai" class="bare">https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/4-azure-openai</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-models"></a>[5] <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models" class="bare">https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-overview"></a>[6] <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/overview" class="bare">https://learn.microsoft.com/en-us/azure/ai-services/openai/overview</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-customizing-llms"></a>[7] <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/customizing-llms" class="bare">https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/customizing-llms</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-prompt-engineering"></a>[8] <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering" class="bare">https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-chatgpt"></a>[9] <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chatgpt" class="bare">https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chatgpt</a></p>
+</li>
+<li>
+<p><a id="oai-chat-completions"></a>[10] <a href="https://platform.openai.com/docs/guides/text-generation/chat-completions-vs-completions" class="bare">https://platform.openai.com/docs/guides/text-generation/chat-completions-vs-completions</a></p>
+</li>
+<li>
+<p><a id="ms-az-oai-code-generation"></a>[11] <a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-openai/6-understand-openai-code-generation" class="bare">https://learn.microsoft.com/en-us/training/modules/explore-azure-openai/6-understand-openai-code-generation</a></p>
+</li>
+<li>
+<p><a id="wiki-gai"></a>[12] <a href="https://en.wikipedia.org/wiki/Generative_artificial_intelligence" class="bare">https://en.wikipedia.org/wiki/Generative_artificial_intelligence</a></p>
+</li>
+<li>
+<p><a id="wiki-llms"></a>[13] <a href="https://en.wikipedia.org/wiki/Large_language_model" class="bare">https://en.wikipedia.org/wiki/Large_language_model</a></p>
+</li>
+<li>
+<p><a id="wiki-Multimodal_learning"></a>[14] <a href="https://en.wikipedia.org/wiki/Multimodal_learning" class="bare">https://en.wikipedia.org/wiki/Multimodal_learning</a></p>
+</li>
+<li>
+<p><a id="zapier-chatgpt"></a>[15] <a href="https://zapier.com/blog/how-does-chatgpt-work/" class="bare">https://zapier.com/blog/how-does-chatgpt-work/</a></p>
+</li>
+<li>
+<p><a id="zapier-llm"></a>[16] <a href="https://zapier.com/blog/best-llm/" class="bare">https://zapier.com/blog/best-llm/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

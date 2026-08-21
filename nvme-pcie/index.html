@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>What is NVMe and PCIe | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="What is NVMe and PCIe" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="NVM Express (NVMe) or Non-Volatile Memory Host Controller Interface Specification (NVMHCIS) is an open, logical-device interface specification for accessing a computer&#8217;s non-volatile storage media usually attached via the PCI Express bus. 1. What is PCI Express? 1.1. Architecture 1.1.1. Interconnect 1.1.2. Lane 1.2. Form factors 1.2.1. PCI Express (standard) 1.2.2. PCI Express Mini Card 1.2.3. PCI Express M.2 2. What is NVM Express? 2.1. NVMe vs SATA 2.1.1. NVMe Hardware Compatibility 2.1.2. NVMe Operating System Compatibility 3. What is M.2? 4. Upgrade SSD in MacBook with MVMe driver 4.1. Which NVMe SSDs are known to work? References 1. What is…" />
+<meta name="twitter:description" property="og:description" content="NVM Express (NVMe) or Non-Volatile Memory Host Controller Interface Specification (NVMHCIS) is an open, logical-device interface specification for accessing a computer&#8217;s non-volatile storage media usually attached via the PCI Express bus. 1. What is PCI Express? 1.1. Architecture 1.1.1. Interconnect 1.1.2. Lane 1.2. Form factors 1.2.1. PCI Express (standard) 1.2.2. PCI Express Mini Card 1.2.3. PCI Express M.2 2. What is NVM Express? 2.1. NVMe vs SATA 2.1.1. NVMe Hardware Compatibility 2.1.2. NVMe Operating System Compatibility 3. What is M.2? 4. Upgrade SSD in MacBook with MVMe driver 4.1. Which NVMe SSDs are known to work? References 1. What is…" />
+<link rel="canonical" href="https://blog.codefarm.me/nvme-pcie/" />
+<meta property="og:url" content="https://blog.codefarm.me/nvme-pcie/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-07-21T08:10:25+08:00" />
+<meta property="article:modified_time" content="2023-07-21T08:10:25+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="What is NVMe and PCIe" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-07-21T08:10:25+08:00","datePublished":"2023-07-21T08:10:25+08:00","description":"NVM Express (NVMe) or Non-Volatile Memory Host Controller Interface Specification (NVMHCIS) is an open, logical-device interface specification for accessing a computer&#8217;s non-volatile storage media usually attached via the PCI Express bus. 1. What is PCI Express? 1.1. Architecture 1.1.1. Interconnect 1.1.2. Lane 1.2. Form factors 1.2.1. PCI Express (standard) 1.2.2. PCI Express Mini Card 1.2.3. PCI Express M.2 2. What is NVM Express? 2.1. NVMe vs SATA 2.1.1. NVMe Hardware Compatibility 2.1.2. NVMe Operating System Compatibility 3. What is M.2? 4. Upgrade SSD in MacBook with MVMe driver 4.1. Which NVMe SSDs are known to work? References 1. What is…","headline":"What is NVMe and PCIe","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/nvme-pcie/"},"url":"https://blog.codefarm.me/nvme-pcie/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">What is NVMe and PCIe</h1><p class="c-post-meta">21 Jul 2023</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>NVM Express</strong> (<strong>NVMe</strong>) or <strong>Non-Volatile Memory Host Controller Interface Specification</strong> (<strong>NVMHCIS</strong>) is an open, logical-device interface specification for accessing a computer&#8217;s non-volatile storage media usually attached via the <strong>PCI Express</strong> bus.</p>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#what-is-pci-express">1. What is PCI Express?</a>
+<ul class="sectlevel2">
+<li><a href="#architecture">1.1. Architecture</a>
+<ul class="sectlevel3">
+<li><a href="#interconnect">1.1.1. Interconnect</a></li>
+<li><a href="#lane">1.1.2. Lane</a></li>
+</ul>
+</li>
+<li><a href="#form-factors">1.2. Form factors</a>
+<ul class="sectlevel3">
+<li><a href="#pci-express-standard">1.2.1. PCI Express (standard)</a></li>
+<li><a href="#pci-express-mini-card">1.2.2. PCI Express Mini Card</a></li>
+<li><a href="#pci-express-m-2">1.2.3. PCI Express M.2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#what-is-nvm-express">2. What is NVM Express?</a>
+<ul class="sectlevel2">
+<li><a href="#nvme-vs-sata">2.1. NVMe vs SATA</a>
+<ul class="sectlevel3">
+<li><a href="#nvme-hardware-compatibility">2.1.1. NVMe Hardware Compatibility</a></li>
+<li><a href="#nvme-operating-system-compatibility">2.1.2. NVMe Operating System Compatibility</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#what-is-m-2">3. What is M.2?</a></li>
+<li><a href="#upgrade-ssd-in-macbook-with-mvme-driver">4. Upgrade SSD in MacBook with MVMe driver</a>
+<ul class="sectlevel2">
+<li><a href="#which-nvme-ssds-are-known-to-work">4.1. Which NVMe SSDs are known to work?</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-pci-express">1. What is PCI Express?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>PCI Express</strong> (<strong>Peripheral Component Interconnect Express</strong>), officially abbreviated as <strong>PCIe</strong> or <strong>PCI-e</strong>, is a high-speed <a href="https://en.wikipedia.org/wiki/Serial_communication">serial</a> computer <a href="https://en.wikipedia.org/wiki/Expansion_bus">expansion bus</a> standard, designed to replace the older <strong>PCI</strong>, <strong>PCI-X</strong> and <strong>AGP</strong> bus standards.</p>
+</div>
+<div class="paragraph">
+<p>It is the common <a href="https://en.wikipedia.org/wiki/Motherboard">motherboard</a> interface for personal computers' <a href="https://en.wikipedia.org/wiki/Video_card">graphics cards</a>, sound cards, hard disk drive host adapters, <a href="https://en.wikipedia.org/wiki/Solid-state_drive">SSDs</a>, Wi-Fi and Ethernet hardware connections.</p>
+</div>
+<div class="paragraph">
+<p>The PCI Express electrical interface is measured by the number of simultaneous lanes. (A lane is a single send/receive line of data. The analogy is a highway with traffic in both directions.) The interface is also used in a variety of other standards — most notably the laptop expansion card interface called ExpressCard. It is also used in the storage interfaces of SATA Express, U.2 (SFF-8639) and <a href="https://en.wikipedia.org/wiki/M.2">M.2</a>.</p>
+</div>
+<div class="sect2">
+<h3 id="architecture">1.1. Architecture</h3>
+<div class="paragraph">
+<p>Conceptually, the PCI Express bus is a high-speed serial replacement of the older PCI/PCI-X bus. One of the key differences between the PCI Express bus and the older PCI is the bus topology:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>PCI uses a shared <a href="https://en.wikipedia.org/wiki/Parallel_communications">parallel</a> bus architecture, in which the PCI host and all devices share a common set of address, data, and control lines.</p>
+</li>
+<li>
+<p>In contrast, PCI Express is based on point-to-point topology, with separate <a href="https://en.wikipedia.org/wiki/Serial_communication">serial</a> links connecting every device to the root complex (host).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Furthermore, the older PCI clocking scheme limits the bus clock to the slowest peripheral on the bus (regardless of the devices involved in the bus transaction). In contrast, a PCI Express bus link supports full-duplex communication between any two endpoints, with no inherent limitation on concurrent access across multiple endpoints.</p>
+</div>
+<div class="paragraph">
+<p>In terms of bus protocol, PCI Express communication is encapsulated in <strong>packets</strong>. The work of packetizing and de-packetizing data and status-message traffic is handled by the transaction layer of the PCI Express port.</p>
+</div>
+<div class="paragraph">
+<p>The PCI Express link between two devices can vary in size from one to 16 <strong>lanes</strong>. In a multi-lane link, the packet data is striped across lanes, and peak data throughput scales with the overall link width. The lane count is automatically negotiated during device initialization and can be restricted by either endpoint.</p>
+</div>
+<div class="paragraph">
+<p>For example, a single-lane PCI Express (x1) card can be inserted into a multi-lane slot (x4, x8, etc.), and the initialization cycle auto-negotiates the highest mutually supported lane count.</p>
+</div>
+<div class="paragraph">
+<p>The link can dynamically down-configure itself to use fewer lanes, providing a failure tolerance in case bad or unreliable lanes are present.</p>
+</div>
+<div class="paragraph">
+<p>The PCI Express standard defines link widths of x1, x2, x4, x8, and x16.</p>
+</div>
+<div class="sect3">
+<h4 id="interconnect">1.1.1. Interconnect</h4>
+<div class="paragraph">
+<p>PCI Express devices communicate via a logical connection called an <strong>interconnect</strong> or <strong>link</strong>. A link is a point-to-point communication channel between two PCI Express ports allowing both of them to send and receive ordinary PCI requests (configuration, I/O or memory read/write) and interrupts (INTx, MSI or MSI-X).</p>
+</div>
+<div class="paragraph">
+<p>At the physical level, a link is composed of one or more lanes. Low-speed peripherals (such as an 802.11 Wi-Fi card) use a single-lane (x1) link, while a graphics adapter typically uses a much wider and therefore faster 16-lane (x16) link.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="lane">1.1.2. Lane</h4>
+<div class="paragraph">
+<p>A lane is composed of two differential signaling pairs, with one pair for receiving data and the other for transmitting. Thus, each lane is composed of four wires or signal traces.</p>
+</div>
+<div class="paragraph">
+<p>Conceptually, each lane is used as a full-duplex byte stream, transporting data packets in eight-bit "byte" format simultaneously in both directions between endpoints of a link.</p>
+</div>
+<div class="paragraph">
+<p>Physical PCI Express links may contain 1, 4, 8 or 16 lanes. Lane counts are written with an "x" prefix (for example, "x8" represents an eight-lane card or slot), with x16 being the largest size in common use. Lane sizes are also referred to via the terms "width" or "by" e.g., an eight-lane slot could be referred to as a "by 8" or as "8 lanes wide."</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="form-factors">1.2. Form factors</h3>
+<div class="sect3">
+<h4 id="pci-express-standard">1.2.1. PCI Express (standard)</h4>
+<div class="paragraph">
+<p>A PCI Express card fits into a slot of its physical size or larger (with x16 as the largest used), but may not fit into a smaller PCI Express slot; for example, a x16 card may not fit into a x4 or x8 slot. Some slots use open-ended sockets to permit physically longer cards and negotiate the best available electrical and logical connection.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="pci-express-mini-card">1.2.2. PCI Express Mini Card</h4>
+<div class="paragraph">
+<p>PCI Express Mini Card (also known as Mini PCI Express, Mini PCIe, Mini PCI-E, mPCIe, and PEM), based on PCI Express, is a replacement for the Mini PCI form factor. It is developed by the PCI-SIG. The host device supports both PCI Express and USB 2.0 connectivity, and each card may use either standard. Most laptop computers built after 2005 use PCI Express for expansion cards; however, as of 2015, many vendors are moving toward using the newer <a href="https://en.wikipedia.org/wiki/M.2">M.2</a> form factor for this purpose.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="pci-express-m-2">1.2.3. PCI Express M.2</h4>
+<div class="paragraph">
+<p>M.2 replaces the mSATA standard and Mini PCIe. Computer bus interfaces provided through the M.2 connector are PCI Express 3.0 (up to four lanes), Serial ATA 3.0, and USB 3.0 (a single logical port for each of the latter two). It is up to the manufacturer of the M.2 host or device to choose which interfaces to support, depending on the desired level of host support and device type.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-nvm-express">2. What is NVM Express?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>NVM Express</strong> (<strong>NVMe</strong>) or <strong>Non-Volatile Memory Host Controller Interface Specification</strong> (<strong>NVMHCIS</strong>) is an open, logical-device interface specification for accessing a computer&#8217;s non-volatile storage media usually attached via the <a href="https://en.wikipedia.org/wiki/PCI_Express">PCI Express</a> bus. <a href="#nvme-wiki">[2]</a></p>
+</div>
+<div class="paragraph">
+<p>The initialism <em>NVM</em> stands for <a href="https://en.wikipedia.org/wiki/Non-volatile_memory">non-volatile memory</a>, which is often NAND flash memory that comes in several physical form factors, including <a href="https://en.wikipedia.org/wiki/Solid-state_drive">solid-state drives (SSDs)</a>, PCIe add-in cards, and <a href="https://en.wikipedia.org/wiki/M.2">M.2</a> cards, the successor to mSATA cards.</p>
+</div>
+<div class="paragraph">
+<p>NVM Express, as a logical-device interface, has been designed to capitalize on the low latency and internal parallelism of solid-state storage devices.</p>
+</div>
+<div class="paragraph">
+<p>Architecturally, the logic for NVMe is physically stored within and executed by the NVMe controller chip that is physically co-located with the storage media, usually an SSD. Version changes for NVMe, e.g., 1.3 to 1.4, are incorporated within the storage media, and do not affect PCIe-compatible components such as motherboards and CPUs.</p>
+</div>
+<div class="paragraph">
+<p>NVM Express devices are chiefly available in the form of standard-sized PCI <a href="https://en.wikipedia.org/wiki/Expansion_card">Express expansion</a> cards and as 2.5-inch form-factor devices that provide a four-lane PCI Express interface through the <a href="https://en.wikipedia.org/wiki/U.2">U.2</a> connector (formerly known as SFF-8639). Storage devices using <a href="https://en.wikipedia.org/wiki/SATA_Express">SATA Express</a> and the <a href="https://en.wikipedia.org/wiki/M.2">M.2</a> specification which support NVM Express as the logical-device interface are a popular use-case for NVMe and have become the dominant form of solid-state storage for servers, desktops, and laptops alike.</p>
+</div>
+<div class="sect2">
+<h3 id="nvme-vs-sata">2.1. NVMe vs SATA</h3>
+<div class="paragraph">
+<p>Non-Volatile Memory Express (NVMe) is a new transfer protocol designed for solid-state memory. While SATA (Serial Advanced Technology Attachment) remains the industry standard for storage protocols, it wasn&#8217;t built specifically for Flash storage like SSDs and can&#8217;t offer the same advantages of NVMe. Eventually, SSDs with NVMe will replace SATA SSDs as the new industry standard. <a href="#kingston-nvme-storage">[3]</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://media.kingston.com/kingston/articles/kc2000-diy5-ep100.jpg" alt="NVMe M.2 SSDs" width="55%" height="55%">
+</div>
+</div>
+<div class="sect3">
+<h4 id="nvme-hardware-compatibility">2.1.1. NVMe Hardware Compatibility</h4>
+<div class="paragraph">
+<p>However, there are a couple of things to consider before purchasing an NVMe SSD. Is your system even compatible with NVMe? Two things you need to look for in your computer system are a built-in M.2 slot and support for NVMe. Check the product page of your computer to see if it accommodates an M.2 slot. Next, you need to see if your motherboard supports NVMe SSDs. Some motherboards that do support it may not always refer to it as NVMe. Instead, they might refer to it as "PCIe mode." Ideally, there should be an easier way to tell if your computer system can support NVMe but unfortunately, there isn&#8217;t. You&#8217;ll just have to refer to your motherboard&#8217;s website or use Google to search and find out if it does.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="nvme-operating-system-compatibility">2.1.2. NVMe Operating System Compatibility</h4>
+<div class="paragraph">
+<p>Along with hardware compatibility, you must consider OS compatibility. The latest versions of Linux, Windows, Chrome OS, and Mac OS all support NVMe but Apple doesn&#8217;t let you upgrade its hardware on most of their recent models so it might not be possible for Mac users. Cloning software is now compatible with NVMe drives as well.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-m-2">3. What is M.2?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>M.2 is a form factor specification that was introduced in 2012 and designed to replace the mSATA standard. The form factor specification spells out the physical size and shape of the SSD card you can connect to your system. The M.2 form factor is designed to maximize PCB (printed circuit board) while minimizing the amount of space it takes up in your PC or laptop. To connect an M.2 specified SSD, your motherboard will need to have an M.2 slot. <a href="#m2-with-pcie-or-sata">[4]</a></p>
+</div>
+<div class="paragraph">
+<p>The M.2 form factor is small and rectangular in shape, almost like a piece of gum. Sizes can vary, with possible widths of 12, 16, 22, or 30 millimeters, but they’re generally 22 millimeters wide. Lengths can also vary, coming in 16, 26, 30, 38, 42, 60, 80, or 110 millimeters. Motherboards will accommodate a variety of lengths for an M.2 module to allow for flexibility, while the width is more fixed.</p>
+</div>
+<div class="paragraph">
+<p>When you buy an SSD like the Crucial P5 Plus, you may see something like "M.2 2280" in the title, which is a combination of its dimensions — 22mm and 80mm in length — helping you know what to buy.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://www.crucial.com/content/dam/crucial/ssd-products/p1/images/in-use/crucial-p1-inuse-install-image.psd.transform/medium-jpg/img.jpg" alt="M.2 SSD in a laptop" width="55%" height="55%">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="upgrade-ssd-in-macbook-with-mvme-driver">4. Upgrade SSD in MacBook with MVMe driver</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+MacBook Pro uses a proprietary storage drive connector, and is therefore not compatible with common M.2 drives without the use of an adapter. <a href="#upgrade-macs-ssd">[5]</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="title">The problem with Standby</div>
+<div class="paragraph">
+<p>When we write, "with good results," there is a caveat. 2013-2014 machines treat hibernation differently than 2015 and later machines.</p>
+</div>
+<div class="paragraph">
+<p>Apple has different power management modes for increasing battery life. One of those can cause a problem for users who upgrade to an NVMe drive in a 2013-2014 machine.</p>
+</div>
+<div class="paragraph">
+<p>Some of these machines will kernel panic when attempting to go into standby mode. Standby is where the computer records a snapshot of the current state of your computer to the flash drive, usually after about 3 hours. A Mac on Standby can stay charged for up to 30 days without being plugged in.</p>
+</div>
+<div class="paragraph">
+<p>The solution is to prevent the computer from going into Standby. Here&#8217;s how to do it.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Open the Terminal app</p>
+</li>
+<li>
+<p>Type <code>sudo pmset -a standby 0</code></p>
+</li>
+<li>
+<p>Press Return</p>
+</li>
+<li>
+<p>Quit the Terminal</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The computer will still hibernate or sleep, without saving the current state of the computer to the flash drive. You&#8217;ll still have battery-life, although maybe not the 30-days-without-charging kind of battery life.</p>
+</div>
+<div class="paragraph">
+<p>2015 and later machines need no modifications like this at all.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="which-nvme-ssds-are-known-to-work">4.1. Which NVMe SSDs are known to work?</h3>
+<div class="paragraph">
+<p>Basically all NVMe SSD work, except a few ones with incompatible firmwares. <a href="#macrumors-m2">[6]</a></p>
+</div>
+<div class="paragraph">
+<p>The following models have been tested to work :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Adata NVMe SSD : SX6000, SX7000, SX8200, SX8200 Pro etc.</p>
+</li>
+<li>
+<p>Corsair NVMe SSD : MP500, MP510</p>
+</li>
+<li>
+<p>Crucial NVMe SSD : P1, P2, X8</p>
+</li>
+<li>
+<p>HP NVMe SSD : ex900, ex920, ex950</p>
+</li>
+<li>
+<p>OCZ RD400</p>
+</li>
+<li>
+<p>Toshiba XG3, XG4, XG5, XG5p, XG6</p>
+</li>
+<li>
+<p>Intel NVMe SSD : 600p, 660p, 760p</p>
+</li>
+<li>
+<p>MyDigital NVMe SSDs : SBX - BPX</p>
+</li>
+<li>
+<p>Kingston NVMe SSD : A1000, A2000, KC1000</p>
+</li>
+<li>
+<p>Sabrent Rocket (Phison E12 and E16 based)</p>
+</li>
+<li>
+<p>Samsung NVMe SSD : 960 Evo, 960 Pro, 970 Evo, 970 Pro, 970 Evo plus (with latest firmware), 980</p>
+</li>
+<li>
+<p>WD Black NVMe SSD v1, v2 and v3, WD Blue SN550 (FW Update mandatory), SN750, SN750 SE</p>
+</li>
+<li>
+<p>Inland Premium (not Professional)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>NVMe SSD known not to work on MacBook Pro / Air. DO NOT BUY:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Samsung PM981</p>
+</li>
+<li>
+<p>Samsung 950 Pro</p>
+</li>
+<li>
+<p>WD Blue NvME SN570 (EDIT march 2023: many success stories with this one during 2022-2023, new ones seem to work)</p>
+</li>
+<li>
+<p>WD Black NvME SN770</p>
+</li>
+<li>
+<p>SK Hynix Gold P31</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Compatibility issues with these models are due to a firmware issue.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>I bought a <strong>WD Blue SN570 1TB</strong> (386.5￥), and a <strong>M2 PCIe NVME Converter</strong> (12.9￥) and upgraded the factory SSD 128GB which is very tiny now, and created a dual OSes (i.e. Windows 10) using the Boot Camp Assistant successfully.</p>
+</div>
+<div class="paragraph">
+<p>What you need:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>WD Blue SN570 1TB* (386.5￥) x 1</p>
+</li>
+<li>
+<p>M2 PCIe NVME Converter x 1</p>
+</li>
+<li>
+<p>P5 Pentalobe Screwdriver x 1</p>
+</li>
+<li>
+<p>Spudger x 1</p>
+</li>
+<li>
+<p>T5 Torx Screwdriver x 1</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://support.apple.com/en-us/HT201250">Back up your Mac with Time Machine</a> to an external storage device.</p>
+</li>
+<li>
+<p><a href="https://support.apple.com/en-us/HT201372">Create a bootable installer for macOS</a> on a USB disk.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The OS of my MacBook Pro Mid 2014 is Big Sur.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p><a href="https://www.ifixit.com/Guide/MacBook+Pro+13-Inch+Retina+Display+Mid+2014+SSD+Replacement/27849">Replace the SSD drive</a> in MacBook Pro Mid 2014.</p>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Be sure you lift up only on the battery connector itself, not the socket, or you risk permanent damage to the logic board.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In fact, you only need to use the Spudger to force a little along the gap to pry the upper layer open.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>After replace the SSD, now plug in the bootable USB, and start the MacBook, and press the <code>Shift</code> key to select the startup options.</p>
+</li>
+<li>
+<p>According to the prompt, use the startup disk (i.e. the bootable USB) to format the new disk (i.e. WD SN570) with APFS format.</p>
+</li>
+<li>
+<p>Install the macOS Big Sur on the new disk.</p>
+</li>
+<li>
+<p>Use the Time Machine to restore the backup to the new disk.</p>
+</li>
+<li>
+<p>(Optional) <a href="https://support.apple.com/en-us/HT201468">Install Windows 10 on your Mac with Boot Camp Assistant</a></p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="pcie-wiki"></a>[1] <a href="https://en.wikipedia.org/wiki/PCI_Express" class="bare">https://en.wikipedia.org/wiki/PCI_Express</a></p>
+</li>
+<li>
+<p><a id="nvme-wiki"></a>[2] <a href="https://en.wikipedia.org/wiki/NVM_Express" class="bare">https://en.wikipedia.org/wiki/NVM_Express</a></p>
+</li>
+<li>
+<p><a id="kingston-nvme-storage"></a>[3] <a href="https://www.kingston.com/en/community/articledetail/articleid/57715" class="bare">https://www.kingston.com/en/community/articledetail/articleid/57715</a></p>
+</li>
+<li>
+<p><a id="m2-with-pcie-or-sata"></a>[4] <a href="https://www.crucial.com/articles/about-ssd/m2-with-pcie-or-sata" class="bare">https://www.crucial.com/articles/about-ssd/m2-with-pcie-or-sata</a></p>
+</li>
+<li>
+<p><a id="upgrade-macs-ssd"></a>[5] <a href="https://appleinsider.com/articles/20/08/23/how-to-use-an-nvme-drive-to-upgrade-your-macs-ssd" class="bare">https://appleinsider.com/articles/20/08/23/how-to-use-an-nvme-drive-to-upgrade-your-macs-ssd</a></p>
+</li>
+<li>
+<p><a id="macrumors-m2"></a>[6] <a href="https://forums.macrumors.com/threads/upgrading-2013-2014-macbook-pro-ssd-to-m-2-nvme.2034976/" class="bare">https://forums.macrumors.com/threads/upgrading-2013-2014-macbook-pro-ssd-to-m-2-nvme.2034976/</a></p>
+</li>
+<li>
+<p><a id="ifixitmacbookpromid2014ssd"></a>[7] <a href="https://www.ifixit.com/Guide/MacBook+Pro+13-Inch+Retina+Display+Mid+2014+SSD+Replacement/27849" class="bare">https://www.ifixit.com/Guide/MacBook+Pro+13-Inch+Retina+Display+Mid+2014+SSD+Replacement/27849</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>

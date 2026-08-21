@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.9.0 -->
+<title>Get Started with AWS | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Get Started with AWS" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="VPC (Virtual Private Cloud) What Is Amazon VPC? Getting Started with IPv4 for Amazon VPC Scenario 2: VPC with Public and Private Subnets (NAT) Recommended Network ACL Rules for Your VPC Security Groups for Your VPC Network ACLs VPCs Subnets public subnet private subnet Accessing the Internet private IP &amp; public IP &amp; EIP &amp; route table IGW (Internet Gateway) NAT (network address translation) Security Security Groups &amp; EC2 Instances **If you specify a single IPv4 address, specify the address using the /32 prefix length. If you specify a single IPv6 address, specify it using the /128 prefix length. **…" />
+<meta name="twitter:description" property="og:description" content="VPC (Virtual Private Cloud) What Is Amazon VPC? Getting Started with IPv4 for Amazon VPC Scenario 2: VPC with Public and Private Subnets (NAT) Recommended Network ACL Rules for Your VPC Security Groups for Your VPC Network ACLs VPCs Subnets public subnet private subnet Accessing the Internet private IP &amp; public IP &amp; EIP &amp; route table IGW (Internet Gateway) NAT (network address translation) Security Security Groups &amp; EC2 Instances **If you specify a single IPv4 address, specify the address using the /32 prefix length. If you specify a single IPv6 address, specify it using the /128 prefix length. **…" />
+<link rel="canonical" href="https://blog.codefarm.me/get-started-aws/" />
+<meta property="og:url" content="https://blog.codefarm.me/get-started-aws/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-09-18T15:55:54+08:00" />
+<meta property="article:modified_time" content="2019-09-18T15:55:54+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Get Started with AWS" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-09-18T15:55:54+08:00","datePublished":"2019-09-18T15:55:54+08:00","description":"VPC (Virtual Private Cloud) What Is Amazon VPC? Getting Started with IPv4 for Amazon VPC Scenario 2: VPC with Public and Private Subnets (NAT) Recommended Network ACL Rules for Your VPC Security Groups for Your VPC Network ACLs VPCs Subnets public subnet private subnet Accessing the Internet private IP &amp; public IP &amp; EIP &amp; route table IGW (Internet Gateway) NAT (network address translation) Security Security Groups &amp; EC2 Instances **If you specify a single IPv4 address, specify the address using the /32 prefix length. If you specify a single IPv6 address, specify it using the /128 prefix length. **…","headline":"Get Started with AWS","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/get-started-aws/"},"url":"https://blog.codefarm.me/get-started-aws/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"War is peace. Freedom is slavery. Ignorance is strength."</p>
+      <cite>- George Orwell, 1984</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">Get Started with AWS</h1><p class="c-post-meta">18 Sep 2019</p>
+  </header>
+
+  <div class="c-post-content">
+    <h3 id="vpc-virtual-private-cloud">VPC (Virtual Private Cloud)</h3>
+
+<ol>
+  <li><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/what-is-amazon-vpc.html">What Is Amazon VPC?</a></li>
+  <li>
+    <p><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/getting-started-ipv4.html">Getting Started with IPv4 for Amazon VPC</a></p>
+  </li>
+  <li>
+    <p><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/VPC_Scenario2.html">Scenario 2: VPC with Public and Private Subnets (NAT)</a></p>
+  </li>
+  <li>
+    <p><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/vpc-recommended-nacl-rules.html#nacl-rules-scenario-2">Recommended Network ACL Rules for Your VPC</a></p>
+  </li>
+  <li>
+    <p><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/VPC_SecurityGroups.html">Security Groups for Your VPC</a></p>
+  </li>
+  <li><a href="https://docs.amazonaws.cn/en_us/vpc/latest/userguide/vpc-network-acls.html">Network ACLs</a></li>
+</ol>
+
+<ul>
+  <li>VPCs
+    <ul>
+      <li>Subnets
+        <ul>
+          <li>public subnet</li>
+          <li>private subnet</li>
+        </ul>
+      </li>
+      <li>Accessing the Internet
+        <ul>
+          <li>private IP &amp; public IP &amp; EIP &amp; route table</li>
+          <li>IGW (Internet Gateway)</li>
+          <li>NAT (network address translation)</li>
+        </ul>
+      </li>
+      <li>Security
+        <ul>
+          <li>Security Groups &amp; EC2 Instances
+            <ul>
+              <li>**If you specify a single IPv4 address, specify the address using the /32 prefix length. If you specify a single IPv6 address, specify it using the /128 prefix length. **</li>
+              <li><strong>Some systems for setting up firewalls let you filter on source ports. Security groups let you filter only on destination ports.</strong></li>
+            </ul>
+          </li>
+          <li>Network ACLs &amp; Subnets</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="elb-elastic-load-balancing">ELB (Elastic Load Balancing)</h3>
+
+<ol>
+  <li><a href="https://docs.amazonaws.cn/en_us/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html">How Elastic Load Balancing Works</a>
+    <ul>
+      <li><strong>With Application Load Balancers, cross-zone load balancing is always enabled.</strong></li>
+      <li>**With Network Load Balancers, cross-zone load balancing is disabled by default. After you create a Network Load Balancer, you can enable or disable cross-zone load balancing at any time. **</li>
+    </ul>
+  </li>
+</ol>
+
+<ul>
+  <li>ELBs
+    <ul>
+      <li>NLB (Network Load Balancer)
+        <ul>
+          <li><strong>https://www.awsfeed.com/2019/08/09/using-a-network-load-balancer-with-the-nginx-ingress-controller-on-eks/</strong></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ec2-elastic-compute-cloud">EC2 (Elastic Compute Cloud)</h3>
+
+<ul>
+  <li>
+    <p>Install Docker</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo amazon-linux-extras install docker -y
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat /etc/docker/daemon.json 
+{
+  "data-root": "/data/docker",
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo systemctl enable docker.service
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo systemctl start docker.service
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo docker info
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo yum install amazon-ecr-credential-helper -y
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo cat /root/.docker/config.json
+{
+  "credHelpers": {
+    "[aws_account_id].dkr.ecr.[region].amazonaws.com.cn": "ecr-login"
+  }
+}
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="install-kubernetes">Install Kubernetes</h3>
+
+<ul>
+  <li>
+    <p>Set bash completion</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo sh -c "kubeadm completion bash &gt; /etc/profile.d/kubeadm.sh"
+$ source /etc/profile.d/kubeadm.sh
+</code></pre></div>    </div>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo sh -c "kubectl completion bash &gt; /etc/profile.d/kubectl.sh"
+$ source /etc/profile.d/kubectl.sh
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Set kubelet root-dir</p>
+
+    <p>The file that can contain user-specified flag overrides with <code class="language-plaintext highlighter-rouge">KUBELET_EXTRA_ARGS</code> is sourced from /etc/default/kubelet (for DEBs), or /etc/sysconfig/kubelet (for RPMs). <code class="language-plaintext highlighter-rouge">KUBELET_EXTRA_ARGS</code> is last in the flag chain and has the highest priority in the event of conflicting settings</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#KUBELET_EXTRA_ARGS=--root-dir=/opt/lib/kubelet
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Enable kubelet service</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo systemctl enable kubelet.service
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>kube init</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo kubeadm init --pod-network-cidr=[10.244.0.0/16] --image-repository=[aws_account_id].dkr.ecr.[region].amazonaws.com.cn/k8s --kubernetes-version=[v1.15.0] [--ignore-preflight-errors=NumCPU]
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Check required ports</p>
+
+    <p>https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#check-required-ports</p>
+  </li>
+  <li>
+    <p>Nginx Ingress Controller &amp; ALB &amp; NLB</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[23/Sep/2019:09:03:56 +0000] remote_addr=10.244.0.4 https= host=alb-449876832.cn-north-1.elb.amazonaws.com.cn request="GET /remote_addr?lb=alb HTTP/1.1" content_length=- request_id=11995321529ae2f4ba05f626d1b2bdce request_time=0.000 referer=- user_agent="curl/7.64.0" x_forwarded_for="10.0.2.71" status=404 bytes_sent=190 body_bytes_sent=21 upstream_addr=- upstream_status=- upstream_response_time=- upstream_connect_time=- upstream_header_time=-
+[23/Sep/2019:09:05:06 +0000] remote_addr=10.244.0.4 https= host=nlb-49353abebcd88735.elb.cn-north-1.amazonaws.com.cn request="GET /remote_addr?lb=nlb HTTP/1.1" content_length=- request_id=6c3ea368830abef17296502d98e797f8 request_time=0.000 referer=- user_agent="curl/7.64.0" x_forwarded_for="140.206.187.194" status=404 bytes_sent=190 body_bytes_sent=21 upstream_addr=- upstream_status=- upstream_response_time=- upstream_connect_time=- upstream_header_time=-
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    <script src="/assets/js/nav.js" defer></script>
+    <script src="/assets/js/heading-anchors.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+    <script src="/assets/js/mermaid.js" defer></script>
+    <!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->    
+    <script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+  </body>
+</html>
