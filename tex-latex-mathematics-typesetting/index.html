@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link type="application/atom+xml" rel="alternate" href="https://blog.codefarm.me/feed.xml" title="CODE FARM" />
+<!-- Begin Jekyll SEO tag v2.9.1 -->
+<title>TeX and LaTeX: Mathematics and Typesetting | CODE FARM</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="TeX and LaTeX: Mathematics and Typesetting" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="TeX is a text formatting and markup language developed by D. Knuth in the late 1970s and early 1980s, which has become the de facto standard for document preparation in mathematics and certain areas of the physical sciences because of its unsurpassed utility in typesetting mathematical formulae. LaTeX is an extension of TeX, which for purposes of discussion can be thought of as a third-party macro package for TeX to provide a logical system for document preparation, where the author does not have to give specific formatting instructions in order to achieve a particular look; the look is provided by…" />
+<meta name="twitter:description" property="og:description" content="TeX is a text formatting and markup language developed by D. Knuth in the late 1970s and early 1980s, which has become the de facto standard for document preparation in mathematics and certain areas of the physical sciences because of its unsurpassed utility in typesetting mathematical formulae. LaTeX is an extension of TeX, which for purposes of discussion can be thought of as a third-party macro package for TeX to provide a logical system for document preparation, where the author does not have to give specific formatting instructions in order to achieve a particular look; the look is provided by…" />
+<link rel="canonical" href="https://blog.codefarm.me/tex-latex-mathematics-typesetting/" />
+<meta property="og:url" content="https://blog.codefarm.me/tex-latex-mathematics-typesetting/" />
+<meta property="og:site_name" content="CODE FARM" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-14T14:10:42+08:00" />
+<meta property="article:modified_time" content="2026-10-14T14:10:42+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="TeX and LaTeX: Mathematics and Typesetting" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-10-14T14:10:42+08:00","datePublished":"2026-10-14T14:10:42+08:00","description":"TeX is a text formatting and markup language developed by D. Knuth in the late 1970s and early 1980s, which has become the de facto standard for document preparation in mathematics and certain areas of the physical sciences because of its unsurpassed utility in typesetting mathematical formulae. LaTeX is an extension of TeX, which for purposes of discussion can be thought of as a third-party macro package for TeX to provide a logical system for document preparation, where the author does not have to give specific formatting instructions in order to achieve a particular look; the look is provided by…","headline":"TeX and LaTeX: Mathematics and Typesetting","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.codefarm.me/tex-latex-mathematics-typesetting/"},"url":"https://blog.codefarm.me/tex-latex-mathematics-typesetting/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css"><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SN88FJ18E5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-SN88FJ18E5');
+    </script></head>
+  <body>
+    <header class="c-header">
+  <div class="o-container">
+    <a class="c-header-title" href="/">CODE FARM</a>
+    <button class="c-header-nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+      <span class="c-header-nav-toggle-icon"></span>
+    </button>
+    <div class="c-header-nav-wrapper" id="nav-wrapper">
+      <nav class="c-header-nav">
+        <a href="/">Home</a>
+        <a href="/categories/">Category</a>
+        <a href="/tags/">Tag</a>
+        <a href="/archives/">Archive</a>
+        <a href="/about/">About</a>
+        <a href="https://resume.github.io/?alyiox" target="_blank">R&eacute;sum&eacute;</a>
+      </nav>
+    </div>
+  </div>
+  
+
+
+
+<div class="o-container">
+  <div class="c-banner">
+    <img src="/assets/images/galaxy.svg" alt="Galaxy background" class="c-banner-bg">
+    <div class="c-banner-quote">
+      <p>"The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion."</p>
+      <cite>- Albert Camus</cite>
+    </div>
+  </div>
+</div>
+</header>
+
+    <main class="o-container">
+      <article class="c-post">
+  <header class="c-post-header">
+    <h1 class="c-post-title">TeX and LaTeX: Mathematics and Typesetting</h1><p class="c-post-meta">29 Oct 2026</p>
+  </header>
+
+  <div class="c-post-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>TeX is a text formatting and markup language developed by D. Knuth in the late 1970s and early 1980s, which has become the de facto standard for document preparation in mathematics and certain areas of the physical sciences because of its unsurpassed utility in typesetting mathematical formulae. LaTeX is an extension of TeX, which for purposes of discussion can be thought of as a third-party macro package for TeX to provide a logical system for document preparation, where the author does not have to give specific formatting instructions in order to achieve a particular look; the look is provided by an external document class description. <a href="#latex-project">[1]</a> <a href="#arxiv-tex-latex">[2]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>TeX is named after the Greek letters tau (τ), epsilon (ε), and chi (χ), reflecting the word τέχνη (téchnē), meaning "art," "craft," or "skill" in Greek. It is pronounced "tech" (as in technology), not "teks." LaTeX stands for Lamport TeX, named after its creator, Leslie Lamport. It is pronounced "LAY-tech" or "LAH-tech."</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><a href="https://tug.org/texlive/">TeX Live</a> is one of the major TeX systems (e.g., MiKTeX and TeX Live) that provides binaries for most flavors of Unix, including GNU/Linux and macOS, and also Windows. It includes the major TeX-related programs, macro packages, and fonts that are free software, including support for many languages around the world. Many Unix/GNU/Linux operating systems provide TeX Live through their own distributions and package managers. TeX Live is supported by the TeX Users Group and many other user groups around the world. <a href="#texlive">[3 ]</a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.mathjax.org/">MathJax</a> is an open-source JavaScript display engine for LaTeX, MathML, and AsciiMath notation that works in modern browsers, with built-in support for assistive technology such as screen readers, including automatic speech generation and an expression explorer that can be used to investigate typeset mathematics at a more granular level than the complete expression. <a href="#mathjax">[4]</a></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="https://texlive.net/run">TeXLive.net</a> is a powerful online site to edit TeX snippets, run LaTeX, and display PDF documents or error logs.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle"></div>
+<ul class="sectlevel1">
+<li><a href="#mathematics">1. Mathematics</a>
+<ul class="sectlevel2">
+<li><a href="#rules">1.1. Rules</a></li>
+<li><a href="#superscripts-and-subscripts">1.2. Superscripts and subscripts</a></li>
+<li><a href="#fractions-and-binomials">1.3. Fractions and binomials</a></li>
+<li><a href="#greek-letters">1.4. Greek letters</a></li>
+<li><a href="#mathematical-operators-and-symbols">1.5. Mathematical operators and symbols</a></li>
+<li><a href="#summations-products-and-integrals">1.6. Summations, products, and integrals</a></li>
+<li><a href="#brackets-and-parentheses">1.7. Brackets and parentheses</a></li>
+<li><a href="#matrices-and-equations">1.8. Matrices and equations</a></li>
+<li><a href="#functions-and-named-operators">1.9. Functions and named operators</a></li>
+</ul>
+</li>
+<li><a href="#stem-in-asciidoctor">2. STEM in Asciidoctor</a>
+<ul class="sectlevel2">
+<li><a href="#enabling-stem-support">2.1. Enabling STEM support</a></li>
+<li><a href="#rendering-mathematics-with-mathjax">2.2. Rendering mathematics with MathJax</a></li>
+<li><a href="#stem-macros-versus-mathjax-delimiters">2.3. STEM macros versus MathJax delimiters</a></li>
+</ul>
+</li>
+<li><a href="#bibliography">Bibliography</a></li>
+</ul>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mathematics">1. Mathematics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LaTeX allows two writing modes for mathematical expressions: the <em>inline math mode</em> and <em>display math mode</em>: <a href="#overleaf-mathematics">[5]</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>inline math mode</em> is used to write formulas that are part of a paragraph:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex">The Pythagorean theorem is <span class="p">\(</span><span class="nb">a</span><span class="p">^</span><span class="m">2</span><span class="nb"> </span><span class="o">+</span><span class="nb"> b</span><span class="p">^</span><span class="m">2</span><span class="nb"> </span><span class="o">=</span><span class="nb"> c</span><span class="p">^</span><span class="m">2</span><span class="p">\)</span>.</code></pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The Pythagorean theorem is \(a^2 + b^2 = c^2\).</p>
+</div>
+</blockquote>
+</div>
+</li>
+<li>
+<p><em>display math mode</em> is used to write expressions that are not part of a paragraph, and are therefore put on separate lines</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex">The quadratic formula is:
+
+<span class="p">\[</span><span class="nb">
+x</span><span class="o">=</span><span class="nv">\frac</span><span class="p">{</span><span class="o">-</span><span class="nb">b</span><span class="nv">\pm\sqrt</span><span class="p">{</span><span class="nb">b</span><span class="p">^</span><span class="m">2</span><span class="o">-</span><span class="m">4</span><span class="nb">ac</span><span class="p">}}{</span><span class="m">2</span><span class="nb">a</span><span class="p">}</span><span class="nb">
+</span><span class="p">\]</span></code></pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The quadratic formula is:</p>
+</div>
+<div class="paragraph">
+<p>\[
+x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+\]</p>
+</div>
+</blockquote>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="rules">1.1. Rules</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Use curly braces <code>{}</code> when an exponent contains more than one character.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x^{a+b}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^{a+b}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x^a+b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^a+b\)</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Use a backslash (<code>\</code>) followed by a command name to enter LaTeX symbols and expressions.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\frac{a}{b}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\frac{a}{b}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\sqrt{x}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sqrt{x}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">x^2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^2\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\alpha</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\alpha\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\infty</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\infty\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">75\%</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(75\%\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\text{hello}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\text{hello}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\textit{hello}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\textit{hello}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\textbf{hello}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\textbf{hello}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\underline{x}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\underline{x}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\overline{x}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\overline{x}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\vec{x}</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\vec{x}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\quad</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a \quad b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\times</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a \times b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\leq</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a \leq b\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\text{for all } x&gt;0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\text{for all } x&gt;0\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\neq</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a \neq b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\pm</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a \pm b\)</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Use spacing commands to control the horizontal space between mathematical symbols and expressions.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 10.5263%;">
+<col style="width: 10.5263%;">
+<col style="width: 10.5263%;">
+<col style="width: 10.5263%;">
+<col style="width: 10.5263%;">
+<col style="width: 15.7894%;">
+<col style="width: 15.7894%;">
+<col style="width: 15.7897%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\!</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Negative thin space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\!b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\!b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\ </code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Normal space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\ b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\ b\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\,</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thin space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\,b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\,b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\:</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\:b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\:b\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thick space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\;b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\;b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\quad</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wide space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\quad b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\quad b\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\qquad</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra-wide space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\qquad b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\qquad b\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\hspace{1em}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Custom horizontal space</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a\hspace{1em}b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\hspace{1em}b\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\\[pt]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Line break</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\a\\b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\\b\)</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\a\\[6pt]b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a\\[6pt]b\)</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Use environment that starts with <code>\begin{...}</code> and ends with <code>\end{...}</code> to format or arrange the content inside it.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 11.1111%;">
+<col style="width: 22.2222%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Environment</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>equation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A single numbered equation</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{equation}</span>
+E = mc<span class="p">^</span>2
+<span class="nt">\end{equation}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(E = mc^2\) (numbered)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aligned</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple aligned equations</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{aligned}</span>
+x + y <span class="p">&amp;</span>= 5 <span class="k">\\</span>
+x - y <span class="p">&amp;</span>= 1
+<span class="nt">\end{aligned}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{aligned}x+y&amp;=5\\x-y&amp;=1\end{aligned}\)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gather</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple centered equations</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{gather}</span>
+x + y = 5 <span class="k">\\</span>
+x - y = 1
+<span class="nt">\end{gather}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{gather}x+y=5\\x-y=1\end{gather}\)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matrix</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matrix elements without surrounding brackets</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{matrix}</span>
+a <span class="p">&amp;</span> b <span class="k">\\</span>
+c <span class="p">&amp;</span> d
+<span class="nt">\end{matrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{matrix}a&amp;b\\c&amp;d\end{matrix}\)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pmatrix</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matrix elements surrounded by parentheses</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{pmatrix}</span>
+a <span class="p">&amp;</span> b <span class="k">\\</span>
+c <span class="p">&amp;</span> d
+<span class="nt">\end{pmatrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}\)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bmatrix</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matrix elements surrounded by square brackets</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{bmatrix}</span>
+a <span class="p">&amp;</span> b <span class="k">\\</span>
+c <span class="p">&amp;</span> d
+<span class="nt">\end{bmatrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{bmatrix}a&amp;b\\c&amp;d\end{bmatrix}\)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cases</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Piecewise-defined functions</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex">f(x) = <span class="nt">\begin{cases}</span>
+x<span class="p">^</span>2 <span class="p">&amp;</span> x <span class="k">\geq</span> 0 <span class="k">\\</span>
+-x <span class="p">&amp;</span> x &lt; 0
+<span class="nt">\end{cases}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(f(x)=\begin{cases}x^2&amp;x\geq0\\-x&amp;x&lt;0\end{cases}\)</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="superscripts-and-subscripts">1.2. Superscripts and subscripts</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x^2</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^2\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x\) squared</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x^10</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^{10}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x\) to the tenth power</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a_i</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a_i\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subscript \(i\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x_i^2</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x_i^2\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subscript and superscript</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x^{n+1}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(x^{n+1}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A multi-character exponent</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>a_{i,j}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(a_{i,j}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A multi-character subscript</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="fractions-and-binomials">1.3. Fractions and binomials</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\frac{a}{b}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\frac{a}{b}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\dfrac{a}{b}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\dfrac{a}{b}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\dfrac{x + 1}{x + 2}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\dfrac{x + 1}{x + 2}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\binom{n}{k}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\binom{n}{k}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\dbinom{n}{k}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\dbinom{n}{k}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\dbinom{n+1}{k-1}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\dbinom{n+1}{k-1}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>P(n,r) = \dfrac{n!}{(n-r)!}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(P(n,r) = \dfrac{n!}{(n-r)!}\)</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>C(n,r) = \dbinom{n}{r} = \dfrac{n!}{r!(n-r)!}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(C(n,r) = \dbinom{n}{r} = \dfrac{n!}{r!(n-r)!}\)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="greek-letters">1.4. Greek letters</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\alpha</code>, <code>A</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\alpha, A\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\beta</code>, <code>B</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\beta, B\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\gamma</code>, <code>\Gamma</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\gamma, \Gamma\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\delta</code>, <code>\Delta</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\delta, \Delta\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\epsilon</code>, <code>\varepsilon</code>, <code>E</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\epsilon, \varepsilon, E\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\zeta</code>, <code>Z</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\zeta, Z\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\eta</code>, <code>H</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\eta, H\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\theta</code>, <code>\vartheta</code>, <code>\Theta</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\theta, \vartheta, \Theta\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\iota</code>, <code>I</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\iota, I\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\kappa</code>, <code>K</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\kappa, K\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\lambda</code>, <code>\Lambda</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\lambda, \Lambda\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mu</code>, <code>M</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mu, M\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\nu</code>, <code>N</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\nu, N\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\xi</code>, <code>\Xi</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\xi, \Xi\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o</code>, <code>O</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(o, O\) (<em>omicron</em>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\pi</code>, <code>\varpi</code>, <code>\Pi</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\pi, \varpi, \Pi\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\rho</code>, <code>\varrho</code>, <code>P</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\rho, \varrho, P\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sigma</code>, <code>\varsigma</code>, <code>\Sigma</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sigma, \varsigma, \Sigma\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\tau</code>, <code>T</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\tau, T\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\upsilon</code>, <code>\Upsilon</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\upsilon, \Upsilon\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\phi</code>, <code>\varphi</code>, <code>\Phi</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\phi, \varphi, \Phi\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\chi</code>, <code>X</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\chi, X\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\psi</code>, <code>\Psi</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\psi, \Psi\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\omega</code>, <code>\Omega</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\omega, \Omega\)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="mathematical-operators-and-symbols">1.5. Mathematical operators and symbols</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 10%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 10%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>+</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(+\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Addition</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(-\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subtraction</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\times</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\times\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiplication</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\div</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\div\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Division</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\pm</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\pm\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Plus or minus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mp\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Minus or plus</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>=</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(=\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Equal to</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\neq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\neq\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not equal to</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&lt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(&lt;\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less than</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>&gt;</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(&gt;\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Greater than</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\leq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\leq\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Less than or equal to</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\geq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\geq\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Greater than or equal to</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\approx</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\approx\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Approximately equal to</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\equiv</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\equiv\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Equivalent to; identically equal to</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\propto</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\propto\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Proportional to</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\infty</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\infty\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Infinity</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sqrt{x}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sqrt{x}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Square root</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sum\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\in</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\in\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is an element of</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\notin</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\notin\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is not an element of</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\subseteq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\subseteq\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a subset of</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\supseteq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\supseteq\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is a superset of</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cup</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cup\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Union of sets</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cap</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cap\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Intersection of sets</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\emptyset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\emptyset\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Empty set</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{R}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{R}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set of real numbers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\forall</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\forall\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For all</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\exists</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\exists\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">There exists</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\land</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\land\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logical AND</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\lor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\lor\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logical OR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\neg</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\neg\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logical NOT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\Rightarrow</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\Rightarrow\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Implies</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\Leftrightarrow</code>, <code>\iff</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\iff\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If and only if</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\partial</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\partial\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Partial derivative symbol</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Use <code>\mathbb{}</code> (<em>bb</em> stands for <em>blackboard bold</em>) to typeset common number sets in blackboard bold.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{N}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{N}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural numbers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{Z}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{Z}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{Q}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{Q}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rational numbers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{R}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{R}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Real numbers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{C}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{C}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Complex numbers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\mathbb{R}^n</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\mathbb{R}^n\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(n\)-dimensional real coordinate space</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="summations-products-and-integrals">1.6. Summations, products, and integrals</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 37.5%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">Remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sum_{i=1}^{n} i</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sum_{i=1}^{n} i\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Summation from \(i=1\) to \(i=n\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sum_{k=0}^{n} k^2</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sum_{k=0}^{n} k^2\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sum of the squares of the integers from \(0\) to \(n\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\prod_{i=1}^{n} i</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\prod_{i=1}^{n} i\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Product of the integers from \(1\) to \(n\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\lim_{n\to\infty} \sum_{i=1}^{n} \frac{1}{i}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\lim_{n\to\infty} \sum_{i=1}^{n} \frac{1}{i}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limit of a sequence of partial sums.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\int x^2\,dx</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\int x^2\,dx\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indefinite integral; <code>\,</code> adds a small space before the differential.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\int_0^1 x^2\,dx</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\int_0^1 x^2\,dx\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Definite integral from \(0\) to \(1\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\iint_D f(x,y)\,dx\,dy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\iint_D f(x,y)\,dx\,dy\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double integral over a region \(D\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\iiint_V f(x,y,z)\,dx\,dy\,dz</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\iiint_V f(x,y,z)\,dx\,dy\,dz\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triple integral over a volume \(V\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\oint_C F(z)\,dz</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\oint_C F(z)\,dz\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contour integral over a closed curve \(C\).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\frac{1}{2\pi i}\oint_C \frac{f(z)}{z-a}\,dz</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\frac{1}{2\pi i}\oint_C \frac{f(z)}{z-a}\,dz\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Example of a contour integral from complex analysis.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="brackets-and-parentheses">1.7. Brackets and parentheses</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Left delimiter</th>
+<th class="tableblock halign-left valign-top">Right delimiter</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left(</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left( x \right)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left( x \right)\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left[</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left[ x \right]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left[ x \right]\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\{</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right\}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\{ x \right\}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left\{ x \right\}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\lvert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right\rvert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\lvert x \right\rvert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left\lvert x \right\rvert\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\lVert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right\rVert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\lVert \mathbf{x} \right\rVert</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left\lVert \mathbf{x} \right\rVert\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\langle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right\rangle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left\langle x \right\rangle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left\langle x \right\rangle\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left.</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right|</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left. F(x) \right|_a^b</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left. F(x) \right| _a^b \)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left|</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\right.</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\left| x \right.</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\left| x \right.\)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Every <code>\left</code> must have a corresponding <code>\right</code> within the same mathematical expression.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="k">\left\{\frac</span><span class="p">{</span>1<span class="p">}{</span>n<span class="p">}</span>:n<span class="k">\in\mathbb</span><span class="p">{</span>N<span class="p">}</span><span class="k">\right\}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>\[
+\left\{\frac{1}{n}:n\in\mathbb{N}\right\}
+\]</p>
+</div>
+<div class="paragraph">
+<p>To make one side invisible, use a dot (<code>.</code>) as the delimiter, which is useful for evaluating a function at a boundary.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="p">\[</span><span class="nb">
+</span><span class="nv">\left</span><span class="nb">. </span><span class="nv">\text</span><span class="p">{</span><span class="nb">expression</span><span class="p">}</span><span class="nb"> </span><span class="nv">\right</span><span class="nb">|
+</span><span class="p">\]</span>
+
+<span class="p">\[</span><span class="nb">
+</span><span class="nv">\left</span><span class="nb">| </span><span class="nv">\text</span><span class="p">{</span><span class="nb">expression</span><span class="p">}</span><span class="nb"> </span><span class="nv">\right</span><span class="nb">.
+</span><span class="p">\]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>\[
+\left. \text{expression} \right|
+\]</p>
+</div>
+<div class="paragraph">
+<p>\[
+\left| \text{expression} \right.
+\]</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="matrices-and-equations">1.8. Matrices and equations</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{matrix}</span>
+a <span class="p">&amp;</span> b <span class="k">\\</span>
+c <span class="p">&amp;</span> d
+<span class="nt">\end{matrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\[
+\begin{matrix}
+a &amp; b \\
+c &amp; d
+\end{matrix}
+\]</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{bmatrix}</span>
+1 <span class="p">&amp;</span> 2 <span class="k">\\</span>
+3 <span class="p">&amp;</span> 4
+<span class="nt">\end{bmatrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\[
+\begin{bmatrix}
+a &amp; b \\
+c &amp; d
+\end{bmatrix}
+\]</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{pmatrix}</span>
+1 <span class="p">&amp;</span> 2 <span class="k">\\</span>
+3 <span class="p">&amp;</span> 4
+<span class="nt">\end{pmatrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\[
+\begin{pmatrix}
+a &amp; b \\
+c &amp; d
+\end{pmatrix}
+\]</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{vmatrix}</span>
+a <span class="p">&amp;</span> b <span class="k">\\</span>
+c <span class="p">&amp;</span> d
+<span class="nt">\end{vmatrix}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\[
+\begin{vmatrix}
+a &amp; b \\
+c &amp; d
+\end{vmatrix}
+\]</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{align*}</span>
+x+y <span class="p">&amp;</span>= 10 <span class="k">\\</span>
+x-y <span class="p">&amp;</span>= 2
+<span class="nt">\end{align*}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\[
+\begin{align*}
+x+y &amp;= 10 \\
+x-y &amp;= 2
+\end{align*}
+\]</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="latex"><span class="nt">\begin{split}</span>
+A <span class="p">&amp;</span> = <span class="k">\frac</span><span class="p">{</span><span class="k">\pi</span> r<span class="p">^</span>2<span class="p">}{</span>2<span class="p">}</span> <span class="k">\\</span>
+ <span class="p">&amp;</span> = <span class="k">\frac</span><span class="p">{</span>1<span class="p">}{</span>2<span class="p">}</span> <span class="k">\pi</span> r<span class="p">^</span>2
+<span class="nt">\end{split}</span></code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>\(\begin{split}A &amp;= \frac{\pi r^2}{2} \\
+&amp;= \frac{1}{2} \pi r^2\end{split}\)</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="functions-and-named-operators">1.9. Functions and named operators</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+<th class="tableblock halign-left valign-top">LaTeX</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sin x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sin x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cos x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cos x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\tan x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\tan x\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cot x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cot x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sec x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sec x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\csc x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\csc x\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\arcsin x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\arcsin x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\arccos x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\arccos x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\arctan x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\arctan x\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sinh x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sinh x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cosh x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cosh x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\tanh x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\tanh x\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\log x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\log x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\ln x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\ln x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\log_{a} x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\log_a x\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\exp x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\exp x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sqrt{x}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sqrt{x}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sqrt[n]{x}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sqrt[n]{x}\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\lim_{x\to 0}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\lim_{x\to 0}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\lim_{x\to\infty}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\lim_{x\to\infty}\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\infty</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\infty\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\max(a,b)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\max(a,b)\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\min(a,b)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\min(a,b)\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sup A</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sup A\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\inf A</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\inf A\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\det A</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\det A\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\dim V</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\dim V\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\gcd(a,b)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\gcd(a,b)\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\arg z</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\arg z\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\ker T</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\ker T\)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\Pr(A)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\Pr(A)\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\sin^2 x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\sin^2 x\)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\cos^2 x</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">\(\cos^2 x\)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="stem-in-asciidoctor">2. STEM in Asciidoctor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Asciidoctor supports mathematical notation through STEM (Science, Technology, Engineering, and Mathematics) processing. It supports both AsciiMath and LaTeX-style mathematical expressions. When generating HTML, Asciidoctor can prepare STEM expressions for rendering by a JavaScript-based mathematics engine such as MathJax. <a href="#asciidoctor-stem">[6]</a></p>
+</div>
+<div class="sect2">
+<h3 id="enabling-stem-support">2.1. Enabling STEM support</h3>
+<div class="paragraph">
+<p>A document-level attribute can override the global setting when necessary.</p>
+</div>
+<div class="paragraph">
+<p>To enable STEM processing, set the <code>stem</code> attribute in the document header or configure the <code>stem</code> attribute globally in the site&#8217;s <code>_config.yml</code> file for using the Jekyll Asciidoc plugin:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yml"><span class="na">asciidoctor</span><span class="pi">:</span>
+  <span class="na">attributes</span><span class="pi">:</span>
+    <span class="na">stem</span><span class="pi">:</span> <span class="s">latexmath</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The value <code>latexmath</code> selects LaTeX syntax as the default for STEM expressions. If no notation is specified, Asciidoctor defaults to AsciiMath.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="rendering-mathematics-with-mathjax">2.2. Rendering mathematics with MathJax</h3>
+<div class="paragraph">
+<p>Asciidoctor processes STEM macros during document conversion, but HTML output generally requires a mathematics renderer to display the expressions as formatted mathematics in the browser. MathJax is a JavaScript library that can render LaTeX mathematics in HTML.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;script&gt;</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">MathJax</span> <span class="o">=</span> <span class="p">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">ignoreHtmlClass</span><span class="p">:</span> <span class="dl">'</span><span class="s1">nostem|nolatexmath</span><span class="dl">'</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="p">},</span>
+    <span class="na">tex</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">inlineMath</span><span class="p">:</span> <span class="p">[[</span><span class="dl">'</span><span class="se">\\</span><span class="s1">(</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="se">\\</span><span class="s1">)</span><span class="dl">'</span><span class="p">]],</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="na">displayMath</span><span class="p">:</span> <span class="p">[[</span><span class="dl">'</span><span class="se">\\</span><span class="s1">[</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="se">\\</span><span class="s1">]</span><span class="dl">'</span><span class="p">]],</span> <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="na">tags</span><span class="p">:</span> <span class="dl">'</span><span class="s1">none</span><span class="dl">'</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="p">},</span>
+  <span class="p">};</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">defer</span>
+    <span class="na">src=</span><span class="s">"https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js"</span> <i class="conum" data-value="6"></i><b>(6)</b>
+    <span class="na">integrity=</span><span class="s">"sha512-kO24RkUwCpSCXtdV9p2FM/5isVLi06qQPGlE+AsOx8kN9MTc6Mk7qlZBSEh/b7bvCr2vEWlZLAdp20QLkB/qPg=="</span>
+    <span class="na">crossorigin=</span><span class="s">"anonymous"</span>
+    <span class="na">referrerpolicy=</span><span class="s">"no-referrer"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Defines the MathJax configuration before the library loads.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Excludes HTML elements whose class matches <code>nostem</code> or <code>nolatexmath</code> from MathJax processing.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Sets <code>\(&#8230;&#8203;\)</code> as the delimiters for inline mathematics.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Sets <code>\[&#8230;&#8203;\]</code> as the delimiters for display mathematics.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Disables automatic equation numbering.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Loads the MathJax TeX-to-Common-HTML component. The <a href="https://cdnjs.com/libraries/mathjax"><code>tex-chtml.min.js</code></a> filename indicates TeX input processing, Common HTML output, and a minified JavaScript file.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="stem-macros-versus-mathjax-delimiters">2.3. STEM macros versus MathJax delimiters</h3>
+<div class="paragraph">
+<p>There are two main ways to include mathematical expressions in an AsciiDoc document: using Asciidoctor&#8217;s STEM macros or writing LaTeX expressions directly between delimiters recognized by MathJax.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 66.6668%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Method</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Processing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STEM macro</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>stem:[y = mx + c]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asciidoctor recognizes the macro and processes the expression according to the configured STEM notation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Explicit LaTeX macro</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>latexmath:[\frac{a}{b}]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asciidoctor recognizes the macro and interprets its content as LaTeX notation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Raw MathJax delimiters</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>\( \frac{a}{b} \)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MathJax processes the delimiters in the generated HTML, provided they are preserved and recognized by its configuration.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The distinction matters because Asciidoctor processes STEM macros during document conversion, whereas MathJax normally renders mathematical expressions in the browser after the HTML has been generated. The two approaches can coexist, but their processing pipelines should be configured consistently.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For a Jekyll site using Asciidoctor, prefer <code>stem:[...]</code> for inline mathematics and <code>[stem]</code> blocks for display mathematics to make the source more explicit and avoid relying on MathJax to recognize raw delimiters throughout the generated HTML.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the <code>stem</code> inline macro to include a mathematical expression within a paragraph:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="asciidoc">The equation of a straight line is stem:[y = mx + c].</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The equation of a straight line is \(y = mx + c\).</p>
+</div>
+<div class="paragraph">
+<p>To specify LaTeX notation explicitly, use the <code>latexmath</code> macro:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="asciidoc">The quadratic equation is latexmath:[ax^2 + bx + c = 0].</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The square brackets delimit the macro&#8217;s content. Unlike raw MathJax delimiters, the Asciidoctor STEM macro does not require wrapping the expression in <code>\(...\)</code> or <code>$...$</code>.</p>
+</div>
+</li>
+<li>
+<p>For a standalone equation, use a delimited STEM block:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="asciidoc">[stem]
+++++
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+++++</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because the document header specifies <code>:stem: latexmath</code>, the expression is interpreted as LaTeX and rendered as a display equation:</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\]
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, explicitly specify the notation (e.g., LaTeX) on the block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="asciidoc">[latexmath]
+++++
+\int_0^1 x^2\,dx = \frac{1}{3}
+++++</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="bibliography">Bibliography</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="latex-project"></a>[1] <a href="https://latex-project.org/" class="bare">https://latex-project.org/</a></p>
+</li>
+<li>
+<p><a id="arxiv-tex-latex"></a>[2] <a href="https://info.arxiv.org/help/tex.html" class="bare">https://info.arxiv.org/help/tex.html</a></p>
+</li>
+<li>
+<p><a id="texlive"></a>[3 ] <a href="https://tug.org/texlive/" class="bare">https://tug.org/texlive/</a></p>
+</li>
+<li>
+<p><a id="mathjax"></a>[4] <a href="https://www.mathjax.org/" class="bare">https://www.mathjax.org/</a></p>
+</li>
+<li>
+<p><a id="overleaf-mathematics"></a>[5] <a href="https://www.overleaf.com/learn/latex/Mathematics" class="bare">https://www.overleaf.com/learn/latex/Mathematics</a></p>
+</li>
+<li>
+<p><a id="asciidoctor-stem"></a>[6] <a href="https://docs.asciidoctor.org/asciidoc/latest/stem/" class="bare">https://docs.asciidoctor.org/asciidoc/latest/stem/</a></p>
+</li>
+<li>
+<p><a id="asciidoctor-mathjax"></a>[7] <a href="https://docs.asciidoctor.org/asciidoctor/latest/stem/mathjax/" class="bare">https://docs.asciidoctor.org/asciidoctor/latest/stem/mathjax/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<style>
+  .utterances {
+      max-width: 100%;
+  }
+</style>
+<script src="https://utteranc.es/client.js"
+        repo="looogos/utterances"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+</div>
+</article>
+    </main>
+    <footer class="c-footer">
+  <div class="c-footer-license">
+    <span>Article licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+  </div>
+  
+  <details class="c-footer-extralinks" open>
+    <summary class="c-footer-extralinks-summary">Extral Links</summary>
+    <div class="c-footer-extralinks-content">
+      
+      <a href="https://jekyllrb.com/">Jekyll</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://shopify.github.io/liquid/">Liquid</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://docs.asciidoctor.org/">Asciidoctor</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="https://github.com/qqbuby/">GitHub</a>
+      
+      &nbsp;.&nbsp;
+      
+      
+      <a href="/feed.xml">RSS</a>
+      
+      
+    </div>
+  </details>
+  
+</footer>
+
+    
+<!-- footer scripts -->
+<script src="/assets/js/nav.js" defer></script>
+<script src="/assets/js/heading-anchors.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.15.0/mermaid.min.js" defer></script>
+<script src="/assets/js/mermaid.js" defer></script>
+<!-- https://cdn.jsdelivr.net/gh/lurongkai/anti-baidu/js/anti-baidu-latest.min.js -->
+<script type="text/javascript" src="/js/anti-baidu.min.js" charset="UTF-8"></script>
+
+<script>
+  window.MathJax = {
+    options: {
+      ignoreHtmlClass: 'nostem|nolatexmath'
+    },
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']],
+      tags: 'none'
+    },
+  };
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" integrity="sha512-kO24RkUwCpSCXtdV9p2FM/5isVLi06qQPGlE+AsOx8kN9MTc6Mk7qlZBSEh/b7bvCr2vEWlZLAdp20QLkB/qPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+  </body>
+</html>
