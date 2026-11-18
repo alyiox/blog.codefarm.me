@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <style>
+    .container { fill: #f0f4f8; stroke: #b0bec5; stroke-width: 1; }
+    .engine { fill: #e3f2fd; stroke: #90caf9; stroke-width: 1; }
+    .component { fill: #ffffff; stroke: #78909c; stroke-width: 1; }
+    .queue { fill: #fff3e0; stroke: #ffcc80; stroke-width: 1; }
+    .api { fill: #e8f5e9; stroke: #a5d6a7; stroke-width: 1; }
+    .text-main { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle; }
+    .text-sub { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+    .arrow { stroke: #546e7a; stroke-width: 2; marker-end: url(#arrowhead); }
+    .arrow-light { stroke: #90a4ae; stroke-width: 1.5; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#546e7a" />
+    </marker>
+  </defs>
+
+  <!-- Main Container -->
+  <rect x="10" y="10" width="780" height="480" rx="10" ry="10" class="container" />
+  <text x="400" y="40" class="text-main">JavaScript Runtime Environment</text>
+
+  <!-- JS Engine -->
+  <rect x="30" y="70" width="740" height="180" rx="5" ry="5" class="engine" />
+  <text x="400" y="95" class="text-main" style="font-size: 14px;">JavaScript Engine (e.g., V8)</text>
+
+  <!-- Engine Components -->
+  <rect x="50" y="120" width="220" height="100" class="component" />
+  <text x="160" y="160" class="text-sub">Memory Heap</text>
+  <text x="160" y="180" class="text-sub">(Memory Allocation)</text>
+
+  <rect x="290" y="120" width="220" height="100" class="component" />
+  <text x="400" y="160" class="text-sub">Call Stack</text>
+  <text x="400" y="180" class="text-sub">(Execution Contexts)</text>
+
+  <rect x="530" y="120" width="220" height="100" class="component" />
+  <text x="640" y="160" class="text-sub">Event Loop</text>
+  <text x="640" y="180" class="text-sub">(Manages Queues)</text>
+
+  <!-- APIs -->
+  <rect x="30" y="280" width="360" height="80" class="api" />
+  <text x="210" y="310" class="text-sub">Web APIs (Browser)</text>
+  <text x="210" y="330" class="text-sub">(DOM, Timers, Fetch)</text>
+
+  <rect x="410" y="280" width="360" height="80" class="api" />
+  <text x="590" y="310" class="text-sub">Node.js APIs</text>
+  <text x="590" y="330" class="text-sub">(File System, HTTP)</text>
+
+  <!-- Queues -->
+  <rect x="410" y="390" width="360" height="70" class="queue" />
+  <text x="590" y="425" class="text-sub">Microtask Queue</text>
+
+  <rect x="30" y="390" width="360" height="70" class="queue" />
+  <text x="210" y="415" class="text-sub">Callback Queue</text>
+  <text x="210" y="435" class="text-sub">(Task Queue)</text>
+
+  <!-- Arrows from Event Loop -->
+  <path d="M640,220 Q640,300 590,385" fill="none" class="arrow-light" />
+  <path d="M640,220 Q550,300 210,385" fill="none" class="arrow-light" />
+
+</svg>
